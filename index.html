@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en" data-theme-preference="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f7f9fc" media="(prefers-color-scheme: light)" />
+    <title>Mwangala — Building Better Ways to Learn</title>
+    <meta
+      name="description"
+      content="Mwangala builds education-technology software: offline-first learning, AI-assisted tutoring, assessment, teacher tools, analytics, low-bandwidth delivery and affordable access."
+    />
+    <script>
+      // Applied before first paint so the initial theme matches the stored
+      // preference (Light / Dark / System) without a flash of the wrong theme.
+      (function () {
+        try {
+          var stored = window.localStorage.getItem('mwangala.theme');
+          var preference = stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'system';
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var isDark = preference === 'dark' || (preference === 'system' && prefersDark);
+          var root = document.documentElement;
+          root.classList.toggle('dark', isDark);
+          root.style.colorScheme = isDark ? 'dark' : 'light';
+          root.dataset.themePreference = preference;
+        } catch (error) {
+          /* Storage unavailable (private mode, blocked cookies) — fall back to media queries only. */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
