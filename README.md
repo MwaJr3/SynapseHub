@@ -50,6 +50,10 @@ When independently building and documenting a challenge, update its record with 
 
 The project library renders from this manifest. It defaults to 12 cards per page, updates search immediately, reflects filters in query parameters, and clamps the current page when the result set changes. Difficulty/type filters are shown because source-catalogue values are recorded; no technology filter is shown while implementation stacks remain unconfigured.
 
+## Optional 60-project build prompt collection
+
+`docs/CHALLENGE_BUILD_PROMPTS.md` contains the user-supplied planning prompts for all 60 challenges. Their 60 official source URLs match the catalogue manifest exactly. The detailed feature lists and suggested stacks are planning guidance, not verified official acceptance criteria; inspect each official brief and any licensed starter assets before building. The prompts are not application code, and adding them does not change any record's unverified implementation status. Build and verify projects individually before publishing implementation claims.
+
 ## Configure profile and links
 
 Copy `.env.example` to `.env.local` and fill only actual values:
