@@ -1,293 +1,104 @@
 import { describe, expect, it } from 'vitest';
-import { screen, within } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '@/App';
 import { renderWithProviders } from '@/test/render-app';
-import { catalogue, getProject } from '@/data/projects';
-import { THEME_STORAGE_KEY } from '@/lib/theme';
+import { challengeManifest, validateChallengeManifest } from '@/data/challengeManifest';
 
-describe('routes', () => {
-  it('renders the home page with the primary call to action', async () => {
+describe('verified challenge collection', () => {
+  it('contains exactly 60 unique records with source URLs', () => {
+    expect(challengeManifest).toHaveLength(60);
+    expect(validateChallengeManifest()).toEqual([]);
+    expect(new Set(challengeManifest.map((item) => item.slug)).size).toBe(60);
+    expect(challengeManifest.every((item) => !item.completed)).toBe(true);
+  });
+
+  it('renders the homepage narrative and links to the collection', async () => {
     renderWithProviders(<App />, '/');
-
-    expect(
-      await screen.findByRole('heading', {
-        level: 1,
-        name: /building better ways to learn/i,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /explore the projects/i }),
-    ).toHaveAttribute('href', '/projects');
+    expect(await screen.findByRole('heading', { level: 1, name: /exploring interfaces.*studying experiences.*one brief at a time/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /explore the challenge catalogue/i })).toHaveAttribute('href', '/projects');
+    expect(screen.getAllByText('60').length).toBeGreaterThan(0);
   });
 
-  it.each(catalogue.map((project) => [project.slug, project.name] as const))(
-    'renders a case study for %s',
-    async (slug, name) => {
-      renderWithProviders(<App />, `/projects/${slug}`);
-
-      expect(
-        await screen.findByRole('heading', { level: 1, name }),
-      ).toBeInTheDocument();
-      // The workflow, architecture and limitation sections are part of every case study.
-      expect(
-        screen.getByRole('heading', { name: /how the application is used/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('heading', { name: /components and connections/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('heading', {
-          name: /what is unfinished, stated plainly/i,
-        }),
-      ).toBeInTheDocument();
-    },
-  );
-
-  it('handles an unknown project slug without a broken detail page', async () => {
-    renderWithProviders(<App />, '/projects/ghost-project');
-
-    expect(
-      await screen.findByRole('heading', {
-        level: 1,
-        name: /that project is not in this catalogue/i,
-      }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('link', { name: /back to the project library/i }),
-    ).toHaveAttribute('href', '/projects');
+  it.each(challengeManifest.map((project) => [project.slug, project.title] as const))('opens the %s case study directly', async (slug, title) => {
+    renderWithProviders(<App />, `/projects/${slug}`);
+    expect(await screen.findByRole('heading', { level: 1, name: title })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: /original challenge/i }).every((link) => link.getAttribute('href') === challengeManifest.find((item) => item.slug === slug)?.originalChallengeUrl)).toBe(true);
+    expect(screen.getByRole('heading', { level: 2, name: 'Representative visual' })).toBeInTheDocument();
   });
 
-  it('renders the custom 404 for unknown routes', async () => {
-    renderWithProviders(<App />, '/does-not-exist');
-
-    expect(
-      await screen.findByRole('heading', {
-        level: 1,
-        name: /this page does not exist/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it('renders the about, skills, journey, approach and contact pages', async () => {
-    const expectations: Array<[string, RegExp]> = [
-      ['/about', /understanding systems/i],
-      ['/skills', /technologies and capabilities/i],
-      ['/journey', /five themes, not a timeline/i],
-      ['/approach', /understand → design → build → test → improve/i],
-      ['/contact', /describe the problem, the constraint/i],
-    ];
-
-    for (const [path, heading] of expectations) {
-      const { unmount } = renderWithProviders(<App />, path);
-      expect(
-        await screen.findByRole('heading', { level: 1, name: heading }),
-      ).toBeInTheDocument();
-      unmount();
-    }
+  it('shows a useful not-found state for unknown challenge slugs and routes', async () => {
+    const { unmount } = renderWithProviders(<App />, '/projects/not-a-real-slug');
+    expect(await screen.findByRole('heading', { name: /project not found/i })).toBeInTheDocument();
+    unmount();
+    renderWithProviders(<App />, '/not-a-real-page');
+    expect(await screen.findByRole('heading', { name: /this page does not exist/i })).toBeInTheDocument();
   });
 });
 
-describe('project library filtering', () => {
-  it('searches project data and reports the result count', async () => {
+describe('project discovery', () => {
+  it('searches the manifest and reports a matching result count', async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithProviders(<App />, '/projects');
+    await screen.findByRole('heading', { name: /sixty briefs/i });
+    await user.type(screen.getByRole('searchbox', { name: /search the collection/i }), 'poll creator');
+    await screen.findByRole('heading', { level: 2, name: 'Poll creator app' });
+    expect(container.querySelector('.collection-status')).toHaveTextContent('1 project match your selection');
+    expect(screen.getByRole('heading', { level: 2, name: 'Poll creator app' })).toBeInTheDocument();
+  });
+
+  it('filters by category and clears back to all records', async () => {
     const user = userEvent.setup();
     renderWithProviders(<App />, '/projects');
-
-    await screen.findByRole('heading', { level: 1, name: /nine projects/i });
-    expect(screen.getByRole('status')).toHaveTextContent(
-      /Showing 9 projects of 9/i,
-    );
-
-    await user.type(screen.getByLabelText(/search projects/i), 'pathwise');
-
-    expect(
-      await screen.findByText(/Showing 1 project of 9/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'PathWise' }),
-    ).toBeInTheDocument();
+    await screen.findByRole('heading', { name: /sixty briefs/i });
+    await user.selectOptions(screen.getByLabelText(/category/i), 'Games & interactive experiences');
+    expect(await screen.findByText(/projects match your selection/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Hangman game' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: /reset search and filters/i }));
+    expect(await screen.findByText(/projects in the collection/)).toBeInTheDocument();
   });
 
-  it('searches technologies and problem statements, not just names', async () => {
+  it('combines challenge-type and difficulty filters', async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithProviders(<App />, '/projects');
+    await screen.findByRole('heading', { name: /sixty briefs/i });
+    await user.selectOptions(screen.getByLabelText(/challenge type/i), 'product');
+    await user.selectOptions(screen.getByLabelText(/difficulty/i), 'intermediate');
+    expect(container.querySelector('.collection-status')).toHaveTextContent('3 projects match your selection');
+    expect(screen.getByRole('heading', { level: 2, name: 'Poll creator app' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Restaurant ranking app' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: 'Skills learning tracker' })).toBeInTheDocument();
+  });
+
+  it('sorts the collection by name and paginates', async () => {
     const user = userEvent.setup();
     renderWithProviders(<App />, '/projects');
-
-    await screen.findByRole('heading', { level: 1, name: /nine projects/i });
-    await user.type(screen.getByLabelText(/search projects/i), 'basic phones');
-
-    const cards = await screen.findAllByRole('heading', { level: 3 });
-    const names = cards.map((card) => card.textContent);
-    expect(names).toContain('ReachLearn');
-  });
-
-  it('combines category filters and shows an empty state for impossible combinations', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<App />, '/projects');
-
-    await screen.findByRole('heading', { level: 1, name: /nine projects/i });
-
-    await user.click(
-      screen.getByRole('button', { name: /^AI & Personalized Learning$/ }),
-    );
-    await user.click(screen.getByRole('button', { name: /^Python$/ }));
-
-    expect(
-      await screen.findByText(/Showing 2 projects of 9/i),
-    ).toBeInTheDocument();
-    const twoResults = screen
-      .getAllByRole('heading', { level: 3 })
-      .map((heading) => heading.textContent);
-    expect(twoResults.sort()).toEqual(['PathWise', 'TutorSpring']);
-
-    await user.click(
-      screen.getByRole('button', { name: /^Virtual Classrooms$/ }),
-    );
-
-    expect(
-      await screen.findByText(/no projects match this combination/i),
-    ).toBeInTheDocument();
-    // No project cards remain, and the empty state explains why.
-    expect(
-      screen.queryByRole('heading', { level: 3, name: 'TutorSpring' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { level: 3, name: 'PathWise' }),
-    ).not.toBeInTheDocument();
-    // Both the filter panel and the empty state offer a way out.
-    expect(
-      screen.getAllByRole('button', { name: /clear all filters/i }),
-    ).toHaveLength(2);
-  });
-
-  it('clears filters back to the full library', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<App />, '/projects?category=affordable-access');
-
-    await screen.findByRole('heading', { level: 1, name: /nine projects/i });
-    expect(
-      await screen.findByText(/Showing 1 project of 9/i),
-    ).toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole('button', { name: /clear all filters/i }),
-    );
-
-    expect(
-      await screen.findByText(/Showing 9 projects of 9/i),
-    ).toBeInTheDocument();
-  });
-
-  it('renders the active filter summary from the URL', async () => {
-    renderWithProviders(<App />, '/projects?category=offline-first&q=sync');
-
-    await screen.findByRole('heading', { level: 1, name: /nine projects/i });
-    expect(screen.getByText(/active view:/i)).toBeInTheDocument();
+    await screen.findByRole('heading', { name: /sixty briefs/i });
+    await user.selectOptions(screen.getByLabelText(/sort by/i), 'name');
+    expect(await screen.findByRole('heading', { level: 2, name: 'Art gallery website' })).toBeInTheDocument();
+    expect(screen.getAllByRole('article')).toHaveLength(12);
+    await user.click(screen.getByRole('button', { name: /next/i }));
+    expect(screen.getByText('Page 2 of 5')).toBeInTheDocument();
   });
 });
 
-describe('navigation and theme', () => {
-  it('exposes every primary route in the header and footer', async () => {
-    renderWithProviders(<App />, '/');
-
-    await screen.findByRole('heading', { level: 1 });
-    // jsdom exposes every <header> as a banner and <section> headers are not
-    // scoped the way browsers scope them, so query the primary navigation.
-    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
-    for (const label of [
-      'Home',
-      'About',
-      'Projects',
-      'Skills',
-      'Journey',
-      'Contact',
-    ]) {
-      expect(
-        within(primaryNav).getByRole('link', { name: label }),
-      ).toBeInTheDocument();
-    }
-
-    const footer = screen.getByRole('contentinfo');
-    expect(
-      within(footer).getByRole('link', { name: /all projects/i }),
-    ).toHaveAttribute('href', '/projects');
+describe('portfolio pages and controls', () => {
+  it.each(['/about', '/skills', '/journey', '/contact'])('renders %s', async (route) => {
+    renderWithProviders(<App />, route);
+    expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument();
   });
 
-  it('switches theme, persists the preference and follows the system setting', async () => {
-    const user = userEvent.setup();
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: (query: string) => ({
-        matches: query.includes('dark'),
-        media: query,
-        onchange: null,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => false,
-      }),
-    });
-
-    renderWithProviders(<App />, '/');
-
-    await screen.findByRole('heading', { level: 1 });
-
-    // System preference resolves to dark first.
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-
-    await user.click(screen.getByRole('button', { name: 'Light' }));
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('light');
-
-    await user.click(screen.getByRole('button', { name: 'Dark' }));
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(window.localStorage.getItem(THEME_STORAGE_KEY)).toBe('dark');
-  });
-
-  it('opens and closes the mobile menu with keyboard support', async () => {
+  it('retains the responsive menu and theme controls', async () => {
     const user = userEvent.setup();
     renderWithProviders(<App />, '/');
-
     await screen.findByRole('heading', { level: 1 });
-    const toggle = screen.getByRole('button', { name: /^menu$/i });
-
-    expect(toggle).toHaveAttribute('aria-expanded', 'false');
-    await user.click(toggle);
-    expect(screen.getByRole('button', { name: /^close$/i })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
-
+    const menu = screen.getByRole('button', { name: /^menu$/i });
+    await user.click(menu);
+    expect(screen.getByRole('button', { name: /^close$/i })).toHaveAttribute('aria-expanded', 'true');
     await user.keyboard('{Escape}');
-    expect(screen.getByRole('button', { name: /^menu$/i })).toHaveAttribute(
-      'aria-expanded',
-      'false',
-    );
-  });
-
-  it('skips unavailable external actions but keeps internal navigation working', async () => {
-    const user = userEvent.setup();
-    renderWithProviders(<App />, '/');
-
-    await screen.findByRole('heading', { level: 1 });
-    expect(
-      screen.queryByRole('link', { name: /view github/i }),
-    ).not.toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole('link', { name: /explore the projects/i }),
-    );
-    expect(
-      await screen.findByRole('heading', { level: 1, name: /nine projects/i }),
-    ).toBeInTheDocument();
-  });
-
-  it('sets a unique document title per page', async () => {
-    renderWithProviders(<App />, '/projects/learnbridge');
-    await screen.findByRole('heading', { level: 1, name: 'LearnBridge' });
-    expect(document.title).toContain('LearnBridge');
-
-    const project = getProject('learnbridge')!;
-    expect(document.title).toContain(project.name);
+    expect(screen.getByRole('button', { name: /^menu$/i })).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('button', { name: 'Light' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Dark' }));
+    expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 });

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { screen } from '@testing-library/react';
 import App from '@/App';
 import { renderWithProviders } from '@/test/render-app';
-import { catalogue } from '@/data/projects';
+import { challengeManifest } from '@/data/challengeManifest';
 
 /**
  * Structural accessibility checks.
@@ -19,12 +19,11 @@ const routes: Array<[string, string]> = [
   ['/projects', 'project library'],
   ['/skills', 'skills'],
   ['/journey', 'journey'],
-  ['/approach', 'approach'],
   ['/contact', 'contact'],
   ['/unknown-route', '404'],
-  ...catalogue.map(
+  ...challengeManifest.map(
     (project) =>
-      [`/projects/${project.slug}`, `${project.name} case study`] as [
+      [`/projects/${project.slug}`, `${project.title} case study`] as [
         string,
         string,
       ],

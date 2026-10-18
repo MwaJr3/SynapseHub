@@ -4,12 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import './styles/index.css';
+import './styles/portfolio.css';
 
 import App from './App';
 import { ThemeProvider } from '@/providers/ThemeProvider';
-import { reportProjectDataIssuesInDev } from '@/lib/validate';
+import { validateChallengeManifest } from '@/data/challengeManifest';
 
-reportProjectDataIssuesInDev();
+const manifestIssues = validateChallengeManifest();
+if (import.meta.env.DEV && manifestIssues.length) {
+  console.error('[challenge manifest]', manifestIssues);
+}
 
 const container = document.getElementById('root');
 

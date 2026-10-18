@@ -1,110 +1,18 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Section } from '@/components/ui/Section';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { journeyThemes } from '@/data/journey';
-import { getProjectsBySlugs } from '@/data/projects';
-import { Callout } from '@/components/ui/Callout';
+import { challengeManifest } from '@/data/challengeManifest';
+
+const themes = [
+  { title: 'Layout and responsive design', category: 'Landing pages', text: 'Page composition, content hierarchy and responsive presentation.' },
+  { title: 'Interactive interfaces', category: 'Interactive applications', text: 'Input, state, user feedback and repeatable workflows.' },
+  { title: 'Data-driven experiences', category: 'API-powered applications', text: 'Search-oriented interfaces and ways to make information legible.' },
+  { title: 'Connected multi-page sites', category: 'Multi-page websites', text: 'Shared identity, navigation and pages with distinct roles.' },
+  { title: 'Games and feedback loops', category: 'Games & interactive experiences', text: 'Rules, changing state and clear responses to user choices.' },
+  { title: 'Product and commerce journeys', category: 'Commerce & product experiences', text: 'Decision-making, product information and meaningful task flow.' },
+];
 
 export default function JourneyPage() {
-  usePageMeta({
-    title: 'Learning journey — how the projects connect',
-    description:
-      'The nine projects grouped by technical theme: learning access foundations, personalized learning and assessment, teaching workflows, shared resources and contextual access, and evidence and improvement.',
-    path: '/journey',
-  });
-
-  return (
-    <>
-      <PageHeader
-        eyebrow="Journey"
-        title="Five themes, not a timeline"
-        summary={
-          <>
-            The portfolio is organised by the problems each project addresses
-            and the engineering they share. No dates or chronology are implied:
-            any ordering by date only appears once genuine project dates are
-            configured.
-          </>
-        }
-      />
-
-      <Section
-        id="themes"
-        tone="surface"
-        eyebrow="01 — Themes"
-        title="Where the threads overlap"
-        description="Each theme explains what the projects have in common technically, and links back into the case studies."
-      >
-        <ol className="grid gap-8">
-          {journeyThemes.map((theme, index) => {
-            const themeProjects = getProjectsBySlugs(theme.slugs);
-
-            return (
-              <li key={theme.id} className="card p-5 sm:p-6">
-                <div className="flex flex-wrap items-center gap-3">
-                  <span className="mono-meta">
-                    Theme {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <h2 className="text-lg font-semibold tracking-tight text-ink sm:text-xl">
-                    {theme.title}
-                  </h2>
-                </div>
-
-                <p className="prose-body mt-3 max-w-prose">
-                  {theme.description}
-                </p>
-
-                <div className="mt-6 grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-                  <div>
-                    <p className="eyebrow mb-2">Technical threads</p>
-                    <ul className="grid gap-2">
-                      {theme.focusPoints.map((point) => (
-                        <li
-                          key={point}
-                          className="rail rail-node text-sm text-ink-muted"
-                        >
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div>
-                    <p className="eyebrow mb-2">Projects in this theme</p>
-                    <ul className="grid gap-3">
-                      {themeProjects.map((project) => (
-                        <li key={project.slug}>
-                          <Link
-                            to={`/projects/${project.slug}`}
-                            className="block rounded-card border border-line bg-panel-strong p-4 transition-colors duration-200 hover:border-accent/50"
-                          >
-                            <span className="text-sm font-semibold text-ink">
-                              {project.name}
-                            </span>
-                            <span className="mono-meta mt-1 block">
-                              {project.primaryCategory}
-                            </span>
-                            <span className="prose-body mt-2 block text-xs">
-                              {project.shortDescription}
-                            </span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-        <Callout title="Conceptual grouping" variant="note" className="mt-8">
-          These groupings describe shared engineering themes across the
-          projects. They are not a completion timeline, a study plan or a claim
-          about the order in which the work was done.
-        </Callout>
-      </Section>
-    </>
-  );
+  usePageMeta({ title: 'Development journey', description: 'Explore practice themes suggested by Mwangala’s catalogue of 60 frontend challenge briefs.', path: '/journey' });
+  return <><PageHeader eyebrow="Development journey · thematic, not chronological" title="A collection can show breadth without pretending to be a timeline." summary="The challenge briefs are grouped by the kinds of frontend problems they invite a developer to explore. These themes are not completed builds, dates or claims about a linear progression." /><section className="shell section-pad"><div className="journey-intro"><p className="eyebrow">60 briefs · multiple directions</p><p className="prose-body">From composed landing pages to interactive tools, each group suggests a different lens on interface engineering. This is a practice roadmap; implementation evidence can be attached when real builds are supplied.</p></div><div className="journey-list">{themes.map((theme, index) => { const records = challengeManifest.filter((project) => project.category === theme.category); return <article className="journey-row" key={theme.category}><span className="journey-index">0{index + 1}</span><div><p className="eyebrow">{String(records.length).padStart(2, '0')} challenge records</p><h2>{theme.title}</h2><p>{theme.text}</p><div className="journey-projects">{records.slice(0, 5).map((project) => <Link key={project.slug} to={`/projects/${project.slug}`}>{project.title}<span aria-hidden="true"> ↗</span></Link>)}{records.length > 5 && <Link to={`/projects?category=${encodeURIComponent(theme.category)}`}>+ {records.length - 5} more briefs →</Link>}</div></div></article>; })}</div><p className="collection-note">Category totals are derived from the 60 supplied challenge records. No implementation completion dates are claimed.</p></section></>;
 }

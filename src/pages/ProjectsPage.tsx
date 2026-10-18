@@ -1,221 +1,81 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { ProjectCard } from '@/components/projects/ProjectCard';
-import { ProjectFilters } from '@/components/projects/ProjectFilters';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { ChallengeCard } from '@/components/projects/ChallengeCard';
 import { Button } from '@/components/ui/Button';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { categories, categoryLabels } from '@/data/categories';
-import { projects } from '@/data/projects';
-import { unconnectedSlugs } from '@/config/deployment';
-import {
-  availableSortOptions,
-  clearFilters,
-  filterProjects,
-  hasActiveFilters,
-  parseQueryParams,
-  queryToParams,
-  type ProjectQuery,
-} from '@/lib/filters';
-import { describeQuery } from '@/lib/filters';
+import { challengeManifest } from '@/data/challengeManifest';
 
-const categoryIds = categories.map((category) => category.id);
+const pageSize = 12;
+const categories = [...new Set(challengeManifest.map((project) => project.category))].sort();
+
+type SortMode = 'featured' | 'name' | 'collection' | 'difficulty';
 
 export default function ProjectsPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [params, setParams] = useSearchParams();
+  const query = params.get('q') ?? '';
+  const category = params.get('category') ?? '';
+  const challengeType = params.get('type') ?? '';
+  const difficulty = params.get('difficulty') ?? '';
+  const sort = (params.get('sort') as SortMode) || 'featured';
+  const requestedPage = Number(params.get('page') || 1);
+  const page = Number.isFinite(requestedPage) && requestedPage > 0 ? Math.floor(requestedPage) : 1;
+  const [draft, setDraft] = useState(query);
 
-  // The URL is the source of truth so filtered views are shareable and survive
-  // a refresh or a direct link from the home page.
-  const query = useMemo<ProjectQuery>(
-    () => parseQueryParams(searchParams, categoryIds),
-    [searchParams],
-  );
-
-  // The search box is controlled locally and only written to the URL after a
-  // short pause: it keeps typing responsive and avoids a history entry per
-  // keystroke, while still producing a shareable filtered link.
-  const [searchDraft, setSearchDraft] = useState(() => query.search);
-  const lastSyncedSearch = useRef(query.search);
-
+  useEffect(() => setDraft(query), [query]);
   useEffect(() => {
-    if (query.search !== lastSyncedSearch.current) {
-      lastSyncedSearch.current = query.search;
-      setSearchDraft(query.search);
-    }
-  }, [query.search]);
+    const timeout = window.setTimeout(() => {
+      if (draft !== query) setParams((current) => { const next = new URLSearchParams(current); if (draft) next.set('q', draft); else next.delete('q'); next.delete('page'); return next; }, { replace: true });
+    }, 180);
+    return () => window.clearTimeout(timeout);
+  }, [draft, query, setParams]);
 
+  const filtered = useMemo(() => {
+    const needle = draft.trim().toLocaleLowerCase();
+    const results = challengeManifest.filter((project) => {
+      const categoryMatch = !category || project.category === category;
+      const typeMatch = !challengeType || project.challengeType === challengeType;
+      const difficultyMatch = !difficulty || project.difficulty === difficulty;
+      const searchFields = [project.title, project.description, project.category, project.originalChallengeUrl, project.challengeType, project.accessTier, project.difficulty ?? '', ...project.categories, ...project.features, ...project.technologies].join(' ').toLocaleLowerCase();
+      return categoryMatch && typeMatch && difficultyMatch && (!needle || searchFields.includes(needle));
+    });
+    if (sort === 'name') results.sort((a, b) => a.title.localeCompare(b.title));
+    else if (sort === 'collection') results.sort((a, b) => a.displayOrder - b.displayOrder);
+    else if (sort === 'difficulty') {
+      const ranks: Record<string, number> = { newbie: 0, junior: 1, intermediate: 2, advanced: 3, guru: 4 };
+      results.sort((a, b) => (ranks[a.difficulty ?? ''] ?? 99) - (ranks[b.difficulty ?? ''] ?? 99) || a.displayOrder - b.displayOrder);
+    } else results.sort((a, b) => Number(b.featured) - Number(a.featured) || a.displayOrder - b.displayOrder);
+    return results;
+  }, [category, challengeType, difficulty, draft, sort]);
+
+  const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const safePage = Math.min(page, pageCount);
+  const visible = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
   useEffect(() => {
-    if (searchDraft === lastSyncedSearch.current) return undefined;
+    if (safePage !== page) setParams((current) => { const next = new URLSearchParams(current); next.set('page', String(safePage)); return next; }, { replace: true });
+  }, [page, safePage, setParams]);
 
-    const timeout = setTimeout(() => {
-      lastSyncedSearch.current = searchDraft;
-      setSearchParams(queryToParams({ ...query, search: searchDraft }), {
-        replace: true,
-      });
-    }, 220);
+  usePageMeta({ title: 'Project collection — 60 frontend challenges', description: 'Browse 60 Frontend Mentor challenge records, with independent implementation status clearly marked and searchable filters.', path: '/projects' });
 
-    return () => clearTimeout(timeout);
-  }, [searchDraft, query, setSearchParams]);
+  const update = (key: string, value: string) => setParams((current) => { const next = new URLSearchParams(current); if (value) next.set(key, value); else next.delete(key); next.delete('page'); return next; });
+  const clear = () => { setDraft(''); setParams({}); };
 
-  const effectiveQuery = useMemo(
-    () => ({ ...query, search: searchDraft }),
-    [query, searchDraft],
-  );
-  const results = useMemo(
-    () => filterProjects(projects, effectiveQuery),
-    [effectiveQuery],
-  );
-  const sortOptions = useMemo(() => availableSortOptions(projects), []);
-  const pendingLinks = unconnectedSlugs();
-
-  usePageMeta({
-    title: 'Project library — nine education-technology projects',
-    description:
-      'Search and filter nine education-technology projects covering offline-first learning, AI-assisted tutoring, virtual classrooms, assessment, teacher tools, open resources, analytics, phone delivery and access funding.',
-    path: '/projects',
-  });
-
-  const updateQuery = (next: ProjectQuery) => {
-    setSearchParams(queryToParams(next), { replace: true });
-  };
-
-  const resetQuery = () => {
-    lastSyncedSearch.current = '';
-    setSearchDraft('');
-    setSearchParams(queryToParams(clearFilters()), { replace: true });
-  };
-
-  return (
-    <>
-      <PageHeader
-        eyebrow="Project library"
-        title="Nine projects, one problem space: making learning reachable"
-        summary={
-          <>
-            Each project addresses a different part of the education-access
-            problem. Every case study explains the learning problem, the
-            workflow, the architecture and the parts that are still unfinished.
-          </>
-        }
-        aside={
-          <div className="card p-5">
-            <p className="eyebrow">Deployment links</p>
-            <p className="prose-body mt-2 text-sm">
-              {pendingLinks.length === projects.length
-                ? 'No application or source repository is connected yet. The catalogue comes first; live demo and source buttons appear the moment a real URL is configured.'
-                : `${projects.length - pendingLinks.length} of ${projects.length} projects have a connected application or repository.`}
-            </p>
-            <p className="mono-meta mt-3">
-              {pendingLinks.length === 0
-                ? 'All projects connected'
-                : `${pendingLinks.length} awaiting links`}
-            </p>
-          </div>
-        }
-      />
-
-      <section data-tone="surface" className="shell pb-20">
-        <ProjectFilters
-          query={query}
-          search={searchDraft}
-          onSearchChange={setSearchDraft}
-          onChange={updateQuery}
-          onClear={resetQuery}
-          sortOptions={sortOptions}
-          resultCount={results.length}
-          totalCount={projects.length}
-        />
-
-        {hasActiveFilters(effectiveQuery) && (
-          <p className="mono-meta mt-4">
-            Active view:{' '}
-            {describeQuery(effectiveQuery, categoryLabels) || 'default sort'}
-          </p>
-        )}
-
-        <section aria-labelledby="results-heading" className="mt-8">
-          <h2 id="results-heading" className="eyebrow">
-            {hasActiveFilters(effectiveQuery)
-              ? 'Matching projects'
-              : 'All nine projects'}
-          </h2>
-
-          {results.length === 0 ? (
-            <div className="mt-4">
-              <EmptyState
-                title="No projects match this combination"
-                description={
-                  effectiveQuery.categories.length > 1
-                    ? 'Each selected filter narrows the list further, so a combination can return nothing. Remove one filter, or clear everything to see all nine projects again.'
-                    : 'No project name, technology or feature contains that search term. Try a shorter term or clear the filters.'
-                }
-                action={
-                  <Button variant="primary" onClick={resetQuery}>
-                    Clear all filters
-                  </Button>
-                }
-              />
-            </div>
-          ) : (
-            <ul className="mt-4 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {results.map((project) => (
-                <li key={project.slug} className="flex">
-                  <ProjectCard project={project} className="w-full" />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <div className="mt-12 grid gap-6 rounded-card border border-line bg-panel p-5 sm:p-6 lg:grid-cols-[1.4fr_1fr]">
-          <div>
-            <h2 className="text-base font-semibold text-ink">
-              How this catalogue is maintained
-            </h2>
-            <p className="prose-body mt-3 text-sm">
-              Every card, filter result, home-page showcase and case study is
-              rendered from one typed catalogue, so a project is described once
-              and referenced everywhere. Categories, technologies and
-              related-project links are validated when the site is built, and
-              the test suite fails if a project references a category or a
-              related slug that does not exist.
-            </p>
-            <p className="prose-body mt-3 text-sm">
-              External links are treated as data too: a missing or malformed URL
-              is omitted rather than replaced with a placeholder destination,
-              and a repository URL is never substituted into a demo slot.
-            </p>
-          </div>
-          <dl className="grid gap-3 text-sm">
-            <div className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
-              <dt className="text-ink-muted">Projects documented</dt>
-              <dd className="font-mono text-ink">{projects.length}</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
-              <dt className="text-ink-muted">Categories</dt>
-              <dd className="font-mono text-ink">{categories.length}</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
-              <dt className="text-ink-muted">Applications connected</dt>
-              <dd className="font-mono text-ink">
-                {projects.filter((project) => project.liveDemoUrl).length}
-              </dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-ink-muted">Repositories connected</dt>
-              <dd className="font-mono text-ink">
-                {projects.filter((project) => project.repositoryUrl).length}
-              </dd>
-            </div>
-          </dl>
-          <p className="mono-meta mt-3 leading-relaxed">
-            Duplicate slugs, unknown categories and dangling related-project
-            links are caught by the data validation in the test suite rather
-            than reaching a visitor.
-          </p>
-        </div>
-      </section>
-    </>
-  );
+  return <>
+    <PageHeader eyebrow="The collection · 01—60" title="Sixty briefs. Sixty ways to think through the interface." summary="A searchable catalogue of 60 Frontend Mentor challenge briefs. Individual routes document source context; no independent implementations have been supplied or verified." />
+    <section className="shell pb-20" aria-labelledby="collection-heading">
+      <div className="collection-toolbar">
+        <div className="collection-search"><label htmlFor="project-search">Search the collection</label><input id="project-search" type="search" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Try “dashboard”, “game” or “portfolio”…" /></div>
+        <div className="collection-filter"><label htmlFor="category-filter">Category</label><select id="category-filter" value={category} onChange={(event) => update('category', event.target.value)}><option value="">All categories</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select></div>
+        <div className="collection-filter"><label htmlFor="type-filter">Challenge type</label><select id="type-filter" value={challengeType} onChange={(event) => update('type', event.target.value)}><option value="">All types</option><option value="design">Design</option><option value="product">Product</option></select></div>
+        <div className="collection-filter"><label htmlFor="difficulty-filter">Difficulty</label><select id="difficulty-filter" value={difficulty} onChange={(event) => update('difficulty', event.target.value)}><option value="">All levels</option>{['newbie', 'junior', 'intermediate', 'advanced', 'guru'].map((level) => <option key={level} value={level}>{level[0]?.toUpperCase()}{level.slice(1)}</option>)}</select></div>
+        <div className="collection-filter"><label htmlFor="sort-projects">Sort by</label><select id="sort-projects" value={sort} onChange={(event) => update('sort', event.target.value)}><option value="featured">Featured first</option><option value="name">Project name</option><option value="difficulty">Difficulty</option><option value="collection">Collection order</option></select></div>
+      </div>
+      <div className="collection-status" role="status" aria-live="polite"><p><strong>{filtered.length}</strong> {filtered.length === 1 ? 'project' : 'projects'}{draft || category || challengeType || difficulty ? ' match your selection' : ' in the collection'}</p>{(draft || category || challengeType || difficulty || sort !== 'featured') && <button className="text-button" onClick={clear}>Reset search and filters</button>}</div>
+      {(draft || category || challengeType || difficulty) && <ul className="active-filters" aria-label="Active filters"><li><span className="eyebrow">Active filters</span></li>{draft && <li><span className="chip">Search: {draft}</span></li>}{category && <li><span className="chip">{category}</span></li>}{challengeType && <li><span className="chip">{challengeType} challenge</span></li>}{difficulty && <li><span className="chip">{difficulty}</span></li>}</ul>}
+      <h2 id="collection-heading" className="sr-only">Project collection</h2>
+      {visible.length ? <div className="challenge-grid">{visible.map((project) => <ChallengeCard key={project.slug} project={project} />)}</div> : <div className="empty-card"><p className="eyebrow">No results</p><h2 className="mt-2 text-xl font-semibold">Nothing matches that combination.</h2><p className="prose-body mt-2">Try a broader term or clear the current filters to return to all {challengeManifest.length} projects.</p><Button variant="primary" className="mt-5" onClick={clear}>Clear filters</Button></div>}
+      {filtered.length > pageSize && <nav className="pagination" aria-label="Project pages"><button className="btn btn-secondary" disabled={safePage <= 1} onClick={() => setParams((current) => { const next = new URLSearchParams(current); next.set('page', String(safePage - 1)); return next; })}>← Previous</button><p className="mono-meta">Page {safePage} of {pageCount}</p><button className="btn btn-secondary" disabled={safePage >= pageCount} onClick={() => setParams((current) => { const next = new URLSearchParams(current); next.set('page', String(safePage + 1)); return next; })}>Next →</button></nav>}
+      <p className="collection-note">Challenge titles and source links are from the supplied catalogue. This is an independent portfolio; Frontend Mentor does not endorse it. Challenge difficulty, tiers, exact stacks, screenshots and project deployment URLs are not recorded until verified.</p>
+    </section>
+  </>;
 }

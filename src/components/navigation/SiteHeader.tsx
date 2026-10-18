@@ -74,7 +74,7 @@ export function SiteHeader() {
               {profileConfig.name}
             </span>
             <span className="mono-meta hidden sm:inline">
-              Python · Software Engineering · AI in learning
+              Frontend development · UI engineering
             </span>
           </span>
         </Link>
