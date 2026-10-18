@@ -2,9 +2,9 @@
  * Challenge catalogue supplied for Mwangala's portfolio.
  *
  * Official challenge titles, URLs, challenge types, access tiers and difficulty
- * labels are recorded from the supplied links and official catalogue. No source
- * code or running apps were supplied, so implementation details, screenshots,
- * demos and repositories are deliberately absent. Nothing here implies
+ * labels are recorded from the supplied links and official catalogue. Each slug
+ * has a local-first prototype, but official starter code and licensed assets were
+ * not supplied and full brief conformance is not verified. Nothing here implies
  * Frontend Mentor endorsement.
  */
 export type ChallengeDifficulty = 'newbie' | 'junior' | 'intermediate' | 'advanced' | 'guru';
@@ -183,7 +183,7 @@ export const challengeManifest: ChallengeRecord[] = seeds.map(([slug, title, cat
   category,
   categories: [category],
   description: challengeBriefs[slug] ?? 'Challenge summary not transcribed yet.',
-  implementationSummary: 'No independent implementation or project-specific evidence has been supplied for this challenge record. Add verified build details, technologies, screenshots, tests and links here when available.',
+  implementationSummary: `A local-first interactive prototype is available at /apps/${slug}. It demonstrates browser-side interactions but does not yet satisfy every prompt requirement or verify against official starter assets. Add project-specific tests, genuine screenshots, backend services, and deployment details when completed.`,
   technologies: [],
   features: [],
   thumbnail: { kind: 'representative-illustration', label: `Representative illustration for ${title}; not a screenshot of the implementation.` },

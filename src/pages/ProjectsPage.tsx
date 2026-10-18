@@ -55,13 +55,13 @@ export default function ProjectsPage() {
     if (safePage !== page) setParams((current) => { const next = new URLSearchParams(current); next.set('page', String(safePage)); return next; }, { replace: true });
   }, [page, safePage, setParams]);
 
-  usePageMeta({ title: 'Project collection — 60 frontend challenges', description: 'Browse 60 Frontend Mentor challenge records, with independent implementation status clearly marked and searchable filters.', path: '/projects' });
+  usePageMeta({ title: 'Project collection — 60 frontend challenges', description: 'Browse 60 Frontend Mentor challenge records with links to their local-first prototypes and clear verification status.', path: '/projects' });
 
   const update = (key: string, value: string) => setParams((current) => { const next = new URLSearchParams(current); if (value) next.set(key, value); else next.delete(key); next.delete('page'); return next; });
   const clear = () => { setDraft(''); setParams({}); };
 
   return <>
-    <PageHeader eyebrow="The collection · 01—60" title="Sixty briefs. Sixty ways to think through the interface." summary="A searchable catalogue of 60 Frontend Mentor challenge briefs. Individual routes document source context; no independent implementations have been supplied or verified." />
+    <PageHeader eyebrow="The collection · 01—60" title="Sixty briefs. Sixty ways to think through the interface." summary="A searchable catalogue of 60 Frontend Mentor challenge briefs. Every record links to a local-first prototype; none is marked complete against the full challenge brief." />
     <section className="shell pb-20" aria-labelledby="collection-heading">
       <div className="collection-toolbar">
         <div className="collection-search"><label htmlFor="project-search">Search the collection</label><input id="project-search" type="search" value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Try “dashboard”, “game” or “portfolio”…" /></div>

@@ -22,7 +22,7 @@ const readEnv = (key: string): string => (rawEnv[key] ?? '').trim();
 export const siteConfig: SiteConfig = {
   title: 'Mwangala — Frontend Developer',
   shortTitle: 'Mwangala',
-  description: 'Frontend development portfolio catalogue of 60 Frontend Mentor challenge briefs; independent implementation status is clearly identified.',
+  description: 'Frontend portfolio featuring local-first interactive prototypes for 60 Frontend Mentor challenge records, with verification status clearly identified.',
   url: readEnv('VITE_SITE_URL').replace(/\/+$/, ''),
   ogImagePath: '/og-image.png',
 };

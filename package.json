@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Mwangala's frontend development portfolio featuring 60 independent challenge implementations.",
+  "description": "Mwangala's frontend portfolio and 60 interactive challenge prototypes.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

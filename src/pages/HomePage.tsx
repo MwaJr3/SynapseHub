@@ -19,8 +19,8 @@ export default function HomePage() {
         <div className="hero-copy">
           <p className="eyebrow">{profileConfig.role}</p>
           <h1>Exploring Interfaces.<br /><span>Studying Experiences.</span><br />One Brief at a Time.</h1>
-          <p className="hero-description">I’m Mwangala, a developer building a roadmap for frontend practice through design challenges. This catalogue records 60 briefs; independent implementations have not yet been supplied or verified.</p>
-          <div className="hero-actions"><Link className="btn btn-primary" to="/projects">Explore the challenge catalogue <span aria-hidden="true">↗</span></Link><Link className="btn btn-secondary" to="/about">About my work</Link>{links.github && <a className="btn btn-secondary" href={links.github} target="_blank" rel="noreferrer">View GitHub ↗</a>}</div>
+          <p className="hero-description">I’m Mwangala, a developer building a roadmap for frontend practice through design challenges. This catalogue includes 60 browser-side prototypes; full completion against each official brief has not been verified.</p>
+          <div className="hero-actions"><Link className="btn btn-primary" to="/apps">Try the interactive prototypes <span aria-hidden="true">↗</span></Link><Link className="btn btn-secondary" to="/projects">Browse challenge records</Link><Link className="btn btn-secondary" to="/about">About my work</Link>{links.github && <a className="btn btn-secondary" href={links.github} target="_blank" rel="noreferrer">View GitHub ↗</a>}</div>
           <div className="hero-foot"><span><b>{challengeManifest.length}</b> challenge briefs catalogued</span><span>Independent work inspired by Frontend Mentor</span></div>
         </div>
         <div className="hero-art" aria-label="An editorial illustration representing interface and code">

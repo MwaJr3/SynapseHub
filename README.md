@@ -1,15 +1,16 @@
 # Mwangala — Frontend Development Portfolio
 
-A responsive portfolio built with React, TypeScript, Vite, Tailwind CSS and React Router. The site presents 60 challenge records from the links supplied for the portfolio, with a searchable project library, individual case-study routes, editorial landing pages and a hybrid light/dark identity.
+A responsive portfolio built with React, TypeScript, Vite, Tailwind CSS and React Router. The site presents 60 challenge records from the links supplied for the portfolio, with a searchable challenge library, 60 local-first interactive prototype routes, individual challenge records, and a hybrid light/dark identity.
 
-> **Content integrity note:** this repository is the portfolio website and challenge catalogue—not 60 finished challenge applications. The 60 challenge titles, links, types, access tiers and difficulty labels come from the supplied links and official catalogue metadata. No independent application code, demos, repositories, implementation screenshots, technology lists or per-project verification were supplied. All project records therefore show implementation status as not verified. The CSS artwork is illustrative, not evidence of completed apps. This is an independent portfolio, not endorsed by Frontend Mentor.
+> **Content integrity note:** this repository now includes 60 interactive, local-first prototype routes in addition to the portfolio and challenge catalogue. They are working browser-side starting points, not 60 production-ready/full-stack applications: several still need official starter assets, backend services, complete prompt acceptance coverage, independent QA, and deployment. All 60 records remain unverified as completed challenge solutions. This is an independent portfolio, not endorsed by Frontend Mentor.
 
 ## Included
 
 - `/` — editorial homepage, featured collection, working-process overview, and project discovery CTAs.
 - `/about` — authentic developer positioning without invented biography or credentials.
 - `/projects` — all 60 records; immediate search; combinable category, challenge type and difficulty filters; featured/name/difficulty/collection sorting; 12-item pagination; URL-backed discovery state.
-- `/projects/:slug` — individual case-study routes, original challenge attribution, challenge brief context and a clear “not verified / no build supplied” status. Demo/source links appear only when configured.
+- `/projects/:slug` — individual challenge records, source attribution, brief context, prototype link, and explicit verification status. Demo/source links appear only when configured.
+- `/apps` and `/apps/:slug` — an interactive browser-first prototype for each of the 60 records, with domain-specific controls, local persistence where appropriate, named public API integrations for select tools, and visible limits.
 - `/skills` — capability areas tied to project categories as a roadmap for practice rather than demonstrated project evidence.
 - `/journey` — thematic groupings, not an invented chronology.
 - `/contact` — configured email/profile links only; no fake contact form.
@@ -52,7 +53,7 @@ The project library renders from this manifest. It defaults to 12 cards per page
 
 ## Optional 60-project build prompt collection
 
-`docs/CHALLENGE_BUILD_PROMPTS.md` contains the user-supplied planning prompts for all 60 challenges. Their 60 official source URLs match the catalogue manifest exactly. The detailed feature lists and suggested stacks are planning guidance, not verified official acceptance criteria; inspect each official brief and any licensed starter assets before building. The prompts are not application code, and adding them does not change any record's unverified implementation status. Build and verify projects individually before publishing implementation claims.
+`docs/CHALLENGE_BUILD_PROMPTS.md` contains the user-supplied planning prompts for all 60 challenges. Their 60 official source URLs match the catalogue manifest exactly. The detailed feature lists and suggested stacks are planning guidance, not verified official acceptance criteria; inspect each official brief and any licensed starter assets before building. The prompts are planning guidance, not a substitute for the application code in `/apps`, nor proof that every prompt requirement has been met. All records remain unverified until each prototype is checked against the official brief and any licensed starter assets.
 
 ## Configure profile and links
 
@@ -66,13 +67,14 @@ Project destinations live on individual records in `src/data/challengeManifest.t
 
 ## Deployment
 
-Build with `npm run build` and deploy `dist/` to a static host. Configure SPA rewrites to `index.html` so direct refreshes on `/projects/:slug` work. `public/_redirects` includes the Netlify fallback. Set `VITE_SITE_URL` at build time before generating the sitemap. No backend is required unless a genuine contact endpoint is configured.
+Build with `npm run build` and deploy `dist/` to a static host. Configure SPA rewrites to `index.html` so direct refreshes on `/projects/:slug` and `/apps/:slug` work. `public/_redirects` includes the Netlify fallback. Set `VITE_SITE_URL` at build time before generating the sitemap. No backend is required unless a genuine contact endpoint is configured.
 
 ## Current content/configuration gaps
 
 - Demo and source repository URLs have not been supplied; those actions are hidden.
 - Twelve user-supplied Reel screenshots are included only as design-reference material in the downloadable handoff ZIP. They are not connected to project records or presented as Mwangala implementations. The website’s representative illustrations are separately labelled and are not app captures.
-- The 60 challenge applications have not been created or verified as part of this repository. Per-project stacks, features, testing evidence, accessibility checks, engineering decisions, screenshots and app links can be added after real builds are supplied.
+- The 60 routes currently host local-first prototype experiences in this shared React app; they are not 60 separately packaged or deployed services. Multi-user authentication, shared databases, payments, email delivery, and backend workflows need real service infrastructure and are not simulated as production behavior.
+- Full per-project acceptance coverage, licensed challenge assets, feature-specific tests, genuine screenshots, and deployment URLs remain to be added before any challenge record is marked complete.
 - Challenge records document the official challenge source and concise paraphrased brief context only. They do not imply paid access, completion, approval or endorsement; some source challenges are marked Premium by Frontend Mentor.
 - Profile links, contact details and the production domain are unconfigured by default.
 - Automated unit/component tests and lint/type/build checks are provided; visual regression, Lighthouse measurement and manual assistive-technology checks are not claimed as completed.

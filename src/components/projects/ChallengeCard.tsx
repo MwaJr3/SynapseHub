@@ -23,8 +23,8 @@ export function ChallengeCard({ project }: { project: ChallengeRecord }) {
         <p className="prose-body mt-2 text-sm">{project.description}</p>
         {project.technologies.length > 0 && <div className="flex flex-wrap gap-2">{project.technologies.slice(0, 4).map((technology) => <span className="chip" key={technology}>{technology}</span>)}</div>}
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
-          <span className="mono-meta">Implementation not verified</span>
-          <Link className="link-inline text-sm" to={`/projects/${project.slug}`}>Case study <span aria-hidden="true">↗</span></Link>
+          <span className="mono-meta">Interactive prototype available</span>
+          <div className="flex flex-wrap gap-3"><Link className="link-inline text-sm" to={`/apps/${project.slug}`}>Try app <span aria-hidden="true">↗</span></Link><Link className="link-inline text-sm" to={`/projects/${project.slug}`}>Challenge notes <span aria-hidden="true">↗</span></Link></div>
         </div>
         <ChallengeLinks project={project} compact />
       </div>

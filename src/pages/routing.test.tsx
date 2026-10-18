@@ -16,7 +16,7 @@ describe('verified challenge collection', () => {
   it('renders the homepage narrative and links to the collection', async () => {
     renderWithProviders(<App />, '/');
     expect(await screen.findByRole('heading', { level: 1, name: /exploring interfaces.*studying experiences.*one brief at a time/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /explore the challenge catalogue/i })).toHaveAttribute('href', '/projects');
+    expect(screen.getByRole('link', { name: /try the interactive prototypes/i })).toHaveAttribute('href', '/apps');
     expect(screen.getAllByText('60').length).toBeGreaterThan(0);
   });
 
@@ -25,6 +25,39 @@ describe('verified challenge collection', () => {
     expect(await screen.findByRole('heading', { level: 1, name: title })).toBeInTheDocument();
     expect(screen.getAllByRole('link', { name: /original challenge/i }).every((link) => link.getAttribute('href') === challengeManifest.find((item) => item.slug === slug)?.originalChallengeUrl)).toBe(true);
     expect(screen.getByRole('heading', { level: 2, name: 'Representative visual' })).toBeInTheDocument();
+  });
+
+  it('lists the 60 interactive prototype routes', async () => {
+    const { container } = renderWithProviders(<App />, '/apps');
+    expect(await screen.findByRole('heading', { level: 1, name: /open a challenge prototype/i })).toBeInTheDocument();
+    expect(container.querySelector('.collection-status')).toHaveTextContent('60 interactive prototypes');
+    expect(screen.getAllByRole('link', { name: /open prototype/i })[0]).toHaveAttribute('href', '/apps/poll-creator-app');
+  });
+
+  it.each(challengeManifest.map((project) => [project.slug, project.title] as const))('opens the %s app prototype directly', async (slug, title) => {
+    renderWithProviders(<App />, `/apps/${slug}`);
+    expect(await screen.findByRole('heading', { level: 1, name: title })).toBeInTheDocument();
+    expect(screen.getByText('Local-first prototype', { exact: true })).toBeInTheDocument();
+  });
+
+  it('supports creating and voting once on a local poll', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<App />, '/apps/poll-creator-app');
+    await screen.findByRole('heading', { level: 1, name: 'Poll creator app' });
+    await user.type(screen.getByLabelText(/poll question/i), 'Choose a time');
+    await user.type(screen.getByLabelText(/answer option/i), 'Morning, Evening');
+    await user.click(screen.getByRole('button', { name: /create local poll/i }));
+    const option = await screen.findByRole('button', { name: /morning/i });
+    await user.click(option);
+    expect(await screen.findAllByText(/voted on this device/i)).toHaveLength(2);
+  });
+
+  it('plays a complete tic-tac-toe round', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<App />, '/apps/tic-tac-toe-game');
+    await screen.findByRole('heading', { level: 1, name: 'Tic Tac Toe game' });
+    for (const square of [1, 4, 2, 5, 3]) await user.click(screen.getByRole('gridcell', { name: `Square ${square}, empty` }));
+    expect(await screen.findByRole('heading', { name: /x wins the round/i })).toBeInTheDocument();
   });
 
   it('shows a useful not-found state for unknown challenge slugs and routes', async () => {

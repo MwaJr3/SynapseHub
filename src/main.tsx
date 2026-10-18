@@ -5,6 +5,7 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import './styles/index.css';
 import './styles/portfolio.css';
+import './styles/apps.css';
 
 import App from './App';
 import { ThemeProvider } from '@/providers/ThemeProvider';
