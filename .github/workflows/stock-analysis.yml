@@ -1,0 +1,45 @@
+name: Stock analysis quality
+
+on:
+  push:
+    paths:
+      - "stock-price-time-series-analysis/**"
+      - ".github/workflows/stock-analysis.yml"
+  pull_request:
+    paths:
+      - "stock-price-time-series-analysis/**"
+      - ".github/workflows/stock-analysis.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: stock-price-time-series-analysis
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: stock-price-time-series-analysis/pyproject.toml
+      - name: Install project
+        run: python -m pip install -e ".[dev,notebook]"
+      - name: Lint and format check
+        run: |
+          ruff format --check .
+          ruff check .
+      - name: Run tests
+        run: pytest -q
+      - name: Execute notebook from a clean kernel
+        env:
+          STOCK_ANALYSIS_DATA_MODE: sample
+        run: >-
+          jupyter nbconvert --to notebook --execute
+          notebooks/stock_price_analysis.ipynb
+          --output stock-analysis-check.ipynb
+          --output-dir /tmp
+          --ExecutePreprocessor.timeout=180
