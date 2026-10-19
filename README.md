@@ -8,6 +8,19 @@ The site's message: **software that explores how technology can make learning mo
 useful** — offline-first study, grounded AI tutoring, evidence-based assessment, teacher workflows, open resources,
 learning analytics, phone-based delivery and affordable access.
 
+## Stock analysis portfolio projects
+
+Two editions are retained side by side:
+
+- **[Version 1 — guided notebook](stock-price-analysis/README.md):** a self-contained, executed introduction to
+  `yfinance`, Pandas date indexes, weekly/monthly `.resample()`, moving averages and volume comparison.
+- **[Version 2 — comparative analytics workflow](stock-price-time-series-analysis/README.md):** the expanded,
+  configurable project with reusable Python modules, strict validation, caching and provenance, returns/volatility/
+  drawdown/correlation analysis, exportable reports, genuine generated visuals and 39 deterministic pytest tests.
+
+Both versions document their archived samples and never invent observations. Version 1 reports when it uses its
+fallback; Version 2 requires the data mode explicitly and never substitutes a failed live request.
+
 ---
 
 ## What is implemented
