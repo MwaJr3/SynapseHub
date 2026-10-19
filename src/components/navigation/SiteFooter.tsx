@@ -5,6 +5,7 @@ import { unconnectedSlugs } from '@/config/deployment';
 import { pluralise } from '@/lib/format';
 
 const footerNav = [
+  { to: '/system', label: 'Personal system' },
   { to: '/projects', label: 'All projects' },
   { to: '/about', label: 'About' },
   { to: '/skills', label: 'Skills' },

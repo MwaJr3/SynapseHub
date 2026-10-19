@@ -21,6 +21,7 @@ const routes: Array<[string, string]> = [
   ['/journey', 'journey'],
   ['/approach', 'approach'],
   ['/contact', 'contact'],
+  ['/system', 'personal operating system'],
   ['/unknown-route', '404'],
   ...catalogue.map(
     (project) =>

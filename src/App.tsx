@@ -13,6 +13,7 @@ const JourneyPage = lazy(() => import('@/pages/JourneyPage'));
 const ApproachPage = lazy(() => import('@/pages/ApproachPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const SystemPage = lazy(() => import('@/pages/SystemPage'));
 
 function RouteFallback() {
   return (
@@ -35,6 +36,7 @@ export function AppRoutes() {
         <Route path="journey" element={<JourneyPage />} />
         <Route path="approach" element={<ApproachPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="system" element={<SystemPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

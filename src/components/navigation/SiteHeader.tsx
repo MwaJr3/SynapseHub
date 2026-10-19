@@ -6,6 +6,7 @@ import { ThemeSwitcher } from './ThemeSwitcher';
 
 const navItems = [
   { to: '/', label: 'Home', end: true },
+  { to: '/system', label: 'System' },
   { to: '/about', label: 'About' },
   { to: '/projects', label: 'Projects' },
   { to: '/skills', label: 'Skills' },
