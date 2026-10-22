@@ -199,6 +199,7 @@ describe('navigation and theme', () => {
       'Projects',
       'Skills',
       'Journey',
+      'Operations',
       'Contact',
     ]) {
       expect(
