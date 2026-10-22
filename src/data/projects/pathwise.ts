@@ -281,7 +281,12 @@ export const pathwise: PortfolioProject = {
   featured: true,
   status: 'completed',
   displayOrder: 4,
-  relatedSlugs: ['learnbridge', 'tutorspring', 'learnpulse'],
+  relatedSlugs: [
+    'learnbridge',
+    'tutorspring',
+    'learnpulse',
+    'workniche',
+  ],
   demoRequirements:
     'Fully functional with seeded synthetic objectives, questions and learners. No external services or credentials are required.',
 };

@@ -4,7 +4,7 @@ import type { DeploymentRegistry, ProjectSlug } from '@/types';
  * Deployment registry — the single place where a project is connected to the
  * application it runs as and the repository it lives in.
  *
- * The portfolio is built catalogue-first: every one of the nine projects is
+ * The portfolio is built catalogue-first: every one of the ten projects is
  * fully documented before a deployment or repository exists. When those become
  * available, add an entry below and the links appear everywhere at once —
  * project card, case-study header, project-links panel, related-project

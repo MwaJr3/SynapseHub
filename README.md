@@ -23,6 +23,25 @@ fallback; Version 2 requires the data mode explicitly and never substitutes a fa
 
 ---
 
+## The WorkNiche application
+
+`workniche/` is a complete full-stack job-marketplace application — the tenth
+portfolio project, presented in the catalogue as [WorkNiche](src/data/projects/workniche.ts).
+Next.js 15 + TypeScript + Drizzle (PostgreSQL, with an embedded PGlite mode for
+local runs), credentials Auth.js, Zod at every boundary, database-enforced
+product rules (one application per candidate per role, notification dedupe),
+an append-only hiring pipeline, private candidate data and résumé storage, an
+explainable recommendation scorer, an idempotent notification worker and an
+admin moderation console.
+
+Every organization, person and listing in its demo data is fictional and
+labelled fictional inside the product. See [workniche/README.md](workniche/README.md)
+for setup, demo accounts, its honesty statement and the values required before
+treating it as a real product, and [workniche/docs/DEPLOYMENT.md](workniche/docs/DEPLOYMENT.md)
+for deployment.
+
+---
+
 ## What is implemented
 
 | Area               | Detail                                                                                                                                                                                                                             |

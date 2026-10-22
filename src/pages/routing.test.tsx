@@ -95,13 +95,13 @@ describe('project library filtering', () => {
 
     await screen.findByRole('heading', { level: 1, name: /nine projects/i });
     expect(screen.getByRole('status')).toHaveTextContent(
-      /Showing 9 projects of 9/i,
+      /Showing 10 projects of 10/i,
     );
 
     await user.type(screen.getByLabelText(/search projects/i), 'pathwise');
 
     expect(
-      await screen.findByText(/Showing 1 project of 9/i),
+      await screen.findByText(/Showing 1 project of 10/i),
     ).toBeInTheDocument();
     expect(
       screen.getByRole('heading', { name: 'PathWise' }),
@@ -132,7 +132,7 @@ describe('project library filtering', () => {
     await user.click(screen.getByRole('button', { name: /^Python$/ }));
 
     expect(
-      await screen.findByText(/Showing 2 projects of 9/i),
+      await screen.findByText(/Showing 2 projects of 10/i),
     ).toBeInTheDocument();
     const twoResults = screen
       .getAllByRole('heading', { level: 3 })
@@ -165,7 +165,7 @@ describe('project library filtering', () => {
 
     await screen.findByRole('heading', { level: 1, name: /nine projects/i });
     expect(
-      await screen.findByText(/Showing 1 project of 9/i),
+      await screen.findByText(/Showing 1 project of 10/i),
     ).toBeInTheDocument();
 
     await user.click(
@@ -173,7 +173,7 @@ describe('project library filtering', () => {
     );
 
     expect(
-      await screen.findByText(/Showing 9 projects of 9/i),
+      await screen.findByText(/Showing 10 projects of 10/i),
     ).toBeInTheDocument();
   });
 

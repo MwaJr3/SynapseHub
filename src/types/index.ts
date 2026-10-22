@@ -21,7 +21,8 @@ export type ProjectSlug =
   | 'openlearn-commons'
   | 'learnpulse'
   | 'reachlearn'
-  | 'eduaccess';
+  | 'eduaccess'
+  | 'workniche';
 
 export interface ProjectFeature {
   /** Short feature name shown as a heading in the case study. */

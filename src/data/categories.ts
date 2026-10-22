@@ -71,6 +71,13 @@ export const categories: CategoryDefinition[] = [
     group: 'technology',
   },
   {
+    id: 'job-marketplace',
+    label: 'Job Marketplaces & Hiring Workflows',
+    description:
+      'Job discovery, applications, pipelines and moderation — hiring workflows built on explicit data invariants.',
+    group: 'domain',
+  },
+  {
     id: 'full-stack',
     label: 'Full-Stack Development',
     description:

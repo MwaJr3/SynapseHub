@@ -72,7 +72,7 @@ export const focusAreas: FocusArea[] = [
 ];
 
 /**
- * Design principles reflected across the nine projects. These describe how the
+ * Design principles reflected across the projects. These describe how the
  * software is built; they are not claims of formal compliance or certification.
  */
 export const principles: Principle[] = [
