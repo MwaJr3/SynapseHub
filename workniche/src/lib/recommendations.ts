@@ -31,6 +31,12 @@ export interface RecommendedJob {
   match: MatchExplanation;
 }
 
+function coerceDate(value: unknown): Date | null {
+  if (value == null) return null;
+  if (value instanceof Date) return value;
+  return new Date(String(value));
+}
+
 interface JobRow {
   id: string;
   title: string;
@@ -141,7 +147,7 @@ async function loadPublishedJobs(db: Db): Promise<JobRow[]> {
     workplaceType: String(row.workplace_type),
     employmentType: String(row.employment_type),
     location: String(row.location ?? ''),
-    publishedAt: (row.published_at as Date | null) ?? null,
+    publishedAt: coerceDate(row.published_at),
     description: String(row.description ?? ''),
     skills: (row.skills as string[]) ?? [],
     salaryMin: row.salary_min == null ? null : Number(row.salary_min),

@@ -33,7 +33,7 @@ export async function notify(
 ): Promise<boolean> {
   if (input.dedupeKey) {
     try {
-      await db
+      const inserted = await db
         .insert(notifications)
         .values({
           userId: input.userId,
@@ -43,8 +43,10 @@ export async function notify(
           link: input.link ?? '',
           dedupeKey: input.dedupeKey,
         })
-        .onConflictDoNothing();
-      return true;
+        .onConflictDoNothing()
+        .returning({ id: notifications.id });
+      // Zero rows means the dedupe key already existed.
+      return inserted.length > 0;
     } catch (error) {
       // Unwrap driver-wrapped unique violations (DrizzleQueryError → cause).
       if (isUniqueViolation(error)) return false;

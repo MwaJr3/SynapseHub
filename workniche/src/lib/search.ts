@@ -199,6 +199,12 @@ export async function searchJobs(
   };
 }
 
+function coerceDate(value: unknown): Date | null {
+  if (value == null) return null;
+  if (value instanceof Date) return value;
+  return new Date(String(value));
+}
+
 export function toJobCard(row: Record<string, unknown>): JobCardData {
   return {
     id: String(row.id),
@@ -216,8 +222,8 @@ export function toJobCard(row: Record<string, unknown>): JobCardData {
     salaryMax: row.salary_max == null ? null : Number(row.salary_max),
     salaryCurrency: String(row.salary_currency ?? 'USD'),
     salaryPeriod: String(row.salary_period ?? 'YEAR'),
-    publishedAt: (row.published_at as Date | null) ?? null,
-    applicationDeadline: (row.application_deadline as Date | null) ?? null,
+    publishedAt: coerceDate(row.published_at),
+    applicationDeadline: coerceDate(row.application_deadline),
     skills: (row.skills as string[]) ?? [],
     descriptionExcerpt: excerpt(String(row.description ?? '')),
   };
