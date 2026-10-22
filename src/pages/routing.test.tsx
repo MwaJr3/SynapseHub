@@ -76,6 +76,7 @@ describe('routes', () => {
       ['/journey', /five themes, not a timeline/i],
       ['/approach', /understand → design → build → test → improve/i],
       ['/contact', /describe the problem, the constraint/i],
+      ['/system', /the system turns self-knowledge into a weekly operating rhythm/i],
     ];
 
     for (const [path, heading] of expectations) {
@@ -195,6 +196,7 @@ describe('navigation and theme', () => {
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
     for (const label of [
       'Home',
+      'System',
       'About',
       'Projects',
       'Skills',
