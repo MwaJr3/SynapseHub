@@ -1,0 +1,10 @@
+.next/
+out/
+data/
+.env
+.env.local
+.env.*.local
+test-results/
+playwright-report/
+coverage/
+*.tsbuildinfo

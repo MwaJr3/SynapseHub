@@ -1,0 +1,48 @@
+{
+  "name": "workniche",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WorkNiche \u2014 a job marketplace for specialized technical work. Demonstration data is fictional.",
+  "scripts": {
+    "dev": "next dev -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "worker": "tsx scripts/run-worker.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.700.0",
+    "@aws-sdk/s3-request-presigner": "^3.700.0",
+    "@electric-sql/pglite": "0.5.11",
+    "drizzle-orm": "0.45.4",
+    "next": "15.5.28",
+    "next-auth": "5.0.0-beta.32",
+    "pg": "8.23.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-hook-form": "^7.90.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "autoprefixer": "^10.4.20",
+    "drizzle-kit": "0.31.11",
+    "jsdom": "^26.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "3.4.19",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.7"
+  }
+}
