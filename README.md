@@ -28,7 +28,7 @@ fallback; Version 2 requires the data mode explicitly and never substitutes a fa
 | Area               | Detail                                                                                                                                                                                                                             |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Routes             | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (9), `/skills`, `/journey`, `/approach`, `/contact`, custom 404                                                                                                             |
-| Personal OS        | Private local-first 90-day workspace for identity and goals, Tier 1–3 priorities, a project portfolio, decision records, energy check-ins, blocker responses, guided weekly reviews, post-mortems, a 3-minute activation timer, and JSON export/import |
+| Personal OS        | Private local-first 90-day workspace for identity, Tier 1–3 goals, projects, weekly capacity and actions, decisions, energy, blocker interventions, meaning, reviews, learning, relationships, personal doctrine, a simple financial ledger, cycle archives, and validated JSON export/import |
 | Catalogue          | 9 typed project records in `src/data/projects/`, one file per project, rendered from a single source of truth                                                                                                                      |
 | Discovery          | Working search (name, description, category, technology, feature, problem, users), 10 combinable filters, sorting, active-filter list, clear-all, empty state, shareable `?q=&category=&sort=` URLs                                |
 | Case studies       | Problem and users → workflow → features → architecture → engineering decisions → testing → interface previews → limits and roadmap → related projects                                                                              |
@@ -57,6 +57,28 @@ React 19 · TypeScript (strict) · Vite 7 · Tailwind CSS 3 with a token-based t
 Vitest + Testing Library · ESLint 9 · Prettier · self-hosted Inter and JetBrains Mono (no external font requests).
 No backend is required to display the portfolio; a contact form activates only when a real submission endpoint is
 configured.
+
+---
+
+## Personal Operating System
+
+`/system` is a browser-local workspace that lives alongside the portfolio. It is built on the repository’s existing
+React/TypeScript/Vite stack, not as a separate Python/Tkinter application. It deliberately begins with an empty
+workspace rather than synthetic personal records.
+
+- **Direction:** vision, identity, values, standards, measurable goals, project portfolio, and 12-week cycle details.
+- **Execution:** a stated weekly capacity, actions with an estimate and cognitive demand, today’s priorities, and
+  an overcommitment warning.
+- **Diagnosis and adaptation:** energy checks, trigger/response maps, blocker occurrences, a three-minute activation
+  timer, decisions, weekly reviews, meaning entries, and post-mortems.
+- **Strategic growth:** learning paths, deliberately minimal relationship records, practical doctrine statements,
+  and a simple multi-currency financial ledger.
+- **Continuity:** versioned browser storage, a v1 → v2 migration, corrupt-payload preservation, JSON export/import,
+  and immutable 12-week cycle snapshots before a new cycle starts.
+
+See [the Personal OS guide](docs/PERSONAL_OPERATING_SYSTEM.md) for workflows, privacy, data recovery, and the
+implemented-versus-planned feature inventory. See [the implementation audit](docs/PERSONAL_OS_AUDIT.md) for the
+actual repository architecture and deliberate scope boundaries.
 
 ---
 

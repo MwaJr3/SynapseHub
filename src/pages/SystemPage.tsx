@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { goalDomains, today } from '@/features/personal-os/data';
+import { ExecutionSpace } from '@/features/personal-os/ExecutionSpace';
+import { GrowthSpace } from '@/features/personal-os/GrowthSpace';
+import { CycleCompletion, ReflectionRecords } from '@/features/personal-os/ReflectionRecords';
 import {
+  computeOverallSignal,
+  createCycleArchive,
   currentCycleWeek,
+  cycleEndDate,
   cycleProgress,
   energyScore,
-  isPersonalSystemData,
+  hydratePersonalSystem,
   systemHealth,
+  todayActions,
   usePersonalSystem,
 } from '@/features/personal-os/system';
 import type {
@@ -20,25 +27,29 @@ import type {
   SystemSignal,
 } from '@/features/personal-os/types';
 
-type SystemTab = 'dashboard' | 'plan' | 'decisions' | 'review';
+type SystemTab = 'dashboard' | 'plan' | 'execute' | 'decisions' | 'review' | 'growth';
 
 const tabs: { id: SystemTab; label: string; description: string }[] = [
   { id: 'dashboard', label: 'System health', description: 'Signal before speed' },
   { id: 'plan', label: 'Direction', description: 'Identity, goals, projects' },
+  { id: 'execute', label: 'Plan & execute', description: 'Week, priorities, capacity' },
   { id: 'decisions', label: 'Decisions', description: 'Decide, test, learn' },
-  { id: 'review', label: 'Review', description: 'Energy, blockers, adaptation' },
+  { id: 'review', label: 'Review', description: 'Evidence, blockers, adaptation' },
+  { id: 'growth', label: 'Growth', description: 'Learning, people, principles' },
 ];
 
 const signalClasses: Record<SystemSignal, string> = {
   stable: 'border-signal/40 bg-signal/10 text-signal',
   attention: 'border-caution/40 bg-caution/10 text-caution',
   intervene: 'border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-300',
+  unknown: 'border-line-strong bg-panel-strong text-ink-muted',
 };
 
 const signalLabels: Record<SystemSignal, string> = {
   stable: 'Stable',
   attention: 'Attention',
   intervene: 'Intervene',
+  unknown: 'Need data',
 };
 
 const projectStatusLabels: Record<ProjectStatus, string> = {
@@ -158,23 +169,27 @@ export default function SystemPage() {
     noIndex: true,
   });
 
-  const { data, update, replace, reset } = usePersonalSystem();
+  const { data, update, replace, reset, persistenceIssue, recoveryPayload } = usePersonalSystem();
   const [activeTab, setActiveTab] = useState<SystemTab>('dashboard');
   const inputRef = useRef<HTMLInputElement>(null);
   const health = useMemo(() => systemHealth(data), [data]);
+  const overallSignal = useMemo(() => computeOverallSignal(data), [data]);
   const cycleWeek = currentCycleWeek(data.cycleStart);
   const progress = cycleProgress(data.cycleStart);
   const energy = energyScore(data.energyLogs);
 
-  const exportSystem = () => {
-    const payload = JSON.stringify(data, null, 2);
+  const downloadJson = (payload: string, filename: string) => {
     const file = new Blob([payload], { type: 'application/json' });
     const url = URL.createObjectURL(file);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `personal-os-${today()}.json`;
+    anchor.download = filename;
     anchor.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportSystem = () => {
+    downloadJson(JSON.stringify(data, null, 2), `personal-os-${today()}.json`);
   };
 
   const importSystem = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -182,8 +197,9 @@ export default function SystemPage() {
     if (!file) return;
     try {
       const candidate: unknown = JSON.parse(await file.text());
-      if (!isPersonalSystemData(candidate)) throw new Error('Unexpected file format');
-      replace(candidate);
+      const restored = hydratePersonalSystem(candidate);
+      if (!restored) throw new Error('Unexpected file format');
+      replace(restored);
     } catch {
       window.alert('That file is not a valid Personal Operating System export. Your current data was not changed.');
     } finally {
@@ -194,10 +210,21 @@ export default function SystemPage() {
   const startNewCycle = () => {
     if (
       window.confirm(
-        'Start a fresh 90-day clock? Your existing goals, decisions, and review history will stay available; only the cycle start date changes. Export first if you want a dated archive.',
+        'Archive the current cycle and start a fresh 12-week clock? Its goals, projects, actions, reviews, meaning records, blockers, and energy checks will remain in the cycle archive. Export first for an additional backup.',
       )
     ) {
-      update((previous) => ({ ...previous, cycleStart: today() }));
+      update((previous) => ({
+        ...previous,
+        cycleArchives: [
+          createCycleArchive(previous, {
+            intended: '', achieved: '', leverage: '', recurringBlockers: '', stop: '', nextEmphasis: '',
+          }, makeId('cycle')),
+          ...previous.cycleArchives,
+        ],
+        cycleStart: today(),
+        cycleName: 'New 90-day cycle',
+        cycleTheme: '',
+      }));
     }
   };
 
@@ -221,8 +248,9 @@ export default function SystemPage() {
             <div className="rounded-card border border-line bg-panel/70 p-5 backdrop-blur">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="eyebrow">Current cycle</p>
+                  <p className="eyebrow">{data.cycleName || 'Current cycle'}</p>
                   <p className="mt-2 text-3xl font-semibold tracking-tight">Week {cycleWeek} / 12</p>
+                  <p className="mt-1 text-xs text-ink-muted">{data.cycleStart} → {cycleEndDate(data.cycleStart)}</p>
                 </div>
                 <span className="rounded-pill border border-accent/40 bg-accent/10 px-3 py-1 font-mono text-xs text-accent">
                   {progress}% elapsed
@@ -239,6 +267,13 @@ export default function SystemPage() {
       </section>
 
       <div className="shell mt-8">
+        {persistenceIssue && (
+          <div role="alert" className="mb-5 rounded-card border border-red-500/40 bg-red-500/10 p-4 text-sm leading-relaxed text-ink">
+            <p className="font-semibold">Your workspace is in recovery mode.</p>
+            <p className="mt-1 text-ink-muted">{persistenceIssue}</p>
+            {recoveryPayload && <button type="button" className="btn btn-secondary mt-3" onClick={() => downloadJson(recoveryPayload, `personal-os-recovery-${today()}.json`)}>Download preserved payload</button>}
+          </div>
+        )}
         <div className="overflow-x-auto border-b border-line" role="tablist" aria-label="Personal operating system sections">
           <div className="flex min-w-max gap-1">
             {tabs.map((tab) => (
@@ -269,6 +304,7 @@ export default function SystemPage() {
           {activeTab === 'dashboard' && (
             <Dashboard
               health={health}
+              overallSignal={overallSignal}
               energy={energy}
               cycleWeek={cycleWeek}
               data={data}
@@ -276,8 +312,10 @@ export default function SystemPage() {
             />
           )}
           {activeTab === 'plan' && <Direction data={data} update={update} />}
+          {activeTab === 'execute' && <ExecutionSpace data={data} update={update} cycleWeek={cycleWeek} />}
           {activeTab === 'decisions' && <DecisionBoard data={data} update={update} />}
           {activeTab === 'review' && <ReviewSpace data={data} update={update} cycleWeek={cycleWeek} />}
+          {activeTab === 'growth' && <GrowthSpace data={data} update={update} />}
         </div>
 
         <section className="mt-8 border-t border-line pt-8" aria-labelledby="system-tools-heading">
@@ -315,12 +353,14 @@ export default function SystemPage() {
 
 function Dashboard({
   health,
+  overallSignal,
   energy,
   cycleWeek,
   data,
   goTo,
 }: {
   health: ReturnType<typeof systemHealth>;
+  overallSignal: ReturnType<typeof computeOverallSignal>;
   energy: number | null;
   cycleWeek: number;
   data: ReturnType<typeof usePersonalSystem>['data'];
@@ -332,10 +372,21 @@ function Dashboard({
     .filter((review) => review.cycleStart === data.cycleStart)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
   const mostRecentEnergy = [...data.energyLogs].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const priorities = todayActions(data);
 
   return (
     <div id="system-panel-dashboard" role="tabpanel" aria-labelledby="system-tab-dashboard" className="grid gap-6">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5" aria-label="System health indicators">
+      <section className={`rounded-card border p-5 sm:p-6 ${signalClasses[overallSignal.signal]}`} aria-label="Authoritative system signal">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="eyebrow">System signal · single source of truth</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{overallSignal.label}</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-ink-muted">{overallSignal.detail}</p>
+          </div>
+          <span className="rounded-pill border border-current/30 px-3 py-1 font-mono text-2xs uppercase tracking-[0.1em]">{signalLabels[overallSignal.signal]}</span>
+        </div>
+      </section>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="System health indicators">
         {health.map((item) => (
           <article key={item.id} className="card p-4">
             <div className="flex items-center justify-between gap-3">
@@ -396,6 +447,21 @@ function Dashboard({
         </Panel>
       </div>
 
+      <Panel eyebrow="Today’s priorities" title="What is the next visible action?">
+        {priorities.length ? (
+          <ul className="mt-4 grid gap-3 md:grid-cols-2">
+            {priorities.slice(0, 4).map((action) => (
+              <li key={action.id} className="rounded-card border border-line bg-panel-strong p-4">
+                <div className="flex items-center justify-between gap-3"><span className="rounded-pill border border-accent/30 bg-accent/10 px-2 py-1 font-mono text-2xs text-accent">Tier {action.tier}</span><span className="font-mono text-2xs text-ink-subtle">{action.estimateHours} h · {action.cognitiveDemand}</span></div>
+                <p className="mt-3 text-sm font-semibold text-ink">{action.title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-ink-muted">{action.nextAction || 'Choose a physical first step in Plan & execute.'}</p>
+              </li>
+            ))}
+          </ul>
+        ) : <p className="mt-4 text-sm leading-relaxed text-ink-muted">No action is scheduled for today. Add one commitment that fits your current capacity; the system deliberately does not invent a task for you.</p>}
+        <button type="button" className="btn btn-secondary mt-5" onClick={() => goTo('execute')}>Plan today’s actions</button>
+      </Panel>
+
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel eyebrow="Open loops" title={`${pendingDecisions.length} pending decision${pendingDecisions.length === 1 ? '' : 's'}`}>
           {pendingDecisions.length ? (
@@ -442,6 +508,11 @@ function Direction({
     title: '',
     outcome: '',
     proof: '',
+    baseline: '',
+    target: '',
+    measurementMethod: '',
+    deadline: '',
+    definitionOfDone: '',
     tier: 2 as PriorityTier,
   });
   const [projectDraft, setProjectDraft] = useState({
@@ -459,9 +530,17 @@ function Direction({
       proof: goalDraft.proof.trim(),
       tier: goalDraft.tier,
       status: 'active',
+      parentGoalId: '',
+      baseline: goalDraft.baseline.trim(),
+      target: goalDraft.target.trim(),
+      measurementMethod: goalDraft.measurementMethod.trim(),
+      startDate: today(),
+      deadline: goalDraft.deadline,
+      definitionOfDone: goalDraft.definitionOfDone.trim(),
+      reviewDate: '',
     };
     update((previous) => ({ ...previous, goals: [...previous.goals, goal] }));
-    setGoalDraft({ domain: 'Projects', title: '', outcome: '', proof: '', tier: 2 });
+    setGoalDraft({ domain: 'Projects', title: '', outcome: '', proof: '', baseline: '', target: '', measurementMethod: '', deadline: '', definitionOfDone: '', tier: 2 });
   };
 
   const saveProject = (event: FormEvent<HTMLFormElement>) => {
@@ -475,11 +554,18 @@ function Direction({
       mvp: projectDraft.mvp.trim(),
       currentStage: 'Define v0.1',
       nextMilestone: projectDraft.nextMilestone.trim(),
+      nextAction: projectDraft.nextMilestone.trim(),
       deadline: projectDraft.deadline,
       hoursBudget: Math.max(0, Number(projectDraft.hoursBudget) || 0),
+      actualHours: 0,
       status: projectDraft.status,
       shipped: false,
       stopCondition: projectDraft.stopCondition.trim(),
+      definitionOfDone: '',
+      excludedFromV1: '',
+      repositoryUrl: '',
+      deploymentUrl: '',
+      evidence: '',
     };
     update((previous) => ({ ...previous, projects: [...previous.projects, project] }));
     setProjectDraft({ name: '', purpose: '', audience: '', mvp: '', nextMilestone: '', deadline: '', hoursBudget: '12', status: 'experiment', stopCondition: '' });
@@ -499,6 +585,14 @@ function Direction({
           These are working assumptions, not a performance of certainty. Keep them short enough to review and concrete enough to guide a real trade-off.
         </p>
         <div className="mt-6 grid gap-5 lg:grid-cols-2">
+          <label className="system-field">
+            <span>Cycle name</span>
+            <input value={data.cycleName} onChange={(event) => update((previous) => ({ ...previous, cycleName: event.target.value }))} placeholder="A short, honest cycle name" />
+          </label>
+          <label className="system-field">
+            <span>Cycle theme</span>
+            <input value={data.cycleTheme} onChange={(event) => update((previous) => ({ ...previous, cycleTheme: event.target.value }))} placeholder="What this cycle is principally for" />
+          </label>
           <label className="system-field lg:col-span-2">
             <span>90-day vision</span>
             <textarea value={data.identity.visionStatement} rows={3} onChange={(event) => updateIdentity('visionStatement', event.target.value)} />
@@ -507,6 +601,10 @@ function Direction({
             <span>Identity statement</span>
             <textarea value={data.identity.identityStatement} rows={3} onChange={(event) => updateIdentity('identityStatement', event.target.value)} />
           </label>
+          <label className="system-field lg:col-span-2">
+            <span>Personal mission</span>
+            <textarea value={data.identity.missionStatement} rows={2} onChange={(event) => updateIdentity('missionStatement', event.target.value)} placeholder="What contribution or responsibility guides your current direction?" />
+          </label>
           <label className="system-field">
             <span>Current identity focus</span>
             <input value={data.identity.currentIdentityFocus} onChange={(event) => updateIdentity('currentIdentityFocus', event.target.value)} />
@@ -514,6 +612,18 @@ function Direction({
           <label className="system-field">
             <span>Core values <small>one per line</small></span>
             <textarea value={data.identity.coreValues.join('\n')} rows={3} onChange={(event) => updateIdentity('coreValues', splitLines(event.target.value))} />
+          </label>
+          <label className="system-field">
+            <span>Desired traits <small>one per line</small></span>
+            <textarea value={data.identity.desiredTraits.join('\n')} rows={3} onChange={(event) => updateIdentity('desiredTraits', splitLines(event.target.value))} />
+          </label>
+          <label className="system-field">
+            <span>Non-negotiables <small>one per line</small></span>
+            <textarea value={data.identity.nonNegotiables.join('\n')} rows={3} onChange={(event) => updateIdentity('nonNegotiables', splitLines(event.target.value))} />
+          </label>
+          <label className="system-field lg:col-span-2">
+            <span>Patterns I intend to stop repeating <small>one per line</small></span>
+            <textarea value={data.identity.neverAgain.join('\n')} rows={2} onChange={(event) => updateIdentity('neverAgain', splitLines(event.target.value))} />
           </label>
         </div>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -574,6 +684,11 @@ function Direction({
               <label className="system-field sm:col-span-2"><span>Goal title</span><input required value={goalDraft.title} onChange={(event) => setGoalDraft((current) => ({ ...current, title: event.target.value }))} placeholder="What is the concrete outcome?" /></label>
               <label className="system-field sm:col-span-2"><span>Outcome</span><textarea rows={2} value={goalDraft.outcome} onChange={(event) => setGoalDraft((current) => ({ ...current, outcome: event.target.value }))} placeholder="What will be different by the end of the cycle?" /></label>
               <label className="system-field sm:col-span-2"><span>Proof of progress</span><input value={goalDraft.proof} onChange={(event) => setGoalDraft((current) => ({ ...current, proof: event.target.value }))} placeholder="What evidence would count?" /></label>
+              <label className="system-field"><span>Baseline</span><input value={goalDraft.baseline} onChange={(event) => setGoalDraft((current) => ({ ...current, baseline: event.target.value }))} placeholder="Where are you now?" /></label>
+              <label className="system-field"><span>Target</span><input value={goalDraft.target} onChange={(event) => setGoalDraft((current) => ({ ...current, target: event.target.value }))} placeholder="What threshold matters?" /></label>
+              <label className="system-field"><span>Measurement method</span><input value={goalDraft.measurementMethod} onChange={(event) => setGoalDraft((current) => ({ ...current, measurementMethod: event.target.value }))} placeholder="How will you check?" /></label>
+              <label className="system-field"><span>Deadline / review</span><input type="date" value={goalDraft.deadline} onChange={(event) => setGoalDraft((current) => ({ ...current, deadline: event.target.value }))} /></label>
+              <label className="system-field sm:col-span-2"><span>Definition of done</span><input value={goalDraft.definitionOfDone} onChange={(event) => setGoalDraft((current) => ({ ...current, definitionOfDone: event.target.value }))} placeholder="What does completed mean in practice?" /></label>
             </div>
             <button className="btn btn-primary mt-4" type="submit">Add goal</button>
           </form>
@@ -671,7 +786,7 @@ function DecisionBoard({
   update: ReturnType<typeof usePersonalSystem>['update'];
 }) {
   const [draft, setDraft] = useState({
-    title: '', context: '', options: '', type: 'B' as DecisionType, deadline: '', expectedUpside: '', majorRisk: '', opportunityCost: '', reviewDate: '',
+    title: '', context: '', options: '', type: 'B' as DecisionType, deadline: '', expectedUpside: '', majorRisk: '', opportunityCost: '', strongestCounterargument: '', expectedOutcome: '', reviewDate: '',
   });
 
   const addDecision = (event: FormEvent<HTMLFormElement>) => {
@@ -689,11 +804,15 @@ function DecisionBoard({
       expectedUpside: draft.expectedUpside.trim(),
       majorRisk: draft.majorRisk.trim(),
       opportunityCost: draft.opportunityCost.trim(),
+      strongestCounterargument: draft.strongestCounterargument.trim(),
+      expectedOutcome: draft.expectedOutcome.trim(),
+      actualOutcome: '',
+      lesson: '',
       reviewDate: draft.reviewDate,
       createdAt: new Date().toISOString(),
     };
     update((previous) => ({ ...previous, decisions: [decision, ...previous.decisions] }));
-    setDraft({ title: '', context: '', options: '', type: 'B', deadline: '', expectedUpside: '', majorRisk: '', opportunityCost: '', reviewDate: '' });
+    setDraft({ title: '', context: '', options: '', type: 'B', deadline: '', expectedUpside: '', majorRisk: '', opportunityCost: '', strongestCounterargument: '', expectedOutcome: '', reviewDate: '' });
   };
 
   return (
@@ -723,6 +842,8 @@ function DecisionBoard({
             <label className="system-field"><span>Expected upside</span><textarea rows={2} value={draft.expectedUpside} onChange={(event) => setDraft((current) => ({ ...current, expectedUpside: event.target.value }))} /></label>
             <label className="system-field"><span>Major risk</span><textarea rows={2} value={draft.majorRisk} onChange={(event) => setDraft((current) => ({ ...current, majorRisk: event.target.value }))} /></label>
             <label className="system-field"><span>Opportunity cost</span><textarea rows={2} value={draft.opportunityCost} onChange={(event) => setDraft((current) => ({ ...current, opportunityCost: event.target.value }))} /></label>
+            <label className="system-field"><span>Strongest case against your preference</span><textarea rows={2} value={draft.strongestCounterargument} onChange={(event) => setDraft((current) => ({ ...current, strongestCounterargument: event.target.value }))} /></label>
+            <label className="system-field"><span>Expected outcome</span><textarea rows={2} value={draft.expectedOutcome} onChange={(event) => setDraft((current) => ({ ...current, expectedOutcome: event.target.value }))} /></label>
             <label className="system-field"><span>Review date</span><input type="date" value={draft.reviewDate} onChange={(event) => setDraft((current) => ({ ...current, reviewDate: event.target.value }))} /></label>
             <div className="md:col-span-2"><button className="btn btn-primary" type="submit">Add decision</button></div>
           </form>
@@ -793,11 +914,15 @@ function ReviewSpace({
   update: ReturnType<typeof usePersonalSystem>['update'];
   cycleWeek: number;
 }) {
-  const [energy, setEnergy] = useState({ sleepQuality: 3, physicalEnergy: 3, cognitiveEnergy: 3, emotionalLoad: 3, primaryConstraint: '', priority: '' });
+  const [energy, setEnergy] = useState({
+    sleepQuality: 3, physicalEnergy: 3, cognitiveEnergy: 3, emotionalLoad: 3,
+    recoveryQuality: 3, stress: 3, primaryConstraint: '', priority: '', notes: '',
+  });
   const [review, setReview] = useState({ moved: '', friction: '', adjustment: '', meaningAnchor: '', relationshipAction: '', calibrationQuestion: '' });
   const [failure, setFailure] = useState({ domain: 'Projects' as GoalDomain, intendedOutcome: '', actualOutcome: '', systemicCause: '', lesson: '', systemChange: '' });
   const [timer, setTimer] = useState(180);
   const [running, setRunning] = useState(false);
+  const [timerAction, setTimerAction] = useState('');
 
   useEffect(() => {
     if (!running || timer <= 0) return undefined;
@@ -829,7 +954,7 @@ function ReviewSpace({
   const saveFailure = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!failure.intendedOutcome.trim() && !failure.actualOutcome.trim()) return;
-    update((previous) => ({ ...previous, failures: [{ id: makeId('failure'), date: today(), ...failure }, ...previous.failures] }));
+    update((previous) => ({ ...previous, failures: [{ id: makeId('failure'), date: today(), followUpDate: '', ...failure }, ...previous.failures] }));
     setFailure({ domain: 'Projects', intendedOutcome: '', actualOutcome: '', systemicCause: '', lesson: '', systemChange: '' });
   };
 
@@ -849,10 +974,13 @@ function ReviewSpace({
               <RatingInput id="physical-energy" label="Physical energy" value={energy.physicalEnergy} onChange={(value) => setEnergy((current) => ({ ...current, physicalEnergy: value }))} />
               <RatingInput id="cognitive-energy" label="Cognitive energy" value={energy.cognitiveEnergy} onChange={(value) => setEnergy((current) => ({ ...current, cognitiveEnergy: value }))} />
               <RatingInput id="emotional-load" label="Emotional load" value={energy.emotionalLoad} onChange={(value) => setEnergy((current) => ({ ...current, emotionalLoad: value }))} inverse />
+              <RatingInput id="recovery-quality" label="Recovery quality" value={energy.recoveryQuality} onChange={(value) => setEnergy((current) => ({ ...current, recoveryQuality: value }))} />
+              <RatingInput id="perceived-stress" label="Perceived stress" value={energy.stress} onChange={(value) => setEnergy((current) => ({ ...current, stress: value }))} inverse />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="system-field"><span>Primary constraint</span><input value={energy.primaryConstraint} onChange={(event) => setEnergy((current) => ({ ...current, primaryConstraint: event.target.value }))} placeholder="What is most limiting today?" /></label>
               <label className="system-field"><span>One fitting priority</span><input value={energy.priority} onChange={(event) => setEnergy((current) => ({ ...current, priority: event.target.value }))} placeholder="What task fits this capacity?" /></label>
+              <label className="system-field sm:col-span-2"><span>Context note <small>optional</small></span><input value={energy.notes} onChange={(event) => setEnergy((current) => ({ ...current, notes: event.target.value }))} placeholder="Context makes trends easier to interpret; it is not required." /></label>
             </div>
             <div className="flex flex-wrap items-center gap-3"><button type="submit" className="btn btn-primary">Save today’s check-in</button><p className="text-xs text-ink-muted">High: deep work · Medium: implementation/review · Low: maintenance/recovery.</p></div>
           </form>
@@ -861,8 +989,10 @@ function ReviewSpace({
         <Panel eyebrow="Cognitive blocker" title="Three minutes to break the loop">
           <p className="mt-3 text-sm leading-relaxed text-ink-muted">When the next step is obvious but you keep thinking, set the timer and take one physical, irreversible action: send the message, open the document, make the commit, or begin the first line.</p>
           <div className="mt-6 grid place-items-center rounded-card border border-accent/30 bg-accent/10 p-6 text-center">
-            <p className="font-mono text-5xl font-semibold tracking-tight text-ink">{minutes}:{seconds}</p>
+            <label className="system-field w-full max-w-md text-left"><span>One physical action before the timer begins</span><input value={timerAction} onChange={(event) => setTimerAction(event.target.value)} placeholder="Open the assignment and solve question one." /></label>
+            <p className="mt-5 font-mono text-5xl font-semibold tracking-tight text-ink">{minutes}:{seconds}</p>
             <p className="mt-2 text-xs uppercase tracking-[0.12em] text-ink-muted">Se activation timer</p>
+            {timer === 0 && <p role="status" className="mt-3 max-w-md text-sm leading-relaxed text-ink">Time is complete. Record whether “{timerAction || 'the action'}” happened in the blocker log below, then name the next step.</p>}
             <div className="mt-5 flex flex-wrap justify-center gap-2">
               <button type="button" className="btn btn-primary" onClick={() => {
                 if (timer === 0) setTimer(180);
@@ -893,6 +1023,8 @@ function ReviewSpace({
         </form>
       </Panel>
 
+      <ReflectionRecords data={data} update={update} />
+
       <Panel eyebrow="Post-mortem" title="A failure should change the system, not just the story you tell about yourself">
         <form className="mt-5 grid gap-3 md:grid-cols-2" onSubmit={saveFailure}>
           <label className="system-field"><span>Domain</span><select value={failure.domain} onChange={(event) => setFailure((current) => ({ ...current, domain: event.target.value as GoalDomain }))}>{goalDomains.map((domain) => <option key={domain}>{domain}</option>)}</select></label>
@@ -906,6 +1038,8 @@ function ReviewSpace({
         </form>
         {data.failures.length > 0 && <ul className="mt-6 grid gap-3 border-t border-line pt-5">{data.failures.slice(0, 3).map((item) => <li key={item.id} className="rounded-card border border-line bg-panel-strong p-4"><p className="font-mono text-2xs uppercase tracking-[0.1em] text-accent">{item.domain} · {item.date}</p><p className="mt-2 text-sm font-semibold text-ink">{item.systemChange || item.lesson || 'Post-mortem logged'}</p><p className="mt-1 text-sm text-ink-muted">{item.actualOutcome}</p></li>)}</ul>}
       </Panel>
+
+      <CycleCompletion data={data} update={update} cycleWeek={cycleWeek} />
     </div>
   );
 }
