@@ -10,6 +10,7 @@ const footerNav = [
   { to: '/skills', label: 'Skills' },
   { to: '/journey', label: 'Journey' },
   { to: '/approach', label: 'Approach' },
+  { to: '/operations', label: 'Operations' },
   { to: '/contact', label: 'Contact' },
 ];
 

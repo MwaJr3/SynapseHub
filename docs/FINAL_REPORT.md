@@ -96,9 +96,9 @@ web server and the worker; do not seed demo data in production.
 - Playwright specs await an environment with browsers.
 - The recommendation scorer is transparent weighting, not a trained model.
 - OAuth providers activate only when their environment variables are set.
-- The earlier session's **operations-layer module for the portfolio site**
-  (`operations.ts` / OpsConsole) was lost with the unpushed branch and is
-  **not** part of this rebuild; it can be re-created on request.
+- The earlier session's **operations-layer module** was lost with its unpushed
+  branch; it has since been **rebuilt and published** (see the addendum below
+  and `src/data/operations.ts`).
 
 ## Honesty statement
 
@@ -106,3 +106,30 @@ No user counts, outcomes, uptime figures, response times, matching accuracy
 claims or benchmarks appear anywhere in the product or these documents.
 Demo organizations and people are fictional and labelled fictional in the
 product. Analytics are raw database counts only.
+
+---
+
+## Addendum — operations layer (2026-10-23)
+
+The portfolio's operations layer was rebuilt on `arena/904a75d8-synapsehub`
+from the seven source dashboard-concept screenshots and published to `main`.
+
+**Delivered:** `src/data/operations.ts` (seven modules), the console UI
+(`src/components/operations/OpsConsole.tsx`, routed at `/operations`), and
+tests (`src/data/operations.test.ts`, `src/components/operations/ops-console.test.tsx`).
+Each module carries explicit states, metric definitions with units and
+sources, and one integrity rule; the source series is named openly on the
+page. Adaptation mapping: status page → service status & incident
+transparency; changelog → content & release changelog; analytics → learning
+analytics with defined metrics; waitlist counter → access demand & eligibility
+queue; revenue dashboard → access funding & reconciliation; backend health →
+API & provider-adapter health; frontend performance → low-bandwidth
+performance budgets.
+
+**Honesty:** no uptime, revenue, MRR, churn, waitlist or user figures appear
+anywhere — the console is a specification of states, definitions and rules,
+and a test-enforced figure guard rejects percentages, currency amounts and
+comma-grouped totals in the data and rendered page.
+
+**Checks:** `npm run check` green (strict typecheck, lint, 178 tests across 9
+files, production build).

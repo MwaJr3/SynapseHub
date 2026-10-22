@@ -200,6 +200,49 @@ export interface Principle {
   description: string;
 }
 
+/** A named state in an operations module's state machine. */
+export interface OpsState {
+  id: string;
+  label: string;
+  /** What is true of the system while it is in this state. */
+  meaning: string;
+}
+
+/**
+ * A metric an operations module is designed to report — defined before any
+ * value is ever shown. Values themselves are deliberately absent from the
+ * catalogue: this site reports definitions and states, never invented
+ * measurements.
+ */
+export interface OpsMetricDefinition {
+  id: string;
+  name: string;
+  /** Exact computation, including what is counted and what is excluded. */
+  definition: string;
+  /** Unit the value would take, e.g. "wall-clock duration", "count", "bytes". */
+  unit: string;
+  /** The records the value would be computed from. */
+  source: string;
+}
+
+/** One of the seven operations-layer modules (see `src/data/operations.ts`). */
+export interface OperationsModule {
+  id: string;
+  /** 1–7, display order in the console. */
+  order: number;
+  title: string;
+  /** One line: what this module does, stated honestly. */
+  purpose: string;
+  /** Which public dashboard concept this adapts — named openly. */
+  adaptedFrom: string;
+  /** How the concept maps onto learning-access work instead of SaaS vanity metrics. */
+  context: string;
+  states: OpsState[];
+  metrics: OpsMetricDefinition[];
+  /** The rule that keeps this module honest. Enforced as a test. */
+  integrityRule: string;
+}
+
 export interface FocusArea {
   id: string;
   title: string;

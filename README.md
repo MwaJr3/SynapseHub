@@ -42,6 +42,25 @@ for deployment.
 
 ---
 
+## The operations layer
+
+`src/data/operations.ts` and the console at [/operations](src/pages/OperationsPage.tsx)
+adapt seven common product-dashboard concepts — status page, changelog,
+analytics, waitlist counter, revenue dashboard, backend health, frontend
+performance — for education-technology programmes under this portfolio's
+honesty rules. Each module ships **explicit states**, **metric definitions**
+(how a value would be computed and from which records) and one **integrity
+rule**, and the source series is named openly on the page.
+
+The SaaS demonstration figures those dashboards show — uptime percentages,
+MRR, churn, waitlist totals, active-user counts — appear **nowhere**: this
+layer is a specification for honest operations reporting, not a fake live
+dashboard. Tests enforce the contract, including a figure guard that fails
+the build if percentages, currency amounts or vanity totals ever enter the
+data.
+
+---
+
 ## What is implemented
 
 | Area               | Detail                                                                                                                                                                                                                             |
@@ -52,10 +71,10 @@ for deployment.
 | Case studies       | Problem and users → workflow → features → architecture → engineering decisions → testing → interface previews → limits and roadmap → related projects                                                                              |
 | Deployment linking | `src/config/deployment.ts` registry drives _Live demo_ and _Source code_ everywhere; unconfigured links are hidden, never faked                                                                                                    |
 | Theming            | Light / Dark / System with persistence, an OS listener, pre-paint initialisation (no wrong-theme flash) and a hybrid tone system (light surfaces + intentional dark panels)                                                        |
-| Visuals            | Nine distinct illustrative SVG compositions (lesson library, session schedule, grounded tutor, skill map, authoring studio, resource catalogue, analytics, SMS/USSD delivery, access plans), each labelled _Illustrative preview_  |
+| Visuals            | Ten distinct illustrative SVG compositions (lesson library, session schedule, grounded tutor, skill map, authoring studio, resource catalogue, analytics, SMS/USSD delivery, access plans), each labelled _Illustrative preview_  |
 | Accessibility      | Semantic landmarks, skip link, keyboard-accessible mobile menu with Escape handling, visible focus states, live regions for search results and copy feedback, `prefers-reduced-motion` support, text equivalents for every diagram |
 | SEO                | Per-page titles and descriptions, Open Graph and Twitter metadata, canonical URLs only when a domain is configured, JSON-LD (`Person`, `SoftwareApplication`), `robots.txt`, optional sitemap generator                            |
-| Quality            | TypeScript strict mode, 76 unit/component/integration tests, ESLint (TypeScript + hooks + jsx-a11y), data-integrity validation, production build                                                                                   |
+| Quality            | TypeScript strict mode, 178 unit/component/integration tests, ESLint (TypeScript + hooks + jsx-a11y), data-integrity validation, production build                                                                                   |
 
 ### Honesty rules the code enforces
 
@@ -211,14 +230,15 @@ The build output is a static SPA in `dist/`.
 | ---------- | ------------------ | -------------------------------------------------------------------------------------- |
 | Type check | `npx tsc --noEmit` | Passed (strict mode, no `any`)                                                         |
 | Lint       | `npx eslint .`     | Passed, no errors or warnings                                                          |
-| Tests      | `npx vitest run`   | 6 files, 76 tests, all passing                                                         |
-| Build      | `npm run build`    | Succeeded; main bundle ≈ 288 kB (≈ 90 kB gzip) plus route-level chunks                 |
+| Tests      | `npx vitest run`   | 9 files, 178 tests, all passing                                                        |
+| Build      | `npm run build`    | Succeeded; route-level code splitting, sizes in the build output                       |
 | Dev server | `npm run dev`      | Serves `/`, `/projects`, `/projects/:slug` and unknown routes through the SPA fallback |
 
-The test suite covers: catalogue integrity (all nine projects, unique slugs, valid categories, reciprocal related
+The test suite covers: catalogue integrity (all ten projects, unique slugs, valid categories, reciprocal related
 links, architecture edges, preview honesty, no placeholder domains or invented metrics), URL validation (scheme and
 host rules, field-swap protection, registry merge behaviour), search/filter/sort logic and query-string round trips,
-theme resolution and persistence, and rendered routing — every case study route, the unknown-slug state, the 404
+theme resolution and persistence, the operations layer (module structure, metric-definition completeness and the
+no-invented-figures guard), and rendered routing — every case study route, the unknown-slug state, the 404
 page, library search and filter combinations, the theme switcher and the mobile menu's Escape behaviour.
 
 Automated accessibility checks (axe) and end-to-end browser runs are **not** included; the accessibility work here
