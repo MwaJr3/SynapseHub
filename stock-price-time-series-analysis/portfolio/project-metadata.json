@@ -1,0 +1,20 @@
+{
+  "projectName": "Stock Price Analysis — Comparative Time-Series Analytics",
+  "slug": "stock-price-analysis",
+  "category": "Data Analysis / Financial Time Series",
+  "technologies": [
+    "Python",
+    "Pandas",
+    "yfinance",
+    "Matplotlib",
+    "Jupyter Notebook",
+    "pytest"
+  ],
+  "shortDescription": "A Python-based analysis of historical stock prices, moving averages, resampled time series, and trading volume across multiple companies.",
+  "thumbnail": "portfolio/stock-price-analysis-preview.png",
+  "repositoryUrl": null,
+  "liveDemoUrl": null,
+  "notebookPath": "notebooks/stock_price_analysis.ipynb",
+  "caseStudyPath": "portfolio/CASE_STUDY.md",
+  "disclaimer": "Educational historical analysis only; not financial advice."
+}

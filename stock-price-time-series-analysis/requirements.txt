@@ -1,0 +1,2 @@
+# Runtime and notebook dependencies. For development, use: pip install -e ".[dev,notebook]"
+-e .[notebook]

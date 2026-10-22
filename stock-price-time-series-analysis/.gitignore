@@ -1,0 +1,32 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Downloaded caches and generated working data (keep directory markers)
+data/cache/*
+!data/cache/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Local scratch exports
+outputs/tmp/
+
+# Configuration and editor files
+.env
+.env.*
+!.env.example
+.DS_Store
+.vscode/
+.idea/
