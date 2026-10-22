@@ -8,6 +8,7 @@ import { OpenLearnVisual } from './openlearn-visual';
 import { LearnPulseVisual } from './learnpulse-visual';
 import { ReachLearnVisual } from './reachlearn-visual';
 import { EduAccessVisual } from './eduaccess-visual';
+import { WorkNicheVisual } from './workniche-visual';
 
 interface ProjectVisualProps {
   slug: ProjectSlug;
@@ -47,6 +48,8 @@ export function ProjectVisual({
       return <ReachLearnVisual view={view} compact={compact} />;
     case 'eduaccess':
       return <EduAccessVisual view={view} compact={compact} />;
+    case 'workniche':
+      return <WorkNicheVisual view={view} compact={compact} />;
     default: {
       // Exhaustiveness guard: adding a slug without a visual is a type error.
       const exhaustive: never = slug;

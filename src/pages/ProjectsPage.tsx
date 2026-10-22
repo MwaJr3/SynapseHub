@@ -70,9 +70,9 @@ export default function ProjectsPage() {
   const pendingLinks = unconnectedSlugs();
 
   usePageMeta({
-    title: 'Project library — nine education-technology projects',
+    title: 'Project library — ten software projects',
     description:
-      'Search and filter nine education-technology projects covering offline-first learning, AI-assisted tutoring, virtual classrooms, assessment, teacher tools, open resources, analytics, phone delivery and access funding.',
+      'Search and filter ten software projects covering offline-first learning, AI-assisted tutoring, virtual classrooms, assessment, teacher tools, open resources, analytics, phone delivery, access funding and hiring workflows.',
     path: '/projects',
   });
 

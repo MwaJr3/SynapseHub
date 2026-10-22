@@ -18,7 +18,7 @@ const PLACEHOLDER_PATTERNS = [
   /^#$/,
   /^javascript:/i,
 ];
-const EXPECTED_PROJECT_COUNT = 9;
+const EXPECTED_PROJECT_COUNT = 10;
 
 function looksLikePlaceholder(value: string): boolean {
   return PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(value));

@@ -16,10 +16,11 @@ import { openlearnCommons } from './openlearn-commons';
 import { learnpulse } from './learnpulse';
 import { reachlearn } from './reachlearn';
 import { eduaccess } from './eduaccess';
+import { workniche } from './workniche';
 
 /**
  * The centralized catalogue: every page, card, filter and case study renders
- * from these nine records. Adding a project means adding a record here — not
+ * from these ten records. Adding a project means adding a record here — not
  * editing components.
  */
 export const catalogue: PortfolioProject[] = [
@@ -32,6 +33,7 @@ export const catalogue: PortfolioProject[] = [
   learnpulse,
   reachlearn,
   eduaccess,
+  workniche,
 ].sort((a, b) => a.displayOrder - b.displayOrder);
 
 /**

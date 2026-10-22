@@ -10,7 +10,7 @@ export default function JourneyPage() {
   usePageMeta({
     title: 'Learning journey — how the projects connect',
     description:
-      'The nine projects grouped by technical theme: learning access foundations, personalized learning and assessment, teaching workflows, shared resources and contextual access, and evidence and improvement.',
+      'The ten projects grouped by technical theme: learning access foundations, personalized learning and assessment, teaching workflows, shared resources and contextual access, and evidence and improvement.',
     path: '/journey',
   });
 

@@ -22,13 +22,14 @@ const EXPECTED_SLUGS = [
   'learnpulse',
   'reachlearn',
   'eduaccess',
+  'workniche',
 ];
 
 describe('project catalogue', () => {
-  it('contains all nine projects with unique slugs and ids', () => {
-    expect(catalogue).toHaveLength(9);
+  it('contains all ten projects with unique slugs and ids', () => {
+    expect(catalogue).toHaveLength(10);
     expect(catalogue.map((project) => project.slug)).toEqual(EXPECTED_SLUGS);
-    expect(new Set(catalogue.map((project) => project.id)).size).toBe(9);
+    expect(new Set(catalogue.map((project) => project.id)).size).toBe(10);
   });
 
   it('has no structural data errors', () => {
@@ -56,9 +57,9 @@ describe('project catalogue', () => {
       ),
     );
 
-    expect(problems.size).toBe(9);
-    expect(descriptions.size).toBe(9);
-    expect(workflows.size).toBe(9);
+    expect(problems.size).toBe(10);
+    expect(descriptions.size).toBe(10);
+    expect(workflows.size).toBe(10);
   });
 
   it('only references categories that exist', () => {

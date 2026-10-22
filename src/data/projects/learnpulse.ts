@@ -266,7 +266,12 @@ export const learnpulse: PortfolioProject = {
   featured: false,
   status: 'completed',
   displayOrder: 7,
-  relatedSlugs: ['classconnect', 'pathwise', 'eduaccess'],
+  relatedSlugs: [
+    'classconnect',
+    'pathwise',
+    'eduaccess',
+    'workniche',
+  ],
   demoRequirements:
     'Runs on synthetic event fixtures generated locally. No third-party analytics service or credentials are involved.',
 };

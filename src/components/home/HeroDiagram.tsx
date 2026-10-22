@@ -1,5 +1,5 @@
 /**
- * Hero composition: how the nine projects fit together around one learning
+ * Hero composition: how the ten projects fit together around one learning
  * journey, with the offline/connected boundary made explicit.
  *
  * This is a conceptual map drawn with the site's own tokens — deliberately not
@@ -17,7 +17,7 @@ export function HeroDiagram() {
     <figure className="card overflow-hidden bg-panel" data-tone="contrast">
       <figcaption className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
         <span className="mono-meta text-ink-muted">
-          portfolio map · 9 projects
+          portfolio map · 10 projects
         </span>
         <span className="chip">Conceptual</span>
       </figcaption>

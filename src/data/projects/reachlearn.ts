@@ -282,7 +282,12 @@ export const reachlearn: PortfolioProject = {
   featured: true,
   status: 'completed',
   displayOrder: 8,
-  relatedSlugs: ['learnbridge', 'openlearn-commons', 'eduaccess'],
+  relatedSlugs: [
+    'learnbridge',
+    'openlearn-commons',
+    'eduaccess',
+    'workniche',
+  ],
   demoRequirements:
     'The studio, channel previews, state machine and delivery queue run against the labelled local simulator with no external account. Live SMS, USSD or IVR delivery requires a configured provider and its server-side credentials.',
 };

@@ -5,7 +5,7 @@ import { categoryLabels } from '@/data/categories';
 import { countLabel } from '@/lib/format';
 
 /**
- * The nine domains represented by the portfolio. Each card links to a real
+ * The domains represented by the portfolio. Each card links to a real
  * filter in the library (or the project that carries the domain), so the
  * overview is navigable rather than decorative.
  */

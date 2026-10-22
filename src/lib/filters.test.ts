@@ -41,7 +41,7 @@ describe('search', () => {
     expect(matchesSearch(learnbridge, '   ')).toBe(true);
     expect(
       filterProjects(catalogue, { ...defaultQuery, search: '' }),
-    ).toHaveLength(9);
+    ).toHaveLength(10);
   });
 });
 
@@ -79,9 +79,9 @@ describe('category filters', () => {
     }
   });
 
-  it('clearing filters restores all nine projects', () => {
+  it('clearing filters restores all ten projects', () => {
     const restored = filterProjects(catalogue, clearFilters());
-    expect(restored).toHaveLength(9);
+    expect(restored).toHaveLength(10);
     expect(hasActiveFilters(clearFilters())).toBe(false);
     expect(hasActiveFilters({ ...defaultQuery, search: 'ai' })).toBe(true);
     expect(hasActiveFilters({ ...defaultQuery, categories: ['python'] })).toBe(
