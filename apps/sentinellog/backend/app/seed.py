@@ -10,7 +10,8 @@ from pathlib import Path
 from sqlalchemy.orm import Session
 
 from . import config, detection, parsing
-from .database import SessionLocal, init_db
+from . import database
+from .database import init_db
 from .models import Dataset, DetectionRule, Finding, LogEvent, Report, User
 from .reporting import build_summary
 from .routes import _default_rules
@@ -113,7 +114,7 @@ def seed(db: Session) -> dict:
 
 def main() -> None:
     init_db()
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         result = seed(db)
         print(result)

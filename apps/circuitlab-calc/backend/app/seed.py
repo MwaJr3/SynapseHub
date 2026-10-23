@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import uuid
 
-from .database import Base, SessionLocal, engine
+from . import database
 from .models import SavedCalculation, User
 from .security import hash_password
 
@@ -12,8 +12,8 @@ DEMO_PASSWORD = "demo-password-123"
 
 
 def seed() -> dict:
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
+    database.Base.metadata.create_all(bind=database.engine)
+    db = database.SessionLocal()
     try:
         existing = db.query(User).filter(User.email == "demo.eng@circuits.example").first()
         if existing:

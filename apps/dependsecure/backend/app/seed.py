@@ -13,7 +13,8 @@ from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
 from . import audit, config, manifests
-from .database import SessionLocal, init_db
+from . import database
+from .database import init_db
 from .models import Finding, Manifest, Project, RemediationTask, Scan, User
 from .security import hash_password
 
@@ -133,7 +134,7 @@ def seed(db: Session) -> dict:
 
 def main() -> None:
     init_db()
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         print(seed(db))
     finally:

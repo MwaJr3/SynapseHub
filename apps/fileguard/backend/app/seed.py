@@ -8,7 +8,8 @@ from __future__ import annotations
 from sqlalchemy.orm import Session
 
 from . import config, integrity
-from .database import SessionLocal, init_db
+from . import database
+from .database import init_db
 from .models import Baseline, Finding, Scan, StoredFile, User, Workspace
 from .security import hash_password
 
@@ -132,7 +133,7 @@ def seed(db: Session) -> dict:
 
 def main() -> None:
     init_db()
-    db = SessionLocal()
+    db = database.SessionLocal()
     try:
         print(seed(db))
     finally:
