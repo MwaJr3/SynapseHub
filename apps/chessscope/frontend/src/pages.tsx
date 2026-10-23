@@ -1,0 +1,248 @@
+import { useCallback, useEffect, useState } from 'react';
+import { api, ApiError, type Analysis, type GameRow, type User } from './api';
+import { classificationTone, formatEval, materialLabel } from './utils';
+import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
+
+export function GamesPage() {
+  const [games, setGames] = useState<GameRow[] | null>(null);
+  const [pgn, setPgn] = useState('');
+  const [error, setError] = useState('');
+  const [openId, setOpenId] = useState<number | null>(null);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const reload = useCallback(() => {
+    api
+      .games()
+      .then(setGames)
+      .catch((err: unknown) => setError(err instanceof ApiError ? err.message : 'Loading failed.'));
+  }, []);
+  useEffect(() => reload(), [reload]);
+
+  const openAnalysis = async (id: number) => {
+    setError('');
+    setAnalysis(null);
+    setOpenId(id);
+    setBusy(true);
+    try {
+      const detail = await api.game(id);
+      if (detail.analysis) {
+        setAnalysis(detail.analysis);
+      } else {
+        setAnalysis(await api.analyze(id));
+        reload();
+      }
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Analysis failed.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold">Games & analysis</h1>
+      {error ? <ErrorBanner message={error} /> : null}
+      <Card title="Import a PGN game">
+        <form
+          className="space-y-3"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setError('');
+            try {
+              await api.uploadGame(pgn);
+              setPgn('');
+              reload();
+            } catch (err) {
+              setError(err instanceof ApiError ? err.message : 'Import failed.');
+            }
+          }}
+        >
+          <textarea
+            className="input h-40 font-mono text-xs"
+            placeholder={'[White "..."]\n[Black "..."]\n\n1. e4 e5 2. Nf3 ...'}
+            value={pgn}
+            onChange={(e) => setPgn(e.target.value)}
+          />
+          <button className="btn-primary" disabled={!pgn.trim()}>
+            Import game
+          </button>
+        </form>
+      </Card>
+      {!games ? (
+        <Loading />
+      ) : games.length === 0 ? (
+        <EmptyState title="No games yet" hint="Import a PGN above to get started." />
+      ) : (
+        <div className="space-y-2">
+          {games.map((g) => (
+            <div key={g.id} className="card">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="font-medium">
+                    {g.white} vs {g.black} · {g.result}
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    {g.analysed ? 'analysed' : 'not analysed yet'}
+                    {g.created_at ? ` · imported ${new Date(g.created_at).toLocaleString()}` : ''}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="btn-ghost" onClick={() => void openAnalysis(g.id)}>
+                    {openId === g.id ? 'Hide analysis' : 'Analyse'}
+                  </button>
+                  <a className="btn-ghost" href={`/api/games/${g.id}/report.json`}>
+                    Report
+                  </a>
+                  <ConfirmButton
+                    label="Delete"
+                    confirmMessage={`Delete game ${g.white} vs ${g.black}?`}
+                    onConfirm={async () => {
+                      await api.deleteGame(g.id);
+                      setOpenId(null);
+                      setAnalysis(null);
+                      reload();
+                    }}
+                  />
+                </div>
+              </div>
+              {openId === g.id ? (
+                <div className="mt-4 space-y-3 border-t border-slate-800 pt-3">
+                  {busy && !analysis ? <Loading /> : null}
+                  {analysis ? <AnalysisView analysis={analysis} /> : null}
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AnalysisView({ analysis }: { analysis: Analysis }) {
+  return (
+    <div className="space-y-3">
+      <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+        <strong className="text-slate-200">Engine status:</strong> {analysis.engine.message}
+      </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Plies" value={analysis.stats.plies} />
+        <StatCard label="Captures" value={analysis.stats.captures} />
+        <StatCard label="Checks" value={analysis.stats.checks} />
+        <StatCard label="Material" value={materialLabel(analysis.stats.final_material_balance)} />
+      </div>
+      {Object.keys(analysis.flags_summary).length > 0 ? (
+        <div className="rounded-lg border border-amber-800 bg-amber-950/50 px-3 py-2 text-xs text-amber-200">
+          Heuristic flags: {Object.entries(analysis.flags_summary).map(([k, v]) => `${k} ×${v}`).join(' · ')} — these
+          mark suspicious patterns for review; they are NOT proof that a move is a mistake.
+        </div>
+      ) : (
+        <div className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-400">
+          No heuristic flags triggered. Absence of flags is not proof that the game is mistake-free.
+        </div>
+      )}
+      <div className="overflow-x-auto rounded-xl border border-slate-800">
+        <table className="min-w-full">
+          <thead className="bg-slate-900">
+            <tr>
+              <th className="th">#</th>
+              <th className="th">Move</th>
+              <th className="th">Side</th>
+              <th className="th">Material after</th>
+              <th className="th">Eval</th>
+              <th className="th">Class</th>
+              <th className="th">Flags</th>
+            </tr>
+          </thead>
+          <tbody>
+            {analysis.moves.map((m) => (
+              <tr key={m.ply} className="border-t border-slate-800">
+                <td className="td">{m.ply}</td>
+                <td className="td font-mono">
+                  {m.san}
+                  {m.is_mate ? ' #' : m.is_check ? ' +' : ''}
+                </td>
+                <td className="td">{m.side}</td>
+                <td className="td">{materialLabel(m.material_after)}</td>
+                <td className="td font-mono">{formatEval(m.engine_eval_cp)}</td>
+                <td className="td">
+                  {m.classification ? <Badge tone={classificationTone(m.classification)}>{m.classification}</Badge> : '—'}
+                </td>
+                <td className="td max-w-md text-xs text-amber-300">{m.flags.join('; ') || '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-slate-500">{analysis.disclaimer}</p>
+    </div>
+  );
+}
+
+export function InsightsPage() {
+  const [data, setData] = useState<import('./api').Insights | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    api
+      .insights()
+      .then(setData)
+      .catch((e: unknown) => setError(e instanceof ApiError ? e.message : 'Loading failed.'));
+  }, []);
+  if (error) return <ErrorBanner message={error} />;
+  if (!data) return <Loading />;
+  return (
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold">Insights</h1>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Games" value={data.games} />
+        <StatCard label="White wins" value={data.results.white_wins} />
+        <StatCard label="Black wins" value={data.results.black_wins} />
+        <StatCard label="Draws" value={data.results.draws} />
+      </div>
+      <Card title="Openings (from PGN labels)">
+        {data.openings.length === 0 ? (
+          <EmptyState title="No games" hint="Import games to see opening statistics." />
+        ) : (
+          <ul className="space-y-1">
+            {data.openings.map(([name, count]) => (
+              <li key={name} className="flex justify-between rounded-lg border border-slate-800 px-3 py-1.5 text-sm">
+                <span>{name}</span>
+                <span className="text-slate-400">×{count}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+      <Card title="Engine status">
+        <p className="text-sm text-slate-300">
+          {data.engine_available
+            ? 'A local UCI engine is available for this deployment.'
+            : 'No local UCI engine is available — heuristic analysis only. Evaluations are not invented.'}
+        </p>
+        <p className="mt-2 text-xs text-slate-500">{data.disclaimer}</p>
+      </Card>
+    </div>
+  );
+}
+
+export function SettingsPage({ user }: { user: User }) {
+  return (
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold">Settings</h1>
+      <Card title="Account">
+        <p className="text-sm text-slate-300">
+          {user.display_name} · <span className="text-slate-400">{user.email}</span>
+        </p>
+      </Card>
+      <Card title="Analysis honesty rules">
+        <ul className="list-inside list-disc space-y-1 text-sm text-slate-300">
+          <li>Heuristic flags mark suspicious patterns for review — NOT proof that a move is a mistake.</li>
+          <li>Engine evaluations are shown only when a local UCI engine is configured; otherwise the app says so and invents nothing.</li>
+          <li>Analysis runs on the PGN you import; the app does not claim to know what happened outside the moves supplied.</li>
+          <li>Demo games are simulated.</li>
+        </ul>
+      </Card>
+    </div>
+  );
+}
