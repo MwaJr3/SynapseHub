@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Portfolio website for Mwangala — nine education-technology projects exploring offline-first learning, AI-assisted tutoring, assessment, analytics and affordable access.",
+  "description": "Mwangala's frontend portfolio and 60 interactive challenge prototypes.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

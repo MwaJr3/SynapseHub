@@ -1,12 +1,19 @@
 # Mwangala — Education Technology Portfolio
 
-A production-ready portfolio website for nine education-technology projects, built catalogue-first: every
-project is fully documented as a case study now, and each one is connected to its live application and source
-repository later, from a single configuration file — without touching any component.
+A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.
 
-The site's message: **software that explores how technology can make learning more accessible, personalized and
-useful** — offline-first study, grounded AI tutoring, evidence-based assessment, teacher workflows, open resources,
-learning analytics, phone-based delivery and affordable access.
+The repository also retains separate stock-analysis and WorkNiche applications, a private browser-local Personal Operating System, and an operations-specification page. Each feature is documented with its real scope and limitations; no unconfigured external links or measured outcomes are claimed.
+
+## Challenge collection and prototypes
+
+- `/projects` lists the 60 sourced challenge records with URL-backed search, filters, sorting and pagination.
+- `/projects/:slug` presents the sourced brief, attribution and current verification status.
+- `/apps` and `/apps/:slug` expose one interactive, browser-first prototype per challenge. These are independent implementations, not certification that every original brief is complete.
+- Challenge metadata and implementation status are kept distinct in `src/data/challengeManifest.ts` and `src/apps/appRegistry.ts`.
+- Most flows store data only in the visitor's browser. A small number of tools request public APIs on submission; errors and service limits are surfaced in the UI.
+- Reference screenshots, when present, are supplied visual references—not claims of completed or tested builds. See `docs/CHALLENGE_BUILD_PROMPTS.md` for the prompt set and source context.
+
+---
 
 ## Stock analysis portfolio projects
 
@@ -65,17 +72,17 @@ data.
 
 | Area               | Detail                                                                                                                                                                                                                             |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Routes             | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (9), `/skills`, `/journey`, `/approach`, `/contact`, custom 404                                                                                                             |
+| Routes             | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (60 challenge records), `/apps`, `/apps/:slug` (60 prototypes), `/skills`, `/journey`, `/approach`, `/operations`, `/contact`, custom 404                                      |
 | Personal OS        | Private local-first 90-day workspace for identity, Tier 1–3 goals, projects, weekly capacity and actions, decisions, energy, blocker interventions, meaning, reviews, learning, relationships, personal doctrine, a simple financial ledger, cycle archives, and validated JSON export/import |
-| Catalogue          | 9 typed project records in `src/data/projects/`, one file per project, rendered from a single source of truth                                                                                                                      |
-| Discovery          | Working search (name, description, category, technology, feature, problem, users), 10 combinable filters, sorting, active-filter list, clear-all, empty state, shareable `?q=&category=&sort=` URLs                                |
-| Case studies       | Problem and users → workflow → features → architecture → engineering decisions → testing → interface previews → limits and roadmap → related projects                                                                              |
-| Deployment linking | `src/config/deployment.ts` registry drives _Live demo_ and _Source code_ everywhere; unconfigured links are hidden, never faked                                                                                                    |
+| Catalogue          | 60 sourced Frontend Mentor challenge records plus 60 uniquely mapped local-first prototype definitions                                                                                                                           |
+| Discovery          | Search over challenge metadata; category, type and difficulty filters; sorting and shareable URL state; 12-item pagination and clear-filter state                                                                                  |
+| Case studies       | Challenge-source context, attribution, prototype link and explicit verification status                                                                                                                                            |
+| Links and attribution | Official challenge source URLs remain separate from prototypes; no unconfigured demo, repository or profile links are shown                                                                                                              |
 | Theming            | Light / Dark / System with persistence, an OS listener, pre-paint initialisation (no wrong-theme flash) and a hybrid tone system (light surfaces + intentional dark panels)                                                        |
-| Visuals            | Ten distinct illustrative SVG compositions (lesson library, session schedule, grounded tutor, skill map, authoring studio, resource catalogue, analytics, SMS/USSD delivery, access plans), each labelled _Illustrative preview_  |
+| Visuals            | Representative interface visuals are clearly labeled; supplied reference images are not presented as verified prototype screenshots                                                                                                      |
 | Accessibility      | Semantic landmarks, skip link, keyboard-accessible mobile menu with Escape handling, visible focus states, live regions for search results and copy feedback, `prefers-reduced-motion` support, text equivalents for every diagram |
-| SEO                | Per-page titles and descriptions, Open Graph and Twitter metadata, canonical URLs only when a domain is configured, JSON-LD (`Person`, `SoftwareApplication`), `robots.txt`, optional sitemap generator                            |
-| Quality            | TypeScript strict mode, 178 unit/component/integration tests, ESLint (TypeScript + hooks + jsx-a11y), data-integrity validation, production build                                                                                   |
+| SEO                | Per-page titles and descriptions, Open Graph metadata, canonical URLs only when a site origin is configured, `robots.txt` and an optional sitemap generator                                                                       |
+| Quality            | TypeScript strict mode, unit/component/routing tests, ESLint, data-integrity checks, and production build (see the verification run below)                                                                                   |
 
 ### Honesty rules the code enforces
 
@@ -147,28 +154,19 @@ npm run dev          # http://localhost:5173
 
 ```text
 src/
-  components/
-    home/          Hero + conceptual portfolio map, focus areas, featured projects, principles, CTA
-    layout/        PageHeader (shared page intro)
-    navigation/    SiteHeader, mobile menu, ThemeSwitcher, SiteFooter, RootLayout
-    projects/      ProjectCard, filters, workflow, features, architecture, preview gallery,
-                   related projects, deployment panel, copy-link, external actions
-    ui/            Button, Section, TagList, Callout, EmptyState, Reveal
-    visuals/       VisualFrame primitives + nine project compositions + ProjectVisual switch
-  config/          site.ts (profile, contact, URL validation) · deployment.ts (project links)
-  data/            projects/ (nine records + index/merge) · categories · skills · journey ·
-                   approach · focus-areas · principles
-  hooks/           usePageMeta · useCopyLink · useReveal
-  lib/             filters · validate · theme · clipboard · format · cn
-  pages/           HomePage, AboutPage, ProjectsPage, ProjectDetailPage, SkillsPage, JourneyPage,
-                   ApproachPage, ContactPage, NotFoundPage
-  providers/       ThemeProvider
-  styles/          index.css (design tokens + tone scopes + component layer)
-  test/            Vitest setup and render helpers
-docs/
-  CONNECTING_PROJECTS.md   How to wire a case study to its app and repository
-scripts/
-  generate-sitemap.mjs
+  apps/                 Unique registry and shared game logic for all 60 prototypes
+  components/apps/      Local-first interactive app families
+  components/navigation/Responsive site header/footer and shared layout
+  data/challengeManifest.ts   Sourced challenge metadata and completion-status flags
+  features/personal-os/ Private browser-local personal workspace
+  pages/                Portfolio, challenge, prototype, operations and personal-system routes
+  styles/               Portfolio and prototype styling
+workniche/              Separate Next.js job-marketplace application
+company-platform/       Separate Next.js company-discovery application
+stock-price-analysis/   Guided stock-analysis notebook edition
+docs/                   Build prompts, implementation notes and project documentation
+scripts/                Sitemap and asset utilities
+tools/personal_os_companion/  Optional offline Python review utility
 ```
 
 ### Design system in one paragraph
@@ -193,45 +191,22 @@ corresponding UI.
 | `VITE_AVAILABILITY_STATEMENT`          | Optional availability sentence; leave empty to avoid implying paid availability                                                                                            |
 | `VITE_GITHUB_URL`, `VITE_LINKEDIN_URL` | Profile links (hidden when unset)                                                                                                                                          |
 
-Project application/repository links are **not** environment variables — they live in
-`src/config/deployment.ts`. See [docs/CONNECTING_PROJECTS.md](docs/CONNECTING_PROJECTS.md).
+Only configure destinations that are real and controlled. Challenge attribution lives in `src/data/challengeManifest.ts`; the prototype routes are local, and unconfigured external destinations are omitted.
 
 ---
 
-## Updating project information
+## Updating the challenge collection
 
-1. **Edit one file.** Each project is one record: `src/data/projects/<slug>.ts`. Descriptions, features, workflow,
-   architecture, engineering decisions, testing, limitations and roadmap all live there, typed by
-   `PortfolioProject` in `src/types/index.ts`.
-2. **Catalogue-wide lists** live in `src/data/`: `categories.ts` (library filters), `skills.ts`, `journey.ts`,
-   `approach.ts`, `focus-areas.ts` (home-page domains and responsible-technology principles).
-3. **Validate.** `npm run check` runs `src/lib/validate.ts` over the catalogue: exactly nine projects, unique slugs
-   and ids, categories that exist, related slugs that exist and are reciprocated, unique short descriptions,
-   architecture nodes that connect only to real neighbours, previews that never claim to be screenshots, and no
-   placeholder domains. Development builds also log issues to the console.
-4. **Add real screenshots.** Put files in `public/screenshots/<slug>/` and set `screenshotSrc` on the preview you
-   are replacing. The gallery then renders the captured image instead of the illustrative composition and labels it
-   as a capture.
+1. Challenge-source metadata and implementation status live in `src/data/challengeManifest.ts`.
+2. Prototype route definitions are registered in `src/apps/appRegistry.ts`; shared interface implementations live in `src/components/apps/`.
+3. Run `npm run check` after changes to verify types, lint, tests and the production build. The registry and tests guard against missing or duplicate prototype slugs.
+4. Only add genuine captures when they exist. Supplied reference images must remain labelled as references and must not be represented as verified output from these prototypes.
 
 ---
 
-## Connecting a project to its application and repository
+## Maintaining challenge attribution
 
-See [docs/CONNECTING_PROJECTS.md](docs/CONNECTING_PROJECTS.md) for the full walkthrough. The short version:
-
-```ts
-// src/config/deployment.ts
-export const deploymentRegistry: DeploymentRegistry = {
-  learnbridge: {
-    liveDemoUrl: 'https://learnbridge.your-domain.org',
-    repositoryUrl: 'https://github.com/MwaJr3/learnbridge',
-    demoNote: 'Seeded demo learner; synthetic, resettable data only.',
-  },
-};
-```
-
-That single entry makes the _Live demo_ and _Source code_ buttons appear on the project card, the case-study
-header, the deployment panel and the footer status counters — everywhere at once.
+Challenge titles and source links are recorded in `src/data/challengeManifest.ts`. Keep the official source URL, access tier, difficulty and challenge category separate from implementation status. The portfolio is independent and is not affiliated with or endorsed by Frontend Mentor. Do not add deployment, repository or social links unless a real, configured destination exists.
 
 ---
 
@@ -253,18 +228,13 @@ The build output is a static SPA in `dist/`.
 
 | Check      | Command            | Result                                                                                 |
 | ---------- | ------------------ | -------------------------------------------------------------------------------------- |
-| Type check | `npx tsc --noEmit` | Passed (strict mode, no `any`)                                                         |
-| Lint       | `npx eslint .`     | Passed, no errors or warnings                                                          |
-| Tests      | `npx vitest run`   | 9 files, 178 tests, all passing                                                        |
-| Build      | `npm run build`    | Succeeded; route-level code splitting, sizes in the build output                       |
-| Dev server | `npm run dev`      | Serves `/`, `/projects`, `/projects/:slug` and unknown routes through the SPA fallback |
+| Type check | `npm run typecheck` | Passed                                                                                       |
+| Lint       | `npm run lint`      | Passed                                                                                       |
+| Tests      | `npm test`          | 13 files, 584 tests, all passing                                                            |
+| Build      | `npm run build`     | Succeeded; route-level code splitting                                                       |
+| Dev server | `npm run dev`       | Serves the portfolio routes and unknown routes through the SPA fallback                    |
 
-The test suite covers: catalogue integrity (all ten projects, unique slugs, valid categories, reciprocal related
-links, architecture edges, preview honesty, no placeholder domains or invented metrics), URL validation (scheme and
-host rules, field-swap protection, registry merge behaviour), search/filter/sort logic and query-string round trips,
-theme resolution and persistence, the operations layer (module structure, metric-definition completeness and the
-no-invented-figures guard), and rendered routing — every case study route, the unknown-slug state, the 404
-page, library search and filter combinations, the theme switcher and the mobile menu's Escape behaviour.
+The test suite covers the challenge manifest and all 60 app routes, interactive prototype flows, URL-backed discovery, the personal operating system, the operations layer and shared site controls. The standalone company-platform and WorkNiche applications have their own check scripts and are not part of this root `npm run check` run.
 
 Automated accessibility checks (axe) and end-to-end browser runs are **not** included; the accessibility work here
 is semantic markup, focus management, live regions, contrast-reviewed tokens and reduced-motion handling, reviewed
@@ -275,12 +245,9 @@ environment.
 
 ## Known limitations
 
-- The nine applications are documented as case studies; no deployment or repository exists yet, so the project-link
-  panels currently state "not yet connected" by design.
-- Interface previews are illustrative compositions, not screenshots of running software.
-- No learning-outcome, AI-accuracy, adoption or performance metrics are claimed anywhere, because none have been
-  measured.
-- The contact form needs an external endpoint; email delivery and spam protection are the endpoint's responsibility.
-- `public/og-image.png` is not included: supply a genuine social image or the Open Graph image tag will 404 once a
-  site origin is configured.
-- Automated visual regression testing is not set up.
+- The 60 frontend prototypes are independent practice builds. They are not verified as complete against every original challenge acceptance criterion.
+- Most prototype data is local to the current browser. These interactions are not connected to production accounts or backends.
+- Public API-backed tools depend on their upstream services and may encounter rate limits or network failures.
+- No learning-outcome, adoption or performance metrics are claimed because none have been measured.
+- The contact form requires a configured real endpoint; email delivery and spam protection are that endpoint's responsibility.
+- Automated visual regression and end-to-end browser testing are not configured for this portfolio.

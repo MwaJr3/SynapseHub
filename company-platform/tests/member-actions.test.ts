@@ -2,7 +2,7 @@
  * Member profile workflow and audit coverage: draft → submit → review → publish
  * → withdraw, with resumes and audit events behaving as specified.
  */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   submitProfileAction,
@@ -18,7 +18,7 @@ import {
   products,
   resumeAssets,
 } from '@/lib/db/schema';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import {
   createMembership,
   createTestCompany,

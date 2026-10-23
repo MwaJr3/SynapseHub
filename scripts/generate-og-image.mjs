@@ -1,135 +1,32 @@
 #!/usr/bin/env node
-/**
- * Generates the Open Graph / social preview image.
- *
- * The card is drawn from the same design tokens as the website, so there is no
- * stock artwork and no image that could be mistaken for a screenshot of the
- * applications. Fonts are the self-hosted Inter and JetBrains Mono files
- * already used by the site.
- *
- *   npm run og:image      # writes public/og-image.png (1200×630)
- */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+/** Draw the portfolio's original editorial social card (not a project screenshot). */
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dirname } from 'node:path';
 import { Resvg } from '@resvg/resvg-js';
 
-const here = dirname(fileURLToPath(import.meta.url));
-const root = resolve(here, '..');
-
-const interPath = resolve(
-  root,
-  'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2',
-);
-const monoPath = resolve(
-  root,
-  'node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2',
-);
-
-const projectNames = [
-  'LearnBridge',
-  'ClassConnect',
-  'TutorSpring',
-  'PathWise',
-  'TeachCraft',
-  'OpenLearn Commons',
-  'LearnPulse',
-  'ReachLearn',
-  'EduAccess',
-];
-
-const columns = [
-  projectNames.slice(0, 3),
-  projectNames.slice(3, 6),
-  projectNames.slice(6, 9),
-];
-
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-  <defs>
-    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0b1020"/>
-      <stop offset="60%" stop-color="#0a0e1a"/>
-      <stop offset="100%" stop-color="#080b12"/>
-    </linearGradient>
-    <pattern id="grid" width="72" height="72" patternUnits="userSpaceOnUse">
-      <path d="M72 0H0V72" fill="none" stroke="#1d2537" stroke-width="1"/>
-    </pattern>
-    <radialGradient id="glow" cx="18%" cy="8%" r="70%">
-      <stop offset="0%" stop-color="#2448d6" stop-opacity="0.42"/>
-      <stop offset="100%" stop-color="#2448d6" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-
-  <rect width="1200" height="630" fill="url(#panel)"/>
-  <rect width="1200" height="630" fill="url(#grid)" opacity="0.5"/>
-  <rect width="1200" height="630" fill="url(#glow)"/>
-
-  <g transform="translate(72, 68)">
-    <rect width="56" height="56" rx="14" fill="#131a2a" stroke="#2b3648"/>
-    <text x="28" y="37" font-family="JetBrains Mono Variable, monospace" font-size="24" fill="#84a7ff" text-anchor="middle">M</text>
-  </g>
-
-  <text x="150" y="106" font-family="Inter Variable, sans-serif" font-size="26" font-weight="600" fill="#eef2fa">Mwangala</text>
-  <text x="72" y="196" font-family="JetBrains Mono Variable, monospace" font-size="17" fill="#7f93b3" letter-spacing="2.6">
-    PYTHON · SOFTWARE ENGINEERING · AI-POWERED LEARNING TOOLS
-  </text>
-
-  <text x="72" y="278" font-family="Inter Variable, sans-serif" font-size="52" font-weight="600" fill="#ffffff">
-    Building better ways to learn.
-  </text>
-  <text x="72" y="344" font-family="Inter Variable, sans-serif" font-size="52" font-weight="600" fill="#7f9dff">
-    Engineering tools that open access.
-  </text>
-
-  <text x="72" y="404" font-family="Inter Variable, sans-serif" font-size="20" fill="#a5b1c5">
-    Nine education-technology projects: offline-first study, grounded AI tutoring,
-  </text>
-  <text x="72" y="434" font-family="Inter Variable, sans-serif" font-size="20" fill="#a5b1c5">
-    assessment evidence, teacher workflows, open resources and low-connectivity delivery.
-  </text>
-
-  ${columns
-    .map(
-      (column, columnIndex) => `
-  <g transform="translate(${72 + columnIndex * 356}, 512)">
-    ${column
-      .map(
-        (name, index) =>
-          `<text y="${index * 28}" font-family="JetBrains Mono Variable, monospace" font-size="16" fill="#8794aa">${name}</text>`,
-      )
-      .join('\n    ')}
-  </g>`,
-    )
-    .join('')}
-
-  <rect x="0" y="622" width="1200" height="8" fill="#2448d6"/>
-</svg>
-`;
-
-const outPath = resolve(root, 'public/og-image.png');
-mkdirSync(dirname(outPath), { recursive: true });
-
+<defs><pattern id="grid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#50645a" stroke-opacity=".25"/></pattern><radialGradient id="soft"><stop stop-color="#405a46" stop-opacity=".72"/><stop offset="1" stop-color="#15221c" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="630" fill="#15221c"/><rect width="1200" height="630" fill="url(#grid)"/><ellipse cx="950" cy="100" rx="430" ry="360" fill="url(#soft)"/>
+<rect x="76" y="68" width="54" height="54" rx="13" fill="#223129" stroke="#657569"/><text x="103" y="104" fill="#c7dcaf" text-anchor="middle" font-family="monospace" font-size="27">M</text>
+<text x="150" y="104" fill="#f2f1e9" font-family="Inter, sans-serif" font-size="25" font-weight="600">Mwangala</text>
+<text x="76" y="186" fill="#bdc9c0" font-family="monospace" font-size="14" letter-spacing="2">FRONTEND DEVELOPER · UI ENGINEERING</text>
+<text x="76" y="285" fill="#f5f3ed" font-family="Inter, sans-serif" font-size="56" font-weight="600" letter-spacing="-2">Designing Interfaces.</text>
+<text x="76" y="355" fill="#bfd5a3" font-family="Inter, sans-serif" font-size="56" font-weight="600" letter-spacing="-2">Building Experiences.</text>
+<text x="76" y="425" fill="#f5f3ed" font-family="Inter, sans-serif" font-size="56" font-weight="600" letter-spacing="-2">Shipping the Details.</text>
+<rect x="76" y="486" width="1" height="72" fill="#657569"/><text x="100" y="514" fill="#c2cbc2" font-family="Inter, sans-serif" font-size="20">60 independent challenge implementations</text><text x="100" y="544" fill="#aab8af" font-family="Inter, sans-serif" font-size="15">Responsive interfaces · interactive applications · thoughtful details</text>
+<text x="1125" y="573" fill="#aab8af" text-anchor="end" font-family="monospace" font-size="11" letter-spacing="1">INDEPENDENT WORK · FRONTEND MENTOR INSPIRED</text></svg>`;
+const fontFiles = [
+  resolve(root, 'node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2'),
+  resolve(root, 'node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2'),
+].filter((file) => { try { readFileSync(file); return true; } catch { return false; } });
 try {
-  const resvg = new Resvg(svg, {
-    fitTo: { mode: 'width', value: 1200 },
-    font: {
-      fontFiles: [interPath, monoPath].filter((file) => {
-        try {
-          readFileSync(file);
-          return true;
-        } catch {
-          return false;
-        }
-      }),
-      loadSystemFonts: true,
-      defaultFontFamily: 'Inter Variable',
-    },
-    background: '#080b12',
-  });
-
-  writeFileSync(outPath, resvg.render().asPng());
-  console.log(`[og] Wrote ${outPath}`);
+  const renderer = new Resvg(svg, { fitTo: { mode: 'width', value: 1200 }, font: { fontFiles, loadSystemFonts: true, defaultFontFamily: 'Inter' }, background: '#15221c' });
+  writeFileSync(resolve(root, 'public/og-image.png'), renderer.render().asPng());
+  console.log('[og] Wrote public/og-image.png (1200 × 630)');
 } catch (error) {
-  console.error('[og] Could not render the social image:', error.message);
+  console.error('[og] Could not render the social image:', error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 }

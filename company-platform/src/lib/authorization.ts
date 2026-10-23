@@ -4,10 +4,10 @@
  * records unless an explicit second membership says so. Public rendering
  * only ever sees published content — enforced at query time.
  */
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 import { getDb, type Db } from '@/lib/db';
-import { companyMemberships, personProfiles, users } from '@/lib/db/schema';
+import { companyMemberships, personProfiles } from '@/lib/db/schema';
 import type { Actor } from '@/lib/auth';
 
 export class AuthorizationError extends Error {

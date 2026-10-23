@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 
-import { addEntryAction, deleteEntryAction } from '@/app/actions/profile';
 import { EmptyState, Section } from '@/components/ui';
 import { requireUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';

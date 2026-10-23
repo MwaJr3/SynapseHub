@@ -9,8 +9,10 @@ const navItems = [
   { to: '/system', label: 'System' },
   { to: '/about', label: 'About' },
   { to: '/projects', label: 'Projects' },
+  { to: '/apps', label: 'Apps' },
   { to: '/skills', label: 'Skills' },
   { to: '/journey', label: 'Journey' },
+  { to: '/approach', label: 'Approach' },
   { to: '/operations', label: 'Operations' },
   { to: '/contact', label: 'Contact' },
 ];
@@ -76,7 +78,7 @@ export function SiteHeader() {
               {profileConfig.name}
             </span>
             <span className="mono-meta hidden sm:inline">
-              Python · Software Engineering · AI in learning
+              Frontend development · UI engineering
             </span>
           </span>
         </Link>

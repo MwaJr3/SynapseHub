@@ -2,7 +2,7 @@
  * Required authorization tests: cross-company isolation, own-profile-only
  * access, suspended members losing write access, and platform-admin boundaries.
  */
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   AuthorizationError,

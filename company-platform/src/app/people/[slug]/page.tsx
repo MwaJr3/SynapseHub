@@ -2,17 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { Badge, Breadcrumbs, EmptyState, ExternalLinkButton, Section } from '@/components/ui';
+import { Breadcrumbs, EmptyState, ExternalLinkButton, Section } from '@/components/ui';
 import { getDb } from '@/lib/db';
 import {
-  getPersonProfileByUserId,
   getPublishedPersonBySlug,
   listPersonExtras,
 } from '@/lib/queries';
 import { isConfiguredUrl } from '@/lib/validation';
 import { externalAnchorProps } from '@/lib/links';
 import { eq } from 'drizzle-orm';
-import { personProfiles, resumeAssets } from '@/lib/db/schema';
+import { personProfiles } from '@/lib/db/schema';
 
 export const dynamic = 'force-dynamic';
 

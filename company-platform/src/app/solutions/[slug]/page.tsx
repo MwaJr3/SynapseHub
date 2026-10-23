@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { Badge, Breadcrumbs, CompanyBadge, Section } from '@/components/ui';
+import { Breadcrumbs, CompanyBadge, Section } from '@/components/ui';
 import { CompanyTokenSync } from '@/components/company-token-sync';
 import { getDb } from '@/lib/db';
 import { getPublishedSolutionBySlug, listPublishedProducts } from '@/lib/queries';

@@ -2,11 +2,12 @@ import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { RootLayout } from '@/components/navigation/RootLayout';
 
-// Route-level code splitting: the case-study template and the secondary pages
-// are only downloaded when a visitor navigates to them.
+// Route-level code splitting keeps secondary features out of the first page load.
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ProjectsPage = lazy(() => import('@/pages/ProjectsPage'));
+const AppHubPage = lazy(() => import('@/pages/AppHubPage'));
+const ChallengeAppPage = lazy(() => import('@/pages/ChallengeAppPage'));
 const ProjectDetailPage = lazy(() => import('@/pages/ProjectDetailPage'));
 const SkillsPage = lazy(() => import('@/pages/SkillsPage'));
 const JourneyPage = lazy(() => import('@/pages/JourneyPage'));
@@ -33,6 +34,8 @@ export function AppRoutes() {
         <Route path="about" element={<AboutPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:slug" element={<ProjectDetailPage />} />
+        <Route path="apps" element={<AppHubPage />} />
+        <Route path="apps/:slug" element={<ChallengeAppPage />} />
         <Route path="skills" element={<SkillsPage />} />
         <Route path="journey" element={<JourneyPage />} />
         <Route path="approach" element={<ApproachPage />} />

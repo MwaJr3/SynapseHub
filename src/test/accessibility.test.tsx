@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { screen } from '@testing-library/react';
 import App from '@/App';
 import { renderWithProviders } from '@/test/render-app';
-import { catalogue } from '@/data/projects';
+import { challengeManifest } from '@/data/challengeManifest';
 
 /**
  * Structural accessibility checks.
@@ -17,15 +17,25 @@ const routes: Array<[string, string]> = [
   ['/', 'home'],
   ['/about', 'about'],
   ['/projects', 'project library'],
+  ['/apps', 'interactive apps library'],
+  ['/apps/poll-creator-app', 'poll creator prototype'],
+  ['/apps/body-mass-index-calculator', 'BMI calculator prototype'],
+  ['/apps/tic-tac-toe-game', 'tic tac toe prototype'],
+  ['/apps/memory-game', 'memory game prototype'],
+  ['/apps/dictionary-web-app', 'dictionary prototype'],
+  ['/apps/kanban-task-management-web-app', 'kanban prototype'],
+  ['/apps/audiophile-ecommerce-website', 'store prototype'],
+  ['/apps/art-gallery-website', 'gallery prototype'],
   ['/skills', 'skills'],
   ['/journey', 'journey'],
   ['/approach', 'approach'],
+  ['/operations', 'operations'],
   ['/contact', 'contact'],
   ['/system', 'personal operating system'],
   ['/unknown-route', '404'],
-  ...catalogue.map(
+  ...challengeManifest.map(
     (project) =>
-      [`/projects/${project.slug}`, `${project.name} case study`] as [
+      [`/projects/${project.slug}`, `${project.title} case study`] as [
         string,
         string,
       ],

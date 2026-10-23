@@ -1,0 +1,14 @@
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { usePageMeta } from '@/hooks/usePageMeta';
+import { challengeManifest } from '@/data/challengeManifest';
+import { getAppDefinition } from '@/apps/appRegistry';
+
+export default function AppHubPage() {
+  const [query, setQuery] = useState('');
+  const [mode, setMode] = useState('all');
+  usePageMeta({ title: 'Interactive prototypes — Mwangala', description: 'Open local-first interactive prototypes for all 60 challenge records. Each prototype explains its current data and service limitations.', path: '/apps' });
+  const modes = useMemo(() => [...new Set(challengeManifest.map((item) => getAppDefinition(item).mode))].sort(), []);
+  const visible = challengeManifest.filter((item) => `${item.title} ${item.category}`.toLowerCase().includes(query.trim().toLowerCase()) && (mode === 'all' || getAppDefinition(item).mode === mode));
+  return <><section data-tone="contrast" className="case-hero"><div className="shell"><p className="eyebrow">Interactive workspace · 01—60</p><h1>Open a challenge prototype.</h1><p className="case-lede">Every catalogue entry now has its own interactive route. These local-first builds demonstrate real browser-side behaviour and clearly disclose features that require a backend, challenge assets, or a third-party service.</p><div className="app-hub-note"><strong>Prototype ≠ full production build.</strong><span>Data stays in your browser unless a tool explicitly calls a named public API. No accounts, shared servers, payments, or challenge-provided design assets are configured.</span></div></div></section><section className="shell section-pad"><div className="app-hub-toolbar"><label>Find an app<input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search the 60 prototypes" /></label><label>Prototype type<select value={mode} onChange={(e) => setMode(e.target.value)}><option value="all">All types</option>{modes.map((item) => <option key={item} value={item}>{item}</option>)}</select></label></div><p className="collection-status"><strong>{visible.length}</strong> interactive prototype{visible.length === 1 ? '' : 's'}</p><div className="app-hub-grid">{visible.map((project) => { const app = getAppDefinition(project); return <article className="app-hub-card" key={project.slug}><div className="app-hub-card-top"><span>{String(project.displayOrder).padStart(2, '0')}</span><span className="app-local-badge"><i /> Local prototype</span></div><p className="app-kicker">{project.category}</p><h2><Link to={`/apps/${project.slug}`}>{project.title}</Link></h2><p>{app.lead}</p><div><Link className="app-hub-link" to={`/apps/${project.slug}`}>Open prototype ↗</Link><Link className="app-hub-secondary" to={`/projects/${project.slug}`}>Challenge record</Link></div></article>; })}</div></section></>;
+}

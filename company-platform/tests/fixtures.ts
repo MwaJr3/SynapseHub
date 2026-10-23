@@ -1,13 +1,11 @@
 /** Shared DB fixtures for authorization and privacy tests. */
 import { getDb } from '@/lib/db';
 import {
-  caseStudies,
   companies,
   companyMemberships,
   personProfiles,
   products,
   resumeAssets,
-  solutionAreas,
   users,
 } from '@/lib/db/schema';
 import { hashPassword } from '@/lib/auth/password';

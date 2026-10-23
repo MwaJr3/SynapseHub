@@ -1,159 +1,16 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Section } from '@/components/ui/Section';
-import { Callout } from '@/components/ui/Callout';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { skillGroups } from '@/data/skills';
-import { getProjectsBySlugs } from '@/data/projects';
-import { categories } from '@/data/categories';
-import { Button } from '@/components/ui/Button';
+import { challengeManifest } from '@/data/challengeManifest';
+
+const capabilities = [
+  { title: 'Responsive interface design', detail: 'Reading a brief, translating hierarchy into page structure, and considering how layout adapts from compact to wide screens.', categories: ['Landing pages', 'Multi-page websites', 'Responsive UI components'] },
+  { title: 'Interaction and application logic', detail: 'Thinking through user input, changing states and the feedback an interface needs to make actions understandable.', categories: ['Interactive applications', 'Games & interactive experiences'] },
+  { title: 'Data and information display', detail: 'Exploring ways to organize, find and present information so the next useful detail is easy to identify.', categories: ['Dashboards & data', 'API-powered applications'] },
+  { title: 'Commerce and product journeys', detail: 'Studying the steps that help someone compare, choose and move through a product-oriented experience.', categories: ['Commerce & product experiences', 'Finance & calculators'] },
+];
 
 export default function SkillsPage() {
-  usePageMeta({
-    title: 'Skills — technologies evidenced by the projects',
-    description:
-      'Python, FastAPI, PostgreSQL, React, TypeScript, offline-first synchronisation, assessment logic, AI provider integration, privacy-aware reporting and the workflows behind them — each linked to the projects that demonstrate it.',
-    path: '/skills',
-  });
-
-  return (
-    <>
-      <PageHeader
-        eyebrow="Skills"
-        title="Technologies and capabilities, with the project that demonstrates each one"
-        summary={
-          <>
-            This page lists what the portfolio actually uses and links every
-            group to the case studies where it appears. There are no proficiency
-            percentages, because there is no defensible way to measure one here.
-          </>
-        }
-        aside={
-          <div className="card p-5">
-            <p className="eyebrow">Primary stack</p>
-            <ul className="mt-3 grid gap-2 text-sm text-ink-muted">
-              <li>Python · FastAPI · Pydantic · SQLAlchemy</li>
-              <li>PostgreSQL · Redis · SQLite · IndexedDB</li>
-              <li>React · TypeScript · Tailwind CSS · Vite</li>
-              <li>
-                Provider adapters for AI, realtime, messaging and payments
-              </li>
-            </ul>
-          </div>
-        }
-      />
-
-      <Section
-        id="groups"
-        tone="surface"
-        eyebrow="01 — Capability groups"
-        title="Six groups, each traced to project evidence"
-      >
-        <div className="grid gap-6">
-          {skillGroups.map((group) => {
-            const evidence = getProjectsBySlugs(group.evidenceSlugs);
-            return (
-              <article key={group.id} className="card p-5 sm:p-6">
-                <div className="grid gap-6 lg:grid-cols-[1fr_1.3fr]">
-                  <div>
-                    <h3 className="text-lg font-semibold tracking-tight text-ink">
-                      {group.title}
-                    </h3>
-                    <p className="prose-body mt-2 text-sm">{group.summary}</p>
-
-                    {group.caveat && (
-                      <p className="mt-4 rounded-card border border-line bg-panel-strong p-3 text-xs text-ink-subtle">
-                        {group.caveat}
-                      </p>
-                    )}
-
-                    <div className="mt-4">
-                      <p className="eyebrow mb-2">Evidenced in</p>
-                      <ul className="flex flex-wrap gap-2">
-                        {evidence.map((project) => (
-                          <li key={project.slug}>
-                            <Link
-                              to={`/projects/${project.slug}`}
-                              className="chip chip-interactive"
-                            >
-                              {project.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <ul className="grid gap-2 sm:grid-cols-2">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="flex gap-3 text-sm text-ink-muted"
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-                        />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </Section>
-
-      <Section
-        id="browse-by-technology"
-        tone="quiet"
-        eyebrow="02 — Browse by technology"
-        title="Filter the library by stack"
-        description="Python and full-stack filters cut across every domain, so the same project appears in several views."
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          {categories
-            .filter((category) => category.group === 'technology')
-            .map((category) => (
-              <Link
-                key={category.id}
-                to={`/projects?category=${category.id}`}
-                className="card card-interactive flex flex-col gap-2 p-5"
-              >
-                <span className="text-base font-semibold text-ink">
-                  {category.label}
-                </span>
-                <span className="prose-body text-sm">
-                  {category.description}
-                </span>
-                <span className="mono-meta mt-auto pt-2 text-accent">
-                  Open filtered library →
-                </span>
-              </Link>
-            ))}
-        </div>
-
-        <Callout
-          title="How these capabilities were developed"
-          variant="note"
-          className="mt-6"
-        >
-          These capabilities come from building the portfolio projects and
-          documenting the decisions inside them — including the parts that did
-          not work as intended. They are not formal qualifications, and nothing
-          here claims regulatory or accessibility compliance.
-        </Callout>
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Button to="/projects" variant="secondary">
-            Browse all nine projects
-          </Button>
-          <Button to="/approach" variant="ghost">
-            See the engineering approach
-          </Button>
-        </div>
-      </Section>
-    </>
-  );
+  usePageMeta({ title: 'Skills and areas of practice', description: 'Practice areas suggested by Mwangala’s challenge catalogue, without unsupported proficiency scores or claims of demonstrated project work.', path: '/skills' });
+  return <><PageHeader eyebrow="Skills · evidence before labels" title="Capabilities are easier to understand in context." summary="This page groups practice areas suggested by the challenge briefs. It does not claim these skills are demonstrated by completed projects; implementation evidence has not been supplied." /><section className="shell section-pad"><div className="capability-list">{capabilities.map((item, index) => { const records = challengeManifest.filter((project) => item.categories.includes(project.category)); return <article className="capability-row" key={item.title}><span className="capability-number">0{index + 1}</span><div><p className="eyebrow">Area of practice</p><h2>{item.title}</h2><p>{item.detail}</p><div className="flex flex-wrap gap-2 mt-4">{item.categories.map((category) => <Link className="chip chip-interactive" key={category} to={`/projects?category=${encodeURIComponent(category)}`}>{category} · {challengeManifest.filter((project) => project.category === category).length}</Link>)}</div></div><div className="capability-evidence"><strong>{records.length}</strong><span>related challenge records</span><small>Stack and code evidence not yet connected</small></div></article>; })}</div></section><section data-tone="contrast" className="section-pad"><div className="shell skills-note"><div><p className="eyebrow">Honest by design</p><h2>Technology is evidence, not decoration.</h2></div><p className="prose-body">Specific stacks, libraries, testing tools and accessibility checks are not included in the supplied project information. They are intentionally left out rather than inferred. Once added to a project record, technology tags and cross-project skill evidence can be surfaced here.</p></div></section></>;
 }

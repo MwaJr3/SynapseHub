@@ -3,7 +3,7 @@
  * on publication state and, where relevant, company id — drafts and the other
  * company's private records are excluded at this layer.
  */
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import { getDb, type Db } from '@/lib/db';
 import {

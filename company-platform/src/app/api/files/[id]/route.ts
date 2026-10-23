@@ -2,7 +2,7 @@
  * Permission-checked resume download. Public access only while the resume is
  * explicitly published; withdrawal or unpublishing kills the download.
  */
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 import { getSessionActor } from '@/lib/auth';

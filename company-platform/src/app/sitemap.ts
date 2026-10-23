@@ -2,7 +2,6 @@ import type { MetadataRoute } from 'next';
 
 import { getDb } from '@/lib/db';
 import {
-  getPublishedPersonBySlug,
   listCompanies,
   listPublishedCaseStudies,
   listPublishedPeople,
