@@ -14,6 +14,9 @@ import {
   demoPeople,
   products,
   solutionAreas,
+  ALLOWED_SEED_URLS,
+  PRODUCT_EVIDENCE,
+  SUPPLIED_EVIDENCE_LINKS,
 } from '@/content';
 
 describe('seed catalogue integrity', () => {
@@ -113,21 +116,48 @@ describe('seed catalogue integrity', () => {
     }
   });
 
-  it('contains no invented external URLs', () => {
+  it('contains no invented external URLs — only owner-supplied evidence', () => {
     const urlPattern = /https?:\/\//i;
     for (const product of products) {
       expect(product.liveDemoUrl ?? '').toBe('');
-      expect(product.repositoryUrl ?? '').toBe('');
+      // Repository URLs may only be owner-supplied evidence links.
+      const repo = product.repositoryUrl ?? '';
+      expect(repo === '' || ALLOWED_SEED_URLS.includes(repo)).toBe(true);
     }
     for (const company of companies) {
       expect(company.contactEmail ?? '').toBe('');
     }
-    // Content prose never embeds made-up links either.
+    // Content prose embeds owner-supplied evidence links only — every URL
+    // found in prose must be in the allowlist.
     const prose = [
       ...products.map((p) => `${p.purpose} ${p.summary} ${p.verificationNote}`),
       ...caseStudies.map((s) => `${s.problem} ${s.solution} ${s.architecture}`),
     ].join(' ');
-    expect(prose).not.toMatch(urlPattern);
+    const found = prose.match(/https?:\/\/[^\s,)]+/g) ?? [];
+    for (const url of found) {
+      expect(ALLOWED_SEED_URLS.some((allowed) => url.startsWith(allowed))).toBe(true);
+    }
+  });
+
+  it('configures source links for exactly the seven products with working apps', () => {
+    const withSource = products.filter((p) => (p.repositoryUrl ?? '') !== '');
+    expect(withSource.map((p) => p.slug).sort()).toEqual([
+      'campusflow',
+      'chessscope',
+      'circuitlab-calc',
+      'dependsecure',
+      'fileguard',
+      'sentinelcore',
+      'sentinellog',
+    ]);
+    for (const product of withSource) {
+      expect(product.repositoryUrl).toBe(SUPPLIED_EVIDENCE_LINKS.mySulWorkingApps.url);
+    }
+    // Every one of the 25 carries its evidence record.
+    for (const product of products) {
+      expect(PRODUCT_EVIDENCE[product.slug]).toBeDefined();
+      expect(product.verificationNote.toLowerCase()).toContain('verified');
+    }
   });
 
   it('keeps case-study verification notes honest', () => {
