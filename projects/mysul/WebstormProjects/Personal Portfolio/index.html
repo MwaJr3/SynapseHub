@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <h1 class="logo">My Portfolio</h1>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <label class="theme-toggle">
+                <input type="checkbox" id="darkToggle">
+                <span class="slider"></span>
+            </label>
+        </nav>
+        <section class="hero fade-in">
+            <div class="hero-text">
+                <h2>Hello, I'm Mwangala</h2>
+                <p>Web Developer | Designer | Freelancer</p>
+                <a href="#projects" class="btn">View Projects</a>
+            </div>
+        </section>
+    </header>
+    <main>
+        <section id="about" class="about section fade-in">
+            <h2>About Me</h2>
+                <p>I'm a passionate front-end developer with a knack for crafting clean, user-friendly web experiences. I specialize in HTML, CSS and JavaScript</p>
+        </section>
+        <section class="project section fade-in" id="projects">
+            <h2>Projects</h2>
+            <input type="text" id="searchInput" placeholder="Search projects..." class="search-bar">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="web">Web</button>
+                <button class="filter-btn" data-filter="app">App</button>
+            </div>
+                <div class="project-grid">
+                    <div class="project-card" data-category="web">
+                        <h3>Project One</h3>
+                        <p>A simple landing page built with HTML and CSS.</p>
+                        <a href="#">View Project</a>
+                    </div>
+                    <div class="project-card" data-category="app">
+                        <h3>Project Two</h3>
+                        <p>A to-do app built using JavaScript.</p>
+                        <a href="#">View Project</a>
+                    </div>
+                    <div class="project-card" data-category="web">
+                        <h3>Project Three</h3>
+                        <p>Portfolio website with responsive design.</p>
+                        <a href="#">View Project</a>
+                    </div>
+                </div>
+        </section>
+
+        <section id="contact" class="contact section fade-in">
+            <h2>Contact</h2>
+            <form action="#" method="post" class="contact-form">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>Copyright<br>All rights reserved</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

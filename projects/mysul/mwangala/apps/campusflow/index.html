@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CampusFlow — University Management System (Demo)</title>
+<meta name="description" content="CampusFlow demo: students, courses, enrolments, and results with role-based access. Fictional data.">
+<link rel="stylesheet" href="../../css/app-shared.css">
+</head>
+<body class="app-light">
+<header class="topbar">
+  <a class="brand" href="../../"><span class="brand-mark">C</span>CampusFlow</a>
+  <span class="sim">Demo · Fictional data</span><span class="sp"></span>
+  <span class="userchip" id="userChip"></span>
+  <a class="btn btn-s" href="../../">← Portfolio</a>
+  <button class="btn btn-s" id="btnSignout" hidden>Sign out</button>
+</header>
+
+<div id="authView" class="authwrap" hidden>
+  <h1>CampusFlow</h1><p class="sub">Sign in with a demo role. New registrations become <b>student</b> accounts.</p>
+  <div class="toolbar"><button class="btn btn-s" id="tabLogin">Sign in</button><button class="btn btn-s" id="tabReg">Register</button></div>
+  <div id="paneLogin"><label class="fl">Email<input id="liEmail" type="email"></label><label class="fl">Password<input id="liPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnLogin">Sign in</button></div>
+  <div class="toolbar"><button class="btn btn-s" data-demo="admin@campusflow.demo">Admin demo</button><button class="btn btn-s" data-demo="lecturer@campusflow.demo">Lecturer demo</button><button class="btn btn-s" data-demo="student@campusflow.demo">Student demo</button></div></div>
+  <div id="paneReg" hidden><label class="fl">Full name<input id="rgName"></label><label class="fl">Email<input id="rgEmail" type="email"></label><label class="fl">Password (min 8)<input id="rgPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnReg">Register as student</button></div></div>
+  <div class="errbar" id="authErr" hidden></div>
+  <p class="note mono">admin@campusflow.demo / admin123 · lecturer@campusflow.demo / lect1234 · student@campusflow.demo / stud1234</p>
+</div>
+
+<div id="app" hidden>
+<div class="mobile-nav" id="mnav"></div>
+<div class="layout">
+  <aside class="side" id="side"></aside>
+  <main class="main">
+    <section class="view" id="v-overview"><h1>Overview</h1><p class="sub" id="ovRole"></p><div class="stats" id="ovStats"></div><div class="panel"><h3>Recent activity</h3><div id="ovAct"></div></div></section>
+    <section class="view" id="v-students"><h1>Students</h1><p class="sub">Admin only. Student IDs and emails must be unique.</p>
+      <div class="toolbar"><input id="stSearch" placeholder="Search name, ID, programme…" size="30"><button class="btn btn-s" id="btnStGo">Search</button><button class="btn btn-s btn-p" id="btnStAdd">+ Add student</button></div>
+      <div class="tblwrap"><table><thead><tr><th>Student ID</th><th>Name</th><th>Email</th><th>Programme</th><th>Year</th><th>Status</th><th></th></tr></thead><tbody id="stRows"></tbody></table></div>
+    </section>
+    <section class="view" id="v-lecturers"><h1>Lecturers</h1><p class="sub">Admin only.</p>
+      <div class="toolbar"><button class="btn btn-s btn-p" id="btnLcAdd">+ Add lecturer</button></div>
+      <div class="tblwrap"><table><thead><tr><th>Staff ID</th><th>Name</th><th>Email</th><th>Department</th><th>Courses</th><th></th></tr></thead><tbody id="lcRows"></tbody></table></div>
+    </section>
+    <section class="view" id="v-courses"><h1>Courses</h1><p class="sub" id="coSub"></p>
+      <div class="toolbar" id="coAdminBar"><button class="btn btn-s btn-p" id="btnCoAdd">+ Add course</button></div>
+      <div id="coList"></div>
+    </section>
+    <section class="view" id="v-enrol"><h1>Enrolments</h1><p class="sub">Admin manages enrolments; duplicates are rejected by validation.</p>
+      <div class="panel" id="enAdminPanel"><h3>Enrol a student</h3><div class="toolbar"><label>Course <select id="enCourse"></select></label><label>Student <select id="enStudent"></select></label><button class="btn btn-p btn-s" id="btnEnrol">Enrol</button></div><div id="enMsg"></div></div>
+      <div class="toolbar"><label>Filter course <select id="enFilter"><option value="">All courses</option></select></label></div>
+      <div class="tblwrap"><table><thead><tr><th>Course</th><th>Student</th><th>Enrolled</th><th></th></tr></thead><tbody id="enRows"></tbody></table></div>
+    </section>
+    <section class="view" id="v-results"><h1>Academic results</h1><p class="sub" id="rsSub"></p>
+      <div class="toolbar"><label>Course <select id="rsCourse"></select></label></div>
+      <div id="rsBody"></div>
+    </section>
+    <section class="view" id="v-reports"><h1>Reports</h1><p class="sub">Grading rules in force are shown on every report.</p>
+      <div class="toolbar"><button class="btn btn-s" id="btnRepEn">Enrolment report (CSV)</button><button class="btn btn-s" id="btnRepPerf">Performance summary (CSV)</button></div>
+      <div id="repBody"></div>
+    </section>
+    <section class="view" id="v-settings"><h1>Settings</h1>
+      <div class="panel" id="gradePanel"><h3>Grade boundaries (admin)</h3><p class="sub">Minimum total (0–100) for each grade. Edit and save.</p><div class="toolbar" id="gradeInputs"></div><div class="toolbar"><button class="btn btn-s" id="btnGrades">Save boundaries</button></div></div>
+      <div class="panel"><h3>Account</h3><label class="fl">New password<input id="setPw" type="password"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnPw">Change password</button><button class="btn btn-s btn-d" id="btnWipe">Delete demo data</button><button class="btn btn-s" id="btnReseed">Reset demo data</button></div><div id="setMsg"></div></div>
+      <div class="panel"><h3>Security note</h3><p class="note">Permissions are enforced in every data function (see <span class="mono">guard()</span>), not just by hiding menu items. Production Django build enforces the same matrix with model permissions + querysets scoped to the request user. Seeded records are fictional.</p></div>
+    </section>
+  </main>
+</div>
+</div>
+<div id="overlay"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtT=t=>new Date(t).toLocaleString();
+const dl=(n,c,t)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+const csvEsc=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+async function sha(s){try{if(crypto.subtle){const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}return"demo-"+s.length;}
+const KU="cf1:users",KS="cf1:session",KD="cf1:data";
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(KU)||"{}")}catch(e){return{}}};
+const setUsers=u=>localStorage.setItem(KU,JSON.stringify(u));
+const me=()=>sessionStorage.getItem(KS);
+let DB=null,actor=null; // actor = {email, role, linkId}
+const save=()=>localStorage.setItem(KD,JSON.stringify(DB));
+function load(){try{DB=JSON.parse(localStorage.getItem(KD)||null)}catch(e){DB=null}if(!DB){DB=seed();save();}}
+function log(act){DB.activity.unshift({at:Date.now(),by:actor?actor.email:"system",act});DB.activity=DB.activity.slice(0,60);}
+/* RBAC — enforced in logic, not just UI */
+function guard(action,courseId){
+  if(!actor)throw new Error("Not signed in.");
+  const R=actor.role;
+  const rules={
+    "students.read":["admin"],"students.write":["admin"],
+    "lecturers.read":["admin"],"lecturers.write":["admin"],
+    "courses.read":["admin","lecturer","student"],"courses.write":["admin"],
+    "enrol.read":["admin","lecturer"],"enrol.write":["admin"],
+    "results.read":["admin","lecturer","student"],"results.write":["admin","lecturer"],
+    "reports":["admin","lecturer"],"grades.write":["admin"]};
+  if(!(rules[action]||[]).includes(R))throw new Error(`Permission denied for role "${R}".`);
+  if(courseId&&(R==="lecturer")&&action.startsWith("results")){
+    const c=DB.courses.find(x=>x.id===courseId);const lec=DB.lecturers.find(l=>l.id===actor.linkId);
+    if(!c||!lec||c.lecturerId!==lec.id)throw new Error("You can only assess your assigned courses.");}
+  return true;}
+/* seed */
+function seed(){
+  const students=["Chanda Mwila","Joseph Mwansa","Kabwe Banda","Tiwonge Phiri","Mutinta Zulu","Brian Chileshe","Grace Nalwamba","David Tembo"].map((n,i)=>({id:"s"+(i+1),studentId:"2024"+(100+i),name:n,email:n.split(" ")[0].toLowerCase()+"."+n.split(" ")[1].toLowerCase()+"@students.example",programme:i%2?"BSc Computer Science":"BEng Electrical",year:1+(i%3),status:"active"}));
+  const lecturers=[{id:"l1",staffId:"LEC-01",name:"Dr. M. Sichone",email:"lecturer@campusflow.demo",dept:"Computing"},{id:"l2",staffId:"LEC-02",name:"Eng. R. Kasonde",email:"r.kasonde@example",dept:"Electrical"},{id:"l3",staffId:"LEC-03",name:"Mrs. A. Lungu",email:"a.lungu@example",dept:"Mathematics"}];
+  const courses=[{id:"c1",code:"CSC201",title:"Data Structures",credits:4,semester:"Sem 2",lecturerId:"l1"},{id:"c2",code:"CSC202",title:"Databases",credits:4,semester:"Sem 2",lecturerId:"l1"},{id:"c3",code:"EEE201",title:"Circuit Theory",credits:4,semester:"Sem 2",lecturerId:"l2"},{id:"c4",code:"MTH201",title:"Engineering Maths II",credits:3,semester:"Sem 2",lecturerId:"l3"},{id:"c5",code:"CSC203",title:"Web Programming",credits:3,semester:"Sem 2",lecturerId:"l1"}];
+  const enrols=[];courses.forEach(c=>students.slice(0,6).forEach(s=>enrols.push({id:uid(),courseId:c.id,studentId:s.id,at:Date.now()-864e5*20})));
+  const asm=[];courses.forEach(c=>{asm.push({id:uid(),courseId:c.id,name:"Continuous Assessment",weight:40});asm.push({id:uid(),courseId:c.id,name:"Final Exam",weight:60});});
+  const marks=[];const R=(a,b)=>a+Math.floor(Math.random()*(b-a));
+  enrols.forEach(e=>{asm.filter(a=>a.courseId===e.courseId).forEach(a=>{if(Math.random()<0.85)marks.push({aid:a.id,studentId:e.studentId,score:R(38,96)});});});
+  return{students,lecturers,courses,enrols,asm,marks,grades:[{g:"A",min:70},{g:"B",min:60},{g:"C",min:50},{g:"D",min:40},{g:"F",min:0}],activity:[{at:Date.now(),by:"system",act:"Seeded fictional demo data."}]};
+}
+async function ensureUsers(){const u=getUsers();
+ const mk=async(e,p,r,l)=>{if(!u[e])u[e]={salt:"s",hash:await sha("s::"+p),role:r,linkId:l};};
+ await mk("admin@campusflow.demo","admin123","admin",null);
+ await mk("lecturer@campusflow.demo","lect1234","lecturer","l1");
+ await mk("student@campusflow.demo","stud1234","student","s1");
+ setUsers(u);}
+/* grades */
+function weightsOk(c){const w=DB.asm.filter(a=>a.courseId===c).reduce((s,a)=>s+ +a.weight,0);return Math.abs(w-100)<0.001;}
+function totalFor(courseId,studentId){const as=DB.asm.filter(a=>a.courseId===courseId);let t=0,done=true;
+ as.forEach(a=>{const m=DB.marks.find(x=>x.aid===a.id&&x.studentId===studentId);if(m==null)done=false;else t+=m.score*a.weight/100;});return{total:Math.round(t*10)/10,complete:done};}
+function gradeFor(t){for(const g of DB.grades)if(t>=g.min)return g.g;return"F";}
+/* nav per role */
+function navFor(){const R=actor.role;
+ const all={overview:"◉ Overview",students:"🎓 Students",lecturers:"👩‍🏫 Lecturers",courses:"📚 Courses",enrol:"📝 Enrolments",results:"📊 Results",reports:"▤ Reports",settings:"⚙ Settings"};
+ if(R==="admin")return Object.entries(all);
+ if(R==="lecturer")return["overview","courses","enrol","results","reports","settings"].map(k=>[k,all[k]]);
+ return["overview","courses","results","settings"].map(k=>[k,all[k]]);}
+function renderNav(){const N=navFor();$("#side").innerHTML=N.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join("");
+ $("#mnav").innerHTML=N.map(([v,l])=>`<button class="btn btn-s" data-v="${v}">${l}</button>`).join("");
+ $$("#side button,#mnav button").forEach(b=>b.onclick=()=>show(b.dataset.v));}
+function show(v){$$(".view").forEach(x=>x.classList.remove("on"));const el=$("#v-"+v);if(!el)return;el.classList.add("on");$$("#side button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));render();}
+/* views */
+function rOverview(){$("#ovRole").innerHTML=`Signed in as <b>${esc(actor.email)}</b> · role <span class="badge b-info">${actor.role}</span>`;
+ let cards="";
+ if(actor.role==="admin")cards=`<div class="stat"><b>${DB.students.length}</b><span>registered students</span></div><div class="stat"><b>${DB.courses.length}</b><span>active courses</span></div><div class="stat"><b>${DB.enrols.length}</b><span>enrolments</span></div><div class="stat"><b>${DB.lecturers.length}</b><span>lecturers</span></div>`;
+ else if(actor.role==="lecturer"){const mine=DB.courses.filter(c=>c.lecturerId===actor.linkId);const st=new Set(DB.enrols.filter(e=>mine.some(c=>c.id===e.courseId)).map(e=>e.studentId)).size;
+  cards=`<div class="stat"><b>${mine.length}</b><span>assigned courses</span></div><div class="stat"><b>${st}</b><span>students taught</span></div><div class="stat"><b>${DB.enrols.filter(e=>mine.some(c=>c.id===e.courseId)).length}</b><span>enrolments</span></div>`;}
+ else{const my=DB.enrols.filter(e=>e.studentId===actor.linkId);cards=`<div class="stat"><b>${my.length}</b><span>my enrolments</span></div><div class="stat"><b>${DB.courses.length}</b><span>courses offered</span></div>`;}
+ $("#ovStats").innerHTML=cards;
+ $("#ovAct").innerHTML=DB.activity.slice(0,8).map(a=>`<div class="mono" style="padding:5px 0;border-top:1px solid var(--line)">${fmtT(a.at)} · ${esc(a.by)} · ${esc(a.act)}</div>`).join("");}
+function rStudents(){try{guard("students.read");}catch(e){$("#stRows").innerHTML="";return;}
+ const q=($("#stSearch").value||"").toLowerCase();
+ $("#stRows").innerHTML=DB.students.filter(s=>(s.name+s.studentId+s.programme).toLowerCase().includes(q)).map(s=>`<tr><td class="mono">${esc(s.studentId)}</td><td><b>${esc(s.name)}</b></td><td>${esc(s.email)}</td><td>${esc(s.programme)}</td><td>${s.year}</td><td><span class="badge ${s.status==="active"?"b-ok":""}">${s.status}</span></td><td><button class="btn btn-s" data-s="edit" data-id="${s.id}">Edit</button> <button class="btn btn-s btn-d" data-s="del" data-id="${s.id}">Delete</button></td></tr>`).join("");
+ $$("#stRows [data-s]").forEach(b=>b.onclick=()=>{const s=DB.students.find(x=>x.id===b.dataset.id);
+  if(b.dataset.s==="edit"){const n=prompt("Name:",s.name);if(!n)return;const y=prompt("Year of study:",s.year);guard("students.write");s.name=n.slice(0,60);if(y)s.year=Math.min(6,Math.max(1,+y||1));log(`Updated student ${s.studentId}`);save();render();}
+  if(b.dataset.s==="del"&&confirm(`Delete ${s.name} and their enrolments/marks?`)){guard("students.write");DB.students=DB.students.filter(x=>x.id!==s.id);DB.enrols=DB.enrols.filter(e=>e.studentId!==s.id);DB.marks=DB.marks.filter(m=>m.studentId!==s.id);log(`Deleted student ${s.studentId}`);save();render();}});}
+function rLecturers(){try{guard("lecturers.read");}catch(e){$("#lcRows").innerHTML="";return;}
+ $("#lcRows").innerHTML=DB.lecturers.map(l=>{const n=DB.courses.filter(c=>c.lecturerId===l.id).length;
+ return `<tr><td class="mono">${esc(l.staffId)}</td><td><b>${esc(l.name)}</b></td><td>${esc(l.email)}</td><td>${esc(l.dept)}</td><td>${n}</td><td><button class="btn btn-s btn-d" data-l="del" data-id="${l.id}">Delete</button></td></tr>`;}).join("");
+ $$("#lcRows [data-l]").forEach(b=>b.onclick=()=>{if(confirm("Delete lecturer? Their courses become unassigned.")){guard("lecturers.write");DB.lecturers=DB.lecturers.filter(x=>x.id!==b.dataset.id);DB.courses.forEach(c=>{if(c.lecturerId===b.dataset.id)c.lecturerId=null;});log("Deleted lecturer");save();render();}});}
+function visibleCourses(){if(actor.role==="student"){const ids=new Set(DB.enrols.filter(e=>e.studentId===actor.linkId).map(e=>e.courseId));return DB.courses.filter(c=>ids.has(c.id));}
+ if(actor.role==="lecturer")return DB.courses.filter(c=>c.lecturerId===actor.linkId);return DB.courses;}
+function rCourses(){$("#coSub").textContent=actor.role==="admin"?"All courses. Admins create, edit, and assign lecturers.":actor.role==="lecturer"?"Courses assigned to you.":"Courses you are enrolled in.";
+ $("#coAdminBar").style.display=actor.role==="admin"?"":"none";
+ $("#coList").innerHTML=visibleCourses().map(c=>{const l=DB.lecturers.find(x=>x.id===c.lecturerId);const n=DB.enrols.filter(e=>e.courseId===c.id).length;
+ return `<div class="panel"><h3><span class="mono">${esc(c.code)}</span> — ${esc(c.title)}</h3><p class="sub">${c.credits} credits · ${esc(c.semester)} · Lecturer: ${l?esc(l.name):"<i>unassigned</i>"} · ${n} enrolled</p>
+ <div class="toolbar"><button class="btn btn-s" data-c="roster" data-id="${c.id}">Roster</button>${actor.role==="admin"?`<button class="btn btn-s" data-c="assign" data-id="${c.id}">Assign lecturer</button><button class="btn btn-s btn-d" data-c="del" data-id="${c.id}">Delete</button>`:""}</div></div>`;}).join("")||'<div class="empty">No courses visible.</div>';
+ $$("#coList [data-c]").forEach(b=>b.onclick=()=>{const c=DB.courses.find(x=>x.id===b.dataset.id);
+  if(b.dataset.c==="roster"){const rows=DB.enrols.filter(e=>e.courseId===c.id).map(e=>DB.students.find(s=>s.id===e.studentId)).filter(Boolean);
+   $("#overlay").innerHTML=`<div class="scrim"></div><div class="drawer"><h2>${esc(c.code)} roster</h2>${rows.length?`<div class="tblwrap"><table><thead><tr><th>ID</th><th>Name</th></tr></thead><tbody>${rows.map(s=>`<tr><td class="mono">${esc(s.studentId)}</td><td>${esc(s.name)}</td></tr>`).join("")}</tbody></table></div>`:"No enrolments."}<p></p><button class="btn" id="dwX">Close</button></div>`;
+   $("#dwX").onclick=$(".scrim").onclick=()=>$("#overlay").innerHTML="";}
+  if(b.dataset.c==="assign"){guard("courses.write");const opts=DB.lecturers.map(l=>`${l.id}=${l.name}`).join("\n");const v=prompt(`Assign lecturer (enter id):\n${opts}`,c.lecturerId||"");if(v&&DB.lecturers.some(l=>l.id===v.trim())){c.lecturerId=v.trim();log(`Assigned lecturer to ${c.code}`);save();render();}}
+  if(b.dataset.c==="del"&&confirm(`Delete ${c.code} with enrolments/assessments/marks?`)){guard("courses.write");DB.courses=DB.courses.filter(x=>x.id!==c.id);const aids=DB.asm.filter(a=>a.courseId===c.id).map(a=>a.id);DB.asm=DB.asm.filter(a=>a.courseId!==c.id);DB.enrols=DB.enrols.filter(e=>e.courseId!==c.id);DB.marks=DB.marks.filter(m=>!aids.includes(m.aid));log(`Deleted course ${c.code}`);save();render();}});}
+function rEnrol(){const canWrite=actor.role==="admin";$("#enAdminPanel").style.display=canWrite?"":"none";
+ $("#enCourse").innerHTML=DB.courses.map(c=>`<option value="${c.id}">${esc(c.code)} — ${esc(c.title)}</option>`).join("");
+ $("#enStudent").innerHTML=DB.students.map(s=>`<option value="${s.id}">${esc(s.studentId)} — ${esc(s.name)}</option>`).join("");
+ const list=actor.role==="lecturer"?DB.courses.filter(c=>c.lecturerId===actor.linkId):DB.courses;
+ $("#enFilter").innerHTML='<option value="">All courses</option>'+list.map(c=>`<option value="${c.id}">${esc(c.code)}</option>`).join("");
+ drawEnrol();}
+function drawEnrol(){const f=$("#enFilter").value;const rows=DB.enrols.filter(e=>{if(f&&e.courseId!==f)return false;
+ if(actor.role==="lecturer"){const c=DB.courses.find(x=>x.id===e.courseId);return c&&c.lecturerId===actor.linkId;}return true;});
+ $("#enRows").innerHTML=rows.map(e=>{const c=DB.courses.find(x=>x.id===e.courseId),s=DB.students.find(x=>x.id===e.studentId);
+ return `<tr><td><b>${esc(c?c.code:"?")}</b></td><td>${esc(s?s.name+" ("+s.studentId+")":"?")}</td><td class="mono">${fmtT(e.at)}</td><td>${actor.role==="admin"?`<button class="btn btn-s btn-d" data-e="del" data-id="${e.id}">Remove</button>`:""}</td></tr>`;}).join("")||'<tr><td colspan="4">No enrolments.</td></tr>';
+ $$("#enRows [data-e]").forEach(b=>b.onclick=()=>{if(confirm("Remove this enrolment (and its marks)?")){guard("enrol.write");const e=DB.enrols.find(x=>x.id===b.dataset.id);DB.enrols=DB.enrols.filter(x=>x.id!==e.id);DB.marks=DB.marks.filter(m=>m.studentId!==e.studentId||!DB.asm.filter(a=>a.courseId===e.courseId).some(a=>a.id===m.aid));log("Removed enrolment");save();render();}});}
+function rResults(){const courses=visibleCourses();$("#rsCourse").innerHTML=courses.map(c=>`<option value="${c.id}">${esc(c.code)} — ${esc(c.title)}</option>`).join("")||"<option value=''>—</option>";drawResults();}
+function drawResults(){const cid=$("#rsCourse").value,box=$("#rsBody");if(!cid){box.innerHTML='<div class="empty">Nothing to show.</div>';return;}
+ guard("results.read",actor.role==="student"?undefined:cid);
+ const c=DB.courses.find(x=>x.id===cid),as=DB.asm.filter(a=>a.courseId===cid);
+ const wOK=weightsOk(cid);
+ const wEditor=(actor.role==="admin"||(actor.role==="lecturer"&&c.lecturerId===actor.linkId))?`<div class="panel"><h3>Assessments (weights must total 100)</h3><div class="toolbar">${as.map(a=>`<span class="badge b-info">${esc(a.name)} · ${a.weight}%</span>`).join("")}<button class="btn btn-s" data-aw="add">+ Add</button></div>${wOK?"":'<div class="errbar">Weights do not total 100 — totals are shown but flagged invalid.</div>'}</div>`:`<p class="sub">Assessments: ${as.map(a=>`${esc(a.name)} (${a.weight}%)`).join(" · ")}</p>`;
+ if(actor.role==="student"){const{total,complete}=totalFor(cid,actor.linkId);
+  box.innerHTML=wEditor+`<div class="panel"><h3>My results — ${esc(c.code)}</h3><div class="tblwrap"><table><thead><tr><th>Assessment</th><th>Weight</th><th>Score</th></tr></thead><tbody>${as.map(a=>{const m=DB.marks.find(x=>x.aid===a.id&&x.studentId===actor.linkId);return `<tr><td>${esc(a.name)}</td><td>${a.weight}%</td><td>${m?m.score:"—"}</td></tr>`;}).join("")}</tbody></table></div><p><b>Total: ${complete?total+" → grade "+gradeFor(total):"incomplete"}</b></p><p class="sub mono">Rules: ${DB.grades.map(g=>g.g+"≥"+g.min).join(" · ")}</p></div>`;wireAW(cid);return;}
+ const rows=DB.enrols.filter(e=>e.courseId===cid).map(e=>DB.students.find(s=>s.id===e.studentId)).filter(Boolean);
+ box.innerHTML=wEditor+`<div class="panel"><h3>Mark entry — ${esc(c.code)} ${wOK?"":'<span class="badge b-high">invalid weights</span>'}</h3><div class="tblwrap"><table><thead><tr><th>Student</th>${as.map(a=>`<th>${esc(a.name)}<br><span class="mono">${a.weight}%</span></th>`).join("")}<th>Total</th><th>Grade</th></tr></thead><tbody>
+ ${rows.map(s=>{const{total,complete}=totalFor(cid,s.id);return `<tr><td><b>${esc(s.name)}</b><br><span class="mono">${esc(s.studentId)}</span></td>${as.map(a=>{const m=DB.marks.find(x=>x.aid===a.id&&x.studentId===s.id);return `<td><input type="number" min="0" max="100" style="width:70px" value="${m?m.score:""}" data-mk="${a.id}:${s.id}"></td>`;}).join("")}<td><b>${complete?total:"—"}</b></td><td>${complete?gradeFor(total):"—"}</td></tr>`;}).join("")}</tbody></table></div>
+ <div class="toolbar"><button class="btn btn-p btn-s" id="btnMarks">Save marks</button></div><div id="mkMsg"></div></div>`;wireAW(cid);
+ $("#btnMarks").onclick=()=>{try{guard("results.write",cid);}catch(e){$("#mkMsg").innerHTML=`<div class="errbar">${esc(e.message)}</div>`;return;}
+  let bad=0;$$("#rsBody [data-mk]").forEach(inp=>{const[aid,sid]=inp.dataset.mk.split(":");const v=inp.value.trim();
+   DB.marks=DB.marks.filter(m=>!(m.aid===aid&&m.studentId===sid));
+   if(v!==""){const n=+v;if(isNaN(n)||n<0||n>100){bad++;inp.style.borderColor="red";}else DB.marks.push({aid,studentId:sid,score:n});}});
+  log(`Saved marks for ${c.code}`);save();render();drawResults();};}
+function wireAW(cid){const b=document.querySelector('[data-aw="add"]');if(b)b.onclick=()=>{try{guard(actor.role==="admin"?"courses.write":"results.write",cid);}catch(e){return alert(e.message);}
+ const n=prompt("Assessment name:","Coursework");if(!n)return;const w=+prompt("Weight %:","20");if(!(w>0&&w<=100))return alert("Weight must be 1–100.");
+ DB.asm.push({id:uid(),courseId:cid,name:n.slice(0,60),weight:w});log("Added assessment");save();render();drawResults();};}
+function rReports(){try{guard("reports");}catch(e){$("#repBody").innerHTML=`<div class="errbar">${esc(e.message)}</div>`;return;}
+ const courses=actor.role==="lecturer"?DB.courses.filter(c=>c.lecturerId===actor.linkId):DB.courses;
+ $("#repBody").innerHTML=courses.map(c=>{const rows=DB.enrols.filter(e=>e.courseId===c.id);const tots=rows.map(e=>totalFor(c.id,e.studentId)).filter(t=>t.complete).map(t=>t.total);
+ const avg=tots.length?(tots.reduce((a,b)=>a+b,0)/tots.length).toFixed(1):"—";
+ return `<div class="panel"><h3>${esc(c.code)} — ${esc(c.title)}</h3><p class="sub">${rows.length} enrolled · ${tots.length} complete · avg ${avg} · min ${tots.length?Math.min(...tots):"—"} · max ${tots.length?Math.max(...tots):"—"}</p><p class="sub mono">Rules: ${DB.grades.map(g=>g.g+"≥"+g.min).join(" · ")}</p></div>`;}).join("");}
+function render(){if(!actor)return;rOverview();if(actor.role==="admin"){rStudents();rLecturers();}rCourses();if(actor.role!=="student")rEnrol();rResults();rReports();
+ $("#gradeInputs").innerHTML=actor.role==="admin"?DB.grades.map((g,i)=>`<label>${g.g} ≥ <input type="number" min="0" max="100" style="width:64px" data-gi="${i}" value="${g.min}"></label>`).join(""):"Only admins can edit grade boundaries.";
+ $("#gradePanel").style.display="";}
+/* boot */
+function afterAuth(){$("#authView").hidden=true;$("#app").hidden=false;$("#btnSignout").hidden=false;$("#userChip").textContent=actor.email+" · "+actor.role;renderNav();render();show("overview");}
+async function boot(){load();await ensureUsers();
+ $("#tabLogin").onclick=()=>{$("#paneLogin").hidden=false;$("#paneReg").hidden=true;};
+ $("#tabReg").onclick=()=>{$("#paneLogin").hidden=true;$("#paneReg").hidden=false;};
+ if(me()&&getUsers()[me()]){const u=getUsers()[me()];actor={email:me(),role:u.role,linkId:u.linkId};afterAuth();$("#authView").hidden=true;return;}
+ $("#authView").hidden=false;
+ const err=m=>{const e=$("#authErr");e.hidden=!m;e.textContent=m||"";};
+ const loginAs=email=>{const u=getUsers()[email];if(!u)return err("Unknown account.");sessionStorage.setItem(KS,email);actor={email,role:u.role,linkId:u.linkId};afterAuth();};
+ $$("[data-demo]").forEach(b=>b.onclick=()=>loginAs(b.dataset.demo));
+ $("#btnLogin").onclick=async()=>{const e=$("#liEmail").value.trim().toLowerCase(),u=getUsers()[e];
+  if(!u||await sha(u.salt+"::"+$("#liPw").value)!==u.hash)return err("Invalid email or password.");loginAs(e);};
+ $("#btnReg").onclick=async()=>{const n=$("#rgName").value.trim(),e=$("#rgEmail").value.trim().toLowerCase(),p=$("#rgPw").value,u=getUsers();
+  if(n.length<2)return err("Enter your full name.");if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return err("Enter a valid email.");
+  if(p.length<8)return err("Min 8 characters.");if(u[e])return err("Account exists — sign in instead.");
+  const sid="2026"+Math.floor(100+Math.random()*800);const rec={id:uid(),studentId:sid,name:n.slice(0,60),email:e,programme:"BSc Computer Science",year:1,status:"active"};
+  DB.students.push(rec);u[e]={salt:"s",hash:await sha("s::"+p),role:"student",linkId:rec.id};setUsers(u);log(`Registered student ${sid}`);save();loginAs(e);};
+ $("#btnSignout").onclick=()=>{sessionStorage.removeItem(KS);location.reload();};
+ $("#btnStGo").onclick=()=>rStudents();$("#stSearch").addEventListener("input",()=>rStudents());
+ $("#btnStAdd").onclick=()=>{try{guard("students.write");}catch(e){return alert(e.message);}
+  const n=prompt("Full name:");if(!n)return;const id=prompt("Student ID (unique):","2026"+Math.floor(100+Math.random()*800));if(!id)return;
+  if(DB.students.some(s=>s.studentId===id.trim()))return alert("That student ID already exists.");
+  DB.students.push({id:uid(),studentId:id.trim(),name:n.slice(0,60),email:n.split(" ")[0].toLowerCase()+"@students.example",programme:"BSc Computer Science",year:1,status:"active"});log("Added student "+id);save();render();};
+ $("#btnLcAdd").onclick=()=>{try{guard("lecturers.write");}catch(e){return alert(e.message);}
+  const n=prompt("Lecturer name:");if(!n)return;DB.lecturers.push({id:uid(),staffId:"LEC-"+Math.floor(10+Math.random()*89),name:n.slice(0,60),email:"lecturer@example",dept:"Computing"});log("Added lecturer");save();render();};
+ $("#btnCoAdd").onclick=()=>{try{guard("courses.write");}catch(e){return alert(e.message);}
+  const code=prompt("Course code (unique):","CSC204");if(!code)return;if(DB.courses.some(c=>c.code.toLowerCase()===code.trim().toLowerCase()))return alert("Course code exists.");
+  const t=prompt("Title:","New Course");DB.courses.push({id:uid(),code:code.trim().toUpperCase(),title:(t||"New Course").slice(0,80),credits:4,semester:"Sem 2",lecturerId:null});
+  const c=DB.courses[DB.courses.length-1];DB.asm.push({id:uid(),courseId:c.id,name:"Continuous Assessment",weight:40},{id:uid(),courseId:c.id,name:"Final Exam",weight:60});
+  log("Created course "+c.code);save();render();};
+ $("#btnEnrol").onclick=()=>{try{guard("enrol.write");const cid=$("#enCourse").value,sid=$("#enStudent").value;
+  if(DB.enrols.some(e=>e.courseId===cid&&e.studentId===sid)){$("#enMsg").innerHTML='<div class="errbar">Duplicate enrolment rejected: this student is already enrolled.</div>';return;}
+  DB.enrols.push({id:uid(),courseId:cid,studentId:sid,at:Date.now()});log("Enrolled student");save();render();$("#enMsg").innerHTML='<p class="note">Enrolled.</p>';}catch(e){$("#enMsg").innerHTML=`<div class="errbar">${esc(e.message)}</div>`;}};
+ $("#enFilter").onchange=()=>drawEnrol();$("#rsCourse").onchange=()=>drawResults();
+ $("#btnRepEn").onclick=()=>{try{guard("reports");}catch(e){return alert(e.message);}
+  const rows=[["course","student_id","student","enrolled"]];DB.enrols.forEach(e=>{const c=DB.courses.find(x=>x.id===e.courseId),s=DB.students.find(x=>x.id===e.studentId);rows.push([c?c.code:"?",s?s.studentId:"?",s?s.name:"?",new Date(e.at).toISOString()]);});
+  dl("campusflow-enrolments.csv",rows.map(r=>r.map(csvEsc).join(",")).join("\n"),"text/csv");};
+ $("#btnRepPerf").onclick=()=>{try{guard("reports");}catch(e){return alert(e.message);}
+  const rows=[["course","enrolled","complete","avg","min","max","rules",DB.grades.map(g=>g.g+"≥"+g.min).join(" ")]];
+  DB.courses.forEach(c=>{const tots=DB.enrols.filter(e=>e.courseId===c.id).map(e=>totalFor(c.id,e.studentId)).filter(t=>t.complete).map(t=>t.total);
+   rows.push([c.code,DB.enrols.filter(e=>e.courseId===c.id).length,tots.length,tots.length?(tots.reduce((a,b)=>a+b,0)/tots.length).toFixed(1):"",tots.length?Math.min(...tots):"",tots.length?Math.max(...tots):"",""]);});
+  dl("campusflow-performance.csv",rows.map(r=>r.map(csvEsc).join(",")).join("\n"),"text/csv");};
+ $("#btnGrades").onclick=()=>{try{guard("grades.write");}catch(e){return alert(e.message);}
+  $$("#gradeInputs [data-gi]").forEach(i=>DB.grades[+i.dataset.gi].min=Math.min(100,Math.max(0,+i.value||0)));
+  DB.grades.sort((a,b)=>b.min-a.min);log("Updated grade boundaries");save();render();};
+ $("#btnPw").onclick=async()=>{const p=$("#setPw").value;if(p.length<8){$("#setMsg").innerHTML='<div class="errbar">Min 8.</div>';return;}const u=getUsers();u[me()].hash=await sha(u[me()].salt+"::"+p);setUsers(u);$("#setMsg").innerHTML='<p class="note">Password changed.</p>';};
+ $("#btnWipe").onclick=()=>{if(confirm("Delete ALL CampusFlow demo data?")){localStorage.removeItem(KD);load();render();}};
+ $("#btnReseed").onclick=()=>{if(confirm("Reset demo data?")){DB=seed();save();render();}};
+}
+document.addEventListener("DOMContentLoaded",boot);
+</script>
+</body>
+</html>

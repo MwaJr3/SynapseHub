@@ -1,0 +1,9 @@
+* {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: auto;
+}
+nav {
+    align-content: center;
+    align-items: center;
+    text-decoration: none;
+}

@@ -69,6 +69,35 @@ Copy `.env.example` to `.env.local`. Everything optional stays empty until
 supplied — nothing is invented. See `docs/LAUNCH_CHECKLIST.md` for the full
 pre-launch list and `DELIVERY_REPORT.md` for the final delivery report.
 
+## Deploying on Vercel
+
+This repository holds **every** project: the company website
+(`company-platform/`) plus all consolidated project source (`projects/`,
+`workniche/`, `stock-price-*/`, the root portfolio). The company website is
+the Next.js app in `company-platform/` — import this repository into Vercel
+and set:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | `company-platform` |
+| Framework preset | Next.js (auto-detected) |
+| Build / Install command | defaults (`next build`, `npm install`) |
+
+Environment variables (set in Vercel → Project → Settings → Environment
+Variables; the same names as `.env.example`):
+
+| Variable | What to supply |
+| --- | --- |
+| `AUTH_SECRET` | A long random secret (e.g. `openssl rand -base64 32`) |
+| `AUTH_TRUST_HOST` | `true` |
+| `DATABASE_URL` | PostgreSQL 14+ connection string (e.g. a Supabase project). Unset in development falls back to embedded PGlite (`./data/`) — PGlite is development-only |
+| `NEXT_PUBLIC_SITE_URL` | The public origin once it exists (Vercel URL or custom domain) — drives canonical URLs and the sitemap |
+| Storage / contact variables | Optional; stay empty until supplied (see `.env.example`) |
+
+Only `company-platform/` is built and served — `projects/` ships the
+consolidated project source in the repository but is not part of the
+deployment. Before public launch, complete `docs/LAUNCH_CHECKLIST.md`.
+
 ## Tests
 
 ```bash
@@ -87,9 +116,11 @@ withdraw, resume withdrawal kills downloads).
 Seed products, case studies, and demo people are working records derived from
 project briefs — illustrative and labelled as such. "Built" means an
 implementation exists and was tested; it does **not** mean publicly deployed.
-Source Code buttons appear only for the seven products whose working apps were
-verified in the owner-supplied MySul source (`docs/PROJECT_EVIDENCE.md` records
-every evidence link and its verification status). No metrics, dates, user
+Source Code buttons appear only for the seven products with working apps —
+vendored in this repository at `projects/mysul/mwangala/apps/<slug>/`, with the
+buttons linking to those in-repo folders
+(`docs/PROJECT_EVIDENCE.md` records every provenance link and its verification
+status). No metrics, dates, user
 counts, testimonials, or educational impact are claimed. E2E browser tests
 (Playwright) are documented as future work because no browser runtime exists
 in this build environment.

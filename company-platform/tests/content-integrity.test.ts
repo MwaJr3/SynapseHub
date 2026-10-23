@@ -17,6 +17,7 @@ import {
   ALLOWED_SEED_URLS,
   PRODUCT_EVIDENCE,
   SUPPLIED_EVIDENCE_LINKS,
+  appSourceUrl,
 } from '@/content';
 
 describe('seed catalogue integrity', () => {
@@ -117,7 +118,6 @@ describe('seed catalogue integrity', () => {
   });
 
   it('contains no invented external URLs — only owner-supplied evidence', () => {
-    const urlPattern = /https?:\/\//i;
     for (const product of products) {
       expect(product.liveDemoUrl ?? '').toBe('');
       // Repository URLs may only be owner-supplied evidence links.
@@ -151,7 +151,13 @@ describe('seed catalogue integrity', () => {
       'sentinellog',
     ]);
     for (const product of withSource) {
-      expect(product.repositoryUrl).toBe(SUPPLIED_EVIDENCE_LINKS.mySulWorkingApps.url);
+      // Source links point into THIS repository — all project code is vendored
+      // in projects/ (owner instruction, 2026-10-23); none points at another
+      // repository's code.
+      expect(product.repositoryUrl).toBe(appSourceUrl(product.slug));
+      expect(product.repositoryUrl?.startsWith(
+        'https://github.com/MwaJr3/SynapseHub/tree/main/projects/',
+      )).toBe(true);
     }
     // Every one of the 25 carries its evidence record.
     for (const product of products) {
@@ -166,6 +172,16 @@ describe('seed catalogue integrity', () => {
         /verif|unvalidated|not claimed|brief/,
       );
     }
+  });
+
+  it('records every supplied evidence link as verified with an in-repo location', () => {
+    // All six origin PRs were merged and inspected (CBU_Assignments became
+    // public on 2026-10-23), and every project now resides in this repository.
+    for (const link of Object.values(SUPPLIED_EVIDENCE_LINKS)) {
+      expect(link.verification).toBe('verified-merged-inspected');
+      expect(link.inRepoPath ?? '').not.toBe('');
+    }
+    expect(Object.values(SUPPLIED_EVIDENCE_LINKS).length).toBe(6);
   });
 
   it('has solution areas owned by exactly one company each', () => {

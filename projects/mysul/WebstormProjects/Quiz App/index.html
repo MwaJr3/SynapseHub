@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz App</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <button id="toggle-theme">Toggle Dark Mode</button>
+    <select id="language-select">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+    </select>
+    <select id="category-select">Language</select>
+    <h1>Quiz App</h1>
+    <div id="quiz-container">
+    <div id="timer">Time Left: 20s</div>
+    <h2 id="question">Question text</h2>
+    <div id="options"></div>
+    <button id="next-btn">Next</button>
+    </div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+    <div id="result" class="hidden">
+        <h2>Your Score: <span id="score"></span></h2>
+        <button id="restart-btn">Restart Quiz</button>
+        <h3>Previous Scores:</h3>
+        <ul id="history"></ul>
+        <button id="clear-history-btn">Clear History</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<canvas id="confetti-canvas" class="hidden"></canvas>
+</body>
+</html>

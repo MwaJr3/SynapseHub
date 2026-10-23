@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# Sitemap: set VITE_SITE_URL and re-run `npm run sitemap`

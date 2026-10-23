@@ -14,6 +14,8 @@ export {
   SUPPLIED_EVIDENCE_LINKS,
   PRODUCT_EVIDENCE,
   ALLOWED_SEED_URLS,
+  appSourceUrl,
+  inRepoUrl,
   type ProductEvidence,
   type SuppliedEvidenceLink,
 } from './evidence';

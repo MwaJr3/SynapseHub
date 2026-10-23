@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+video_downloader_app/runtime_data/
+video_downloader_app/downloads/
+*.sqlite3
+*.log

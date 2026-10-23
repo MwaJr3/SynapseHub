@@ -1,0 +1,21 @@
+# Core Desktop GUI & Theme Detection
+PyQt6==6.11.0
+darkdetect==0.8.0
+
+# Video Downloading, FFmpeg Binary Bundle & Subtitle Parsing
+yt-dlp==2026.10.21
+imageio-ffmpeg==0.6.0
+webvtt-py==0.5.1
+
+# Browser Extension WebSocket Bridge & Live Dashboard Server
+websockets==17.3
+aiohttp==3.14.5
+
+# Clipboard Monitoring & Desktop Notifications
+pyperclip==1.11.0
+plyer==2.1.0
+
+# Single-Executable Packaging & Automated Test Suite
+pyinstaller==6.22.3
+pytest==9.1.1
+pytest-asyncio==1.4.0
