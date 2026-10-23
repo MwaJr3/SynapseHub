@@ -16,6 +16,7 @@ export default defineConfig({
     // The embedded PGlite database is a single file — parallel workers would
     // fight over it.
     pool: 'forks',
-    poolOptions: { forks: { singleFork: true } },
+    maxWorkers: 1,
+    fileParallelism: false,
   },
 });

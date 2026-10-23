@@ -62,7 +62,7 @@ PostgreSQL 14+ in production / embedded PGlite 0.5 in development (one SQL
 schema, zero services to develop) · Auth.js (next-auth v5 beta) credentials
 with node scrypt hashing (`scrypt$16384$8$1$…`, per-user salt, constant-time
 compare), JWT sessions re-validated against the database · Zod validation on
-every mutating boundary · Tailwind CSS 3.4 design system · Vitest 3 test
+every mutating boundary · Tailwind CSS 4.3 design system · Vitest 4 test
 suite. Storage abstraction: local directory (dev) or S3-compatible (prod) for
 resumes. The CMS is a purpose-built editorial layer on the Drizzle schema —
 chosen deliberately over a third-party headless CMS because this sandbox has
