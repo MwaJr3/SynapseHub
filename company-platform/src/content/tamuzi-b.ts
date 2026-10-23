@@ -12,7 +12,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Uses diagnostic evidence to estimate topic-level mastery and recommend explainable learning steps.',
     summary:
       'Diagnostic assessment and adaptive learning paths: objectives and prerequisite maps, question banks, transparent mastery calculation, explainable next-step recommendations, spaced review, and teacher overrides.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. Mastery estimates are rule-based evidence, not validated measurement.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'PostgreSQL'],
@@ -115,7 +115,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Helps teachers create, review, version, and publish lessons, question banks, assessments, assignments, and rubrics.',
     summary:
       'A teacher content and assessment studio: structured rich-text authoring, reusable templates, question banks, preview modes, draft/review/published/archived workflow, collaboration comments, version history, and exports.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'PostgreSQL', 'TipTap'],
@@ -218,7 +218,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Helps users find, evaluate, adapt, translate, and responsibly reuse open educational resources.',
     summary:
       'An OER and localization hub: searchable catalogue with subject/level/language/license filters, attribution and license metadata, adaptations and translations with side-by-side review, collections, moderation, and course packs where permitted.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'PostgreSQL', 'S3-compatible storage'],
@@ -321,7 +321,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Converts educational activity and assessment records into explainable, privacy-conscious insights for teachers and program managers.',
     summary:
       'A learning analytics and teacher support dashboard: event imports, course/class summaries, learning and assessment trends, transparent support flags, teacher annotations, data-quality checks, and metric definitions.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. No high-stakes decisions should rest on automated flags alone.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'PostgreSQL', 'Pandas'],
@@ -424,7 +424,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Delivers structured micro-lessons and quizzes through configurable SMS, USSD, and IVR channels.',
     summary:
       'A low-bandwidth learning gateway: channel-neutral lessons, provider adapters, consent and opt-out, a learner state machine, scheduled reminders, cohorts, delivery receipts, idempotent callbacks, and an explicit simulator mode.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. Simulator output is not real carrier delivery and is labelled.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'PostgreSQL', 'SQLAlchemy', 'Redis', 'Job queue'],
@@ -527,7 +527,7 @@ export const tamuziProductsB: ProductContent[] = [
       'Manages free course access, scholarships, fee waivers, sponsored seats, and transparent enrollment workflows.',
     summary:
       'An affordable-learning platform: access plans, scholarship applications with configurable eligibility, review workflows, seat allocation and waitlists, sponsorship pools, reconciled funding records, appeals, and sponsor reports.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. No payment processing is implied where no adapter is configured.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'SQLAlchemy', 'PostgreSQL', 'Background jobs'],

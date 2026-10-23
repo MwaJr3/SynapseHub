@@ -79,7 +79,7 @@ export const tamuziProducts: ProductContent[] = [
       'Teaches secure online practices through lessons, fictional scenarios, quizzes, and progress tracking.',
     summary:
       'An interactive cybersecurity awareness platform: structured lessons, safe fictional simulations, scenario-based exercises with answer explanations, learning paths, and privacy-conscious progress tracking.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. Real-cohort educational effectiveness is not claimed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
@@ -283,7 +283,7 @@ export const tamuziProducts: ProductContent[] = [
       'Uses supported transcript inputs to create organized study guides and other learning materials.',
     summary:
       'A YouTube transcript and learning intelligence tool: transcript retrieval or manual/upload entry, AI-assisted study guides, concept explanations, quizzes and flashcards — with transcript-derived claims kept distinct from AI interpretation.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. AI-generated content requires human review; provider limits apply.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'Tailwind CSS', 'Pydantic', 'PostgreSQL', 'Configurable AI provider'],
@@ -386,7 +386,7 @@ export const tamuziProducts: ProductContent[] = [
       'Delivers structured digital courses that remain usable during unreliable connectivity.',
     summary:
       'An offline-first e-learning platform: course catalogue, lessons and modules, downloadable lesson packs, offline progress with sync and conflict handling, quizzes, bookmarks and notes, and course versioning.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js', 'Python', 'FastAPI', 'PostgreSQL', 'IndexedDB', 'Service worker'],
@@ -488,7 +488,7 @@ export const tamuziProducts: ProductContent[] = [
       'Supports scheduled remote lessons and asynchronous follow-up for teachers and learners with different connectivity constraints.',
     summary:
       'A low-bandwidth virtual classroom: class scheduling, enrolment, live sessions through a configured WebRTC provider, audio-priority mode, chat and question queue, polls, attendance, materials, and asynchronous follow-up.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. Live calls require a configured WebRTC provider (e.g. LiveKit); demo mode is simulated and labelled.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'PostgreSQL', 'Redis', 'LiveKit (configured)'],
@@ -590,7 +590,7 @@ export const tamuziProducts: ProductContent[] = [
       'Provides grounded, supportive tutoring that helps learners understand concepts, practice, and seek teacher support when needed.',
     summary:
       'An AI learning companion with Explain, Hint, Practice, Check Reasoning, and Summarize modes — grounded in approved sources with citations, adaptive explanation levels, a teacher review queue, and a deterministic demo mode.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. AI correctness and learning mastery are not claimed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'PostgreSQL', 'Model-provider adapter'],

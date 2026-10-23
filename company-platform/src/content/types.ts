@@ -13,6 +13,7 @@ export interface ProductFeature {
 export type ProductStatus =
   | 'PROTOTYPE'
   | 'BUILT'
+  | 'CASE_STUDY_ONLY'
   | 'PILOT'
   | 'LIVE'
   | 'MAINTENANCE'

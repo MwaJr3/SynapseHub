@@ -156,7 +156,7 @@ describe('seed catalogue integrity', () => {
       // repository's code.
       expect(product.repositoryUrl).toBe(appSourceUrl(product.slug));
       expect(product.repositoryUrl?.startsWith(
-        'https://github.com/MwaJr3/SynapseHub/tree/main/projects/',
+        'https://github.com/MwaJr3/SynapseHub/tree/main/apps/',
       )).toBe(true);
     }
     // Every one of the 25 carries its evidence record.

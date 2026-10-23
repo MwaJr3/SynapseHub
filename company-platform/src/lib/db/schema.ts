@@ -43,6 +43,7 @@ export const membershipRoleEnum = pgEnum('membership_role', [
 export const productStatusEnum = pgEnum('product_status', [
   'PROTOTYPE',
   'BUILT',
+  'CASE_STUDY_ONLY',
   'PILOT',
   'LIVE',
   'MAINTENANCE',
