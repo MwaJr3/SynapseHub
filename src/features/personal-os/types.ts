@@ -250,6 +250,29 @@ export interface CycleRetrospective {
   nextEmphasis: string;
 }
 
+export interface ScheduleBlock {
+  id: string;
+  title: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  domain: GoalDomain;
+  actionId: string;
+  location: string;
+  notes: string;
+}
+
+export interface AuditEvent {
+  id: string;
+  at: string;
+  collection: string;
+  recordId: string;
+  action: 'created' | 'updated' | 'deleted' | 'restored';
+  label: string;
+  before: unknown | null;
+  after: unknown | null;
+}
+
 export interface CycleArchive {
   id: string;
   name: string;
@@ -268,7 +291,7 @@ export interface CycleArchive {
 }
 
 export interface PersonalSystemData {
-  version: 2;
+  version: 3;
   cycleStart: string;
   cycleName: string;
   cycleTheme: string;
@@ -278,6 +301,7 @@ export interface PersonalSystemData {
   decisions: Decision[];
   energyLogs: EnergyLog[];
   actionItems: ActionItem[];
+  scheduleBlocks: ScheduleBlock[];
   weeklyPlans: WeeklyPlan[];
   meaningEntries: MeaningEntry[];
   blockerPatterns: BlockerPattern[];
@@ -289,6 +313,7 @@ export interface PersonalSystemData {
   relationships: RelationshipRecord[];
   financialEntries: FinancialEntry[];
   cycleArchives: CycleArchive[];
+  history: AuditEvent[];
   updatedAt: string;
 }
 

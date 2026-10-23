@@ -36,4 +36,47 @@ describe('personal operating system workflow', () => {
     expect(await screen.findByText('Plan fits stated capacity')).toBeInTheDocument();
     expect(window.localStorage.getItem(SYSTEM_STORAGE_KEY)).toContain('weeklyPlans');
   });
+
+  it('stores a local time block without claiming external calendar sync', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<App />, '/system');
+    await screen.findByRole('heading', { level: 1 });
+
+    await user.click(screen.getByRole('tab', { name: /schedule/i }));
+    expect(screen.getByText(/local schedule, not a live external calendar connection/i)).toBeInTheDocument();
+    await user.type(screen.getByLabelText('Title'), 'Protected implementation time');
+    await user.click(screen.getByRole('button', { name: /reserve block/i }));
+
+    expect(await screen.findByText('Protected implementation time')).toBeInTheDocument();
+    expect(window.localStorage.getItem(SYSTEM_STORAGE_KEY)).toContain('scheduleBlocks');
+  });
+
+  it('archives a completed cycle through the week-twelve review flow', async () => {
+    const user = userEvent.setup();
+    const current = new Date();
+    current.setDate(current.getDate() - 77);
+    window.localStorage.setItem(SYSTEM_STORAGE_KEY, JSON.stringify({
+      version: 3,
+      cycleStart: current.toISOString().slice(0, 10),
+      cycleName: 'Finishing cycle',
+      cycleTheme: 'Ship',
+      identity: { visionStatement: '', identityStatement: '', missionStatement: '', coreValues: [], nonNegotiables: [], neverAgain: [], desiredTraits: [], currentIdentityFocus: '', standards: { minimum: '', standard: '', exceptional: '' } },
+      goals: [], projects: [], decisions: [], energyLogs: [], actionItems: [], scheduleBlocks: [], weeklyPlans: [], meaningEntries: [], blockerPatterns: [], blockerLogs: [], failures: [], weeklyReviews: [], doctrines: [], learningPaths: [], relationships: [], financialEntries: [], cycleArchives: [], history: [], updatedAt: current.toISOString(),
+    }));
+    renderWithProviders(<App />, '/system');
+    await screen.findByRole('heading', { level: 1 });
+
+    await user.click(screen.getByRole('tab', { name: /review/i }));
+    expect(screen.getByText(/week 12 is active/i)).toBeInTheDocument();
+    await user.type(screen.getByLabelText('What did you intend?'), 'Ship a usable release');
+    await user.type(screen.getByLabelText('What did you actually achieve?'), 'Released the first version');
+    await user.clear(screen.getByLabelText('Next cycle name'));
+    await user.type(screen.getByLabelText('Next cycle name'), 'Refine the release');
+    await user.click(screen.getByRole('button', { name: /archive cycle/i }));
+
+    expect(await screen.findByText('Refine the release')).toBeInTheDocument();
+    const saved = window.localStorage.getItem(SYSTEM_STORAGE_KEY);
+    expect(saved).toContain('cycleArchives');
+    expect(saved).toContain('Released the first version');
+  });
 });

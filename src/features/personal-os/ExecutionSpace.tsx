@@ -9,7 +9,10 @@ import type {
   WeeklyPlan,
 } from './types';
 
-export type PersonalSystemUpdater = (updater: (previous: PersonalSystemData) => PersonalSystemData) => void;
+export type PersonalSystemUpdater = (
+  updater: (previous: PersonalSystemData) => PersonalSystemData,
+  options?: { restored?: boolean },
+) => void;
 
 const demands: { value: CognitiveDemand; label: string; guidance: string }[] = [
   { value: 'deep', label: 'Deep analytical work', guidance: 'Best protected for high cognitive energy.' },
