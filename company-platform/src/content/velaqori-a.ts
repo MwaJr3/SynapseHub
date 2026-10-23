@@ -503,7 +503,7 @@ export const velaqoriProducts: ProductContent[] = [
       'Performs explainable defensive analysis of suspicious email content, headers, and URLs.',
     summary:
       'A phishing email and URL analyzer: header parsing, URL structure analysis, sender/reply-to mismatch indicators, available SPF/DKIM/DMARC evidence, and explainable risk classifications — never automatically opening suspicious links.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLite'],
@@ -616,7 +616,7 @@ export const velaqoriProducts: ProductContent[] = [
       'Processes authorized packet captures to summarize protocols, endpoints, traffic distribution, and potential anomalies.',
     summary:
       'A network traffic analysis workbench: PCAP/PCAPNG upload, packet parsing, protocol summaries, endpoint analysis, filters, visualization, capture comparison, and configurable anomaly indicators — offline processing of authorized captures.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'Scapy', 'Pandas', 'PostgreSQL'],

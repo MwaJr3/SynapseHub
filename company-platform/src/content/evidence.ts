@@ -96,9 +96,9 @@ export function inRepoUrl(inRepoPath: string): string {
   return `${IN_REPO_BASE}${inRepoPath}`;
 }
 
-/** Source location of one vendored working app (projects/mysul/mwangala/apps/<slug>). */
+/** Source location of one full working app (apps/<slug>, built 2026-10-23). */
 export function appSourceUrl(slug: string): string {
-  return inRepoUrl(`projects/mysul/mwangala/apps/${slug}`);
+  return inRepoUrl(`apps/${slug}`);
 }
 
 export interface ProductEvidence {
@@ -115,13 +115,18 @@ const CASE_STUDY_ADDENDUM =
   'linked yet — the Source Code button stays hidden.';
 
 const REGISTRY_ADDENDUM =
-  'A linked portfolio case-study record exists in the personal portfolio project registry in this repository (src/data/projects/) — record location verified. Product source code is not linked yet — the Source Code button stays hidden.';
+  'A portfolio case-study record for this product exists in the owner-supplied Mwangala portfolio registry ' +
+  '(verified location: projects/mysul/mwangala-portfolio/src/data/projects/). No record exists at the root ' +
+  'registry path src/data/projects/ — a previously drafted claim of records there was incorrect and has been ' +
+  'withdrawn. Product source code is not linked — the Source Code button stays hidden.';
 
 function appAddendum(slug: string): string {
   return (
-    'Working application and case-study pages verified in the owner-supplied MySul source (' +
-    'https://github.com/MwaJr3/MySul/pull/1, merged 2026-10-23). The source resides in this ' +
-    `repository at projects/mysul/mwangala/apps/${slug}. Not publicly deployed; no hosted demo is claimed.`
+    `Working full-stack application built and verified in this repository at apps/${slug} (backend + frontend + tests), ` +
+    'with demo and case-study pages vendored from the owner-supplied MySul source ' +
+    '(https://github.com/MwaJr3/MySul/pull/1, merged 2026-10-23) at ' +
+    `projects/mysul/mwangala/apps/${slug} and projects/mysul/mwangala/projects/${slug}. ` +
+    'Not publicly deployed; no hosted demo is claimed.'
   );
 }
 

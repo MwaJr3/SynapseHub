@@ -12,7 +12,7 @@ export const velaqoriProductsB: ProductContent[] = [
       'Collects, normalizes, searches, and correlates indicators from configurable legitimate threat-intelligence sources.',
     summary:
       'A threat-intelligence aggregation platform: feed ingestion, indicator normalization and deduplication, source attribution, relationships, analyst notes, feed-health monitoring, and reports.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Background jobs'],
@@ -125,7 +125,7 @@ export const velaqoriProductsB: ProductContent[] = [
       'Organizes security incidents, response tasks, evidence references, timelines, affected assets, investigation notes, and remediation work.',
     summary:
       'Security incident response and case management: classification, severity/status lifecycle, task assignment, timelines, asset records, response templates, audit trail, and resolution reports.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLAlchemy', 'PostgreSQL'],
@@ -227,7 +227,7 @@ export const velaqoriProductsB: ProductContent[] = [
       'Calculates local file hashes and optionally checks configured reputation sources.',
     summary:
       'A file hash reputation explorer: local hashing (SHA-256 plus compatibility hashes where required), configurable reputation lookups with source attribution, conflicting-result display, lookup history, and investigation cases.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLite'],
@@ -330,7 +330,7 @@ export const velaqoriProductsB: ProductContent[] = [
       'Tracks authorized network assets, observed services, exposure findings, and remediation tasks over time.',
     summary:
       'An authorized network asset and exposure monitor: allowlisted inventory collection, service observations, scan history, change detection, exposure findings, ownership, and remediation tracking.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
@@ -437,7 +437,7 @@ export const velaqoriProductsB: ProductContent[] = [
       'Integrates established static-analysis tools to help developers understand and prioritize supported code-security findings.',
     summary:
       'Static application security review with Bandit (and optional Semgrep) integration: finding categories, source locations, rule references, remediation guidance, a false-positive workflow, and review history.',
-    status: 'BUILT',
+    status: 'CASE_STUDY_ONLY',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Bandit', 'Semgrep'],

@@ -32,13 +32,15 @@ working application source. Source Code buttons appear only for the seven.
 ### Working apps — Source Code configured (7)
 
 `sentinelcore`, `sentinellog`, `fileguard`, `dependsecure`, `chessscope`,
-`circuitlab-calc`, `campusflow` — working implementations vendored at
-`projects/mysul/mwangala/apps/<slug>/` (case-study pages at
-`projects/mysul/mwangala/projects/<slug>/`), provenance
+`circuitlab-calc`, `campusflow` — **full working full-stack applications
+built into this repository at `apps/<slug>/`** (backend + frontend + tests,
+built 2026-10-23), with demo and case-study pages vendored at
+`projects/mysul/mwangala/apps/<slug>/` and
+`projects/mysul/mwangala/projects/<slug>/`, provenance
 [MySul#1](https://github.com/MwaJr3/MySul/pull/1). Each product's Source Code
-button links to its folder **inside this repository**. Status stays **Built
-(not publicly deployed)**: source exists and runs; no hosted deployment is
-claimed.
+button links to its `apps/<slug>/` folder **inside this repository**. Status
+stays **Built (not publicly deployed)**: source exists and runs; no hosted
+deployment is claimed.
 
 ### Verified case-study records — Source Code hidden (9)
 
@@ -52,9 +54,12 @@ linked**, so the Source Code button stays hidden.
 ### Portfolio project registry — Source Code hidden (9)
 
 `learnbridge`, `classconnect`, `tutorspring`, `pathwise`, `teachcraft`,
-`openlearn-commons`, `learnpulse`, `reachlearn`, `eduaccess` — linked
-portfolio case-study records exist in this repository's personal portfolio
-project registry (`src/data/projects/`). Product source is **not linked**.
+`openlearn-commons`, `learnpulse`, `reachlearn`, `eduaccess` — portfolio
+case-study records exist in the owner-supplied Mwangala portfolio registry
+(verified location: `projects/mysul/mwangala-portfolio/src/data/projects/`).
+**Correction (2026-10-23):** an earlier draft of this document claimed
+verified records at the root registry path `src/data/projects/`; no such
+records exist and that claim is withdrawn. Product source is **not linked**.
 
 ## Projects outside the 25-product catalogue
 

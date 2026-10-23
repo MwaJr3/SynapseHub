@@ -130,6 +130,7 @@ export const contentPublicationSchema = z.object({
 export const PRODUCT_STATUSES = [
   'PROTOTYPE',
   'BUILT',
+  'CASE_STUDY_ONLY',
   'PILOT',
   'LIVE',
   'MAINTENANCE',

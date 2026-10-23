@@ -28,6 +28,7 @@ export function Badge({
 export const STATUS_LABELS: Record<string, string> = {
   PROTOTYPE: 'Prototype',
   BUILT: 'Built (not publicly deployed)',
+  CASE_STUDY_ONLY: 'Case study — no working implementation',
   PILOT: 'Pilot',
   LIVE: 'Live',
   MAINTENANCE: 'Maintenance',
