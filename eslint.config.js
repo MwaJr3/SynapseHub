@@ -7,7 +7,15 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 export default tseslint.config(
   {
     // workniche/ is a self-contained Next.js app with its own lint setup.
-    ignores: ['dist', 'node_modules', 'coverage', 'public', 'workniche', 'company-platform/next-env.d.ts'],
+    ignores: [
+      'dist',
+      'node_modules',
+      'coverage',
+      'public',
+      'workniche',
+      '**/.next/**',
+      'company-platform/next-env.d.ts',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

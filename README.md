@@ -98,7 +98,7 @@ data.
 
 ## Stack
 
-React 19 · TypeScript (strict) · Vite 7 · Tailwind CSS 3 with a token-based theme system · React Router 6 ·
+React 19 · TypeScript (strict) · Vite 7 · Tailwind CSS 4 with a token-based theme system · React Router 7 ·
 Vitest + Testing Library · ESLint 9 · Prettier · self-hosted Inter and JetBrains Mono (no external font requests).
 No backend is required to display the portfolio; a contact form activates only when a real submission endpoint is
 configured.
