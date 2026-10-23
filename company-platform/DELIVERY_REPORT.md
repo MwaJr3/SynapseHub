@@ -177,15 +177,22 @@ no Lighthouse scores are claimed anywhere.
   briefs; every case study flags implementation details that need verification.
   Deployment status of all 25 products is unverified — none is claimed live.
 - **Evidence update (2026-10-23):** the owner supplied six project source
-  links (see `docs/PROJECT_EVIDENCE.md`). Four were independently verified
-  merged and inspected: MySul#1 (7 working apps for the catalogue),
+  links (see `docs/PROJECT_EVIDENCE.md`). All six are now independently
+  verified merged and inspected: MySul#1 (7 working apps for the catalogue),
   MySul#2 (nine case-study records), SynapseHub#3 (60 challenge prototypes),
-  SynapseHub#4 (stock time-series analysis v1/v2). Seven catalogue products
-  now have configured Source Code links to their working apps; nine carry
+  SynapseHub#4 (stock time-series analysis v1/v2), CBU_Assignments#5
+  (TenantCore multi-tenant SaaS platform) and CBU_Assignments#6 (VDownloader
+  OS) — the last two after the repository became public. Seven catalogue
+  products have configured Source Code links to their working apps; nine carry
   verified case-study records without linked source; nine are covered by the
-  personal portfolio project registry. TenantCore and VDownloader
-  (CBU_Assignments#5/#6) are owner-supplied links to a private repository and
-  could not be independently verified from this environment.
+  personal portfolio project registry.
+- **Code consolidation (2026-10-23):** per owner instruction, all project
+  code formerly kept in MySul and CBU_Assignments now lives in this
+  repository under `projects/` (`projects/mysul/`,
+  `projects/cbu-assignments/` — see `projects/README.md`), so the company
+  website hosted on Vercel from this repository has every project physically
+  within it. Product Source Code links point into this repository's own tree;
+  the origin PR URLs remain as provenance in verification notes.
 - **No genuine screenshots yet** — all visuals are labelled illustrative and
   must be replaced (see `docs/LAUNCH_CHECKLIST.md`).
 - **Legal details empty** — legal names, registration, privacy/terms policy

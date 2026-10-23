@@ -1,0 +1,118 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-Plans</title>
+    <link rel="stylesheet" href="intj.css">
+</head>
+<body>
+    <header>
+    <h1>John Doe</h1>
+    <p>I build systems that solve meaningful problems.</p>
+    <p>Areas of Focus: AI, Strategy, Creative-Tech, Systems & Security</p>
+</header>
+
+<nav>
+    <a href="#projects">Projects</a>
+    <a href="#writing">Writing & Thinking</a>
+    <a href="#about">About & Philosophy</a>
+    <a href="#contact">Contact & Collaborate</a>
+</nav>
+
+<section id="projects">
+    <h2>Projects</h2>
+    <div class="project">
+        <h3>AI Bias Detection Model</h3>
+        <p>Summary: An explainable AI tool to detect and mitigate biases in machine learning models.</p>
+        <p>Problem: Inspired by ethical concerns in AI deployment, aiming to promote fairness in automated decisions.</p>
+        <p>Approach: Analyzed datasets for bias indicators, implemented SHAP for explainability, and iterated on model architecture for accuracy.</p>
+        <p>Tech/Tools: Python, Scikit-learn, SHAP, TensorFlow.</p>
+        <p>Outcome & Insight: Reduced bias by 40% in test cases; learned the importance of introspective evaluation in AI ethics.</p>
+    </div>
+    <div class="project">
+        <h3>Workflow Audit & Redesign</h3>
+        <p>Summary: Case study on optimizing a remote team's collaboration system.</p>
+        <p>Problem: Inefficient workflows leading to productivity loss, driven by curiosity in human-system interactions.</p>
+        <p>Approach: Mapped current processes, identified bottlenecks using systems thinking, and prototyped a streamlined UX.</p>
+        <p>Tech/Tools: Figma, Miro, JavaScript.</p>
+        <p>Outcome & Insight: Improved efficiency by 25%; reinforced the value of autonomy in strategic redesigns.</p>
+    </div>
+    <div class="project">
+        <h3>Minimalist Deep Focus Tool</h3>
+        <p>Summary: A creative-tech prototype app for enhancing concentration in intellectual work.</p>
+        <p>Problem: Distractions in modern environments, seeking a tool aligned with introspective productivity.</p>
+        <p>Approach: Designed ambient soundscapes and timed sessions based on cognitive science principles.</p>
+        <p>Tech/Tools: React, Web Audio API, Node.js.</p>
+        <p>Outcome & Insight: Users reported 30% better focus; highlighted creativity in tech for personal growth.</p>
+    </div>
+    <div class="project">
+        <h3>Digital Privacy Framework</h3>
+        <p>Summary: A security tool for encrypting and managing personal data streams.</p>
+        <p>Problem: Rising concerns over data privacy, motivated by universalist values.</p>
+        <p>Approach: Built a modular framework with encryption algorithms and user-defined policies.</p>
+        <p>Tech/Tools: Go, Cryptography libraries (e.g., OpenSSL), Docker.</p>
+        <p>Outcome & Insight: Enhanced user control over data; deepened understanding of power through secure systems.</p>
+    </div>
+    <div class="project">
+        <h3>Data Visualization Story</h3>
+        <p>Summary: Interactive viz from World Bank data on global inequality.</p>
+        <p>Problem: Need for insightful narratives from complex datasets to inform policy.</p>
+        <p>Approach: Cleaned data, applied statistical analysis, and created interactive charts.</p>
+        <p>Tech/Tools: D3.js, Pandas, Jupyter.</p>
+        <p>Outcome & Insight: Revealed trends in inequality; emphasized self-direction in data-driven storytelling.</p>
+    </div>
+</section>
+
+<section id="writing">
+    <h2>Writing & Thinking</h2>
+    <p>Essays and insights on systems, ethics, and problem-solving.</p>
+    <ul>
+        <li><a href="#">The Ethics of AI: Balancing Innovation and Universalism</a> - Exploring moral implications in autonomous systems.</li>
+        <li><a href="#">Systems Thinking in Creative Tech</a> - How holistic approaches drive meaningful inventions.</li>
+        <li><a href="#">Introspective Problem-Solving for INTJs</a> - Personal reflections on autonomy and precision.</li>
+    </ul>
+    <p>Published on Medium and Substack.</p>
+</section>
+
+<section id="about">
+    <h2>About & Philosophy</h2>
+    <p>Brief narrative: From self-taught coding to mastering AI and systems design, my path emphasizes independent learning and intellectual depth.</p>
+    <p>Personal Values: Self-Direction (autonomy in exploration), Universalism (ethical and inclusive solutions), Power (amplifying impact through technology).</p>
+    <p>Working Style: Independent thinker. Precision-driven. Innovation-focused.</p>
+</section>
+
+<section id="contact">
+    <h2>Contact & Collaborate</h2>
+    <p>Reach out for freelance opportunities, AI consultations, or creative-tech collaborations.</p>
+    <form>
+        <input type="text" placeholder="Your Name" required>
+        <input type="email" placeholder="Your Email" required>
+        <textarea placeholder="Your Message" required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
+</section>
+
+<footer>
+    <p>&copy; 2025 Mwangala. All rights reserved.</p>
+    <p>Hosted on GitHub Pages | Code on GitHub | Writing on Medium</p>
+</footer>
+
+<script>
+    // Simple smooth scrolling for navigation
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Placeholder form submission (for demo)
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Message sent! (This is a demo)');
+    });
+</script>
+</body>
+</html>

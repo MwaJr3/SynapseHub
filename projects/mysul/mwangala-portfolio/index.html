@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+
+    <title>Mwangala — Python Developer · Cybersecurity · Full-Stack Engineering</title>
+    <meta
+      name="description"
+      content="Portfolio of Mwangala, a developer building practical Python, full-stack and defensive-cybersecurity applications. Nine project case studies covering phishing analysis, network traffic inspection, threat intelligence, incident response and more."
+    />
+    <meta name="author" content="Mwangala" />
+    <meta name="theme-color" content="#fbfaf8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / social. og:url is only emitted when VITE_SITE_URL is configured. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mwangala — Portfolio" />
+    <meta property="og:title" content="Building Software. Understanding Security. Solving Real Problems." />
+    <meta
+      property="og:description"
+      content="Practical Python, full-stack and defensive-cybersecurity work from Mwangala — nine project case studies with the engineering decisions behind them."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <script>
+      // Runs before first paint so the visitor never sees a theme flash.
+      // Modes: 'light' | 'dark' | 'system' | 'hybrid' (default composition).
+      (function () {
+        try {
+          var stored = localStorage.getItem('mw-theme');
+          var mode = stored === 'light' || stored === 'dark' || stored === 'system' ? stored : 'hybrid';
+          var resolved = mode;
+          if (mode === 'system') {
+            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          var root = document.documentElement;
+          root.setAttribute('data-theme-mode', mode);
+          if (mode !== 'hybrid') {
+            root.setAttribute('data-theme', resolved);
+          } else {
+            root.removeAttribute('data-theme');
+          }
+        } catch (e) {
+          /* localStorage unavailable (private mode / blocked storage) — the
+             stylesheet default (hybrid light) still renders correctly. */
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

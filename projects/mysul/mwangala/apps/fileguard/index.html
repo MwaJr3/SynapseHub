@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FileGuard — File Integrity Monitoring (Demo)</title>
+<meta name="description" content="FileGuard demo: SHA-256 baselines, integrity scans, and findings. Simulated data.">
+<link rel="stylesheet" href="../../css/app-shared.css">
+<style>.hash{font-family:var(--m);font-size:.72rem;word-break:break-all}</style>
+</head>
+<body class="app-dark">
+<header class="topbar">
+  <a class="brand" href="../../"><span class="brand-mark">F</span>FileGuard</a>
+  <span class="sim">Demo · Simulated data</span><span class="sp"></span>
+  <span class="userchip" id="userChip"></span>
+  <a class="btn btn-s" href="../../">← Portfolio</a>
+  <button class="btn btn-s" id="btnSignout" hidden>Sign out</button>
+</header>
+
+<div id="authView" class="authwrap" hidden>
+  <h1>FileGuard</h1><p class="sub">File integrity monitoring — demo sign in (browser-local).</p>
+  <div class="toolbar"><button class="btn btn-s" id="tabLogin">Sign in</button><button class="btn btn-s" id="tabReg">Register</button></div>
+  <div id="paneLogin"><label class="fl">Email<input id="liEmail" type="email"></label><label class="fl">Password<input id="liPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnLogin">Sign in</button><button class="btn" id="btnDemo">Use demo account</button></div></div>
+  <div id="paneReg" hidden><label class="fl">Email<input id="rgEmail" type="email"></label><label class="fl">Password (min 8)<input id="rgPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnReg">Create account</button></div></div>
+  <div class="errbar" id="authErr" hidden></div>
+  <p class="note">Demo: <span class="mono">analyst@demo / demo1234</span>. This demo only handles files you provide — it does not scan your computer.</p>
+</div>
+
+<div id="app" hidden>
+<div class="mobile-nav" id="mnav"></div>
+<div class="layout">
+  <aside class="side" id="side"></aside>
+  <main class="main">
+    <div class="warnbar">Integrity ≠ safety: a matching hash confirms a file is unchanged <b>versus its baseline</b> — it never proves the file is safe or malware-free. Baselines are trustworthy only if their own integrity and origin are protected.</div>
+    <section class="view" id="v-overview"><h1>Overview</h1><p class="sub">Workspace: <select id="ovWs"></select></p>
+      <div class="stats" id="ovStats"></div>
+      <div class="panel"><h3>Latest scan result</h3><div id="ovScan"></div></div>
+      <div class="panel"><h3>Recent findings</h3><div id="ovFind"></div></div>
+    </section>
+    <section class="view" id="v-workspaces"><h1>Workspaces</h1><p class="sub">Collections of registered files with their own baselines and scans.</p>
+      <div class="panel"><h3>New workspace</h3><div class="toolbar"><input id="wsName" placeholder="e.g. web-server configs" size="30"><input id="wsDesc" placeholder="Description (optional)" size="34"><button class="btn btn-p" id="btnWsAdd">Create</button></div></div>
+      <div id="wsList"></div>
+    </section>
+    <section class="view" id="v-files"><h1>Registered files</h1><p class="sub">Upload files into the controlled workspace. Uploads are validated and never executed.</p>
+      <div class="toolbar"><label>Workspace <select id="fiWs"></select></label><input type="file" id="upFile" multiple><button class="btn btn-p" id="btnUp">Register files</button></div>
+      <div id="upMsg"></div><div class="tblwrap"><table><thead><tr><th>File</th><th>Size</th><th>SHA-256</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead><tbody id="fiRows"></tbody></table></div>
+    </section>
+    <section class="view" id="v-baselines"><h1>Baselines</h1><p class="sub">Immutable snapshots of trusted hashes. Findings always cite which baseline produced them.</p>
+      <div class="toolbar"><label>Workspace <select id="blWs"></select></label><button class="btn btn-p" id="btnBl">Create baseline from current files</button></div>
+      <div id="blList"></div>
+    </section>
+    <section class="view" id="v-scans"><h1>Scan history</h1><p class="sub">Compare the current state against a baseline.</p>
+      <div class="toolbar"><label>Workspace <select id="scWs"></select></label><label>Baseline <select id="scBl"></select></label><button class="btn btn-p" id="btnScan">Run integrity scan</button></div>
+      <div id="scList"></div>
+    </section>
+    <section class="view" id="v-findings"><h1>Findings</h1><p class="sub">Changed, missing, or newly registered files. Add notes and mark reviewed.</p>
+      <div class="toolbar"><select id="fVerdict"><option value="">All verdicts</option><option>changed</option><option>missing</option><option>new</option></select>
+      <select id="fRev"><option value="">All</option><option value="no">Unreviewed</option><option value="yes">Reviewed</option></select><button class="btn btn-s" id="btnFGo">Apply</button></div>
+      <div id="fdList"></div>
+    </section>
+    <section class="view" id="v-reports"><h1>Reports</h1><p class="sub">Export manifests and integrity reports.</p>
+      <div class="toolbar"><label>Workspace <select id="rpWs"></select></label><button class="btn btn-s" id="btnRepJson">Report (JSON)</button><button class="btn btn-s" id="btnRepCsv">Report (CSV)</button><label>Manifest <select id="rpBl"></select></label><button class="btn btn-s" id="btnManifest">Download manifest</button></div>
+      <div id="repInfo"></div>
+    </section>
+    <section class="view" id="v-settings"><h1>Settings</h1>
+      <div class="panel"><h3>Severity mapping</h3><div class="toolbar"><label>Changed <select id="sevChanged"><option>High</option><option>Medium</option><option>Low</option></select></label><label>Missing <select id="sevMissing"><option>Medium</option><option>High</option><option>Low</option></select></label><label>New <select id="sevNew"><option>Low</option><option>Medium</option><option>High</option></select></label></div>
+      <label class="fl">Max upload (MB)<input id="setMaxMB" type="number" min="1" max="10" value="5"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnSetSave">Save</button></div></div>
+      <div class="panel"><h3>Account</h3><label class="fl">New password<input id="setPw" type="password"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnPw">Change password</button><button class="btn btn-s btn-d" id="btnWipe">Delete my data</button><button class="btn btn-s" id="btnReseed">Reset demo data</button></div><div id="setMsg"></div></div>
+    </section>
+  </main>
+</div>
+</div>
+<div id="overlay"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtT=t=>new Date(t).toLocaleString(), fmtB=b=>b>1048576?(b/1048576).toFixed(2)+" MB":b>1024?(b/1024).toFixed(1)+" KB":b+" B";
+const dl=(n,c,t)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+const csvEsc=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+async function sha256Hex(data){try{if(crypto.subtle){const buf=typeof data==="string"?new TextEncoder().encode(data):data;const h=await crypto.subtle.digest("SHA-256",buf);return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}
+ let h1=0xdeadbeef,h2=0x41c6ce57;const s=String(typeof data==="string"?data:data.byteLength);for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677);}return"demo-fallback-"+(h1>>>0).toString(16)+(h2>>>0).toString(16);}
+const hashPw=(p,s)=>sha256Hex(s+"::"+p);
+/* store */
+const KU="fg1:users",KS="fg1:session",KD=u=>"fg1:data:"+u;
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(KU)||"{}")}catch(e){return{}}};
+const setUsers=u=>localStorage.setItem(KU,JSON.stringify(u));
+const me=()=>sessionStorage.getItem(KS);
+let DB=null;
+function save(){localStorage.setItem(KD(me()),JSON.stringify(DB));}
+async function load(){try{DB=JSON.parse(localStorage.getItem(KD(me()))||null)}catch(e){DB=null}if(!DB){DB=await seed();save();}}
+async function seed(){
+  const now=Date.now(),ws={id:uid(),name:"Demo web configs (simulated)",desc:"Seeded workspace showing match / changed / missing / new.",createdAt:now,simulated:true};
+  const files=[
+    {id:uid(),ws:ws.id,name:"deploy-checklist.txt",size:214,type:"text/plain",uploadedAt:now-864e5,content:"1. pull latest tag\n2. run migrations\n3. reload nginx\n4. verify /healthz\n",removed:false},
+    {id:uid(),ws:ws.id,name:"app-config.yaml",size:188,type:"text/plain",uploadedAt:now-864e5,content:"env: prod\nworkers: 4\nlog_level: info\n",removed:false},
+    {id:uid(),ws:ws.id,name:"release-notes.md",size:96,type:"text/plain",uploadedAt:now-36e5,content:"# v2.4.1\n- fixes session timeout\n",removed:false}];
+  for(const f of files)f.hash=await sha256Hex(f.content);
+  // simulate an edit AFTER baseline: change current content+hash of app-config
+  const bl={id:uid(),ws:ws.id,version:1,createdAt:now-72e5,entries:[
+    {fileId:files[0].id,name:files[0].name,hash:files[0].hash},
+    {fileId:files[1].id,name:files[1].name,hash:await sha256Hex("env: prod\nworkers: 2\nlog_level: debug\n")},
+    {fileId:"seed-missing",name:"old-cert.pem",hash:await sha256Hex("CERT-DATA-V1")} ]};
+  files[1].content="env: prod\nworkers: 4\nlog_level: info\nmax_conn: 512\n";files[1].size=226;files[1].hash=await sha256Hex(files[1].content);
+  return{workspaces:[ws],files,baselines:[bl],scans:[],findings:[],active:ws.id,settings:{maxMB:5,sev:{changed:"High",missing:"Medium",new:"Low"}}};
+}
+const ws=()=>DB.workspaces.find(w=>w.id===DB.active)||DB.workspaces[0];
+const wsFiles=id=>DB.files.filter(f=>f.ws===(id||DB.active));
+/* compare */
+function compare(wsId,bl){const cur=wsFiles(wsId).filter(f=>!f.removed);const out=[];
+  const byName={};cur.forEach(f=>byName[f.name]=f);const blNames=new Set(bl.entries.map(e=>e.name));
+  bl.entries.forEach(e=>{const c=byName[e.name];
+    if(!c)out.push({name:e.name,expected:e.hash,observed:null,verdict:"missing"});
+    else if(c.hash!==e.hash)out.push({name:e.name,expected:e.hash,observed:c.hash,verdict:"changed"});
+    else out.push({name:e.name,expected:e.hash,observed:c.hash,verdict:"match"});});
+  cur.forEach(f=>{if(!blNames.has(f.name))out.push({name:f.name,expected:null,observed:f.hash,verdict:"new"});});
+  return out;}
+function fileHistory(name){return DB.scans.filter(s=>s.ws===DB.active).map(s=>({at:s.at,verdict:(s.results.find(r=>r.name===name)||{}).verdict||"—",bl:s.blVersion})).reverse();}
+/* nav */
+const NAV=[["overview","◉ Overview"],["workspaces","⧉ Workspaces"],["files","🗎 Files"],["baselines","◈ Baselines"],["scans","◎ Scans"],["findings","⚑ Findings"],["reports","▤ Reports"],["settings","⚙ Settings"]];
+function renderNav(){$("#side").innerHTML=NAV.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join("");
+ $("#mnav").innerHTML=NAV.map(([v,l])=>`<button class="btn btn-s" data-v="${v}">${l}</button>`).join("");
+ $$("#side button,#mnav button").forEach(b=>b.onclick=()=>show(b.dataset.v));}
+function show(v){$$(".view").forEach(x=>x.classList.remove("on"));$("#v-"+v).classList.add("on");$$("#side button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));render();}
+function wsOpts(){["ovWs","fiWs","blWs","scWs","rpWs"].forEach(id=>{const s=$("#"+id);s.innerHTML=DB.workspaces.map(w=>`<option value="${w.id}"${w.id===DB.active?" selected":""}>${esc(w.name)}</option>`).join("")||"<option value=''>—</option>";});}
+function blOpts(){const list=DB.baselines.filter(b=>b.ws===DB.active);
+ $("#scBl").innerHTML=list.map(b=>`<option value="${b.id}">v${b.version} · ${fmtT(b.createdAt)}</option>`).join("")||"<option value=''>No baselines</option>";
+ $("#rpBl").innerHTML=$("#scBl").innerHTML;}
+/* views */
+function sevBadge(s){return `<span class="badge b-${s==="High"?"high":s==="Medium"?"med":"low"}">${s}</span>`;}
+function rOverview(){const w=ws();if(!w){$("#ovStats").innerHTML='<div class="empty">Create a workspace to begin.</div>';return;}
+ const files=wsFiles().filter(f=>!f.removed),scans=DB.scans.filter(s=>s.ws===w.id);
+ const last=scans[scans.length-1];const c={match:0,changed:0,missing:0,new:0};if(last)last.results.forEach(r=>c[r.verdict]++);
+ $("#ovStats").innerHTML=`<div class="stat"><b>${files.length}</b><span>registered files</span></div><div class="stat"><b>${scans.length}</b><span>integrity scans</span></div><div class="stat"><b>${c.match}</b><span>matching baseline</span></div><div class="stat"><b>${c.changed}</b><span>changed</span></div><div class="stat"><b>${c.missing}</b><span>missing</span></div><div class="stat"><b>${c.new}</b><span>new</span></div>`;
+ $("#ovScan").innerHTML=last?`<p class="sub mono">Scan ${fmtT(last.at)} vs baseline v${last.blVersion}: ${c.match} match · ${c.changed} changed · ${c.missing} missing · ${c.new} new</p>`:'<div class="empty">No scans yet — create a baseline, then run a scan.</div>';
+ const fd=DB.findings.filter(f=>f.ws===w.id).slice(-6).reverse();
+ $("#ovFind").innerHTML=fd.length?`<div class="tblwrap"><table><thead><tr><th>File</th><th>Verdict</th><th>Severity</th><th>Reviewed</th></tr></thead><tbody>${fd.map(f=>`<tr><td>${esc(f.name)}</td><td><span class="badge ${f.verdict==="changed"?"b-high":f.verdict==="missing"?"b-med":"b-low"}">${f.verdict}</span></td><td>${sevBadge(f.severity)}</td><td>${f.reviewed?"yes":"no"}</td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No findings. Findings appear when a scan differs from its baseline.</div>';}
+function rWorkspaces(){$("#wsList").innerHTML=DB.workspaces.map(w=>{const n=wsFiles(w.id).filter(f=>!f.removed).length,b=DB.baselines.filter(x=>x.ws===w.id).length,s=DB.scans.filter(x=>x.ws===w.id).length;
+ return `<div class="panel"><h3>${esc(w.name)} ${w.simulated?'<span class="badge b-med">simulated</span>':""} ${w.id===DB.active?'<span class="badge b-info">active</span>':""}</h3><p class="sub">${esc(w.desc||"")} · ${n} files · ${b} baselines · ${s} scans</p>
+ <div class="toolbar"><button class="btn btn-s" data-a="open" data-id="${w.id}">Open</button><button class="btn btn-s" data-a="ren" data-id="${w.id}">Rename</button><button class="btn btn-s btn-d" data-a="del" data-id="${w.id}">Delete</button></div></div>`;}).join("")||'<div class="empty">No workspaces.</div>';
+ $$("#wsList [data-a]").forEach(x=>x.onclick=()=>{const w=DB.workspaces.find(y=>y.id===x.dataset.id);
+  if(x.dataset.a==="open"){DB.active=w.id;save();render();}
+  if(x.dataset.a==="ren"){const n=prompt("Workspace name:",w.name);if(n&&n.trim()){w.name=n.trim().slice(0,80);save();render();}}
+  if(x.dataset.a==="del"&&confirm(`Delete workspace "${w.name}" and its files, baselines, scans?`)){DB.workspaces=DB.workspaces.filter(y=>y.id!==w.id);DB.files=DB.files.filter(f=>f.ws!==w.id);DB.baselines=DB.baselines.filter(b=>b.ws!==w.id);DB.scans=DB.scans.filter(s=>s.ws!==w.id);DB.findings=DB.findings.filter(f=>f.ws!==w.id);DB.active=(DB.workspaces[0]||{}).id;save();render();}});}
+function rFiles(){const rows=wsFiles();
+ $("#fiRows").innerHTML=rows.map(f=>`<tr><td><b>${esc(f.name)}</b><br><span class="sub mono">${fmtB(f.size)} · ${esc(f.type||"unknown")}</span></td><td class="mono">${fmtB(f.size)}</td><td class="hash">${esc(f.hash.slice(0,32))}…</td><td class="mono">${fmtT(f.uploadedAt)}</td><td>${f.removed?'<span class="badge b-med">removed</span>':'<span class="badge b-ok">present</span>'}</td>
+ <td><div class="toolbar" style="margin:0"><button class="btn btn-s" data-f="hist" data-id="${f.id}">History</button>${f.removed?`<button class="btn btn-s" data-f="restore" data-id="${f.id}">Restore</button>`:`<button class="btn btn-s" data-f="edit" data-id="${f.id}">Simulate edit</button><button class="btn btn-s" data-f="rm" data-id="${f.id}">Remove</button>`}<button class="btn btn-s btn-d" data-f="del" data-id="${f.id}">Delete</button></div></td></tr>`).join("")||'<tr><td colspan="6">No files registered in this workspace.</td></tr>';
+ $$("#fiRows [data-f]").forEach(b=>b.onclick=async()=>{const f=DB.files.find(x=>x.id===b.dataset.id);if(!f)return;
+  if(b.dataset.f==="hist"){const h=fileHistory(f.name);$("#overlay").innerHTML=`<div class="scrim"></div><div class="drawer"><h2>${esc(f.name)}</h2><p class="hash">${esc(f.hash)}</p><div class="timeline">${h.length?h.map(x=>`<div class="t"><b>${esc(x.verdict)}</b> · baseline v${x.bl} · ${fmtT(x.at)}</div>`).join(""):"No scans cover this file yet."}</div><button class="btn" id="dwX">Close</button></div>`;$("#dwX").onclick=$(".scrim").onclick=()=>$("#overlay").innerHTML="";}
+  if(b.dataset.f==="edit"){f.content=(f.content||"")+"# edit "+new Date().toISOString()+"\n";f.size=(f.content||"").length;f.hash=await sha256Hex(f.content||f.name);save();render();}
+  if(b.dataset.f==="rm"){f.removed=true;save();render();}
+  if(b.dataset.f==="restore"){f.removed=false;save();render();}
+  if(b.dataset.f==="del"&&confirm(`Delete record "${f.name}"?`)){DB.files=DB.files.filter(x=>x.id!==f.id);save();render();}});}
+function rBaselines(){const list=DB.baselines.filter(b=>b.ws===DB.active).slice().reverse();
+ $("#blList").innerHTML=list.map(b=>`<div class="panel"><h3>Baseline v${b.version} <span class="badge b-info">${b.entries.length} files</span></h3><p class="sub mono">created ${fmtT(b.createdAt)} · id ${b.id}</p><div class="lg">${b.entries.map(e=>`${e.hash.slice(0,16)}…  ${e.name}`).join("\n")}</div></div>`).join("")||'<div class="empty">No baselines for this workspace. Register files, then create one.</div>';}
+function rScans(){const list=DB.scans.filter(s=>s.ws===DB.active).slice().reverse();
+ $("#scList").innerHTML=list.map(s=>{const c={match:0,changed:0,missing:0,new:0};s.results.forEach(r=>c[r.verdict]++);
+ return `<div class="panel"><h3>Scan · ${fmtT(s.at)} <span class="badge b-info">vs v${s.blVersion}</span></h3><p class="sub">${c.match} match · ${c.changed} changed · ${c.missing} missing · ${c.new} new</p>
+ <div class="tblwrap"><table><thead><tr><th>File</th><th>Verdict</th><th>Expected</th><th>Observed</th></tr></thead><tbody>${s.results.map(r=>`<tr><td>${esc(r.name)}</td><td><span class="badge ${r.verdict==="match"?"b-ok":r.verdict==="changed"?"b-high":r.verdict==="missing"?"b-med":"b-low"}">${r.verdict}</span></td><td class="hash">${r.expected?esc(r.expected.slice(0,24))+"…":"—"}</td><td class="hash">${r.observed?esc(r.observed.slice(0,24))+"…":"—"}</td></tr>`).join("")}</tbody></table></div></div>`;}).join("")||'<div class="empty">No scans yet.</div>';}
+function rFindings(){const v=$("#fVerdict").value,rv=$("#fRev").value;
+ const list=DB.findings.filter(f=>f.ws===DB.active&&(!v||f.verdict===v)&&(!rv||(rv==="yes")===!!f.reviewed)).slice().reverse();
+ $("#fdList").innerHTML=list.map(f=>`<div class="panel"><h3>${esc(f.name)} <span class="badge ${f.verdict==="changed"?"b-high":f.verdict==="missing"?"b-med":"b-low"}">${f.verdict}</span> ${sevBadge(f.severity)} ${f.reviewed?'<span class="badge b-ok">reviewed</span>':""}</h3>
+ <p class="sub mono">scan ${fmtT(f.at)} · baseline v${f.blVersion}</p>
+ <div class="lg">expected: ${f.expected||"—"}\nobserved: ${f.observed||"—"}</div>
+ <label class="fl">Investigation notes<textarea data-n="${f.id}">${esc(f.notes||"")}</textarea></label>
+ <div class="toolbar"><button class="btn btn-s" data-fd="save" data-id="${f.id}">Save notes</button><button class="btn btn-s" data-fd="rev" data-id="${f.id}">${f.reviewed?"Reopen":"Mark reviewed"}</button></div></div>`).join("")||'<div class="empty">No findings match. Run a scan that differs from its baseline.</div>';
+ $$("#fdList [data-fd]").forEach(b=>b.onclick=()=>{const f=DB.findings.find(x=>x.id===b.dataset.id);if(!f)return;
+  if(b.dataset.fd==="save"){f.notes=document.querySelector(`[data-n="${f.id}"]`).value.slice(0,2000);save();render();}
+  if(b.dataset.fd==="rev"){f.reviewed=!f.reviewed;save();render();}});}
+function render(){wsOpts();blOpts();rOverview();rWorkspaces();rFiles();rBaselines();rScans();rFindings();
+ $("#sevChanged").value=DB.settings.sev.changed;$("#sevMissing").value=DB.settings.sev.missing;$("#sevNew").value=DB.settings.sev.new;$("#setMaxMB").value=DB.settings.maxMB;}
+/* boot */
+function afterAuth(){$("#authView").hidden=true;$("#app").hidden=false;$("#btnSignout").hidden=false;$("#userChip").textContent=me();renderNav();render();show("overview");}
+async function boot(){
+ $("#tabLogin").onclick=()=>{$("#paneLogin").hidden=false;$("#paneReg").hidden=true;};
+ $("#tabReg").onclick=()=>{$("#paneLogin").hidden=true;$("#paneReg").hidden=false;};
+ const u0=getUsers();if(!u0["analyst@demo"]){u0["analyst@demo"]={salt:"s0",hash:await hashPw("demo1234","s0"),at:Date.now()};setUsers(u0);}
+ if(me()&&getUsers()[me()]){await load();afterAuth();$("#authView").hidden=true;return;}
+ $("#authView").hidden=false;
+ const err=m=>{const e=$("#authErr");e.hidden=!m;e.textContent=m||"";};
+ $("#btnDemo").onclick=async()=>{sessionStorage.setItem(KS,"analyst@demo");await load();afterAuth();};
+ $("#btnLogin").onclick=async()=>{const e=$("#liEmail").value.trim().toLowerCase(),p=$("#liPw").value,u=getUsers()[e];
+  if(!u||await hashPw(p,u.salt)!==u.hash)return err("Invalid email or password.");sessionStorage.setItem(KS,e);await load();afterAuth();};
+ $("#btnReg").onclick=async()=>{const e=$("#rgEmail").value.trim().toLowerCase(),p=$("#rgPw").value,u=getUsers();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return err("Enter a valid email.");if(p.length<8)return err("Password must be at least 8 characters.");
+  if(u[e])return err("Account exists — sign in instead.");const s=uid();u[e]={salt:s,hash:await hashPw(p,s),at:Date.now()};setUsers(u);sessionStorage.setItem(KS,e);await load();afterAuth();};
+ $("#btnSignout").onclick=()=>{sessionStorage.removeItem(KS);location.reload();};
+ ["ovWs","fiWs","blWs","scWs","rpWs"].forEach(id=>$("#"+id).addEventListener("change",e=>{DB.active=e.target.value;save();render();}));
+ $("#btnWsAdd").onclick=()=>{const n=$("#wsName").value.trim();if(!n)return;const w={id:uid(),name:n.slice(0,80),desc:$("#wsDesc").value.trim().slice(0,200),createdAt:Date.now()};DB.workspaces.push(w);DB.active=w.id;save();render();};
+ $("#btnUp").onclick=async()=>{const inp=$("#upFile"),box=$("#upMsg");if(!DB.active){box.innerHTML='<div class="errbar">Create a workspace first.</div>';return;}
+  if(!inp.files.length){box.innerHTML='<div class="errbar">Choose at least one file.</div>';return;}
+  const errs=[];let ok=0;
+  for(const f of inp.files){
+   if(f.size>DB.settings.maxMB*1048576){errs.push(`${f.name}: exceeds ${DB.settings.maxMB} MB`);continue;}
+   const buf=await f.arrayBuffer();const hash=await sha256Hex(buf);
+   const clean=f.name.replace(/[^\w.\-+ ]+/g,"_").slice(0,120);
+   let text=null;if(f.size<200000){try{text=new TextDecoder("utf-8",{fatal:true}).decode(buf.slice(0,200000));}catch(e){text=null;}}
+   const ex=DB.files.find(x=>x.ws===DB.active&&x.name===clean&&!x.removed);
+   if(ex){ex.hash=hash;ex.size=f.size;ex.type=f.type;ex.content=text;ex.uploadedAt=Date.now();}
+   else DB.files.push({id:uid(),ws:DB.active,name:clean,size:f.size,type:f.type||"unknown",uploadedAt:Date.now(),hash,content:text,removed:false});
+   ok++;}
+  save();render();box.innerHTML=`<p class="note">Registered/updated <b>${ok}</b> file(s).${errs.length?" Issues: "+esc(errs.join("; ")):""}</p>`;inp.value="";};
+ $("#btnBl").onclick=()=>{const cur=wsFiles().filter(f=>!f.removed);if(!cur.length)return alert("Register files first.");
+  const v=DB.baselines.filter(b=>b.ws===DB.active).length+1;
+  DB.baselines.push({id:uid(),ws:DB.active,version:v,createdAt:Date.now(),entries:cur.map(f=>({fileId:f.id,name:f.name,hash:f.hash}))});save();render();};
+ $("#btnScan").onclick=()=>{const bl=DB.baselines.find(b=>b.id===$("#scBl").value);if(!bl)return alert("Create a baseline first.");
+  const results=compare(DB.active,bl);const at=Date.now();
+  DB.scans.push({id:uid(),ws:DB.active,baselineId:bl.id,blVersion:bl.version,at,results});
+  results.filter(r=>r.verdict!=="match").forEach(r=>DB.findings.push({id:uid(),ws:DB.active,name:r.name,verdict:r.verdict,severity:DB.settings.sev[r.verdict],expected:r.expected,observed:r.observed,at,blVersion:bl.version,reviewed:false,notes:""}));
+  save();render();show("scans");};
+ $("#btnFGo").onclick=()=>rFindings();$("#fVerdict").onchange=rFindings;$("#fRev").onchange=rFindings;
+ $("#btnRepJson").onclick=()=>{const w=ws();dl(`fileguard-${w.id}.json`,JSON.stringify({workspace:w,files:wsFiles(),baselines:DB.baselines.filter(b=>b.ws===w.id),scans:DB.scans.filter(s=>s.ws===w.id),findings:DB.findings.filter(f=>f.ws===w.id),exportedAt:new Date().toISOString()},null,2),"application/json");$("#repInfo").innerHTML='<p class="note">JSON report downloaded.</p>';};
+ $("#btnRepCsv").onclick=()=>{const rows=[["file","verdict","severity","reviewed","scan_time","baseline"]];DB.findings.filter(f=>f.ws===DB.active).forEach(f=>rows.push([f.name,f.verdict,f.severity,f.reviewed?"yes":"no",new Date(f.at).toISOString(),"v"+f.blVersion]));dl("fileguard-findings.csv",rows.map(r=>r.map(csvEsc).join(",")).join("\n"),"text/csv");$("#repInfo").innerHTML='<p class="note">CSV findings downloaded.</p>';};
+ $("#btnManifest").onclick=()=>{const bl=DB.baselines.find(b=>b.id===$("#rpBl").value);if(!bl)return;dl(`fileguard-baseline-v${bl.version}.json`,JSON.stringify({tool:"FileGuard",version:bl.version,createdAt:new Date(bl.createdAt).toISOString(),algorithm:"SHA-256",entries:bl.entries},null,2),"application/json");$("#repInfo").innerHTML='<p class="note">Baseline manifest downloaded.</p>';};
+ $("#btnSetSave").onclick=()=>{DB.settings.sev={changed:$("#sevChanged").value,missing:$("#sevMissing").value,new:$("#sevNew").value};DB.settings.maxMB=Math.min(10,Math.max(1,+$("#setMaxMB").value||5));save();$("#setMsg").innerHTML='<p class="note">Saved.</p>';};
+ $("#btnPw").onclick=async()=>{const p=$("#setPw").value;if(p.length<8){$("#setMsg").innerHTML='<div class="errbar">Min 8 characters.</div>';return;}const us=getUsers(),s=uid();us[me()]={salt:s,hash:await hashPw(p,s),at:Date.now()};setUsers(us);$("#setMsg").innerHTML='<p class="note">Password changed.</p>';};
+ $("#btnWipe").onclick=()=>{if(confirm("Delete ALL your FileGuard data?")){localStorage.removeItem(KD(me()));load().then(render);}};
+ $("#btnReseed").onclick=async()=>{if(confirm("Reset to fresh demo data?")){DB=await seed();save();render();}};
+}
+document.addEventListener("DOMContentLoaded",boot);
+</script>
+</body>
+</html>

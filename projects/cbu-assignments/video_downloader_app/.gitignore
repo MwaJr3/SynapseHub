@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Runtime user data, downloads, logs, SQLite telemetry
+runtime_data/
+downloads/
+*.log
+*.sqlite3
+*.sqlite3-journal
+
+# Temporary subtitle/media scratch files
+*.part
+*.ytdl
+*.temp.*
+
+# Test & coverage caches
+.pytest_cache/
+.coverage
+coverage/
+
+# OS metadata
+.DS_Store
+Thumbs.db

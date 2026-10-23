@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SentinelCore — Mini-SIEM Security Dashboard (Demo)</title>
+<meta name="description" content="SentinelCore flagship demo: ingest events, run detections, correlate alerts, manage incidents. Simulated data.">
+<link rel="stylesheet" href="../../css/app-shared.css">
+<style>.lg{font-family:var(--m);font-size:.76rem;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow:auto}.pill-row{display:flex;gap:6px;flex-wrap:wrap}</style>
+</head>
+<body class="app-dark">
+<header class="topbar">
+  <a class="brand" href="../../"><span class="brand-mark">◈</span>SentinelCore</a>
+  <span class="sim">Flagship demo · Simulated data</span><span class="sp"></span>
+  <span class="userchip" id="userChip"></span>
+  <a class="btn btn-s" href="../../">← Portfolio</a>
+  <button class="btn btn-s" id="btnSignout" hidden>Sign out</button>
+</header>
+
+<div id="authView" class="authwrap" hidden>
+  <h1>SentinelCore</h1><p class="sub">Mini-SIEM — role-based demo sign in. New accounts start as <b>viewer</b>.</p>
+  <div class="toolbar"><button class="btn btn-s" id="tabLogin">Sign in</button><button class="btn btn-s" id="tabReg">Register</button></div>
+  <div id="paneLogin"><label class="fl">Email<input id="liEmail" type="email"></label><label class="fl">Password<input id="liPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnLogin">Sign in</button></div>
+  <div class="toolbar"><button class="btn btn-s" data-demo="admin@sentinelcore.demo">Admin</button><button class="btn btn-s" data-demo="analyst@demo">Analyst</button><button class="btn btn-s" data-demo="viewer@demo">Viewer</button></div></div>
+  <div id="paneReg" hidden><label class="fl">Email<input id="rgEmail" type="email"></label><label class="fl">Password (min 8)<input id="rgPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnReg">Register (viewer)</button></div></div>
+  <div class="errbar" id="authErr" hidden></div>
+  <p class="note mono">admin@sentinelcore.demo / admin123 · analyst@demo / demo1234 · viewer@demo / view1234</p>
+</div>
+
+<div id="app" hidden>
+<div class="mobile-nav" id="mnav"></div>
+<div class="layout">
+  <aside class="side" id="side"></aside>
+  <main class="main">
+    <div class="warnbar">This is a <b>training mini-SIEM</b>, not a commercial SIEM/EDR replacement. Alerts are <b>candidates for investigation</b> — correlation groups evidence; it never proves causation. All seeded data is <b>simulated</b>.</div>
+    <section class="view" id="v-overview"><h1>SOC overview</h1><p class="sub" id="ovRole"></p>
+      <div class="stats" id="ovStats"></div>
+      <div class="grid2"><div class="panel"><h3>Events by severity</h3><div id="ovSev"></div></div>
+      <div class="panel"><h3>Detection trend (alerts/day)</h3><div id="ovTrend"></div></div></div>
+      <div class="grid2"><div class="panel"><h3>Recent security activity</h3><div id="ovAct"></div></div>
+      <div class="panel"><h3>Recent analyst actions</h3><div id="ovAudit"></div></div></div>
+    </section>
+    <section class="view" id="v-events"><h1>Event explorer</h1><p class="sub">Normalized events from all sources. Click a row for detail.</p>
+      <div class="toolbar"><input id="fText" placeholder="Search user, IP, system, message…" size="30"><select id="fType"><option value="">All types</option></select><select id="fSev"><option value="">All severities</option><option>High</option><option>Medium</option><option>Low</option><option>Info</option></select><select id="fSrc"><option value="">All sources</option></select><button class="btn btn-s" id="btnFGo">Apply</button></div>
+      <div class="tblwrap"><table><thead><tr><th>Time</th><th>Type</th><th>User</th><th>Source</th><th>System</th><th>Severity</th><th>Message</th></tr></thead><tbody id="evRows"></tbody></table></div>
+      <div class="pager"><button class="btn btn-s" id="pgPrev">← Prev</button><span id="pgInfo"></span><button class="btn btn-s" id="pgNext">Next →</button></div>
+    </section>
+    <section class="view" id="v-rules"><h1>Detection rules</h1><p class="sub">Transparent, documented rules. Admins manage rules; analysts run them. Every rule lists its limitations.</p>
+      <div class="toolbar" id="ruleBar"><button class="btn btn-p btn-s" id="btnRun">▶ Run all enabled rules</button><button class="btn btn-s" id="btnNewRule">+ New rule</button></div>
+      <div id="ruleMsg"></div><div id="ruleList"></div>
+      <div class="panel" id="ruleForm" hidden><h3 id="rfTitle">New rule</h3>
+        <div class="grid2"><div><label class="fl">Name<input id="rName"></label>
+        <label class="fl">Kind<select id="rKind"><option value="repeat">Repeated failures (same source)</option><option value="multiuser">Multi-user failures (same source)</option><option value="success-after">Success after failures</option><option value="concentration">Event concentration</option><option value="errors">Error burst (same system)</option></select></label>
+        <label class="fl">Severity<select id="rSev"><option>High</option><option>Medium</option><option>Low</option></select></label></div>
+        <div><label class="fl">Threshold (count ≥)<input id="rThr" type="number" value="5" min="2"></label>
+        <label class="fl">Window (minutes)<input id="rWin" type="number" value="10" min="1"></label>
+        <label class="fl">Event type (for concentration)<input id="rType" value="auth.failed"></label></div></div>
+        <label class="fl">Purpose<input id="rPurpose" placeholder="Why this rule exists"></label>
+        <label class="fl">Limitations<textarea id="rLimits" style="min-height:50px" placeholder="What this rule cannot prove"></textarea></label>
+        <label class="fl">Investigation steps<textarea id="rSteps"></textarea></label>
+        <div class="toolbar"><button class="btn btn-p btn-s" id="btnRuleSave">Save rule</button><button class="btn btn-s" id="btnRuleCancel">Cancel</button></div>
+      </div>
+    </section>
+    <section class="view" id="v-alerts"><h1>Alerts</h1><p class="sub">Grouped evidence with timelines. Triage an alert or promote it to an incident.</p>
+      <div class="toolbar"><select id="aSev"><option value="">All severities</option><option>High</option><option>Medium</option><option>Low</option></select><select id="aSt"><option value="">All statuses</option><option>open</option><option>triaged</option><option>incident</option></select><button class="btn btn-s" id="btnAGo">Apply</button></div>
+      <div id="alList"></div>
+    </section>
+    <section class="view" id="v-incidents"><h1>Incidents</h1><p class="sub">Original detections are immutable; analyst conclusions are separate, timestamped records.</p>
+      <div class="toolbar"><select id="iSt"><option value="">All statuses</option><option>New</option><option>Investigating</option><option>Resolved</option><option>Closed</option></select><button class="btn btn-s" id="btnIGo">Apply</button><button class="btn btn-s" id="btnNewInc">+ Blank incident</button></div>
+      <div id="incList"></div>
+    </section>
+    <section class="view" id="v-sources"><h1>Event sources</h1><p class="sub">Import CSV, JSON, or auth logs. <b>Preview before importing</b>; malformed rows are quarantined for inspection.</p>
+      <div class="panel"><h3>New import</h3><div class="toolbar"><input type="file" id="upFile" accept=".csv,.json,.log,.txt"><button class="btn btn-p btn-s" id="btnPreview">Parse &amp; preview</button></div><div id="prevBody"></div></div>
+      <div class="panel"><h3>Connector: portfolio findings</h3><p class="sub">Accepts documented finding JSON from SentinelLog, FileGuard, or DependSecure (<span class="mono">{source, findings:[...]}</span>) and converts each finding into a normalized event.</p>
+      <div class="toolbar"><button class="btn btn-s" id="btnFindingFmt">Show format</button><button class="btn btn-s" id="btnFindingDemo">Import demo finding</button></div><div id="findingMsg"></div></div>
+      <div id="srcList"></div>
+    </section>
+    <section class="view" id="v-reports"><h1>Reports</h1><p class="sub">Incident reports and dataset exports. Downloads are audit-logged.</p>
+      <div class="toolbar"><label>Incident <select id="rpInc"></select></label><button class="btn btn-s" id="btnIncJson">Incident JSON</button><button class="btn btn-s" id="btnEvCsv">Events CSV</button><button class="btn btn-s" id="btnAlCsv">Alerts CSV</button></div>
+      <div id="repBody"></div>
+    </section>
+    <section class="view" id="v-users"><h1>User management</h1><p class="sub">Admin only. Least privilege: new accounts are viewers.</p><div id="userList"></div></section>
+    <section class="view" id="v-settings"><h1>Settings</h1>
+      <div class="panel"><h3>Audit log</h3><div id="auditList"></div></div>
+      <div class="panel"><h3>Account &amp; demo</h3><label class="fl">New password<input id="setPw" type="password"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnPw">Change password</button><button class="btn btn-s" id="btnReseed">Reset demo environment</button></div><div id="setMsg"></div></div>
+    </section>
+  </main>
+</div>
+</div>
+<div id="overlay"></div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtT=t=>new Date(t).toLocaleString();
+const dl=(n,c,t)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+const csvEsc=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+async function sha(s){try{if(crypto.subtle){const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}return"demo-"+s.length;}
+const KU="sc1:users",KS="sc1:session",KD="sc1:data";
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(KU)||"{}")}catch(e){return{}}};
+const setUsers=u=>localStorage.setItem(KU,JSON.stringify(u));
+const me=()=>sessionStorage.getItem(KS);
+let DB=null,actor=null;
+const save=()=>localStorage.setItem(KD,JSON.stringify(DB));
+function load(){try{DB=JSON.parse(localStorage.getItem(KD)||null)}catch(e){DB=null}if(!DB){DB=seed();save();}}
+function audit(action,detail){DB.audit.unshift({at:Date.now(),by:actor?actor.email:"system",action,detail:detail||""});DB.audit=DB.audit.slice(0,200);}
+/* RBAC */
+function guard(action){const R=actor.role;const M={
+ "events.read":["admin","analyst","viewer"],"events.write":["admin","analyst"],
+ "rules.read":["admin","analyst","viewer"],"rules.write":["admin"],"rules.run":["admin","analyst"],
+ "alerts.triage":["admin","analyst"],"incidents.write":["admin","analyst"],"incidents.read":["admin","analyst","viewer"],
+ "reports":["admin","analyst","viewer"],"users.write":["admin"],"settings":["admin","analyst","viewer"]};
+ if(!(M[action]||[]).includes(R))throw new Error(`Role "${R}" cannot ${action}.`);}
+/* seed */
+function seed(){const now=Date.now();const ev=[];let n=0;
+ const E=(ts,type,user,src,sys,msg,sev,extra)=>ev.push(Object.assign({id:"e"+(n++),ts,type,user:user||"—",src:src||"—",dst:"—",system:sys||"—",message:msg,severity:sev||"Info",source:"seed-auth",simulated:true},extra||{}));
+ const users=["chanda","j.mwansa","k.banda","t.phiri"],ips=["192.168.1.10","192.168.1.11","172.16.0.5"];
+ for(let d=6;d>=0;d--)for(let i=0;i<12;i++){const t=now-d*864e5-Math.floor(Math.random()*7e7);const u=users[i%4],ip=ips[i%3];
+  if(Math.random()<0.85)E(t,"auth.success",u,ip,"auth-01",`Accepted password for ${u} from ${ip}`,"Info");
+  else E(t,"auth.failed",u,ip,"auth-01",`Failed password for ${u} from ${ip}`,"Medium");}
+ const burst=now-30*36e5;for(let i=0;i<14;i++)E(burst+i*35e3,"auth.failed",i<10?"chanda":"k.banda","10.0.4.21","vpn-gw",`Failed password from 10.0.4.21 (${i+1}/14)`,"Medium");
+ E(burst+15*35e3,"auth.success","chanda","10.0.4.21","vpn-gw","Accepted password for chanda from 10.0.4.21 — AFTER 10 failures","High");
+ for(let i=0;i<6;i++)E(now-8*36e5+i*9e4,"app.error","system","app-02","app-02",`upstream timeout req ${uid()}`,"Low");
+ ev.sort((a,b)=>a.ts-b.ts);
+ const rules=[
+  {id:"r1",name:"Repeated authentication failures",kind:"repeat",threshold:5,windowMin:10,severity:"High",enabled:true,purpose:"Catches brute-force-shaped bursts from one source.",limitations:"Cannot distinguish attacks from misconfigured scripts or shared NAT. Needs corroboration.",steps:"1. Check whether the source is shared/NAT.\n2. List targeted accounts.\n3. Look for a success after the burst."},
+  {id:"r2",name:"Multi-account failures, one source",kind:"multiuser",threshold:3,windowMin:15,severity:"Medium",enabled:true,purpose:"Catches password-spray shape: many users, one source.",limitations:"Help-desk password resets can look similar.",steps:"1. Enumerate targeted users.\n2. Check timing uniformity (scripted vs human)."},
+  {id:"r3",name:"Success after suspicious failures",kind:"success-after",threshold:4,windowMin:30,severity:"High",enabled:true,purpose:"Highest-priority shape: failures then a success for the same user.",limitations:"The success may be the legitimate user. Verify out-of-band before concluding compromise.",steps:"1. Verify with the user out-of-band.\n2. Review session activity after the success.\n3. Consider credential reset per policy."},
+  {id:"r4",name:"Failed-login concentration",kind:"concentration",eventType:"auth.failed",threshold:12,windowMin:30,severity:"Medium",enabled:true,purpose:"Catches distributed or slow-burn failure waves.",limitations:"Noisy during outages or mass lockouts.",steps:"1. Break down by source and user.\n2. Correlate with change windows."},
+  {id:"r5",name:"Application error burst",kind:"errors",threshold:5,windowMin:30,severity:"Low",enabled:false,purpose:"Availability lead, not strictly security.",limitations:"Usually operational, not adversarial.",steps:"1. Check deploys and dependencies."}];
+ const DB0={events:ev,rules,sources:[{id:"s0",name:"seed-auth (simulated)",kind:"seed",at:now,count:ev.length,errors:0,by:"system"}],alerts:[],incidents:[],audit:[]};
+ DB=DB0;DB0.alerts=runAll(DB0);
+ // demo incidents
+ const hi=DB0.alerts.find(a=>a.severity==="High");
+ if(hi){hi.status="incident";DB0.incidents.push({id:"INC-1",title:"Possible brute-force + success from 10.0.4.21",severity:"High",status:"Investigating",assignee:"analyst@demo",alertIds:[hi.id],createdAt:now-20*36e5,resolvedAt:null,
+  notes:[{at:now-19*36e5,by:"analyst@demo",text:"Contacted chanda out-of-band; they deny logging in from VPN at that time. Checking session logs next."}],
+  actions:[{at:now-18*36e5,by:"analyst@demo",text:"Blocked 10.0.4.21 at vpn-gw pending review (demo action)."}],history:[{at:now-20*36e5,by:"analyst@demo",text:"Incident created from alert."}]});}
+ DB0.incidents.push({id:"INC-0",title:"Error burst on app-02 (deploy-related)",severity:"Low",status:"Resolved",assignee:"analyst@demo",alertIds:[],createdAt:now-50*36e5,resolvedAt:now-48*36e5,
+  notes:[{at:now-49*36e5,by:"analyst@demo",text:"Correlated with deploy v2.4.0; timeouts stopped after rollback."}],actions:[{at:now-48*36e5,by:"analyst@demo",text:"Confirmed rollback; no security impact found."}],history:[{at:now-50*36e5,by:"analyst@demo",text:"Created."},{at:now-48*36e5,by:"analyst@demo",text:"Resolved."}]});
+ DB0.audit=[{at:now-20*36e5,by:"analyst@demo",action:"incident.create",detail:"INC-1 from alert"},{at:now-18*36e5,by:"analyst@demo",action:"incident.note",detail:"INC-1 note added"}];
+ return DB0;}
+/* detection */
+function winGroups(events,ms,keyFn){const g={};events.forEach(e=>{const k=keyFn(e);(g[k]=g[k]||[]).push(e);});
+ const out=[];for(const[k,arr]of Object.entries(g)){arr.sort((a,b)=>a.ts-b.ts);let i=0;
+  for(let j=0;j<arr.length;j++){while(arr[j].ts-arr[i].ts>ms)i++;out.push({key:k,arr:arr.slice(),i,j});}}
+ return out;}
+function evalRule(r,events){const ms=r.windowMin*60000,out=[];
+ const mk=(key,evs,summary)=>({key:r.id+"|"+key+"|"+evs[0].ts,ruleId:r.id,ruleName:r.name,severity:r.severity,at:evs[evs.length-1].ts,key,summary,count:evs.length,windowStart:evs[0].ts,windowEnd:evs[evs.length-1].ts,eventIds:evs.map(e=>e.id),status:"open"});
+ if(r.kind==="repeat"||r.kind==="concentration"){const list=events.filter(e=>e.type===(r.kind==="repeat"?"auth.failed":r.eventType)).sort((a,b)=>a.ts-b.ts);
+  const g={};list.forEach(e=>{const k=r.kind==="repeat"?e.src:"all";(g[k]=g[k]||[]).push(e);});
+  for(const[k,arr]of Object.entries(g)){let i=0;for(let j=0;j<arr.length;j++){while(arr[j].ts-arr[i].ts>ms)i++;
+   if(j-i+1>=r.threshold){const w=arr.slice(i,j+1);out.push(mk(k,w,`${w.length} × ${r.kind==="repeat"?"auth.failed":r.eventType} from ${k} in ${r.windowMin}m`));i=j+1;}}}}
+ else if(r.kind==="multiuser"){const fails=events.filter(e=>e.type==="auth.failed");const g={};fails.forEach(e=>{(g[e.src]=g[e.src]||[]).push(e);});
+  for(const[src,arr]of Object.entries(g)){arr.sort((a,b)=>a.ts-b.ts);
+   for(let j=0;j<arr.length;j++){const w=arr.filter(e=>arr[j].ts-e.ts<=ms&&arr[j].ts-e.ts>=0);
+    if(new Set(w.map(e=>e.user)).size>=r.threshold){out.push(mk(src,w,`${new Set(w.map(e=>e.user)).size} users with failures from ${src} in ${r.windowMin}m`));break;}}}}
+ else if(r.kind==="success-after"){const byU={};events.forEach(e=>{(byU[e.user]=byU[e.user]||[]).push(e);});
+  for(const[u,arr]of Object.entries(byU)){arr.sort((a,b)=>a.ts-b.ts);
+   arr.forEach(s=>{if(s.type!=="auth.success")return;const w=arr.filter(e=>e.type==="auth.failed"&&s.ts-e.ts<=ms&&s.ts-e.ts>=0);
+    if(w.length>=r.threshold)out.push(mk(u,[...w,s],`${u}: success after ${w.length} failures within ${r.windowMin}m`));});}}
+ else if(r.kind==="errors"){const errs=events.filter(e=>e.type==="app.error");const g={};errs.forEach(e=>{(g[e.system]=g[e.system]||[]).push(e);});
+  for(const[sys,arr]of Object.entries(g)){arr.sort((a,b)=>a.ts-b.ts);let i=0;
+   for(let j=0;j<arr.length;j++){while(arr[j].ts-arr[i].ts>ms)i++;if(j-i+1>=r.threshold){const w=arr.slice(i,j+1);out.push(mk(sys,w,`${w.length} errors on ${sys} in ${r.windowMin}m`));i=j+1;}}}}
+ return out;}
+function runAll(db){db=db||DB;const have=new Set(db.alerts.map(a=>a.key));const out=[];
+ db.rules.filter(r=>r.enabled).forEach(r=>{evalRule(r,db.events).forEach(a=>{if(!have.has(a.key)){a.id=uid();out.push(a);have.add(a.key);}});});
+ return db.alerts.concat(out);}
+/* correlation */
+function related(a){const evs=new Set(a.eventIds.map(id=>{const e=DB.events.find(x=>x.id===id);return e?e.src+"|"+e.user:"";}));
+ return DB.alerts.filter(b=>b.id!==a.id&&b.eventIds.some(id=>{const e=DB.events.find(x=>x.id===id);return e&&evs.has(e.src+"|"+e.user);})&&Math.abs(b.at-a.at)<72e5);}
+/* nav */
+const NAV=[["overview","◉ Overview"],["events","☰ Events"],["rules","⚑ Rules"],["alerts","⚠ Alerts"],["incidents","🚨 Incidents"],["sources","⇪ Sources"],["reports","▤ Reports"],["users","👥 Users"],["settings","⚙ Settings"]];
+function renderNav(){let N=NAV;if(actor.role==="viewer")N=NAV.filter(([v])=>!["users"].includes(v));
+ $("#side").innerHTML=N.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join("");
+ $("#mnav").innerHTML=N.map(([v,l])=>`<button class="btn btn-s" data-v="${v}">${l}</button>`).join("");
+ $$("#side button,#mnav button").forEach(b=>b.onclick=()=>show(b.dataset.v));}
+function show(v){if(v==="users"&&actor.role!=="admin")return;$$(".view").forEach(x=>x.classList.remove("on"));$("#v-"+v).classList.add("on");$$("#side button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));render();}
+function sevB(s){return `<span class="badge b-${s==="High"?"high":s==="Medium"?"med":s==="Low"?"low":""}">${s}</span>`;}
+function bars(el,data,color){if(!data.length){el.innerHTML='<div class="empty">No data.</div>';return;}
+ const W=520,H=160,P=26,mx=Math.max(...data.map(d=>d.v),1);const bw=(W-P*2)/data.length;let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+ data.forEach((d,i)=>{const h=(H-P*2)*(d.v/mx);s+=`<rect x="${(P+i*bw+2).toFixed(1)}" y="${(H-P-h).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${color||"#60a5fa"}"><title>${esc(d.l)}: ${d.v}</title></rect>`;});
+ el.innerHTML=s+"</svg>";}
+/* views */
+function rOverview(){$("#ovRole").innerHTML=`Signed in as <b>${esc(actor.email)}</b> · <span class="badge b-info">${actor.role}</span>`;
+ const open=DB.incidents.filter(i=>i.status==="New"||i.status==="Investigating").length;
+ $("#ovStats").innerHTML=`<div class="stat"><b>${DB.events.length}</b><span>events ingested</span></div><div class="stat"><b>${DB.alerts.length}</b><span>alerts generated</span></div><div class="stat"><b>${open}</b><span>open incidents</span></div><div class="stat"><b>${DB.rules.filter(r=>r.enabled).length}/${DB.rules.length}</b><span>rules enabled</span></div>`;
+ const by={High:0,Medium:0,Low:0,Info:0};DB.events.forEach(e=>by[e.severity in by?e.severity:"Info"]++);
+ bars($("#ovSev"),Object.entries(by).map(([l,v])=>({l:l+" ("+v+")",v})));
+ const days=Array.from({length:7},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return d.toDateString();});
+ bars($("#ovTrend"),days.map(d=>({l:d.slice(4,10),v:DB.alerts.filter(a=>new Date(a.at).toDateString()===d).length})),"#7c3aed");
+ $("#ovAct").innerHTML=DB.events.slice(-6).reverse().map(e=>`<div class="mono" style="padding:5px 0;border-top:1px solid var(--line)">${fmtT(e.ts)} · ${esc(e.type)} · ${esc(e.user)}@${esc(e.src)}</div>`).join("");
+ $("#ovAudit").innerHTML=DB.audit.slice(0,6).map(a=>`<div class="mono" style="padding:5px 0;border-top:1px solid var(--line)">${fmtT(a.at)} · ${esc(a.by)} · ${esc(a.action)}</div>`).join("")||"—";}
+let pg=0;const PER=15;
+function rEvents(){const types=[...new Set(DB.events.map(e=>e.type))],srcs=[...new Set(DB.events.map(e=>e.source))];
+ const ft=$("#fType"),fs=$("#fSrc"),vt=ft.value,vs=fs.value;
+ ft.innerHTML='<option value="">All types</option>'+types.map(t=>`<option>${esc(t)}</option>`).join("");ft.value=vt;
+ fs.innerHTML='<option value="">All sources</option>'+srcs.map(t=>`<option>${esc(t)}</option>`).join("");fs.value=vs;
+ drawEvents();}
+function drawEvents(){const t=$("#fText").value.trim().toLowerCase(),ty=$("#fType").value,sv=$("#fSev").value,so=$("#fSrc").value;
+ const list=DB.events.filter(e=>(!t||(e.user+e.src+e.system+e.message).toLowerCase().includes(t))&&(!ty||e.type===ty)&&(!sv||e.severity===sv)&&(!so||e.source===so)).sort((a,b)=>b.ts-a.ts);
+ const pages=Math.max(1,Math.ceil(list.length/PER));pg=Math.min(pg,pages-1);
+ $("#evRows").innerHTML=list.slice(pg*PER,pg*PER+PER).map(e=>`<tr class="click" data-id="${e.id}"><td class="mono">${fmtT(e.ts)}</td><td><span class="badge b-info">${esc(e.type)}</span></td><td>${esc(e.user)}</td><td class="mono">${esc(e.src)}</td><td class="mono">${esc(e.system)}</td><td>${sevB(e.severity)}</td><td>${esc(e.message.slice(0,80))}</td></tr>`).join("")||'<tr><td colspan="7">No events match.</td></tr>';
+ $("#pgInfo").textContent=`Page ${pg+1}/${pages} · ${list.length} events`;
+ $$("#evRows tr.click").forEach(tr=>tr.onclick=()=>{const e=DB.events.find(x=>x.id===tr.dataset.id);
+  $("#overlay").innerHTML=`<div class="scrim"></div><div class="drawer"><h2>Normalized event</h2><dl class="kv"><dt>Timestamp</dt><dd class="mono">${fmtT(e.ts)}</dd><dt>Type</dt><dd>${esc(e.type)}</dd><dt>User</dt><dd>${esc(e.user)}</dd><dt>Source</dt><dd class="mono">${esc(e.src)}</dd><dt>Dest</dt><dd class="mono">${esc(e.dst)}</dd><dt>System</dt><dd class="mono">${esc(e.system)}</dd><dt>Severity</dt><dd>${esc(e.severity)}</dd><dt>Source feed</dt><dd class="mono">${esc(e.source)}</dd><dt>Message</dt><dd class="mono">${esc(e.message)}</dd>${e.simulated?"<dt>Label</dt><dd>simulated demo data</dd>":""}</dl><button class="btn" id="dwX">Close</button></div>`;
+  $("#dwX").onclick=$(".scrim").onclick=()=>$("#overlay").innerHTML="";});}
+let editingRule=null;
+function rRules(){$("#ruleList").innerHTML=DB.rules.map(r=>`<div class="panel"><h3>${esc(r.name)} ${r.enabled?'<span class="badge b-ok">enabled</span>':'<span class="badge">disabled</span>'} ${sevB(r.severity)}</h3>
+ <p class="sub mono">${r.kind} · ≥${r.threshold} in ${r.windowMin} min${r.eventType?" · "+esc(r.eventType):""}</p>
+ <p class="sub"><b>Purpose:</b> ${esc(r.purpose||"—")}</p><p class="sub"><b>Limitations:</b> ${esc(r.limitations||"—")}</p>
+ <div class="toolbar">${actor.role==="admin"?`<button class="btn btn-s" data-r="tog" data-id="${r.id}">${r.enabled?"Disable":"Enable"}</button><button class="btn btn-s" data-r="edit" data-id="${r.id}">Edit</button><button class="btn btn-s btn-d" data-r="del" data-id="${r.id}">Delete</button>`:`<span class="sub">Rule management requires admin.</span>`}</div></div>`).join("");
+ $("#btnNewRule").style.display=actor.role==="admin"?"":"none";
+ $$("#ruleList [data-r]").forEach(b=>b.onclick=()=>{try{guard("rules.write");}catch(e){return alert(e.message);}
+  const r=DB.rules.find(x=>x.id===b.dataset.id);
+  if(b.dataset.r==="tog"){r.enabled=!r.enabled;audit("rule.toggle",r.name+" → "+r.enabled);save();render();}
+  if(b.dataset.r==="edit"){editingRule=r.id;$("#rfTitle").textContent="Edit rule";$("#ruleForm").hidden=false;
+   $("#rName").value=r.name;$("#rKind").value=r.kind;$("#rSev").value=r.severity;$("#rThr").value=r.threshold;$("#rWin").value=r.windowMin;$("#rType").value=r.eventType||"auth.failed";$("#rPurpose").value=r.purpose||"";$("#rLimits").value=r.limitations||"";$("#rSteps").value=r.steps||"";}
+  if(b.dataset.r==="del"&&confirm(`Delete rule "${r.name}"? Existing alerts are kept.`)){DB.rules=DB.rules.filter(x=>x.id!==r.id);audit("rule.delete",r.name);save();render();}});}
+function alertCard(a,detail){const evs=a.eventIds.map(id=>DB.events.find(e=>e.id===id)).filter(Boolean).sort((x,y)=>x.ts-y.ts);
+ const rel=related(a).filter(x=>x.id!==a.id);
+ return `<div class="panel"><h3>${esc(a.ruleName)} ${sevB(a.severity)} <span class="badge ${a.status==="open"?"b-high":a.status==="triaged"?"b-med":"b-info"}">${a.status}</span></h3>
+ <p class="sub">${esc(a.summary)}</p><p class="sub mono">${a.count} events · ${fmtT(a.windowStart)} → ${fmtT(a.windowEnd)}</p>
+ ${detail?`<div class="timeline">${evs.map(e=>`<div class="t"><span class="mono">${fmtT(e.ts)}</span> · <b>${esc(e.type)}</b> · ${esc(e.user)} @ ${esc(e.src)} (${esc(e.system)})<br><span class="mono">${esc(e.message.slice(0,140))}</span></div>`).join("")}</div>
+ ${rel.length?`<p class="sub"><b>Correlated alerts</b> (shared user/source within 2h — grouping, not causation): ${rel.map(r=>`<span class="badge b-med">${esc(r.ruleName)} · ${fmtT(r.at)}</span>`).join(" ")}</p>`:""}
+ <p class="sub"><b>Recommended steps:</b><br>${esc(((DB.rules.find(r=>r.id===a.ruleId)||{}).steps||"Review the timeline and corroborate.")).replace(/\n/g,"<br>")}</p>`:""}
+ <div class="toolbar"><button class="btn btn-s" data-al="view" data-id="${a.id}">${detail?"Collapse":"Investigate"}</button>
+ ${actor.role!=="viewer"?`<button class="btn btn-s" data-al="triage" data-id="${a.id}">Mark triaged</button><button class="btn btn-s" data-al="inc" data-id="${a.id}">Create incident</button>`:""}</div></div>`;}
+let openAlert=null;
+function rAlerts(){const sv=$("#aSev").value,st=$("#aSt").value;
+ const list=DB.alerts.filter(a=>(!sv||a.severity===sv)&&(!st||a.status===st)).sort((a,b)=>b.at-a.at);
+ $("#alList").innerHTML=list.map(a=>alertCard(a,openAlert===a.id)).join("")||'<div class="empty">No alerts. Run detection from the Rules view.</div>';
+ $$("#alList [data-al]").forEach(b=>b.onclick=()=>{const a=DB.alerts.find(x=>x.id===b.dataset.id);
+  if(b.dataset.al==="view"){openAlert=openAlert===a.id?null:a.id;rAlerts();}
+  if(b.dataset.al==="triage"){try{guard("alerts.triage");}catch(e){return alert(e.message);}a.status="triaged";audit("alert.triage",a.ruleName);save();render();}
+  if(b.dataset.al==="inc"){try{guard("incidents.write");}catch(e){return alert(e.message);}
+   const id="INC-"+(Math.max(0,...DB.incidents.map(i=>+String(i.id).split("-")[1]||0))+1);
+   DB.incidents.unshift({id,title:a.ruleName+" — "+a.key,severity:a.severity,status:"New",assignee:"",alertIds:[a.id],createdAt:Date.now(),resolvedAt:null,notes:[],actions:[],history:[{at:Date.now(),by:actor.email,text:"Created from alert."}]});
+   a.status="incident";audit("incident.create",id+" from alert");save();show("incidents");}});}
+function rIncidents(){const st=$("#iSt").value;
+ $("#incList").innerHTML=DB.incidents.filter(i=>!st||i.status===st).map(i=>`<div class="panel"><h3>${esc(i.id)} — ${esc(i.title)} ${sevB(i.severity)} <span class="badge ${i.status==="Resolved"||i.status==="Closed"?"b-ok":i.status==="Investigating"?"b-med":"b-high"}">${i.status}</span></h3>
+ <p class="sub mono">opened ${fmtT(i.createdAt)}${i.resolvedAt?" · resolved "+fmtT(i.resolvedAt):""} · assignee ${esc(i.assignee||"unassigned")} · ${i.alertIds.length} alert(s)</p>
+ <p class="sub"><b>Linked alerts:</b> ${i.alertIds.map(id=>{const a=DB.alerts.find(x=>x.id===id);return a?esc(a.ruleName):"(removed)";}).join("; ")||"—"}</p>
+ <div class="grid2"><div><h3>Analyst notes</h3><div class="timeline">${i.notes.map(n=>`<div class="t"><span class="mono">${fmtT(n.at)} · ${esc(n.by)}</span><br>${esc(n.text)}</div>`).join("")||"No notes."}</div>
+ <label class="fl">Add note<textarea data-in="note" data-id="${i.id}"></textarea></label></div>
+ <div><h3>Actions taken</h3><div class="timeline">${i.actions.map(n=>`<div class="t"><span class="mono">${fmtT(n.at)} · ${esc(n.by)}</span><br>${esc(n.text)}</div>`).join("")||"No actions recorded."}</div>
+ <label class="fl">Record action<textarea data-in="act" data-id="${i.id}" style="min-height:50px"></textarea></label></div></div>
+ <div class="toolbar"><label>Status <select data-in="st" data-id="${i.id}">${["New","Investigating","Resolved","Closed"].map(s=>`<option${s===i.status?" selected":""}>${s}</option>`).join("")}</select></label>
+ <label>Assignee <input data-in="as" data-id="${i.id}" value="${esc(i.assignee||"")}" size="16"></label>
+ ${actor.role!=="viewer"?`<button class="btn btn-s btn-p" data-in="save" data-id="${i.id}">Save</button><button class="btn btn-s" data-in="rep" data-id="${i.id}">View report</button>`:`<span class="sub">Read-only for viewers.</span>`}</div></div>`).join("")||'<div class="empty">No incidents.</div>';
+ $$("#incList [data-in='save']").forEach(b=>b.onclick=()=>{try{guard("incidents.write");}catch(e){return alert(e.message);}
+  const i=DB.incidents.find(x=>x.id===b.dataset.id);const g=n=>document.querySelector(`[data-in="${n}"][data-id="${i.id}"]`);
+  const nt=g("note").value.trim(),ac=g("act").value.trim();
+  if(nt)i.notes.push({at:Date.now(),by:actor.email,text:nt.slice(0,2000)});
+  if(ac)i.actions.push({at:Date.now(),by:actor.email,text:ac.slice(0,2000)});
+  const ns=g("st").value;if(ns!==i.status){i.history.push({at:Date.now(),by:actor.email,text:`${i.status} → ${ns}`});i.status=ns;if(ns==="Resolved"||ns==="Closed")i.resolvedAt=Date.now();else i.resolvedAt=null;}
+  i.assignee=g("as").value.slice(0,80);audit("incident.update",i.id+" "+i.status);save();render();});
+ $$("#incList [data-in='rep']").forEach(b=>b.onclick=()=>{show("reports");$("#rpInc").value=b.dataset.id;drawIncReport();});}
+/* import parsers */
+function parseCSVRows(t){const rows=[];let r=[],c="",q=false;for(let i=0;i<t.length;i++){const ch=t[i];
+ if(q){if(ch==='"'){if(t[i+1]==='"'){c+='"';i++;}else q=false;}else c+=ch;}
+ else{if(ch==='"')q=true;else if(ch===","){r.push(c);c="";}else if(ch==="\n"){r.push(c);rows.push(r);r=[];c="";}else if(ch!=="\r")c+=ch;}}
+ if(c!==""||r.length){r.push(c);rows.push(r);}return rows.filter(x=>x.some(v=>v.trim()));}
+function normalize(obj,source){const g=(...ks)=>{for(const k of ks){if(obj[k]!=null&&obj[k]!=="")return obj[k];for(const ok of Object.keys(obj)){if(ok.toLowerCase()===k.toLowerCase())return obj[ok];}}return null;};
+ const tsRaw=g("timestamp","ts","time","date");const ts=tsRaw?Date.parse(tsRaw):NaN;
+ const type=String(g("event_type","event","type","status")||"unknown").toLowerCase();
+ const map={failed:"auth.failed",failure:"auth.failed",success:"auth.success",accepted:"auth.success",error:"app.error"};
+ return{ts:isNaN(ts)?null:ts,type:map[type]||(/fail/.test(type)?"auth.failed":/success|accept/.test(type)?"auth.success":/error/.test(type)?"app.error":type),
+  user:String(g("user","username","account")||"—"),src:String(g("src","source","ip","source_ip","host")||"—"),dst:String(g("dst","dest","destination")||"—"),
+  system:String(g("system","host","source_system")||source),message:String(g("message","msg","detail")||JSON.stringify(obj)).slice(0,500),severity:String(g("severity")||"Info")};
+}
+let pending=null;
+function parseImport(name,text){const events=[],errors=[];
+ if(/\.json$/i.test(name)){let j;try{j=JSON.parse(text);}catch(e){return{events,errors:["Invalid JSON: "+e.message]};}
+  const arr=Array.isArray(j)?j:(j.events||j.records||[]);if(!arr.length)return{events,errors:["JSON has no array of events (expected [...] or {events:[...]})."]};
+  arr.slice(0,2000).forEach((o,i)=>{if(typeof o!=="object"){errors.push(`row ${i+1}: not an object`);return;}
+   const n=normalize(o,name);if(n.ts==null){errors.push(`row ${i+1}: unparseable timestamp`);return;}events.push(n);});}
+ else if(/\.csv$/i.test(name)){const rows=parseCSVRows(text);if(rows.length<2)return{events,errors:["CSV needs a header row plus data."]};
+  const head=rows[0].map(h=>h.trim());rows.slice(1,2001).forEach((r,i)=>{const o={};head.forEach((h,j)=>o[h]=r[j]);const n=normalize(o,name);
+   if(n.ts==null){errors.push(`row ${i+2}: unparseable timestamp`);return;}events.push(n);});}
+ else{ // auth log lines
+  text.split(/\n/).forEach((ln,i)=>{if(!ln.trim())return;let m;const t=(ln.match(/(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(?::\d{2})?)/)||[])[1];
+   if(!t){errors.push(`line ${i+1}: no timestamp`);return;}
+   if((m=ln.match(/Failed password for (?:invalid user )?(\S+) from (\S+)/i)))events.push({ts:Date.parse(t),type:"auth.failed",user:m[1],src:m[2],dst:"—",system:name,message:ln.trim(),severity:"Medium"});
+   else if((m=ln.match(/Accepted password for (\S+) from (\S+)/i)))events.push({ts:Date.parse(t),type:"auth.success",user:m[1],src:m[2],dst:"—",system:name,message:ln.trim(),severity:"Info"});
+   else{const low=ln.toLowerCase();const u=(ln.match(/user(?:name)?[=:]\s*([\w.\-]+)/i)||[])[1]||"—",ip=(ln.match(/(\d{1,3}(?:\.\d{1,3}){3})/)||[])[1]||"—";
+    const ty=/fail|denied/.test(low)?"auth.failed":/success|accept/.test(low)?"auth.success":/error/.test(low)?"app.error":"unknown";
+    if(ty==="unknown"&&u==="—"&&ip==="—"){errors.push(`line ${i+1}: unsupported format`);return;}
+    events.push({ts:Date.parse(t),type:ty,user:u,src:ip,dst:"—",system:name,message:ln.trim(),severity:ty==="auth.failed"?"Medium":"Info"});}});}
+ return{events,errors};}
+function rSources(){$("#srcList").innerHTML=DB.sources.slice().reverse().map(s=>`<div class="panel"><h3>${esc(s.name)} <span class="badge b-info">${esc(s.kind)}</span></h3><p class="sub mono">${s.count} events · ${s.errors} quarantined · ${fmtT(s.at)} · by ${esc(s.by)}</p></div>`).join("");}
+function incidentReport(i){const alerts=i.alertIds.map(id=>DB.alerts.find(a=>a.id===id)).filter(Boolean);
+ const evs=[...new Set(alerts.flatMap(a=>a.eventIds))].map(id=>DB.events.find(e=>e.id===id)).filter(Boolean).sort((a,b)=>a.ts-b.ts);
+ return{incident:{id:i.id,title:i.title,severity:i.severity,status:i.status,assignee:i.assignee,opened:new Date(i.createdAt).toISOString(),resolved:i.resolvedAt?new Date(i.resolvedAt).toISOString():null},
+  alerts:alerts.map(a=>({rule:a.ruleName,severity:a.severity,summary:a.summary,window:[new Date(a.windowStart).toISOString(),new Date(a.windowEnd).toISOString()]})),
+  events:evs.map(e=>({ts:new Date(e.ts).toISOString(),type:e.type,user:e.user,src:e.src,system:e.system,message:e.message})),
+  notes:i.notes,actions:i.actions,history:i.history,generatedAt:new Date().toISOString(),generatedBy:actor.email};}
+function drawIncReport(){const i=DB.incidents.find(x=>x.id===$("#rpInc").value);if(!i){$("#repBody").innerHTML='<div class="empty">Select an incident.</div>';return;}
+ const r=incidentReport(i);
+ $("#repBody").innerHTML=`<div class="panel"><h3>${esc(r.incident.id)} — ${esc(r.incident.title)}</h3>
+ <p class="sub mono">status ${r.incident.status} · severity ${r.incident.severity} · opened ${r.incident.opened} · generated ${r.generatedAt}</p>
+ <p class="sub"><b>Alerts (${r.alerts.length}):</b> ${r.alerts.map(a=>esc(a.rule)).join("; ")||"—"}</p>
+ <p class="sub"><b>Events (${r.events.length}) · Notes (${r.notes.length}) · Actions (${r.actions.length})</b></p>
+ <div class="timeline">${r.events.slice(0,20).map(e=>`<div class="t"><span class="mono">${e.ts}</span> · ${esc(e.type)} · ${esc(e.user)}@${esc(e.src)}</div>`).join("")}${r.events.length>20?`<div class="t">… +${r.events.length-20} more (see JSON export)</div>`:""}</div></div>`;}
+function rReports(){$("#rpInc").innerHTML=DB.incidents.map(i=>`<option value="${i.id}">${esc(i.id)} — ${esc(i.title.slice(0,40))}</option>`).join("")||"<option value=''>—</option>";drawIncReport();}
+function rUsers(){if(actor.role!=="admin"){$("#userList").innerHTML='<div class="errbar">Admin only.</div>';return;}
+ const u=getUsers();$("#userList").innerHTML=Object.entries(u).map(([e,v])=>`<div class="panel"><h3>${esc(e)} <span class="badge b-info">${v.role}</span></h3>
+ <div class="toolbar"><label>Role <select data-u="${e}">${["viewer","analyst","admin"].map(r=>`<option${r===v.role?" selected":""}>${r}</option>`).join("")}</select></label><button class="btn btn-s" data-uu="save" data-id="${e}">Save</button>${e!==actor.email?`<button class="btn btn-s btn-d" data-uu="del" data-id="${e}">Remove</button>`:""}</div></div>`).join("");
+ $$("#userList [data-uu]").forEach(b=>b.onclick=()=>{const us=getUsers();
+  if(b.dataset.uu==="save"){us[b.dataset.id].role=document.querySelector(`[data-u="${b.dataset.id}"]`).value;setUsers(us);audit("user.role",b.dataset.id+" → "+us[b.dataset.id].role);save();render();}
+  if(b.dataset.uu==="del"&&confirm("Remove user "+b.dataset.id+"?")){delete us[b.dataset.id];setUsers(us);audit("user.remove",b.dataset.id);save();render();}});}
+function rSettings(){$("#auditList").innerHTML=`<div class="tblwrap"><table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead><tbody>${DB.audit.slice(0,30).map(a=>`<tr><td class="mono">${fmtT(a.at)}</td><td>${esc(a.by)}</td><td class="mono">${esc(a.action)}</td><td>${esc(a.detail)}</td></tr>`).join("")}</tbody></table></div>`;}
+function render(){if(!actor)return;rOverview();rEvents();rRules();rAlerts();rIncidents();rSources();rReports();rUsers();rSettings();}
+/* boot */
+function afterAuth(){$("#authView").hidden=true;$("#app").hidden=false;$("#btnSignout").hidden=false;$("#userChip").textContent=actor.email+" · "+actor.role;renderNav();render();show("overview");}
+async function ensureUsers(){const u=getUsers();
+ const mk=async(e,p,r)=>{if(!u[e])u[e]={salt:"s",hash:await sha("s::"+p),role:r};};
+ await mk("admin@sentinelcore.demo","admin123","admin");await mk("analyst@demo","demo1234","analyst");await mk("viewer@demo","view1234","viewer");setUsers(u);}
+async function boot(){load();await ensureUsers();
+ $("#tabLogin").onclick=()=>{$("#paneLogin").hidden=false;$("#paneReg").hidden=true;};
+ $("#tabReg").onclick=()=>{$("#paneLogin").hidden=true;$("#paneReg").hidden=false;};
+ if(me()&&getUsers()[me()]){const u=getUsers()[me()];actor={email:me(),role:u.role};afterAuth();$("#authView").hidden=true;return;}
+ $("#authView").hidden=false;
+ const err=m=>{const e=$("#authErr");e.hidden=!m;e.textContent=m||"";};
+ const loginAs=email=>{const u=getUsers()[email];sessionStorage.setItem(KS,email);actor={email,role:u.role};audit("auth.login","");save();afterAuth();};
+ $$("[data-demo]").forEach(b=>b.onclick=()=>loginAs(b.dataset.demo));
+ $("#btnLogin").onclick=async()=>{const e=$("#liEmail").value.trim().toLowerCase(),u=getUsers()[e];
+  if(!u||await sha(u.salt+"::"+$("#liPw").value)!==u.hash)return err("Invalid email or password.");loginAs(e);};
+ $("#btnReg").onclick=async()=>{const e=$("#rgEmail").value.trim().toLowerCase(),p=$("#rgPw").value,u=getUsers();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return err("Enter a valid email.");if(p.length<8)return err("Min 8.");
+  if(u[e])return err("Exists — sign in.");u[e]={salt:"s",hash:await sha("s::"+p),role:"viewer"};setUsers(u);loginAs(e);};
+ $("#btnSignout").onclick=()=>{sessionStorage.removeItem(KS);location.reload();};
+ $("#btnRun").onclick=()=>{try{guard("rules.run");}catch(e){$("#ruleMsg").innerHTML=`<div class="errbar">${esc(e.message)}</div>`;return;}
+  const before=DB.alerts.length;DB.alerts=runAll();const added=DB.alerts.length-before;audit("detection.run",added+" new alert(s)");save();render();
+  $("#ruleMsg").innerHTML=`<p class="note">Detection complete: <b>${added}</b> new alert(s), ${DB.alerts.length} total. Candidates — investigate before concluding.</p>`;};
+ $("#btnNewRule").onclick=()=>{editingRule=null;$("#rfTitle").textContent="New rule";$("#ruleForm").hidden=false;};
+ $("#btnRuleCancel").onclick=()=>{$("#ruleForm").hidden=true;};
+ $("#btnRuleSave").onclick=()=>{try{guard("rules.write");}catch(e){return alert(e.message);}
+  const r={id:editingRule||uid(),name:$("#rName").value.trim()||"Untitled rule",kind:$("#rKind").value,severity:$("#rSev").value,threshold:Math.max(2,+$("#rThr").value||2),windowMin:Math.max(1,+$("#rWin").value||1),eventType:$("#rType").value.trim()||"auth.failed",enabled:true,purpose:$("#rPurpose").value.trim(),limitations:$("#rLimits").value.trim(),steps:$("#rSteps").value.trim()};
+  if(editingRule){DB.rules[DB.rules.findIndex(x=>x.id===editingRule)]=r;audit("rule.edit",r.name);}else{DB.rules.push(r);audit("rule.create",r.name);}
+  editingRule=null;$("#ruleForm").hidden=true;save();render();};
+ $("#btnFGo").onclick=()=>{pg=0;drawEvents();};$("#pgPrev").onclick=()=>{pg=Math.max(0,pg-1);drawEvents();};$("#pgNext").onclick=()=>{pg++;drawEvents();};
+ $("#btnAGo").onclick=()=>rAlerts();$("#btnIGo").onclick=()=>rIncidents();
+ $("#btnNewInc").onclick=()=>{try{guard("incidents.write");}catch(e){return alert(e.message);}
+  const t=prompt("Incident title:");if(!t)return;const id="INC-"+(Math.max(0,...DB.incidents.map(i=>+String(i.id).split("-")[1]||0))+1);
+  DB.incidents.unshift({id,title:t.slice(0,120),severity:"Medium",status:"New",assignee:"",alertIds:[],createdAt:Date.now(),resolvedAt:null,notes:[],actions:[],history:[{at:Date.now(),by:actor.email,text:"Created blank."}]});
+  audit("incident.create",id);save();render();};
+ $("#btnPreview").onclick=()=>{try{guard("events.write");}catch(e){$("#prevBody").innerHTML=`<div class="errbar">${esc(e.message)}</div>`;return;}
+  const f=$("#upFile").files[0];if(!f){$("#prevBody").innerHTML='<div class="errbar">Choose a file.</div>';return;}
+  if(!/\.(csv|json|log|txt)$/i.test(f.name)){$("#prevBody").innerHTML='<div class="errbar">Supported: .csv, .json, .log, .txt</div>';return;}
+  if(f.size>2097152){$("#prevBody").innerHTML='<div class="errbar">File exceeds the 2 MB demo cap.</div>';return;}
+  const rd=new FileReader();rd.onload=()=>{const r=parseImport(f.name,String(rd.result||""));pending={name:f.name,kind:/\.json$/i.test(f.name)?"json":/\.csv$/i.test(f.name)?"csv":"auth-log",...r};
+   $("#prevBody").innerHTML=`<p class="note"><b>${r.events.length}</b> valid · <b>${r.errors.length}</b> quarantined from <span class="mono">${esc(f.name)}</span></p>
+   ${r.events.length?`<div class="tblwrap"><table><thead><tr><th>Time</th><th>Type</th><th>User</th><th>Src</th><th>System</th></tr></thead><tbody>${r.events.slice(0,10).map(e=>`<tr><td class="mono">${fmtT(e.ts)}</td><td>${esc(e.type)}</td><td>${esc(e.user)}</td><td class="mono">${esc(e.src)}</td><td class="mono">${esc(e.system)}</td></tr>`).join("")}</tbody></table></div>`:""}
+   ${r.errors.length?`<div class="lg">${r.errors.slice(0,12).map(esc).join("\n")}${r.errors.length>12?`\n… +${r.errors.length-12} more`:""}</div>`:""}
+   <div class="toolbar"><button class="btn btn-p btn-s" id="btnConfirm" ${r.events.length?"":"disabled"}>Confirm import (${r.events.length})</button></div>`;
+   const c=$("#btnConfirm");if(c)c.onclick=()=>{const evs=pending.events.map(e=>({id:uid(),...e,source:pending.name,simulated:false}));
+    DB.events.push(...evs);DB.events.sort((a,b)=>a.ts-b.ts);
+    DB.sources.push({id:uid(),name:pending.name,kind:pending.kind,at:Date.now(),count:evs.length,errors:pending.errors.length,by:actor.email});
+    audit("events.import",pending.name+" +"+evs.length);pending=null;$("#prevBody").innerHTML='<p class="note">Imported. Run detection to evaluate new events.</p>';save();render();};};
+  rd.readAsText(f);};
+ $("#btnFindingFmt").onclick=()=>{$("#findingMsg").innerHTML='<div class="lg">{"source":"sentinellog|fileguard|dependsecure","findings":[{"title":"…","severity":"High|Medium|Low","detail":"…","at":"ISO-8601?"}]}</div>';};
+ $("#btnFindingDemo").onclick=()=>{try{guard("events.write");}catch(e){return alert(e.message);}
+  const now=Date.now();[["sentinellog","Repeated failures (imported lead)","Medium"],["fileguard","Baseline drift: app-config.yaml (imported)","High"],["dependsecure","Outdated dependency pinned (imported)","Low"]].forEach(([s,t,sv],i)=>{
+   DB.events.push({id:uid(),ts:now-i*6e4,type:"finding.imported",user:"—",src:s,dst:"—",system:"connector",message:t,severity:sv,source:"connector:"+s,simulated:true});});
+  DB.sources.push({id:uid(),name:"portfolio-connector (demo)",kind:"connector",at:now,count:3,errors:0,by:actor.email});
+  audit("events.import","connector demo +3");save();render();$("#findingMsg").innerHTML='<p class="note">3 connector findings imported as events. Documented format above.</p>';};
+ $("#rpInc").onchange=()=>drawIncReport();
+ $("#btnIncJson").onclick=()=>{try{guard("reports");}catch(e){return alert(e.message);}const i=DB.incidents.find(x=>x.id===$("#rpInc").value);if(!i)return;
+  dl(`${i.id}-report.json`,JSON.stringify(incidentReport(i),null,2),"application/json");audit("report.export",i.id+" json");save();};
+ $("#btnEvCsv").onclick=()=>{try{guard("reports");}catch(e){return alert(e.message);}
+  dl("sentinelcore-events.csv","timestamp,type,user,src,dst,system,severity,source,message\n"+DB.events.map(e=>[new Date(e.ts).toISOString(),csvEsc(e.type),csvEsc(e.user),csvEsc(e.src),csvEsc(e.dst),csvEsc(e.system),e.severity,csvEsc(e.source),csvEsc(e.message)].join(",")).join("\n"),"text/csv");audit("report.export","events csv");save();};
+ $("#btnAlCsv").onclick=()=>{try{guard("reports");}catch(e){return alert(e.message);}
+  dl("sentinelcore-alerts.csv","time,rule,severity,status,key,summary\n"+DB.alerts.map(a=>[new Date(a.at).toISOString(),csvEsc(a.ruleName),a.severity,a.status,csvEsc(a.key),csvEsc(a.summary)].join(",")).join("\n"),"text/csv");audit("report.export","alerts csv");save();};
+ $("#btnPw").onclick=async()=>{const p=$("#setPw").value;if(p.length<8){$("#setMsg").innerHTML='<div class="errbar">Min 8.</div>';return;}const u=getUsers();u[me()].hash=await sha(u[me()].salt+"::"+p);setUsers(u);$("#setMsg").innerHTML='<p class="note">Changed.</p>';};
+ $("#btnReseed").onclick=()=>{if(confirm("Reset the demo environment (events, alerts, incidents)? Users are kept.")){DB=seed();save();render();}};
+}
+document.addEventListener("DOMContentLoaded",boot);
+</script>
+</body>
+</html>

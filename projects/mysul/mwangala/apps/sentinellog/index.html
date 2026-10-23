@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SentinelLog — Security Log Analyzer (Demo)</title>
+<meta name="description" content="SentinelLog demo: analyze authentication logs, run detection rules, and export security reports. Simulated data.">
+<link rel="stylesheet" href="../../css/app-shared.css">
+<style>.sevbar{display:flex;height:10px;border-radius:6px;overflow:hidden;margin:8px 0}.sevbar i{display:block}.lg{font-family:var(--m);font-size:.78rem;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}</style>
+</head>
+<body class="app-dark">
+<header class="topbar">
+  <a class="brand" href="../../"><span class="brand-mark">S</span>SentinelLog</a>
+  <span class="sim">Demo · Simulated data</span><span class="sp"></span>
+  <span class="userchip" id="userChip"></span>
+  <a class="btn btn-s" href="../../">← Portfolio</a>
+  <button class="btn btn-s" id="btnSignout" hidden>Sign out</button>
+</header>
+
+<div id="authView" class="authwrap" hidden>
+  <h1>SentinelLog</h1>
+  <p class="sub">Security Log Analyzer — sign in to analyze logs. Demo auth (browser-local).</p>
+  <div class="toolbar"><button class="btn btn-s" id="tabLogin">Sign in</button><button class="btn btn-s" id="tabReg">Register</button></div>
+  <div id="paneLogin"><label class="fl">Email<input id="liEmail" type="email" autocomplete="username"></label>
+  <label class="fl">Password<input id="liPw" type="password" autocomplete="current-password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnLogin">Sign in</button><button class="btn" id="btnDemo">Use demo account</button></div></div>
+  <div id="paneReg" hidden><label class="fl">Email<input id="rgEmail" type="email" autocomplete="username"></label>
+  <label class="fl">Password (min 8 chars)<input id="rgPw" type="password" autocomplete="new-password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnReg">Create account</button></div></div>
+  <div class="errbar" id="authErr" hidden></div>
+  <p class="note">Demo account: <span class="mono">analyst@demo / demo1234</span>. Data is per-user and stays in this browser. Production uses server-side auth + bcrypt/argon2.</p>
+</div>
+
+<div id="app" hidden>
+<div class="mobile-nav" id="mnav"></div>
+<div class="layout">
+  <aside class="side" id="side" aria-label="SentinelLog navigation"></aside>
+  <main class="main">
+    <section class="view" id="v-overview"><h1>Overview</h1><p class="sub">Suspicious <b>patterns</b> are investigation leads — they do not prove an attack.</p>
+      <div class="toolbar"><label>Dataset <select id="ovDs"></select></label></div>
+      <div class="stats" id="ovStats"></div>
+      <div class="grid2"><div class="panel"><h3>Authentication activity over time</h3><div id="ovChart"></div></div>
+      <div class="panel"><h3>Events by severity</h3><div id="ovSev"></div></div></div>
+      <div class="panel"><h3>Recent detections</h3><div id="ovDet"></div></div>
+    </section>
+    <section class="view" id="v-datasets"><h1>Datasets</h1><p class="sub">Upload <span class="mono">.log</span>, <span class="mono">.txt</span>, <span class="mono">.csv</span>. Files are treated as untrusted input: validated, never executed.</p>
+      <div class="panel"><h3>Import log file</h3>
+        <div class="toolbar"><input type="file" id="upFile" accept=".log,.txt,.csv"><button class="btn btn-p" id="btnUpload">Parse &amp; import</button>
+        <button class="btn" id="btnSample">Load sample dataset</button><button class="btn" id="btnFmt">Download format example</button></div>
+        <div id="upMsg"></div></div>
+      <div id="dsList"></div>
+    </section>
+    <section class="view" id="v-events"><h1>Security events</h1><p class="sub">Investigate individual events. Click a row for detail.</p>
+      <div class="toolbar"><label>Dataset <select id="evDs"></select></label>
+        <input id="fText" placeholder="Search user, IP, message…" size="26">
+        <select id="fType"><option value="">All types</option><option>auth.success</option><option>auth.failed</option><option>app.error</option><option>unknown</option></select>
+        <select id="fSev"><option value="">All severities</option><option>High</option><option>Medium</option><option>Low</option></select>
+        <button class="btn btn-s" id="btnFGo">Apply</button></div>
+      <div class="tblwrap"><table><thead><tr><th>Time</th><th>User</th><th>Source IP</th><th>Event</th><th>Severity</th><th>Message</th></tr></thead><tbody id="evRows"></tbody></table></div>
+      <div class="pager"><button class="btn btn-s" id="pgPrev">← Prev</button><span id="pgInfo"></span><button class="btn btn-s" id="pgNext">Next →</button></div>
+    </section>
+    <section class="view" id="v-rules"><h1>Detection rules</h1><p class="sub">Transparent threshold + time-window rules. Test any rule against a dataset before trusting it.</p>
+      <div class="toolbar"><label>Test against <select id="rlDs"></select></label></div>
+      <div id="ruleList"></div>
+      <div class="panel"><h3 id="ruleFormTitle">New rule</h3>
+        <div class="grid2"><div><label class="fl">Name<input id="rName" placeholder="Repeated login failures"></label>
+        <label class="fl">Event type<select id="rType"><option>auth.failed</option><option>auth.success</option><option>app.error</option></select></label>
+        <label class="fl">Group by<select id="rGroup"><option value="ip">Source IP</option><option value="user">Username</option><option value="all">All events</option></select></label></div>
+        <div><label class="fl">Threshold (count ≥)<input id="rThr" type="number" min="2" value="5"></label>
+        <label class="fl">Window (minutes)<input id="rWin" type="number" min="1" value="10"></label>
+        <label class="fl">Severity<select id="rSev"><option>High</option><option>Medium</option><option>Low</option></select></label></div></div>
+        <label class="fl">Description<input id="rDesc" placeholder="What this rule looks for"></label>
+        <label class="fl">Investigation steps<textarea id="rSteps" placeholder="1. Check …&#10;2. Verify …"></textarea></label>
+        <div class="toolbar"><button class="btn btn-p" id="btnRuleSave">Save rule</button><button class="btn" id="btnRuleCancel">Cancel</button></div>
+      </div>
+      <div class="panel"><h3>Rule test results</h3><div id="ruleTest"><p class="sub">No test run yet.</p></div></div>
+    </section>
+    <section class="view" id="v-reports"><h1>Reports</h1><p class="sub">Summaries reference their dataset and generation time for reproducibility.</p>
+      <div class="toolbar"><label>Dataset <select id="rpDs"></select></label><button class="btn btn-p" id="btnGenRep">Generate report</button></div>
+      <div id="repList"></div>
+    </section>
+    <section class="view" id="v-settings"><h1>Settings</h1>
+      <div class="panel"><h3>Ingestion</h3><label class="fl">Max file size (MB)<input id="setMaxMB" type="number" min="1" max="10" value="2"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnSetSave">Save settings</button></div></div>
+      <div class="panel"><h3>Account</h3><label class="fl">New password<input id="setPw" type="password"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnPw">Change password</button><button class="btn btn-s btn-d" id="btnWipe">Delete my data</button><button class="btn btn-s" id="btnReseed">Reset demo data</button></div><div id="setMsg"></div></div>
+      <div class="panel"><h3>Security note</h3><p class="note">Demo-grade auth: salted SHA-256 in this browser, per-user namespaced storage. The production FastAPI build enforces ownership on the server, hashes with bcrypt/argon2, and audit-logs access. Uploads are validated by extension + size and never executed.</p></div>
+    </section>
+  </main>
+</div>
+</div>
+<div id="overlay"></div>
+
+<script>
+"use strict";
+/* ---------- utils ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtT=t=>new Date(t).toLocaleString();
+const dl=(name,content,type)=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);};
+const csvEsc=v=>{v=String(v??"");return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+async function hashPw(pw,salt){try{if(crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(salt+"::"+pw));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}let h1=0xdeadbeef,h2=0x41c6ce57;const s=salt+"::"+pw;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677);}return "f"+(Math.imul(h1^h2>>>0,2246822519)>>>0).toString(16);}
+/* ---------- auth + per-user store ---------- */
+const KU="sl1:users", KS="sl1:session", KD=u=>"sl1:data:"+u;
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(KU)||"{}")}catch(e){return{}}};
+const setUsers=u=>localStorage.setItem(KU,JSON.stringify(u));
+const me=()=>sessionStorage.getItem(KS);
+let DB=null;
+function load(){try{DB=JSON.parse(localStorage.getItem(KD(me()))||null)}catch(e){DB=null}if(!DB){DB=seed();save();}}
+function save(){localStorage.setItem(KD(me()),JSON.stringify(DB));}
+function seed(){const ds=sampleDataset();return{datasets:[ds],rules:defaultRules(),reports:[],active:ds.id,settings:{maxMB:2}};}
+function defaultRules(){return[
+ {id:uid(),name:"Repeated login failures from one IP",eventType:"auth.failed",groupBy:"ip",threshold:5,windowMin:10,severity:"High",enabled:true,desc:"Flags ≥5 failed logins from a single source IP within 10 minutes.",steps:"1. Confirm the IP is not shared/NAT.\n2. Check targeted usernames and timing.\n3. Review firewall/auth logs for the window.\n4. Escalate only with corroborating evidence."},
+ {id:uid(),name:"Repeated failures against one user",eventType:"auth.failed",groupBy:"user",threshold:4,windowMin:15,severity:"Medium",enabled:true,desc:"Flags ≥4 failed logins for one username within 15 minutes.",steps:"1. Contact the user out-of-band if lockout risk.\n2. Check source IPs for distribution.\n3. Look for a success following the failures."},
+ {id:uid(),name:"Application error burst",eventType:"app.error",groupBy:"all",threshold:8,windowMin:30,severity:"Low",enabled:false,desc:"Flags ≥8 application errors within 30 minutes (availability lead).",steps:"1. Correlate with deploys or config changes.\n2. Check upstream dependencies."}];}
+/* ---------- sample data (SIMULATED) ---------- */
+function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function sampleDataset(){
+  const R=rng(42),now=Date.now(),users=["chanda","j.mwansa","k.banda","t.phiri","m.zulu"],ips=["192.168.1.10","192.168.1.11","192.168.1.12","172.16.0.5","10.0.4.21"];
+  const ev=[];let n=0;const push=(ts,user,ip,event,msg)=>ev.push({id:"e"+(n++),ts,user,ip,event,severity:event==="auth.failed"?"Medium":"Low",message:msg});
+  for(let d=6;d>=0;d--)for(let i=0;i<14;i++){const ts=now-d*864e5-Math.floor(R()*8e7);const u=users[Math.floor(R()*4)],ip=ips[Math.floor(R()*4)];
+    if(R()<0.78)push(ts,u,ip,"auth.success",`Accepted password for ${u} from ${ip} port 512${Math.floor(R()*9)} ssh2`);
+    else push(ts,u,ip,"auth.failed",`Failed password for ${u} from ${ip} port 512${Math.floor(R()*9)} ssh2`);}
+  const burst=now-26*36e5;for(let i=0;i<12;i++)push(burst+i*38e3,"chanda","10.0.4.21","auth.failed",`Failed password for chanda from 10.0.4.21 port 60${100+i} ssh2`);
+  push(burst+13*38e3,"k.banda","10.0.4.21","auth.failed","Failed password for k.banda from 10.0.4.21 port 60231 ssh2");
+  for(let i=0;i<5;i++)push(now-Math.floor(R()*5*864e5),"system","app-01","app.error",`app-01 web: upstream timeout after 3000ms (req ${uid()})`);
+  ev.sort((a,b)=>a.ts-b.ts);
+  return{id:uid(),name:"Sample auth logs (simulated)",filename:"sample-auth.log",createdAt:now,simulated:true,events:ev,errors:[{line:3,reason:" Illustrative malformed line: missing timestamp (shown so error handling is visible)."}]};
+}
+/* ---------- parser ---------- */
+function parseCSV(text){const rows=[];let row=[],q="",inq=false;for(let i=0;i<text.length;i++){const c=text[i];
+ if(inq){if(c==='"'){if(text[i+1]==='"'){q+='"';i++;}else inq=false;}else q+=c;}
+ else{if(c==='"')inq=true;else if(c===","){row.push(q);q="";}else if(c==="\n"){row.push(q);rows.push(row);row=[];q="";}else if(c!=="\r")q+=c;}}
+ if(q!==""||row.length){row.push(q);rows.push(row);}return rows.filter(r=>r.some(x=>x.trim()!==""));}
+function parseText(text,filename){
+  const events=[],errors=[];let n=0;
+  const lines=text.split(/\n/);
+  const looksCSV=/\.csv$/i.test(filename)||(lines[0]&&lines[0].split(",").length>=3&&/user|ip|event|time/i.test(lines[0]));
+  if(looksCSV){const rows=parseCSV(text);if(!rows.length)return{events,errors:[{line:0,reason:"Empty CSV."}]};
+    const head=rows[0].map(h=>h.trim().toLowerCase());
+    const ci=(...ns)=>{for(const x of ns){const i=head.findIndex(h=>h===x||h.includes(x));if(i>=0)return i;}return -1;};
+    const cT=ci("timestamp","time","date"),cU=ci("user","username","account"),cI=ci("ip","source","src","host"),cE=ci("event","type","status","outcome"),cM=ci("message","msg","detail");
+    if(cU<0&&cI<0&&cE<0)return{events,errors:[{line:1,reason:"Unsupported CSV: need at least user/IP/event columns."}]};
+    for(let i=1;i<rows.length;i++){const r=rows[i];try{
+      const rawE=(cE>=0?r[cE]:"").toLowerCase();let event="unknown";
+      if(/fail|denied|invalid|error/.test(rawE))event=rawE.includes("app")?"app.error":"auth.failed";
+      else if(/success|accept|ok|pass/.test(rawE))event="auth.success";
+      const ts=cT>=0&&r[cT]?Date.parse(r[cT]):NaN;
+      events.push({id:uid()+(n++),ts:isNaN(ts)?Date.now():ts,user:cU>=0?r[cU].trim()||"unknown":"unknown",ip:cI>=0?r[cI].trim()||"unknown":"unknown",event,severity:event==="auth.failed"?"Medium":"Low",message:cM>=0?r[cM]:rows[i].join(" | ")});
+    }catch(e){errors.push({line:i+1,reason:"Could not parse CSV row."});}}
+    return{events,errors};}
+  const tsRe=/(\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}(?::\d{2})?)/;
+  lines.forEach((ln,idx)=>{if(!ln.trim())return;let m;
+    if((m=ln.match(/Failed password for (?:invalid user )?(\S+) from (\S+)/i))){const t=ln.match(tsRe);events.push({id:uid()+(n++),ts:t?Date.parse(t[1]):Date.now(),user:m[1],ip:m[2],event:"auth.failed",severity:"Medium",message:ln.trim()});return;}
+    if((m=ln.match(/Accepted password for (\S+) from (\S+)/i))){const t=ln.match(tsRe);events.push({id:uid()+(n++),ts:t?Date.parse(t[1]):Date.now(),user:m[1],ip:m[2],event:"auth.success",severity:"Low",message:ln.trim()});return;}
+    const user=(ln.match(/user(?:name)?[=:]\s*([A-Za-z0-9._-]+)/i)||[])[1],ip=(ln.match(/ip[=:]\s*([\d.]+)/i)||ln.match(/(\d{1,3}(?:\.\d{1,3}){3})/)||[])[1];
+    const low=ln.toLowerCase();let event=null;
+    if(/fail|denied|invalid|unauthori/.test(low))event="auth.failed";else if(/accept|success|login ok|authenticated/.test(low))event="auth.success";else if(/error|exception|timeout|critical/.test(low))event="app.error";
+    const t=ln.match(tsRe);
+    if(event&&(t||user||ip)){events.push({id:uid()+(n++),ts:t?Date.parse(t[1]):Date.now(),user:user||"unknown",ip:ip||"unknown",event,severity:event==="auth.failed"?"Medium":"Low",message:ln.trim()});}
+    else errors.push({line:idx+1,reason:"Unsupported format: no recognized timestamp/user/IP/event pattern."});});
+  return{events,errors};
+}
+/* ---------- detection ---------- */
+function runRule(rule,events){
+  const ms=rule.windowMin*60000,match=events.filter(e=>e.event===rule.eventType).sort((a,b)=>a.ts-b.ts);
+  const g={};match.forEach(e=>{const k=rule.groupBy==="all"?"all":(e[rule.groupBy]||"unknown");(g[k]=g[k]||[]).push(e);});
+  const out=[];for(const[key,arr]of Object.entries(g)){let i=0;
+    for(let j=0;j<arr.length;j++){while(arr[j].ts-arr[i].ts>ms)i++;if(j-i+1>=rule.threshold){out.push({ruleId:rule.id,ruleName:rule.name,severity:rule.severity,key,count:j-i+1,windowStart:arr[i].ts,windowEnd:arr[j].ts,eventIds:arr.slice(i,j+1).map(e=>e.id)});i=j+1;}}}
+  return out;
+}
+const activeDs=()=>DB.datasets.find(d=>d.id===DB.active)||DB.datasets[0];
+function allDetections(ds){ds=ds||activeDs();if(!ds)return[];return DB.rules.filter(r=>r.enabled).flatMap(r=>runRule(r,ds.events));}
+/* ---------- charts ---------- */
+function bars(el,data){if(!data.length){el.innerHTML='<div class="empty">No events in range.</div>';return;}
+ const W=520,H=180,P=28,mx=Math.max(...data.map(d=>d.v),1);
+ let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Activity chart">`;
+ const bw=(W-P*2)/data.length;
+ data.forEach((d,i)=>{const h=(H-P*2)*(d.v/mx),x=P+i*bw+2,y=H-P-h;
+  s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${d.c||"#60a5fa"}"><title>${esc(d.l)}: ${d.v}</title></rect>`;});
+ s+=`</svg><p class="sub mono" style="font-size:.75rem">${esc(data[0].l)} → ${esc(data[data.length-1].l)}</p>`;el.innerHTML=s;}
+function donut(el,parts){const tot=parts.reduce((a,p)=>a+p.v,0)||1;let s='<div class="sevbar">',leg="";
+ parts.forEach(p=>{s+=`<i style="width:${(p.v/tot*100).toFixed(1)}%;background:${p.c}" title="${esc(p.l)}: ${p.v}"></i>`;leg+=`<div class="skill" style="display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)"><b>${esc(p.l)}</b><span>${p.v}</span></div>`;});
+ el.innerHTML=s+"</div>"+leg;}
+/* ---------- views ---------- */
+const NAV=[["overview","◉ Overview"],["datasets","⧉ Datasets"],["events","☰ Events"],["rules","⚑ Rules"],["reports","▤ Reports"],["settings","⚙ Settings"]];
+function renderNav(){$("#side").innerHTML=NAV.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join("")+`<div class="sec">Account</div><button data-v="settings">⚙ Settings</button>`;
+ $("#mnav").innerHTML=NAV.map(([v,l])=>`<button class="btn btn-s" data-v="${v}">${l}</button>`).join("");
+ $$("#side button,#mnav button").forEach(b=>b.onclick=()=>show(b.dataset.v));}
+function show(v){$$(".view").forEach(x=>x.classList.remove("on"));$("#v-"+v).classList.add("on");
+ $$("#side button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));render();}
+function dsOptions(sel){const ds=DB.datasets;sel.innerHTML=ds.length?ds.map(d=>`<option value="${d.id}"${d.id===DB.active?" selected":""}>${esc(d.name)} (${d.events.length})</option>`).join(""):"<option value=''>No datasets</option>";}
+function syncDs(){["ovDs","evDs","rlDs","rpDs"].forEach(id=>dsOptions($("#"+id)));}
+/* overview */
+function rOverview(){const ds=activeDs();if(!ds){$("#ovStats").innerHTML='<div class="empty">No datasets — import a log file or load the sample.</div>';$("#ovChart").innerHTML="";$("#ovSev").innerHTML="";$("#ovDet").innerHTML="";return;}
+ const ev=ds.events,ok=ev.filter(e=>e.event==="auth.success").length,fb=ev.filter(e=>e.event==="auth.failed").length;
+ const det=allDetections(ds);
+ $("#ovStats").innerHTML=`<div class="stat"><b>${ev.length}</b><span>total events</span></div><div class="stat"><b>${ok}</b><span>successful logins</span></div><div class="stat"><b>${fb}</b><span>failed logins</span></div><div class="stat"><b>${det.length}</b><span>patterns detected</span></div>`;
+ const ts=ev.map(e=>e.ts).sort((a,b)=>a-b);let buckets=[];
+ if(ts.length){const span=ts[ts.length-1]-ts[0]||1,N=14;buckets=Array.from({length:N},(_,i)=>({v:0,l:""}));
+  ev.forEach(e=>{buckets[Math.min(N-1,Math.floor((e.ts-ts[0])/span*N))].v++;});
+  buckets.forEach((b,i)=>b.l=new Date(ts[0]+span*i/N).toLocaleDateString());}
+ bars($("#ovChart"),buckets);
+ donut($("#ovSev"),[{l:"High",v:det.filter(d=>d.severity==="High").length,c:"#f87171"},{l:"Medium",v:ev.filter(e=>e.severity==="Medium").length,c:"#e8a23c"},{l:"Low",v:ev.filter(e=>e.severity==="Low").length,c:"#4ade80"}]);
+ $("#ovDet").innerHTML=det.length?`<div class="tblwrap"><table><thead><tr><th>Rule</th><th>Key</th><th>Count</th><th>Window</th><th>Severity</th></tr></thead><tbody>${det.slice(-8).reverse().map(d=>`<tr><td>${esc(d.ruleName)}</td><td class="mono">${esc(d.key)}</td><td>${d.count}</td><td class="mono">${fmtT(d.windowStart)}</td><td><span class="badge b-${d.severity==="High"?"high":d.severity==="Medium"?"med":"low"}">${d.severity}</span></td></tr>`).join("")}</tbody></table></div>`:'<div class="empty">No detections from enabled rules. Enable a rule or lower its threshold, then re-check.</div>';}
+/* datasets */
+function rDatasets(){$("#dsList").innerHTML=DB.datasets.length?DB.datasets.map(d=>{const fb=d.events.filter(e=>e.event==="auth.failed").length;
+ return `<div class="panel"><h3>${esc(d.name)} ${d.simulated?'<span class="badge b-med">simulated</span>':""} ${d.id===DB.active?'<span class="badge b-info">active</span>':""}</h3>
+ <p class="sub mono">${esc(d.filename)} · ${d.events.length} events · ${fb} failed · ${d.errors.length} parse errors · imported ${fmtT(d.createdAt)}</p>
+ ${d.errors.length?`<div class="lg">${d.errors.slice(0,6).map(e=>`line ${e.line}: ${esc(e.reason)}`).join("\n")}${d.errors.length>6?`\n… +${d.errors.length-6} more`:""}</div>`:""}
+ <div class="toolbar"><button class="btn btn-s" data-a="view" data-id="${d.id}">View events</button><button class="btn btn-s" data-a="active" data-id="${d.id}">Set active</button><button class="btn btn-s" data-a="csv" data-id="${d.id}">Export CSV</button><button class="btn btn-s btn-d" data-a="del" data-id="${d.id}">Delete</button></div></div>`;}).join(""):'<div class="empty">No datasets yet. Upload a file above or load the sample.</div>';
+ $$("#dsList [data-a]").forEach(b=>b.onclick=()=>{const d=DB.datasets.find(x=>x.id===b.dataset.id);if(!d)return;
+  if(b.dataset.a==="view"){DB.active=d.id;save();syncDs();show("events");}
+  if(b.dataset.a==="active"){DB.active=d.id;save();render();}
+  if(b.dataset.a==="csv"){dl(d.filename+".events.csv","timestamp,user,ip,event,severity,message\n"+d.events.map(e=>[new Date(e.ts).toISOString(),csvEsc(e.user),csvEsc(e.ip),e.event,e.severity,csvEsc(e.message)].join(",")).join("\n"),"text/csv");}
+  if(b.dataset.a==="del"){if(confirm(`Delete dataset "${d.name}"?`)){DB.datasets=DB.datasets.filter(x=>x.id!==d.id);DB.active=(DB.datasets[0]||{}).id;save();syncDs();render();}}});}
+/* events */
+let pg=0;const PER=15;
+function filteredEvents(){const ds=activeDs();if(!ds)return[];const t=$("#fText").value.trim().toLowerCase(),ty=$("#fType").value,sv=$("#fSev").value;
+ return ds.events.filter(e=>(!t||(e.user+e.ip+e.message).toLowerCase().includes(t))&&(!ty||e.event===ty)&&(!sv||e.severity===sv)).sort((a,b)=>b.ts-a.ts);}
+function rEvents(){const list=filteredEvents(),pages=Math.max(1,Math.ceil(list.length/PER));pg=Math.min(pg,pages-1);
+ const rows=list.slice(pg*PER,pg*PER+PER);
+ $("#evRows").innerHTML=rows.map(e=>`<tr class="click" data-id="${e.id}"><td class="mono">${fmtT(e.ts)}</td><td>${esc(e.user)}</td><td class="mono">${esc(e.ip)}</td><td><span class="badge ${e.event==="auth.failed"?"b-med":"b-info"}">${e.event}</span></td><td><span class="badge b-${e.severity==="High"?"high":e.severity==="Medium"?"med":"low"}">${e.severity}</span></td><td>${esc(e.message.slice(0,90))}</td></tr>`).join("")||'<tr><td colspan="6">No events match.</td></tr>';
+ $("#pgInfo").textContent=`Page ${pg+1} of ${pages} · ${list.length} events`;
+ $$("#evRows tr.click").forEach(tr=>tr.onclick=()=>{const ds=activeDs(),e=ds.events.find(x=>x.id===tr.dataset.id);if(!e)return;
+  $("#overlay").innerHTML=`<div class="scrim"></div><div class="drawer"><h2>Event detail</h2><dl class="kv"><dt>Time</dt><dd class="mono">${fmtT(e.ts)}</dd><dt>User</dt><dd>${esc(e.user)}</dd><dt>Source IP</dt><dd class="mono">${esc(e.ip)}</dd><dt>Event</dt><dd>${esc(e.event)}</dd><dt>Severity</dt><dd>${esc(e.severity)}</dd><dt>Message</dt><dd class="mono">${esc(e.message)}</dd></dl><p class="note">Severity is a triage hint from parsing + rules, not a verdict. Corroborate before concluding anything.</p><button class="btn" id="dwX">Close</button></div>`;
+  $("#dwX").onclick=$(".scrim").onclick=()=>$("#overlay").innerHTML="";});}
+/* rules */
+let editing=null;
+function rRules(){$("#ruleList").innerHTML=DB.rules.map(r=>`<div class="panel"><h3>${esc(r.name)} ${r.enabled?'<span class="badge b-ok">enabled</span>':'<span class="badge">disabled</span>'} <span class="badge b-${r.severity==="High"?"high":r.severity==="Medium"?"med":"low"}">${r.severity}</span></h3>
+ <p class="sub mono">${esc(r.eventType)} · group by ${r.groupBy} · ≥${r.threshold} in ${r.windowMin} min</p><p class="sub">${esc(r.desc||"")}</p>
+ <div class="toolbar"><button class="btn btn-s" data-r="test" data-id="${r.id}">Test on dataset</button><button class="btn btn-s" data-r="tog" data-id="${r.id}">${r.enabled?"Disable":"Enable"}</button><button class="btn btn-s" data-r="edit" data-id="${r.id}">Edit</button><button class="btn btn-s btn-d" data-r="del" data-id="${r.id}">Delete</button></div></div>`).join("")||'<div class="empty">No rules. Create one below.</div>';
+ $$("#ruleList [data-r]").forEach(b=>b.onclick=()=>{const r=DB.rules.find(x=>x.id===b.dataset.id);if(!r)return;const ds=activeDs();
+  if(b.dataset.r==="test"){if(!ds){$("#ruleTest").innerHTML='<div class="empty">No dataset selected.</div>';return;}const d=runRule(r,ds.events);
+   $("#ruleTest").innerHTML=d.length?`<p class="sub"><b>${d.length}</b> window(s) matched on <b>${esc(ds.name)}</b> — leads, not verdicts.</p><div class="tblwrap"><table><thead><tr><th>Key</th><th>Count</th><th>Window start</th><th>Window end</th></tr></thead><tbody>${d.map(x=>`<tr><td class="mono">${esc(x.key)}</td><td>${x.count}</td><td class="mono">${fmtT(x.windowStart)}</td><td class="mono">${fmtT(x.windowEnd)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">No matches on ${esc(ds.name)}. That means “no pattern found”, not “all clear”.</div>`;show("rules");}
+  if(b.dataset.r==="tog"){r.enabled=!r.enabled;save();render();}
+  if(b.dataset.r==="edit"){editing=r.id;$("#ruleFormTitle").textContent="Edit rule";$("#rName").value=r.name;$("#rType").value=r.eventType;$("#rGroup").value=r.groupBy;$("#rThr").value=r.threshold;$("#rWin").value=r.windowMin;$("#rSev").value=r.severity;$("#rDesc").value=r.desc||"";$("#rSteps").value=r.steps||"";window.scrollTo(0,document.body.scrollHeight);}
+  if(b.dataset.r==="del"){if(confirm(`Delete rule "${r.name}"?`)){DB.rules=DB.rules.filter(x=>x.id!==r.id);save();render();}}});}
+/* reports */
+function rReports(){$("#repList").innerHTML=DB.reports.slice().reverse().map(r=>{const ds=DB.datasets.find(d=>d.id===r.datasetId);
+ return `<div class="panel"><h3>Report · ${esc(ds?ds.name:"(deleted dataset)")}</h3><p class="sub mono">generated ${fmtT(r.createdAt)} · ${r.totals.events} events · ${r.totals.failed} failed · ${r.detections.length} patterns</p>
+ <p class="sub">Top users: ${r.topUsers.map(u=>`${esc(u.k)} (${u.v})`).join(", ")||"—"}<br>Top IPs: ${r.topIps.map(u=>`${esc(u.k)} (${u.v})`).join(", ")||"—"}</p>
+ <div class="toolbar"><button class="btn btn-s" data-p="json" data-id="${r.id}">Export JSON</button><button class="btn btn-s" data-p="csv" data-id="${r.id}">Export CSV</button><button class="btn btn-s btn-d" data-p="del" data-id="${r.id}">Delete</button></div></div>`;}).join("")||'<div class="empty">No reports yet. Generate one above.</div>';
+ $$("#repList [data-p]").forEach(b=>b.onclick=()=>{const r=DB.reports.find(x=>x.id===b.dataset.id);if(!r)return;
+  if(b.dataset.p==="json")dl(`sentinellog-report-${r.id}.json`,JSON.stringify(r,null,2),"application/json");
+  if(b.dataset.p==="csv"){const rows=[["metric","value"],["generated",new Date(r.createdAt).toISOString()],["events",r.totals.events],["failed",r.totals.failed],["patterns",r.detections.length],[],["rule","key","count","severity","window_start"]];r.detections.forEach(d=>rows.push([d.ruleName,d.key,d.count,d.severity,new Date(d.windowStart).toISOString()]));dl(`sentinellog-report-${r.id}.csv`,rows.map(x=>x.map(csvEsc).join(",")).join("\n"),"text/csv");}
+  if(b.dataset.p==="del"&&confirm("Delete this report?")){DB.reports=DB.reports.filter(x=>x.id!==r.id);save();render();}});}
+function render(){syncDs();rOverview();rDatasets();rEvents();rRules();rReports();}
+/* ---------- wiring ---------- */
+function afterAuth(){$("#authView").hidden=true;$("#app").hidden=false;$("#btnSignout").hidden=false;$("#userChip").textContent=me();load();renderNav();render();show("overview");}
+async function ensureDemo(){const u=getUsers();if(!u["analyst@demo"]){const s=uid();u["analyst@demo"]={salt:s,hash:await hashPw("demo1234",s),at:Date.now()};setUsers(u);}}
+async function boot(){
+ $("#tabLogin").onclick=()=>{$("#paneLogin").hidden=false;$("#paneReg").hidden=true;};
+ $("#tabReg").onclick=()=>{$("#paneLogin").hidden=true;$("#paneReg").hidden=false;};
+ await ensureDemo();
+ if(me()&&getUsers()[me()]){afterAuth();return;}
+ $("#authView").hidden=false;
+ const err=m=>{const e=$("#authErr");e.hidden=!m;e.textContent=m||"";};
+ $("#btnDemo").onclick=async()=>{await ensureDemo();sessionStorage.setItem(KS,"analyst@demo");afterAuth();};
+ $("#btnLogin").onclick=async()=>{const e=$("#liEmail").value.trim().toLowerCase(),p=$("#liPw").value;const u=getUsers()[e];
+  if(!u||await hashPw(p,u.salt)!==u.hash)return err("Invalid email or password.");
+  sessionStorage.setItem(KS,e);afterAuth();};
+ $("#btnReg").onclick=async()=>{const e=$("#rgEmail").value.trim().toLowerCase(),p=$("#rgPw").value;const u=getUsers();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return err("Enter a valid email.");if(p.length<8)return err("Password must be at least 8 characters.");
+  if(u[e])return err("Account exists — sign in instead.");const s=uid();u[e]={salt:s,hash:await hashPw(p,s),at:Date.now()};setUsers(u);sessionStorage.setItem(KS,e);afterAuth();};
+ $("#btnSignout").onclick=()=>{sessionStorage.removeItem(KS);location.reload();};
+ ["ovDs","evDs","rlDs","rpDs"].forEach(id=>$("#"+id).addEventListener("change",e=>{DB.active=e.target.value;save();render();}));
+ $("#btnUpload").onclick=()=>{const f=$("#upFile").files[0],box=$("#upMsg");if(!f){box.innerHTML='<div class="errbar">Choose a file first.</div>';return;}
+  if(!/\.(log|txt|csv)$/i.test(f.name)){box.innerHTML='<div class="errbar">Unsupported type. Allowed: .log, .txt, .csv</div>';return;}
+  if(f.size>DB.settings.maxMB*1048576){box.innerHTML=`<div class="errbar">File exceeds the ${DB.settings.maxMB} MB limit (see Settings).</div>`;return;}
+  const rd=new FileReader();rd.onload=()=>{try{const{events,errors}=parseText(String(rd.result||""),f.name);
+   if(!events.length){box.innerHTML=`<div class="errbar">No parseable events. ${errors.length} malformed line(s); first: ${esc(errors[0]?.reason||"")}</div>`;return;}
+   const ds={id:uid(),name:f.name.replace(/\.[^.]+$/,""),filename:f.name,createdAt:Date.now(),simulated:false,events,errors};DB.datasets.push(ds);DB.active=ds.id;save();syncDs();render();
+   box.innerHTML=`<p class="note">Imported <b>${events.length}</b> events with <b>${errors.length}</b> quarantined line(s).</p>`;}catch(e){box.innerHTML='<div class="errbar">Could not read that file (encoding?). Try UTF-8 text.</div>';}};
+  rd.readAsText(f);};
+ $("#btnSample").onclick=()=>{const ds=sampleDataset();ds.name+=" · "+new Date().toLocaleTimeString();DB.datasets.push(ds);DB.active=ds.id;save();render();$("#upMsg").innerHTML='<p class="note">Sample dataset loaded (simulated).</p>';};
+ $("#btnFmt").onclick=()=>dl("sentinellog-format-example.log",`2026-09-20 09:14:02 Accepted password for chanda from 192.168.1.10 port 51221 ssh2\n2026-09-20 09:15:44 Failed password for chanda from 10.0.4.21 port 60112 ssh2\n2026-09-20 09:15:51 user=k.banda ip=10.0.4.21 status=FAILED action=ssh-login\ntimestamp,user,ip,event,message\n2026-09-20 09:16:00,t.phiri,192.168.1.12,auth.success,login ok\n`,"text/plain");
+ $("#btnFGo").onclick=()=>{pg=0;rEvents();};$("#pgPrev").onclick=()=>{pg=Math.max(0,pg-1);rEvents();};$("#pgNext").onclick=()=>{pg++;rEvents();};
+ $("#btnRuleSave").onclick=()=>{const r={id:editing||uid(),name:$("#rName").value.trim()||"Untitled rule",eventType:$("#rType").value,groupBy:$("#rGroup").value,threshold:Math.max(2,+$("#rThr").value||2),windowMin:Math.max(1,+$("#rWin").value||1),severity:$("#rSev").value,enabled:true,desc:$("#rDesc").value.trim(),steps:$("#rSteps").value.trim()};
+  if(editing){const i=DB.rules.findIndex(x=>x.id===editing);DB.rules[i]={...DB.rules[i],...r};}else DB.rules.push(r);
+  editing=null;$("#ruleFormTitle").textContent="New rule";save();render();};
+ $("#btnRuleCancel").onclick=()=>{editing=null;$("#ruleFormTitle").textContent="New rule";};
+ $("#btnGenRep").onclick=()=>{const ds=activeDs();if(!ds)return;const det=allDetections(ds);
+  const top=(f)=>Object.entries(ds.events.reduce((a,e)=>{a[e[f]]=(a[e[f]]||0)+1;return a;},{})).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([k,v])=>({k,v}));
+  DB.reports.push({id:uid(),datasetId:ds.id,createdAt:Date.now(),totals:{events:ds.events.length,success:ds.events.filter(e=>e.event==="auth.success").length,failed:ds.events.filter(e=>e.event==="auth.failed").length},topUsers:top("user"),topIps:top("ip"),detections:det});
+  save();render();};
+ $("#btnSetSave").onclick=()=>{DB.settings.maxMB=Math.min(10,Math.max(1,+$("#setMaxMB").value||2));save();$("#setMsg").innerHTML='<p class="note">Settings saved.</p>';};
+ $("#btnPw").onclick=async()=>{const p=$("#setPw").value;if(p.length<8){$("#setMsg").innerHTML='<div class="errbar">Password must be at least 8 characters.</div>';return;}
+  const u=getUsers(),s=uid();u[me()]={salt:s,hash:await hashPw(p,s),at:Date.now()};setUsers(u);$("#setMsg").innerHTML='<p class="note">Password changed.</p>';};
+ $("#btnWipe").onclick=()=>{if(confirm("Delete ALL your SentinelLog data?")){localStorage.removeItem(KD(me()));load();render();}};
+ $("#btnReseed").onclick=()=>{if(confirm("Reset to fresh demo data?")){DB=seed();save();render();}};
+}
+document.addEventListener("DOMContentLoaded",boot);
+</script>
+</body>
+</html>

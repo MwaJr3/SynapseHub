@@ -163,6 +163,7 @@ src/
   styles/               Portfolio and prototype styling
 workniche/              Separate Next.js job-marketplace application
 company-platform/       Separate Next.js company-discovery application
+projects/               All other projects, consolidated here (mysul/, cbu-assignments/) — see projects/README.md
 stock-price-analysis/   Guided stock-analysis notebook edition
 docs/                   Build prompts, implementation notes and project documentation
 scripts/                Sitemap and asset utilities
@@ -213,6 +214,12 @@ Challenge titles and source links are recorded in `src/data/challengeManifest.ts
 ## Deployment
 
 The build output is a static SPA in `dist/`.
+
+- **Company website:** `company-platform/` is a separate Next.js app, deployed
+  on Vercel from this repository with Root Directory `company-platform/` —
+  see `company-platform/README.md`. Every project's source is in this same
+  repository (`projects/`, `workniche/`, `stock-price-*/`), so the hosted
+  company site and all project code share one home.
 
 - **Any static host / CDN:** upload `dist/`. Configure a single-page fallback to `index.html` so direct navigation
   and refresh work on `/projects/:slug`. `public/_redirects` already provides the Netlify form of this rule;
