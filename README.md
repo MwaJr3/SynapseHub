@@ -1,10 +1,20 @@
-# Mwangala — Frontend Development Portfolio
+# Mwangala — Education Technology Portfolio
 
-A responsive portfolio built with React, TypeScript, Vite, Tailwind CSS and React Router. The site presents 60 challenge records from the links supplied for the portfolio, with a searchable challenge library, 60 local-first interactive prototype routes, individual challenge records, and a hybrid light/dark identity.
+A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.
 
-> **Content integrity note:** this repository now includes 60 interactive, local-first prototype routes in addition to the portfolio and challenge catalogue. They are working browser-side starting points, not 60 production-ready/full-stack applications: several still need official starter assets, backend services, complete prompt acceptance coverage, independent QA, and deployment. All 60 records remain unverified as completed challenge solutions. This is an independent portfolio, not endorsed by Frontend Mentor.
+The repository also retains separate stock-analysis and WorkNiche applications, a private browser-local Personal Operating System, and an operations-specification page. Each feature is documented with its real scope and limitations; no unconfigured external links or measured outcomes are claimed.
 
-## Included
+## Challenge collection and prototypes
+
+- `/projects` lists the 60 sourced challenge records with URL-backed search, filters, sorting and pagination.
+- `/projects/:slug` presents the sourced brief, attribution and current verification status.
+- `/apps` and `/apps/:slug` expose one interactive, browser-first prototype per challenge. These are independent implementations, not certification that every original brief is complete.
+- Challenge metadata and implementation status are kept distinct in `src/data/challengeManifest.ts` and `src/apps/appRegistry.ts`.
+- Most flows store data only in the visitor's browser. A small number of tools request public APIs on submission; errors and service limits are surfaced in the UI.
+- Reference screenshots, when present, are supplied visual references—not claims of completed or tested builds. See `docs/CHALLENGE_BUILD_PROMPTS.md` for the prompt set and source context.
+
+---
+
 ## Stock analysis portfolio projects
 
 Two editions are retained side by side:
@@ -20,75 +30,224 @@ fallback; Version 2 requires the data mode explicitly and never substitutes a fa
 
 ---
 
-- `/` — editorial homepage, featured collection, working-process overview, and project discovery CTAs.
-- `/about` — authentic developer positioning without invented biography or credentials.
-- `/projects` — all 60 records; immediate search; combinable category, challenge type and difficulty filters; featured/name/difficulty/collection sorting; 12-item pagination; URL-backed discovery state.
-- `/projects/:slug` — individual challenge records, source attribution, brief context, prototype link, and explicit verification status. Demo/source links appear only when configured.
-- `/apps` and `/apps/:slug` — an interactive browser-first prototype for each of the 60 records, with domain-specific controls, local persistence where appropriate, named public API integrations for select tools, and visible limits.
-- `/skills` — capability areas tied to project categories as a roadmap for practice rather than demonstrated project evidence.
-- `/journey` — thematic groupings, not an invented chronology.
-- `/contact` — configured email/profile links only; no fake contact form.
-- Custom 404, accessible responsive navigation, persisted Light/Dark/System switcher, page metadata, Open Graph tags, canonical URL support when configured, robots.txt, SPA fallback and sitemap generator.
-- Representative CSS-built interface illustrations labelled as illustrations—not project screenshots.
+## The WorkNiche application
 
-## Run locally
+`workniche/` is a complete full-stack job-marketplace application — the tenth
+portfolio project, presented in the catalogue as [WorkNiche](src/data/projects/workniche.ts).
+Next.js 15 + TypeScript + Drizzle (PostgreSQL, with an embedded PGlite mode for
+local runs), credentials Auth.js, Zod at every boundary, database-enforced
+product rules (one application per candidate per role, notification dedupe),
+an append-only hiring pipeline, private candidate data and résumé storage, an
+explainable recommendation scorer, an idempotent notification worker and an
+admin moderation console.
+
+Every organization, person and listing in its demo data is fictional and
+labelled fictional inside the product. See [workniche/README.md](workniche/README.md)
+for setup, demo accounts, its honesty statement and the values required before
+treating it as a real product, and [workniche/docs/DEPLOYMENT.md](workniche/docs/DEPLOYMENT.md)
+for deployment.
+
+---
+
+## The operations layer
+
+`src/data/operations.ts` and the console at [/operations](src/pages/OperationsPage.tsx)
+adapt seven common product-dashboard concepts — status page, changelog,
+analytics, waitlist counter, revenue dashboard, backend health, frontend
+performance — for education-technology programmes under this portfolio's
+honesty rules. Each module ships **explicit states**, **metric definitions**
+(how a value would be computed and from which records) and one **integrity
+rule**, and the source series is named openly on the page.
+
+The SaaS demonstration figures those dashboards show — uptime percentages,
+MRR, churn, waitlist totals, active-user counts — appear **nowhere**: this
+layer is a specification for honest operations reporting, not a fake live
+dashboard. Tests enforce the contract, including a figure guard that fails
+the build if percentages, currency amounts or vanity totals ever enter the
+data.
+
+---
+
+## What is implemented
+
+| Area               | Detail                                                                                                                                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Routes             | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (60 challenge records), `/apps`, `/apps/:slug` (60 prototypes), `/skills`, `/journey`, `/approach`, `/operations`, `/contact`, custom 404                                      |
+| Personal OS        | Private local-first 90-day workspace for identity, Tier 1–3 goals, projects, weekly capacity and actions, decisions, energy, blocker interventions, meaning, reviews, learning, relationships, personal doctrine, a simple financial ledger, cycle archives, and validated JSON export/import |
+| Catalogue          | 60 sourced Frontend Mentor challenge records plus 60 uniquely mapped local-first prototype definitions                                                                                                                           |
+| Discovery          | Search over challenge metadata; category, type and difficulty filters; sorting and shareable URL state; 12-item pagination and clear-filter state                                                                                  |
+| Case studies       | Challenge-source context, attribution, prototype link and explicit verification status                                                                                                                                            |
+| Links and attribution | Official challenge source URLs remain separate from prototypes; no unconfigured demo, repository or profile links are shown                                                                                                              |
+| Theming            | Light / Dark / System with persistence, an OS listener, pre-paint initialisation (no wrong-theme flash) and a hybrid tone system (light surfaces + intentional dark panels)                                                        |
+| Visuals            | Representative interface visuals are clearly labeled; supplied reference images are not presented as verified prototype screenshots                                                                                                      |
+| Accessibility      | Semantic landmarks, skip link, keyboard-accessible mobile menu with Escape handling, visible focus states, live regions for search results and copy feedback, `prefers-reduced-motion` support, text equivalents for every diagram |
+| SEO                | Per-page titles and descriptions, Open Graph metadata, canonical URLs only when a site origin is configured, `robots.txt` and an optional sitemap generator                                                                       |
+| Quality            | TypeScript strict mode, unit/component/routing tests, ESLint, data-integrity checks, and production build (see the verification run below)                                                                                   |
+
+### Honesty rules the code enforces
+
+- No invented external URLs, screenshots, learner statistics, accuracy figures, coverage percentages, testimonials
+  or partnerships — the catalogue is validated for placeholder domains and unfinished markers.
+- A missing or malformed URL (including `javascript:`, `data:` and plain `http:` outside localhost) is **dropped**,
+  and the related button disappears. A repository URL is never substituted into a demo slot, or the reverse.
+- Interface previews are illustrations drawn from the site's own design system, labelled as such in the frame and
+  in the caption. Real screenshots take precedence automatically once supplied.
+- Availability wording, contact channels and external profiles appear only when configured.
+
+---
+
+## Stack
+
+React 19 · TypeScript (strict) · Vite 7 · Tailwind CSS 3 with a token-based theme system · React Router 6 ·
+Vitest + Testing Library · ESLint 9 · Prettier · self-hosted Inter and JetBrains Mono (no external font requests).
+No backend is required to display the portfolio; a contact form activates only when a real submission endpoint is
+configured.
+
+---
+
+## Personal Operating System
+
+`/system` is a browser-local workspace that lives alongside the portfolio. It is built on the repository’s existing
+React/TypeScript/Vite stack, not as a separate Python/Tkinter application. It deliberately begins with an empty
+workspace rather than synthetic personal records.
+
+- **Direction:** vision, identity, values, standards, measurable goals, project portfolio, and 12-week cycle details.
+- **Execution:** a stated weekly capacity, actions with an estimate and cognitive demand, today’s priorities, an
+  overcommitment warning, and a local time-block scheduler with ICS export (not calendar-account sync).
+- **Diagnosis and adaptation:** energy checks, trigger/response maps, blocker occurrences, a three-minute activation
+  timer, decisions, weekly reviews, meaning entries, post-mortems, and evidence-only monthly/quarterly trends.
+- **Strategic growth:** learning paths, deliberately minimal relationship records, practical doctrine statements,
+  and a simple multi-currency financial ledger.
+- **Continuity:** v1 → v2 → v3 browser-data migration, corrupt-payload preservation, full/scoped/redacted exports,
+  optional Web-Crypto encrypted transfer files, bounded local record history/restore, and immutable 12-week snapshots.
+- **Optional desktop utility:** `tools/personal_os_companion` is a separate offline Python/Tkinter reviewer for
+  user-selected backup shapes and manual CSV review; it has no browser-storage, bank, cloud-sync, or advice capability.
+
+See [the Personal OS guide](docs/PERSONAL_OPERATING_SYSTEM.md) for workflows, privacy, data recovery, and the
+implemented-versus-planned feature inventory. See [the implementation audit](docs/PERSONAL_OS_AUDIT.md) for the
+actual repository architecture and deliberate scope boundaries.
+
+---
+
+## Getting started
 
 ```bash
-npm ci
-npm run dev
+npm install
+npm run dev          # http://localhost:5173
 ```
 
-The Vite server binds to `0.0.0.0` for preview environments. Useful scripts:
+| Command              | Purpose                                                            |
+| -------------------- | ------------------------------------------------------------------ |
+| `npm run dev`        | Development server (bound to `0.0.0.0` so container previews work) |
+| `npm run build`      | Type check, then production build into `dist/`                     |
+| `npm run preview`    | Serve the production build locally                                 |
+| `npm run typecheck`  | `tsc --noEmit`                                                     |
+| `npm run lint`       | ESLint over the repository                                         |
+| `npm test`           | Vitest run (unit, component and routing tests)                     |
+| `npm run test:watch` | Vitest in watch mode                                               |
+| `npm run check`      | Type check → lint → tests → build                                  |
+| `npm run sitemap`    | Generate `public/sitemap.xml` (requires `VITE_SITE_URL`)           |
 
-```bash
-npm run typecheck
-npm run lint
-npm test
-npm run build
-npm run check       # typecheck → lint → test → production build
-npm run sitemap     # only writes public/sitemap.xml when VITE_SITE_URL is configured
+---
+
+## Project structure
+
+```text
+src/
+  apps/                 Unique registry and shared game logic for all 60 prototypes
+  components/apps/      Local-first interactive app families
+  components/navigation/Responsive site header/footer and shared layout
+  data/challengeManifest.ts   Sourced challenge metadata and completion-status flags
+  features/personal-os/ Private browser-local personal workspace
+  pages/                Portfolio, challenge, prototype, operations and personal-system routes
+  styles/               Portfolio and prototype styling
+workniche/              Separate Next.js job-marketplace application
+company-platform/       Separate Next.js company-discovery application
+stock-price-analysis/   Guided stock-analysis notebook edition
+docs/                   Build prompts, implementation notes and project documentation
+scripts/                Sitemap and asset utilities
+tools/personal_os_companion/  Optional offline Python review utility
 ```
 
-## Challenge manifest and content maintenance
+### Design system in one paragraph
 
-The central source is `src/data/challengeManifest.ts`.
+Three tones share one token set: `surface` (light surfaces by default, deep surfaces in dark mode), `contrast`
+(the intentional dark panels used by the hero, featured work and closing CTAs) and `quiet` (a subtly raised band).
+Because a tone is a CSS custom-property scope rather than a second template, cards, borders, code blocks, focus
+rings and diagrams all adapt together in Light, Dark and System modes while the section hierarchy stays intact.
 
-Each record includes the challenge title, unique slug, source URL, type, access tier, difficulty, collection category, challenge brief summary, a false-by-default completion flag, and optional implementation fields. Runtime validation and tests enforce 60 records, unique slugs/URLs, non-empty titles and valid Frontend Mentor source URLs.
+---
 
-When independently building and documenting a challenge, update its record with evidence rather than inference:
+## Configuration before publication
 
-1. Add the actual `technologies`, implemented `features`, `engineeringHighlights`, `lessonsLearned` and accessibility/testing notes.
-2. Add real captures under `public/screenshots/<slug>/` and put their source/alt/caption details in `screenshots`.
-3. Add only confirmed project links as `liveDemoUrl` and `repositoryUrl`.
-4. Update the case-study component if richer project-specific sections are being added. Do not claim a test, feature or technology unless it was used/verified.
-5. Run `npm run check`.
+Copy `.env.example` to `.env.local` and supply what you own. Everything is optional; empty values simply hide the
+corresponding UI.
 
-The project library renders from this manifest. It defaults to 12 cards per page, updates search immediately, reflects filters in query parameters, and clamps the current page when the result set changes. Difficulty/type filters are shown because source-catalogue values are recorded; no technology filter is shown while implementation stacks remain unconfigured.
+| Variable                               | Used for                                                                                                                                                                   |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_SITE_URL`                        | Canonical URLs, Open Graph URLs, sitemap. Without it no canonical URL is emitted (the copy-link control copies the visitor's own address instead).                         |
+| `VITE_CONTACT_EMAIL`                   | Email link on the Contact page and footer                                                                                                                                  |
+| `VITE_CONTACT_ENDPOINT`                | Enables the contact form. Must be an HTTPS endpoint accepting `{ name, email, subject, message }` JSON that performs its own validation, spam protection and rate limiting |
+| `VITE_AVAILABILITY_STATEMENT`          | Optional availability sentence; leave empty to avoid implying paid availability                                                                                            |
+| `VITE_GITHUB_URL`, `VITE_LINKEDIN_URL` | Profile links (hidden when unset)                                                                                                                                          |
 
-## Optional 60-project build prompt collection
+Only configure destinations that are real and controlled. Challenge attribution lives in `src/data/challengeManifest.ts`; the prototype routes are local, and unconfigured external destinations are omitted.
 
-`docs/CHALLENGE_BUILD_PROMPTS.md` contains the user-supplied planning prompts for all 60 challenges. Their 60 official source URLs match the catalogue manifest exactly. The detailed feature lists and suggested stacks are planning guidance, not verified official acceptance criteria; inspect each official brief and any licensed starter assets before building. The prompts are planning guidance, not a substitute for the application code in `/apps`, nor proof that every prompt requirement has been met. All records remain unverified until each prototype is checked against the official brief and any licensed starter assets.
+---
 
-## Configure profile and links
+## Updating the challenge collection
 
-Copy `.env.example` to `.env.local` and fill only actual values:
+1. Challenge-source metadata and implementation status live in `src/data/challengeManifest.ts`.
+2. Prototype route definitions are registered in `src/apps/appRegistry.ts`; shared interface implementations live in `src/components/apps/`.
+3. Run `npm run check` after changes to verify types, lint, tests and the production build. The registry and tests guard against missing or duplicate prototype slugs.
+4. Only add genuine captures when they exist. Supplied reference images must remain labelled as references and must not be represented as verified output from these prototypes.
 
-- `VITE_SITE_URL` — production origin for canonical metadata and sitemap.
-- `VITE_CONTACT_EMAIL` — email link.
-- `VITE_GITHUB_URL`, `VITE_LINKEDIN_URL` — profile links.
+---
 
-Project destinations live on individual records in `src/data/challengeManifest.ts`, not in an inferred URL convention. Set the actual HTTPS `liveDemoUrl` and/or `repositoryUrl`; external buttons remain hidden otherwise. Validate links before publishing. Never put credentials in the client-side manifest or environment variables prefixed with `VITE_`.
+## Maintaining challenge attribution
+
+Challenge titles and source links are recorded in `src/data/challengeManifest.ts`. Keep the official source URL, access tier, difficulty and challenge category separate from implementation status. The portfolio is independent and is not affiliated with or endorsed by Frontend Mentor. Do not add deployment, repository or social links unless a real, configured destination exists.
+
+---
 
 ## Deployment
 
-Build with `npm run build` and deploy `dist/` to a static host. Configure SPA rewrites to `index.html` so direct refreshes on `/projects/:slug` and `/apps/:slug` work. `public/_redirects` includes the Netlify fallback. Set `VITE_SITE_URL` at build time before generating the sitemap. No backend is required unless a genuine contact endpoint is configured.
+The build output is a static SPA in `dist/`.
 
-## Current content/configuration gaps
+- **Any static host / CDN:** upload `dist/`. Configure a single-page fallback to `index.html` so direct navigation
+  and refresh work on `/projects/:slug`. `public/_redirects` already provides the Netlify form of this rule;
+  Vercel needs a `vercel.json` rewrite, and Nginx/Apache need an equivalent `try_files`/`.htaccess` rule.
+- **Sitemap:** set `VITE_SITE_URL` and run `npm run sitemap` before uploading (the file is generated, not committed).
+- **Contact form:** point `VITE_CONTACT_ENDPOINT` at your form service or endpoint. Without it, no form is rendered.
+- **Social preview image:** `public/og-image.png` is referenced through `VITE_SITE_URL`; add a genuine image before
+  publishing if you want a rich preview card.
 
-- Demo and source repository URLs have not been supplied; those actions are hidden.
-- Twelve user-supplied Reel screenshots are included only as design-reference material in the downloadable handoff ZIP. They are not connected to project records or presented as Mwangala implementations. The website’s representative illustrations are separately labelled and are not app captures.
-- The 60 routes currently host local-first prototype experiences in this shared React app; they are not 60 separately packaged or deployed services. Multi-user authentication, shared databases, payments, email delivery, and backend workflows need real service infrastructure and are not simulated as production behavior.
-- Full per-project acceptance coverage, licensed challenge assets, feature-specific tests, genuine screenshots, and deployment URLs remain to be added before any challenge record is marked complete.
-- Challenge records document the official challenge source and concise paraphrased brief context only. They do not imply paid access, completion, approval or endorsement; some source challenges are marked Premium by Frontend Mentor.
-- Profile links, contact details and the production domain are unconfigured by default.
-- Automated unit/component tests and lint/type/build checks are provided; visual regression, Lighthouse measurement and manual assistive-technology checks are not claimed as completed.
+---
+
+## Checks executed for this build
+
+| Check      | Command            | Result                                                                                 |
+| ---------- | ------------------ | -------------------------------------------------------------------------------------- |
+| Type check | `npm run typecheck` | Passed                                                                                       |
+| Lint       | `npm run lint`      | Passed                                                                                       |
+| Tests      | `npm test`          | 13 files, 584 tests, all passing                                                            |
+| Build      | `npm run build`     | Succeeded; route-level code splitting                                                       |
+| Dev server | `npm run dev`       | Serves the portfolio routes and unknown routes through the SPA fallback                    |
+
+The test suite covers the challenge manifest and all 60 app routes, interactive prototype flows, URL-backed discovery, the personal operating system, the operations layer and shared site controls. The standalone company-platform and WorkNiche applications have their own check scripts and are not part of this root `npm run check` run.
+
+Automated accessibility checks (axe) and end-to-end browser runs are **not** included; the accessibility work here
+is semantic markup, focus management, live regions, contrast-reviewed tokens and reduced-motion handling, reviewed
+by hand rather than by a tool. No Lighthouse or performance score is published because none was measured in this
+environment.
+
+---
+
+## Known limitations
+
+- The 60 frontend prototypes are independent practice builds. They are not verified as complete against every original challenge acceptance criterion.
+- Most prototype data is local to the current browser. These interactions are not connected to production accounts or backends.
+- Public API-backed tools depend on their upstream services and may encounter rate limits or network failures.
+- No learning-outcome, adoption or performance metrics are claimed because none have been measured.
+- The contact form requires a configured real endpoint; email delivery and spam protection are that endpoint's responsibility.
+- Automated visual regression and end-to-end browser testing are not configured for this portfolio.

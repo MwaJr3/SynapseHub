@@ -2,8 +2,7 @@ import { Suspense, lazy } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { RootLayout } from '@/components/navigation/RootLayout';
 
-// Route-level code splitting: the case-study template and the secondary pages
-// are only downloaded when a visitor navigates to them.
+// Route-level code splitting keeps secondary features out of the first page load.
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
 const ProjectsPage = lazy(() => import('@/pages/ProjectsPage'));
@@ -12,8 +11,11 @@ const ChallengeAppPage = lazy(() => import('@/pages/ChallengeAppPage'));
 const ProjectDetailPage = lazy(() => import('@/pages/ProjectDetailPage'));
 const SkillsPage = lazy(() => import('@/pages/SkillsPage'));
 const JourneyPage = lazy(() => import('@/pages/JourneyPage'));
+const ApproachPage = lazy(() => import('@/pages/ApproachPage'));
+const OperationsPage = lazy(() => import('@/pages/OperationsPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const SystemPage = lazy(() => import('@/pages/SystemPage'));
 
 function RouteFallback() {
   return (
@@ -36,7 +38,10 @@ export function AppRoutes() {
         <Route path="apps/:slug" element={<ChallengeAppPage />} />
         <Route path="skills" element={<SkillsPage />} />
         <Route path="journey" element={<JourneyPage />} />
+        <Route path="approach" element={<ApproachPage />} />
+        <Route path="operations" element={<OperationsPage />} />
         <Route path="contact" element={<ContactPage />} />
+        <Route path="system" element={<SystemPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -270,7 +270,37 @@
   .mono-meta {
     @apply font-mono text-xs text-ink-subtle;
   }
+
+  /* Personal Operating System — deliberately compact form controls that retain
+     the same token system in light, dark, and contrast surfaces. */
+  .system-field {
+    @apply grid gap-1.5 text-sm font-medium text-ink;
+  }
+
+  .system-field > span {
+    @apply flex items-baseline justify-between gap-2;
+  }
+
+  .system-field small {
+    @apply font-normal text-xs text-ink-subtle;
+  }
+
+  .system-field input,
+  .system-field textarea,
+  .system-field select,
+  .system-select {
+    @apply w-full rounded-card border border-line bg-panel px-3 py-2.5 text-sm font-normal text-ink shadow-sm outline-none transition-[border-color,box-shadow] placeholder:text-ink-subtle focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+
+  .system-field textarea {
+    @apply resize-y leading-relaxed;
+  }
+
+  .system-field input[type='checkbox'] {
+    @apply h-4 w-4 rounded border-line p-0 text-accent accent-[rgb(var(--accent))] shadow-none focus:ring-2 focus:ring-accent/20;
+  }
 }
+
 
 @layer utilities {
   .text-balance {

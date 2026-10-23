@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --ink: #141824;
+  --ink-muted: #4b5568;
+  --line: #e3e8f0;
+  --accent: #3b6fd4;
+  --accent-strong: #2f5ab0;
+  --accent-soft: #eef4ff;
+}
+
+html.dark {
+  --bg: #0d1119;
+  --surface: #151b26;
+  --ink: #e8edf5;
+  --ink-muted: #9aa6b8;
+  --line: #263041;
+  --accent: #7ea6f0;
+  --accent-strong: #9dbaf5;
+  --accent-soft: #1b2740;
+}
+
+html[data-company='velaqori-systems'] {
+  --accent: #3b6fd4;
+  --accent-strong: #2f5ab0;
+  --accent-soft: #eef4ff;
+}
+html.dark[data-company='velaqori-systems'] {
+  --accent: #7ea6f0;
+  --accent-strong: #9dbaf5;
+  --accent-soft: #1b2740;
+}
+html[data-company='tamuzi-learning'] {
+  --accent: #e07b28;
+  --accent-strong: #c26213;
+  --accent-soft: #fff6ed;
+}
+html.dark[data-company='tamuzi-learning'] {
+  --accent: #f0a566;
+  --accent-strong: #f5b985;
+  --accent-soft: #2f2012;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+body {
+  min-height: 100vh;
+}
+
+@layer components {
+  .surface {
+    background: var(--surface);
+  }
+  .text-muted {
+    color: var(--ink-muted);
+  }
+  .border-line {
+    border-color: var(--line);
+  }
+  .accent-text {
+    color: var(--accent-strong);
+  }
+  .accent-bg {
+    background: var(--accent);
+  }
+  .accent-soft {
+    background: var(--accent-soft);
+  }
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
+    outline-color: var(--accent);
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+  }
+  .btn-primary:hover {
+    background: var(--accent-strong);
+  }
+  .btn-secondary {
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+  }
+  .card {
+    @apply rounded-lg border p-5;
+    background: var(--surface);
+    border-color: var(--line);
+  }
+  .field {
+    @apply w-full rounded-md border px-3 py-2 text-sm;
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  .field:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .prose-plate > * + * {
+    margin-top: 0.85rem;
+  }
+}

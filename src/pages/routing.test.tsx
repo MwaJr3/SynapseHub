@@ -116,7 +116,7 @@ describe('project discovery', () => {
 });
 
 describe('portfolio pages and controls', () => {
-  it.each(['/about', '/skills', '/journey', '/contact'])('renders %s', async (route) => {
+  it.each(['/about', '/skills', '/journey', '/approach', '/contact', '/system', '/operations'])('renders %s', async (route) => {
     renderWithProviders(<App />, route);
     expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument();
   });

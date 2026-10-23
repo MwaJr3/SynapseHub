@@ -28,7 +28,10 @@ const routes: Array<[string, string]> = [
   ['/apps/art-gallery-website', 'gallery prototype'],
   ['/skills', 'skills'],
   ['/journey', 'journey'],
+  ['/approach', 'approach'],
+  ['/operations', 'operations'],
   ['/contact', 'contact'],
+  ['/system', 'personal operating system'],
   ['/unknown-route', '404'],
   ...challengeManifest.map(
     (project) =>
