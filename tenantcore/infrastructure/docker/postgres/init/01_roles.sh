@@ -1,0 +1,10 @@
+#!/bin/bash
+set -euo pipefail
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
+  -v app_password="$TENANTCORE_APP_PASSWORD" <<'SQL'
+CREATE ROLE tenantcore_app
+  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS
+  PASSWORD :'app_password';
+REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+SQL

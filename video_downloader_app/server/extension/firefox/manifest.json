@@ -1,0 +1,51 @@
+{
+  "manifest_version": 2,
+  "name": "VDownloader OS — Video & Transcript Bridge",
+  "version": "2.4.0",
+  "description": "Detects playing HTML5/streaming videos on YouTube, Facebook, TikTok, anime sites, and sends page URLs to the VDownloader OS desktop app.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab",
+    "<all_urls>"
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "vdownloader-os@insightdl.local",
+      "strict_min_version": "109.0"
+    }
+  },
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": true
+  },
+  "browser_action": {
+    "default_title": "VDownloader OS Bridge",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
