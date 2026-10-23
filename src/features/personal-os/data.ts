@@ -46,7 +46,7 @@ export const defaultIdentity: IdentityProfile = {
  */
 export function createStarterSystem(): PersonalSystemData {
   return {
-    version: 2,
+    version: 3,
     cycleStart: currentMonday(),
     cycleName: 'My first 90-day cycle',
     cycleTheme: '',
@@ -56,6 +56,7 @@ export function createStarterSystem(): PersonalSystemData {
     decisions: [],
     energyLogs: [],
     actionItems: [],
+    scheduleBlocks: [],
     weeklyPlans: [],
     meaningEntries: [],
     blockerPatterns: [],
@@ -67,6 +68,7 @@ export function createStarterSystem(): PersonalSystemData {
     relationships: [],
     financialEntries: [],
     cycleArchives: [],
+    history: [],
     updatedAt: new Date().toISOString(),
   };
 }

@@ -6,6 +6,7 @@ import {
 } from './data';
 import type {
   ActionItem,
+  AuditEvent,
   CycleArchive,
   CycleRetrospective,
   EnergyLog,
@@ -22,6 +23,7 @@ const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000;
 const CYCLE_LENGTH_DAYS = 84;
 
 type LegacyRecord = Record<string, unknown>;
+type V2Data = Omit<PersonalSystemData, 'version' | 'scheduleBlocks' | 'history'> & { version: 2 };
 
 interface LoadResult {
   data: PersonalSystemData;
@@ -96,9 +98,9 @@ function normaliseProject(project: unknown): Project {
  * planning records, meaning entries, and growth modules. The migration keeps
  * every v1 field and adds empty, explicit defaults for new properties.
  */
-export function migrateV1ToV2(value: unknown): PersonalSystemData | null {
+export function migrateV1ToV2(value: unknown): V2Data | null {
   if (!isRecord(value) || value.version !== 1 || !isRecord(value.identity)) return null;
-  const starter = createStarterSystem();
+  const { scheduleBlocks: _scheduleBlocks, history: _history, ...starter } = createStarterSystem();
   const identity = value.identity;
   const standards = isRecord(identity.standards) ? identity.standards : {};
   const cycleStart = asString(value.cycleStart) || starter.cycleStart;
@@ -179,11 +181,11 @@ export function migrateV1ToV2(value: unknown): PersonalSystemData | null {
 
 /** Validates the top-level format before user data is restored into the app. */
 export function isPersonalSystemData(value: unknown): value is PersonalSystemData {
-  if (!isRecord(value) || value.version !== 2 || !isRecord(value.identity)) return false;
+  if (!isRecord(value) || value.version !== 3 || !isRecord(value.identity)) return false;
   const requiredArrays = [
-    'goals', 'projects', 'decisions', 'energyLogs', 'actionItems', 'weeklyPlans',
+    'goals', 'projects', 'decisions', 'energyLogs', 'actionItems', 'scheduleBlocks', 'weeklyPlans',
     'meaningEntries', 'blockerPatterns', 'blockerLogs', 'failures', 'weeklyReviews',
-    'doctrines', 'learningPaths', 'relationships', 'financialEntries', 'cycleArchives',
+    'doctrines', 'learningPaths', 'relationships', 'financialEntries', 'cycleArchives', 'history',
   ];
   return (
     typeof value.cycleStart === 'string' &&
@@ -192,10 +194,32 @@ export function isPersonalSystemData(value: unknown): value is PersonalSystemDat
   );
 }
 
-/** Accepts the current archive format and safely upgrades the previous format. */
+/** Adds scheduling and audit history without modifying existing v2 records. */
+export function migrateV2ToV3(value: unknown): PersonalSystemData | null {
+  if (!isRecord(value) || value.version !== 2 || !isRecord(value.identity)) return null;
+  const requiredV2Arrays = [
+    'goals', 'projects', 'decisions', 'energyLogs', 'actionItems', 'weeklyPlans',
+    'meaningEntries', 'blockerPatterns', 'blockerLogs', 'failures', 'weeklyReviews',
+    'doctrines', 'learningPaths', 'relationships', 'financialEntries', 'cycleArchives',
+  ];
+  if (!requiredV2Arrays.every((key) => Array.isArray(value[key]))) return null;
+
+  const source = value as unknown as V2Data;
+  return {
+    ...source,
+    version: 3,
+    scheduleBlocks: [],
+    history: [],
+  };
+}
+
+/** Accepts the current archive format and safely upgrades previous formats. */
 export function hydratePersonalSystem(value: unknown): PersonalSystemData | null {
   if (isPersonalSystemData(value)) return value;
-  return migrateV1ToV2(value);
+  const fromV2 = migrateV2ToV3(value);
+  if (fromV2) return fromV2;
+  const fromV1 = migrateV1ToV2(value);
+  return fromV1 ? migrateV2ToV3(fromV1) : null;
 }
 
 function preserveCorruptPayload(raw: string): void {
@@ -449,6 +473,92 @@ export function createCycleArchive(
   };
 }
 
+const AUDITED_COLLECTIONS = [
+  'goals', 'projects', 'decisions', 'energyLogs', 'actionItems', 'scheduleBlocks',
+  'weeklyPlans', 'meaningEntries', 'blockerPatterns', 'blockerLogs', 'failures',
+  'weeklyReviews', 'doctrines', 'learningPaths', 'relationships', 'financialEntries',
+  'cycleArchives',
+] as const;
+
+function recordLabel(collection: string, record: unknown): string {
+  if (!isRecord(record)) return collection;
+  return asString(record.title) || asString(record.name) || asString(record.skill)
+    || asString(record.displayName) || asString(record.blocker) || collection;
+}
+
+function createAuditEvents(
+  previous: PersonalSystemData,
+  next: PersonalSystemData,
+  restored = false,
+): AuditEvent[] {
+  const at = new Date().toISOString();
+  const events: AuditEvent[] = [];
+  for (const collection of AUDITED_COLLECTIONS) {
+    const before = previous[collection] as Array<{ id: string }>;
+    const after = next[collection] as Array<{ id: string }>;
+    const beforeById = new Map(before.map((record) => [record.id, record]));
+    const afterById = new Map(after.map((record) => [record.id, record]));
+    for (const [id, record] of afterById) {
+      const old = beforeById.get(id);
+      if (!old || JSON.stringify(old) !== JSON.stringify(record)) {
+        events.push({
+          id: `history-${crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`}`,
+          at,
+          collection,
+          recordId: id,
+          action: restored ? 'restored' : old ? 'updated' : 'created',
+          label: recordLabel(collection, record),
+          before: old ? structuredClone(old) : null,
+          after: structuredClone(record),
+        });
+      }
+    }
+    for (const [id, record] of beforeById) {
+      if (!afterById.has(id)) {
+        events.push({
+          id: `history-${crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`}`,
+          at,
+          collection,
+          recordId: id,
+          action: restored ? 'restored' : 'deleted',
+          label: recordLabel(collection, record),
+          before: structuredClone(record),
+          after: null,
+        });
+      }
+    }
+  }
+  if (JSON.stringify(previous.identity) !== JSON.stringify(next.identity)) {
+    events.push({
+      id: `history-${crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`}`,
+      at,
+      collection: 'identity',
+      recordId: 'identity',
+      action: restored ? 'restored' : 'updated',
+      label: 'Identity and values',
+      before: structuredClone(previous.identity),
+      after: structuredClone(next.identity),
+    });
+  }
+  return events;
+}
+
+export function restoreAuditEvent(data: PersonalSystemData, event: AuditEvent): PersonalSystemData {
+  if (event.collection === 'identity' && isRecord(event.before)) {
+    return { ...data, identity: structuredClone(event.before) as unknown as PersonalSystemData['identity'] };
+  }
+  if (!AUDITED_COLLECTIONS.includes(event.collection as (typeof AUDITED_COLLECTIONS)[number])) {
+    return data;
+  }
+  const collection = event.collection as (typeof AUDITED_COLLECTIONS)[number];
+  const records = data[collection] as Array<{ id: string }>;
+  const withoutCurrent = records.filter((record) => record.id !== event.recordId);
+  const restored = event.before && isRecord(event.before)
+    ? [structuredClone(event.before) as { id: string }, ...withoutCurrent]
+    : withoutCurrent;
+  return { ...data, [collection]: restored } as PersonalSystemData;
+}
+
 export function usePersonalSystem() {
   const [initial] = useState<LoadResult>(loadPersonalSystemResult);
   const [data, setData] = useState<PersonalSystemData>(initial.data);
@@ -457,15 +567,40 @@ export function usePersonalSystem() {
 
   useEffect(() => {
     if (persistenceIssue) return;
-    try {
-      window.localStorage.setItem(SYSTEM_STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      setPersistenceIssue('Changes could not be saved in this browser. Export the workspace before closing this page.');
+    let cancelled = false;
+    const save = () => {
+      if (cancelled) return;
+      try {
+        window.localStorage.setItem(SYSTEM_STORAGE_KEY, JSON.stringify(data));
+      } catch {
+        if (!cancelled) setPersistenceIssue('Changes could not be saved in this browser. Export the workspace before closing this page.');
+      }
+    };
+
+    // Web Locks coordinates writes between open Personal OS tabs in supporting
+    // browsers. It is not an operating-system file lock or multi-device sync.
+    const lockManager = navigator.locks;
+    if (lockManager) {
+      void lockManager.request('synapsehub.personal-os.save', { mode: 'exclusive' }, save).catch(() => save());
+    } else {
+      save();
     }
+    return () => { cancelled = true; };
   }, [data, persistenceIssue]);
 
-  const update = useCallback((updater: (previous: PersonalSystemData) => PersonalSystemData) => {
-    setData((previous) => ({ ...updater(previous), updatedAt: new Date().toISOString() }));
+  const update = useCallback((
+    updater: (previous: PersonalSystemData) => PersonalSystemData,
+    options?: { restored?: boolean },
+  ) => {
+    setData((previous) => {
+      const changed = updater(previous);
+      const events = createAuditEvents(previous, changed, options?.restored);
+      return {
+        ...changed,
+        history: [...events, ...previous.history].slice(0, 300),
+        updatedAt: new Date().toISOString(),
+      };
+    });
   }, []);
 
   const replace = useCallback((next: PersonalSystemData) => {

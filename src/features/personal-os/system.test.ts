@@ -112,10 +112,18 @@ describe('personal operating system calculations', () => {
 
     const migrated = hydratePersonalSystem(v1);
 
-    expect(migrated).toMatchObject({ version: 2, cycleStart: '2026-10-19' });
+    expect(migrated).toMatchObject({ version: 3, cycleStart: '2026-10-19' });
     expect(migrated?.identity.visionStatement).toBe('Build useful things.');
     expect(migrated?.goals[0]).toMatchObject({ title: 'Ship', tier: 2, definitionOfDone: '' });
     expect(migrated?.actionItems).toEqual([]);
+  });
+
+  it('upgrades a valid version-two backup with empty schedule and history collections', () => {
+    const current = createStarterSystem();
+    const { scheduleBlocks: _scheduleBlocks, history: _history, ...v2 } = current;
+    const migrated = hydratePersonalSystem({ ...v2, version: 2 });
+
+    expect(migrated).toMatchObject({ version: 3, scheduleBlocks: [], history: [] });
   });
 
   it('preserves an invalid stored payload instead of silently overwriting it', () => {

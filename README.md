@@ -105,14 +105,16 @@ React/TypeScript/Vite stack, not as a separate Python/Tkinter application. It de
 workspace rather than synthetic personal records.
 
 - **Direction:** vision, identity, values, standards, measurable goals, project portfolio, and 12-week cycle details.
-- **Execution:** a stated weekly capacity, actions with an estimate and cognitive demand, today’s priorities, and
-  an overcommitment warning.
+- **Execution:** a stated weekly capacity, actions with an estimate and cognitive demand, today’s priorities, an
+  overcommitment warning, and a local time-block scheduler with ICS export (not calendar-account sync).
 - **Diagnosis and adaptation:** energy checks, trigger/response maps, blocker occurrences, a three-minute activation
-  timer, decisions, weekly reviews, meaning entries, and post-mortems.
+  timer, decisions, weekly reviews, meaning entries, post-mortems, and evidence-only monthly/quarterly trends.
 - **Strategic growth:** learning paths, deliberately minimal relationship records, practical doctrine statements,
   and a simple multi-currency financial ledger.
-- **Continuity:** versioned browser storage, a v1 → v2 migration, corrupt-payload preservation, JSON export/import,
-  and immutable 12-week cycle snapshots before a new cycle starts.
+- **Continuity:** v1 → v2 → v3 browser-data migration, corrupt-payload preservation, full/scoped/redacted exports,
+  optional Web-Crypto encrypted transfer files, bounded local record history/restore, and immutable 12-week snapshots.
+- **Optional desktop utility:** `tools/personal_os_companion` is a separate offline Python/Tkinter reviewer for
+  user-selected backup shapes and manual CSV review; it has no browser-storage, bank, cloud-sync, or advice capability.
 
 See [the Personal OS guide](docs/PERSONAL_OPERATING_SYSTEM.md) for workflows, privacy, data recovery, and the
 implemented-versus-planned feature inventory. See [the implementation audit](docs/PERSONAL_OS_AUDIT.md) for the

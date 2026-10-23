@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { goalDomains, today } from '@/features/personal-os/data';
+import { AnalyticsSpace } from '@/features/personal-os/AnalyticsSpace';
+import { createScopedExport, type ExportScope } from '@/features/personal-os/exports';
 import { ExecutionSpace } from '@/features/personal-os/ExecutionSpace';
 import { GrowthSpace } from '@/features/personal-os/GrowthSpace';
+import { RecordStudio } from '@/features/personal-os/RecordStudio';
+import { ScheduleSpace } from '@/features/personal-os/ScheduleSpace';
+import { decryptExport, encryptExport } from '@/features/personal-os/secureExport';
 import { CycleCompletion, ReflectionRecords } from '@/features/personal-os/ReflectionRecords';
 import {
   computeOverallSignal,
@@ -27,15 +32,18 @@ import type {
   SystemSignal,
 } from '@/features/personal-os/types';
 
-type SystemTab = 'dashboard' | 'plan' | 'execute' | 'decisions' | 'review' | 'growth';
+type SystemTab = 'dashboard' | 'plan' | 'execute' | 'schedule' | 'decisions' | 'review' | 'analytics' | 'growth' | 'records';
 
 const tabs: { id: SystemTab; label: string; description: string }[] = [
   { id: 'dashboard', label: 'System health', description: 'Signal before speed' },
   { id: 'plan', label: 'Direction', description: 'Identity, goals, projects' },
   { id: 'execute', label: 'Plan & execute', description: 'Week, priorities, capacity' },
+  { id: 'schedule', label: 'Schedule', description: 'Protect time blocks' },
   { id: 'decisions', label: 'Decisions', description: 'Decide, test, learn' },
   { id: 'review', label: 'Review', description: 'Evidence, blockers, adaptation' },
+  { id: 'analytics', label: 'Analytics', description: 'Evidence over guesses' },
   { id: 'growth', label: 'Growth', description: 'Learning, people, principles' },
+  { id: 'records', label: 'Records', description: 'Edit and restore history' },
 ];
 
 const signalClasses: Record<SystemSignal, string> = {
@@ -171,7 +179,12 @@ export default function SystemPage() {
 
   const { data, update, replace, reset, persistenceIssue, recoveryPayload } = usePersonalSystem();
   const [activeTab, setActiveTab] = useState<SystemTab>('dashboard');
+  const [exportScope, setExportScope] = useState<ExportScope>('full');
+  const [redactExport, setRedactExport] = useState(false);
+  const [exportPassphrase, setExportPassphrase] = useState('');
+  const [transferStatus, setTransferStatus] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const encryptedInputRef = useRef<HTMLInputElement>(null);
   const health = useMemo(() => systemHealth(data), [data]);
   const overallSignal = useMemo(() => computeOverallSignal(data), [data]);
   const cycleWeek = currentCycleWeek(data.cycleStart);
@@ -189,7 +202,25 @@ export default function SystemPage() {
   };
 
   const exportSystem = () => {
-    downloadJson(JSON.stringify(data, null, 2), `personal-os-${today()}.json`);
+    downloadJson(JSON.stringify(data, null, 2), `personal-os-backup-${today()}.json`);
+  };
+
+  const exportScoped = () => {
+    const payload = createScopedExport(data, exportScope, redactExport);
+    downloadJson(JSON.stringify(payload, null, 2), `personal-os-${exportScope}${redactExport ? '-redacted' : ''}-${today()}.json`);
+    setTransferStatus('Scoped export downloaded. Scoped files are for sharing or inspection, not workspace restore.');
+  };
+
+  const exportEncrypted = async () => {
+    try {
+      const payload = createScopedExport(data, exportScope, redactExport);
+      const encrypted = await encryptExport(payload, exportPassphrase);
+      downloadJson(JSON.stringify(encrypted, null, 2), `personal-os-encrypted-${exportScope}-${today()}.json`);
+      setExportPassphrase('');
+      setTransferStatus('Encrypted transfer file downloaded. Keep its passphrase separately; it cannot be recovered by this app.');
+    } catch (caught) {
+      setTransferStatus(caught instanceof Error ? caught.message : 'Could not encrypt the export.');
+    }
   };
 
   const importSystem = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -202,6 +233,30 @@ export default function SystemPage() {
       replace(restored);
     } catch {
       window.alert('That file is not a valid Personal Operating System export. Your current data was not changed.');
+    } finally {
+      event.target.value = '';
+    }
+  };
+
+  const importEncryptedSystem = async (event: ChangeEvent<HTMLInputElement>) => {
+    const [file] = Array.from(event.target.files ?? []);
+    if (!file) return;
+    const passphrase = window.prompt('Enter the passphrase for this encrypted Personal OS transfer file.');
+    if (!passphrase) {
+      event.target.value = '';
+      return;
+    }
+    try {
+      const encrypted: unknown = JSON.parse(await file.text());
+      const decrypted = await decryptExport(encrypted, passphrase);
+      const wrapper = decrypted as { scope?: string; payload?: unknown };
+      if (wrapper.scope !== 'full') throw new Error('Only a full encrypted backup can restore a workspace. Scoped exports are intentionally read-only.');
+      const restored = hydratePersonalSystem(wrapper.payload);
+      if (!restored) throw new Error('The decrypted payload is not a valid workspace backup.');
+      replace(restored);
+      setTransferStatus('Encrypted full backup restored. It remains local to this browser.');
+    } catch (caught) {
+      setTransferStatus(caught instanceof Error ? caught.message : 'Could not restore this encrypted export. Your current workspace was not changed.');
     } finally {
       event.target.value = '';
     }
@@ -313,37 +368,39 @@ export default function SystemPage() {
           )}
           {activeTab === 'plan' && <Direction data={data} update={update} />}
           {activeTab === 'execute' && <ExecutionSpace data={data} update={update} cycleWeek={cycleWeek} />}
+          {activeTab === 'schedule' && <ScheduleSpace data={data} update={update} />}
           {activeTab === 'decisions' && <DecisionBoard data={data} update={update} />}
           {activeTab === 'review' && <ReviewSpace data={data} update={update} cycleWeek={cycleWeek} />}
+          {activeTab === 'analytics' && <AnalyticsSpace data={data} />}
           {activeTab === 'growth' && <GrowthSpace data={data} update={update} />}
+          {activeTab === 'records' && <RecordStudio data={data} update={update} />}
         </div>
 
         <section className="mt-8 border-t border-line pt-8" aria-labelledby="system-tools-heading">
-          <div className="flex flex-col justify-between gap-5 rounded-card border border-line bg-panel-strong p-5 sm:flex-row sm:items-center">
-            <div>
-              <p className="eyebrow">Data stewardship</p>
-              <h2 id="system-tools-heading" className="mt-1 text-base font-semibold text-ink">
-                Your system belongs to you
-              </h2>
-              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">
-                This prototype is local-first: data stays in this browser unless you export it. Keep a JSON export before clearing browser data or starting a major new cycle.
-              </p>
+          <div className="rounded-card border border-line bg-panel-strong p-5">
+            <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-start">
+              <div>
+                <p className="eyebrow">Data stewardship</p>
+                <h2 id="system-tools-heading" className="mt-1 text-base font-semibold text-ink">Your system belongs to you</h2>
+                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-muted">This workspace is local-first: data stays in this browser unless you download it. A full JSON backup is the only export that can restore the complete workspace. Manual file exchange is not cloud sync, and this browser cannot lock files at operating-system level.</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" className="btn btn-secondary" onClick={exportSystem}>Full backup</button>
+                <button type="button" className="btn btn-secondary" onClick={() => inputRef.current?.click()}>Restore backup</button>
+                <button type="button" className="btn btn-secondary" onClick={() => encryptedInputRef.current?.click()}>Restore encrypted backup</button>
+                <button type="button" className="btn btn-ghost" onClick={startNewCycle}>New 90-day clock</button>
+                <button type="button" className="btn btn-ghost text-red-600 dark:text-red-300" onClick={() => { if (window.confirm('Reset this browser workspace to the starter system? Export first if you need the current data.')) reset(); }}>Reset workspace</button>
+                <input ref={inputRef} type="file" accept="application/json" className="sr-only" onChange={importSystem} />
+                <input ref={encryptedInputRef} type="file" accept="application/json" className="sr-only" onChange={importEncryptedSystem} />
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <button type="button" className="btn btn-secondary" onClick={exportSystem}>Export JSON</button>
-              <button type="button" className="btn btn-secondary" onClick={() => inputRef.current?.click()}>Import / restore</button>
-              <button type="button" className="btn btn-ghost" onClick={startNewCycle}>New 90-day clock</button>
-              <button
-                type="button"
-                className="btn btn-ghost text-red-600 dark:text-red-300"
-                onClick={() => {
-                  if (window.confirm('Reset this browser workspace to the starter system? Export first if you need the current data.')) reset();
-                }}
-              >
-                Reset workspace
-              </button>
-              <input ref={inputRef} type="file" accept="application/json" className="sr-only" onChange={importSystem} />
+            <div className="mt-6 grid gap-4 border-t border-line pt-5 lg:grid-cols-[1fr_1fr_auto]">
+              <label className="system-field"><span>Share scope</span><select value={exportScope} onChange={(event) => setExportScope(event.target.value as ExportScope)}><option value="full">Full workspace</option><option value="current-cycle">Current cycle</option><option value="planning">Planning only</option><option value="review">Review evidence only</option></select></label>
+              <div className="grid gap-3"><label className="system-field"><span>Encryption passphrase <small>10+ characters; never saved</small></span><input type="password" autoComplete="new-password" value={exportPassphrase} onChange={(event) => setExportPassphrase(event.target.value)} placeholder="Only for encrypted transfer" /></label><label className="flex items-center gap-2 text-sm text-ink-muted"><input type="checkbox" checked={redactExport} onChange={(event) => setRedactExport(event.target.checked)} /> Redact narrative/private-text fields</label></div>
+              <div className="flex flex-wrap items-end gap-2"><button type="button" className="btn btn-secondary" onClick={exportScoped}>Download scoped copy</button><button type="button" className="btn btn-primary" onClick={exportEncrypted}>Download encrypted copy</button></div>
             </div>
+            <p className="mt-4 text-xs leading-relaxed text-ink-subtle">Encrypted copies use browser Web Crypto (AES-GCM with PBKDF2-SHA-256). Keep the passphrase separately: there is no account, recovery service, bank connection, or live multi-device conflict handling in this local app.</p>
+            {transferStatus && <p role="status" className="mt-3 text-sm text-ink-muted">{transferStatus}</p>}
           </div>
         </section>
       </div>
