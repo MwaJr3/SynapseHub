@@ -87,6 +87,9 @@ withdraw, resume withdrawal kills downloads).
 Seed products, case studies, and demo people are working records derived from
 project briefs — illustrative and labelled as such. "Built" means an
 implementation exists and was tested; it does **not** mean publicly deployed.
-No metrics, dates, user counts, testimonials, or educational impact are
-claimed. E2E browser tests (Playwright) are documented as future work because
-no browser runtime exists in this build environment.
+Source Code buttons appear only for the seven products whose working apps were
+verified in the owner-supplied MySul source (`docs/PROJECT_EVIDENCE.md` records
+every evidence link and its verification status). No metrics, dates, user
+counts, testimonials, or educational impact are claimed. E2E browser tests
+(Playwright) are documented as future work because no browser runtime exists
+in this build environment.

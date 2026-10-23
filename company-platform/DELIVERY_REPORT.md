@@ -176,6 +176,16 @@ no Lighthouse scores are claimed anywhere.
 - **Seed content is illustrative working material** derived from project
   briefs; every case study flags implementation details that need verification.
   Deployment status of all 25 products is unverified — none is claimed live.
+- **Evidence update (2026-10-23):** the owner supplied six project source
+  links (see `docs/PROJECT_EVIDENCE.md`). Four were independently verified
+  merged and inspected: MySul#1 (7 working apps for the catalogue),
+  MySul#2 (nine case-study records), SynapseHub#3 (60 challenge prototypes),
+  SynapseHub#4 (stock time-series analysis v1/v2). Seven catalogue products
+  now have configured Source Code links to their working apps; nine carry
+  verified case-study records without linked source; nine are covered by the
+  personal portfolio project registry. TenantCore and VDownloader
+  (CBU_Assignments#5/#6) are owner-supplied links to a private repository and
+  could not be independently verified from this environment.
 - **No genuine screenshots yet** — all visuals are labelled illustrative and
   must be replaced (see `docs/LAUNCH_CHECKLIST.md`).
 - **Legal details empty** — legal names, registration, privacy/terms policy

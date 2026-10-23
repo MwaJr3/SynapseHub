@@ -3,23 +3,46 @@ import { velaqoriCompany, velaqoriSolutions, velaqoriProducts } from './velaqori
 import { velaqoriProductsB } from './velaqori-b';
 import { tamuziCompany, tamuziSolutions, tamuziProducts } from './tamuzi-a';
 import { tamuziProductsB } from './tamuzi-b';
+import { PRODUCT_EVIDENCE, type ProductEvidence } from './evidence';
 import type { ProductContent } from './types';
 import { SEED_DATA_NOTICE } from './types';
 
 export { SEED_DATA_NOTICE };
 export type { ProductContent };
 export { demoPeople, type DemoPersonSeed } from './people';
+export {
+  SUPPLIED_EVIDENCE_LINKS,
+  PRODUCT_EVIDENCE,
+  ALLOWED_SEED_URLS,
+  type ProductEvidence,
+  type SuppliedEvidenceLink,
+} from './evidence';
 
 export const companies = [velaqoriCompany, tamuziCompany];
 
 export const solutionAreas = [...velaqoriSolutions, ...tamuziSolutions];
 
-export const products: ProductContent[] = [
+const baseProducts: ProductContent[] = [
   ...velaqoriProducts,
   ...velaqoriProductsB,
   ...tamuziProducts,
   ...tamuziProductsB,
 ];
+
+/**
+ * Products with owner-supplied evidence applied: configured source links only
+ * where real source exists, and verification notes that say what was actually
+ * verified.
+ */
+export const products: ProductContent[] = baseProducts.map((product) => {
+  const evidence: ProductEvidence | undefined = PRODUCT_EVIDENCE[product.slug];
+  if (!evidence) return product;
+  return {
+    ...product,
+    ...(evidence.repositoryUrl ? { repositoryUrl: evidence.repositoryUrl } : {}),
+    verificationNote: `${product.verificationNote} ${evidence.verificationAddendum}`,
+  };
+});
 
 export interface CaseStudyContent {
   slug: string;
