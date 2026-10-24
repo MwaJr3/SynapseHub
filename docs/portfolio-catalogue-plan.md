@@ -21,21 +21,21 @@ entry to a working app in `apps/` and records honest build status.
 
 | # | Catalogue project | App | Interface | Status |
 | --- | --- | --- | --- | --- |
-| 1 | Student Grade Management | `gradeflow` | CLI + JSON | planned |
-| 2 | Personal Expense Tracker | `budgetbook` | CLI + JSON | planned |
-| 3 | Number Guessing Game | `guessmaster` | CLI | planned |
-| 4 | Quiz Application | `quizbox` | CLI + JSON bank | planned |
-| 5 | Secure Password Generator | `passforge` | CLI | planned |
-| 6 | Personal Task Manager | `taskdeck` | CLI + JSON | planned |
-| 7 | University Management System | `unicore` | CLI + SQLite | planned |
-| 8 | File Organizer | `tidyfiles` | CLI | planned |
-| 9 | Library Management System | `shelfwise` | CLI + SQLite | planned |
-| 10 | Flashcard Learning Application | `flashkit` | CLI + SQLite | planned |
-| 11 | Weather Application | `skycast` | CLI + provider adapter | planned |
+| 1 | Student Grade Management | `gradeflow` | CLI + JSON | built + tested |
+| 2 | Personal Expense Tracker | `budgetbook` | CLI + JSON | built + tested |
+| 3 | Number Guessing Game | `guessmaster` | CLI | built + tested |
+| 4 | Quiz Application | `quizbox` | CLI + JSON bank | built + tested |
+| 5 | Secure Password Generator | `passforge` | CLI | built + tested |
+| 6 | Personal Task Manager | `taskdeck` | CLI + JSON | built + tested |
+| 7 | University Management System | `unicore` | CLI + SQLite | built + tested |
+| 8 | File Organizer | `tidyfiles` | CLI | built + tested |
+| 9 | Library Management System | `shelfwise` | CLI + SQLite | built + tested |
+| 10 | Flashcard Learning Application | `flashkit` | CLI + SQLite | built + tested |
+| 11 | Weather Application | `skycast` | CLI + provider adapter | built + tested |
 | 12 | Chess Game Analyzer | **`chessscope`** (existing) | Web + Stockfish | **reused** |
 | 13 | Electrical Engineering Calculator | **`circuitlab-calc`** (existing) | Web | **reused** |
-| 14 | Data Analysis Dashboard | `datadesk` | CLI + HTML reports | planned |
-| 15 | Personal Knowledge Management | `notekit` | CLI + SQLite | planned |
+| 14 | Data Analysis Dashboard | `datadesk` | CLI + HTML reports | built + tested |
+| 15 | Personal Knowledge Management | `notekit` | CLI + SQLite | built + tested |
 | 16 | Real-Time Multiplayer Quiz | `quizarena` | FastAPI + WebSocket web | built + tested |
 | 17 | AI Study Assistant | `prepwise` | FastAPI web (RAG) | built + tested |
 | 18 | E-Commerce Application | `shopdeck` | FastAPI web | built + tested |
@@ -51,24 +51,24 @@ entry to a working app in `apps/` and records honest build status.
 
 | # | Catalogue project | App | Interface | Status |
 | --- | --- | --- | --- | --- |
-| 1 | Secure Password Generator | **`passforge`** (shared with Eng 5) | CLI | planned |
+| 1 | Secure Password Generator | **`passforge`** (shared with Eng 5) | CLI | built + tested |
 | 2 | File Hashing & Integrity Checker | **`fileguard`** (existing) | Web | **reused** |
-| 3 | Password Strength Analyzer | `passmeter` | CLI | planned |
-| 4 | File Encryption/Decryption Tool | `fileseal` | CLI | planned |
+| 3 | Password Strength Analyzer | `passmeter` | CLI | built + tested |
+| 4 | File Encryption/Decryption Tool | `fileseal` | CLI | built + tested |
 | 5 | Cybersecurity Log Analyzer | **`sentinellog`** (existing) | Web | **reused** |
-| 6 | Phishing Email Analyzer | `phishlens` | CLI | planned |
+| 6 | Phishing Email Analyzer | `phishlens` | CLI | built + tested |
 | 7 | File Integrity Monitoring System | **`fileguard`** (existing) | Web | **reused** |
-| 8 | Secret & API-Key Scanner | `secretscan` | CLI | planned |
+| 8 | Secret & API-Key Scanner | `secretscan` | CLI | built + tested |
 | 9 | Dependency Vulnerability Auditor | **`dependsecure`** (existing) | Web | **reused** |
-| 10 | HTTP Security Headers Checker | `headercheck` | CLI | planned |
-| 11 | Network Traffic Analyzer | `netscope` | CLI | planned |
-| 12 | Suspicious Login Detection | `loginsense` | CLI | planned |
+| 10 | HTTP Security Headers Checker | `headercheck` | CLI | built + tested |
+| 11 | Network Traffic Analyzer | `netscope` | CLI | built + tested |
+| 12 | Suspicious Login Detection | `loginsense` | CLI | built + tested |
 | 13 | Mini SIEM | **`sentinelcore`** (existing) | Web | **reused** |
 | 14 | Digital Forensics Evidence Analyzer | `incidentflow` | CLI + SQLite | built + tested |
 | 15 | Secure Login System with MFA | `authgate` | FastAPI web + TOTP | built + tested |
 | 16 | Web Application Security Testing Lab | `secweblab` | pytest runner + fixture app | built + tested |
-| 17 | Threat Intelligence Lookup/Enrichment | `threatintel-desk` | CLI + SQLite | planned |
-| 18 | Endpoint Security Monitoring | `hostwatch` | CLI | planned |
+| 17 | Threat Intelligence Lookup/Enrichment | `threatintel-desk` | CLI + SQLite | built + tested |
+| 18 | Endpoint Security Monitoring | `hostwatch` | CLI | built + tested |
 | 19 | Phishing URL Detection Model | `urlshield` | CLI (scikit-learn) | built + tested |
 | 20 | Python Security Automation Dashboard | `secops-dash` | FastAPI web (integration) | built + tested |
 
@@ -105,3 +105,8 @@ deferred-with-reasons per app) and per-app README sections titled "Modern
 features & performance notes". Candidate sets were prioritized (P0
 correctness/safety first); performance-relevant operations carry DSA/
 complexity notes; no unmeasured benchmark numbers are claimed anywhere.
+
+### Status-label correction (2026-10-24)
+The 22 rows previously left as `planned` were already built, tested and merged
+(one app per commit in the 2026-10-24 campaigns; suites green at merge). The
+label was stale documentation, not missing work — corrected here.
