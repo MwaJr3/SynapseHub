@@ -1,0 +1,9 @@
+[project]
+name = "quizbox"
+version = "0.1.0"
+description = "Categorized multiple-choice quiz application"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+quizbox = "app.cli:main"
