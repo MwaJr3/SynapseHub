@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Run one project's e2e suite (which also captures documentation screenshots).
-# Usage: scripts/run-e2e.sh <hashsight|assetwatch|securecode-workbench|cyberaware-lab>
+# Usage: scripts/run-e2e.sh <hashsight|assetwatch|securecode-workbench|cyberaware-lab|phishlens|netscope|incidentflow|threatintel-desk>
 # Requirements: python env with the backend deps, node, and Playwright browsers
 #   (npx playwright install chromium — run once on a machine with network access).
 set -euo pipefail
 SLUG="$1"
-declare -A BE_PORT=( [hashsight]=8011 [assetwatch]=8012 [securecode-workbench]=8013 [cyberaware-lab]=8014 )
-declare -A FE_PORT=( [hashsight]=5174 [assetwatch]=5175 [securecode-workbench]=5176 [cyberaware-lab]=5177 )
+declare -A BE_PORT=( [hashsight]=8011 [assetwatch]=8012 [securecode-workbench]=8013 [cyberaware-lab]=8014 [phishlens]=8015 [netscope]=8016 [incidentflow]=8017 [threatintel-desk]=8018 )
+declare -A FE_PORT=( [hashsight]=5174 [assetwatch]=5175 [securecode-workbench]=5176 [cyberaware-lab]=5177 [phishlens]=5178 [netscope]=5179 [incidentflow]=5180 [threatintel-desk]=5181 )
 BE="${BE_PORT[$SLUG]:?unknown project}"
 FE="${FE_PORT[$SLUG]:?unknown project}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
