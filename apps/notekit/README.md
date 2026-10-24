@@ -37,3 +37,16 @@ Substring search (no full-text index yet); no export/backup yet (roadmap).
 ## Future enhancements
 Full-text search, graph-style note relationships, source citations in answers,
 export/backup, optional AI-assisted summarisation (clearly labelled).
+
+## Modern features & performance notes (feature-candidate pass)
+- **Backlinks** (`backlinks`): inbound link lookup over recorded edges.
+- **Bounded graph expansion** (`graph`): BFS with depth ≤ 4 and node cap ≤
+  200; truncation is flagged — the full graph is never rendered implicitly.
+- **Duplicate detection** (`dupes`): token-Jaccard candidates with a cheap
+  length pre-filter (pairwise `O(n²)` over a bounded corpus); flagged for
+  human review, **never auto-merged**.
+- **Markdown import/export** (`export`/`import`): H1-split bundles; rejected
+  chunks carry reasons.
+- Deferred candidates (with reasons): embedding-based similarity (would need
+  a model; labelled alternatives preferred); realtime multi-user editing
+  (hosting/infra out of scope).
