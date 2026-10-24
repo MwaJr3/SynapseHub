@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, ApiError, type Analysis, type GameRow, type User } from './api';
+import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 
@@ -243,6 +243,127 @@ export function SettingsPage({ user }: { user: User }) {
           <li>Demo games are simulated.</li>
         </ul>
       </Card>
+    </div>
+  );
+}
+
+
+export function TrainingPage() {
+  const [plan, setPlan] = useState<TrainingPlan | null>(null);
+  const [mistakes, setMistakes] = useState<Mistake[]>([]);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([api.trainingPlan(), api.trainingMistakes()])
+      .then(([p, m]) => {
+        setPlan(p);
+        setMistakes(m.mistakes);
+      })
+      .catch((e: Error) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <Loading />;
+  const progress = (plan?.progress ?? {}) as Record<string, unknown>;
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-xl font-semibold text-slate-100">Training &amp; improvement</h1>
+        <p className="text-sm text-slate-400">
+          Every inaccuracy, mistake and blunder recorded from your engine-analysed games, with concrete
+          suggestions for where to improve.
+        </p>
+      </div>
+      {error ? <ErrorBanner message={error} /> : null}
+      {plan ? (
+        <>
+          <div className="card">
+            <h2 className="mb-2 font-medium text-emerald-300">Where to focus next</h2>
+            {plan.focusAreas.length === 0 ? (
+              <p className="text-sm text-slate-400">
+                No recorded mistakes yet — analyse a game with the engine to build your improvement plan.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {plan.focusAreas.map((f) => (
+                  <div key={f.category} className="rounded-lg border border-slate-800 p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="font-medium text-slate-100">{f.title}</div>
+                      <div className="text-xs text-slate-500">
+                        {f.count} recorded · {f.phases.join(', ')}
+                      </div>
+                    </div>
+                    <p className="mt-1 text-sm text-slate-400">{f.advice}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            <p className="mt-3 text-xs text-slate-500">{plan.note}</p>
+          </div>
+          <div className="card">
+            <h2 className="mb-2 font-medium text-emerald-300">Recorded pattern summary</h2>
+            <div className="flex flex-wrap gap-2 text-xs">
+              {Object.entries(plan.byClassification).map(([k, v]) => (
+                <span key={k} className="rounded bg-slate-800 px-2 py-1 text-slate-300">
+                  {k}: {String(v)}
+                </span>
+              ))}
+              {Object.entries(plan.byCategory).map(([k, v]) => (
+                <span key={k} className="rounded bg-slate-800 px-2 py-1 text-slate-300">
+                  {k}: {String(v)}
+                </span>
+              ))}
+            </div>
+            {typeof progress.direction === 'string' ? (
+              <p className="mt-2 text-xs text-slate-500">
+                Blunders in earlier vs later analysed games: {String(progress.early_blunders)} →{' '}
+                {String(progress.recent_blunders)} ({progress.direction}). {String(progress.note ?? '')}
+              </p>
+            ) : (
+              <p className="mt-2 text-xs text-slate-500">{String(progress.note ?? '')}</p>
+            )}
+          </div>
+        </>
+      ) : null}
+      <div className="card">
+        <h2 className="mb-2 font-medium text-emerald-300">Mistake journal</h2>
+        {mistakes.length === 0 ? (
+          <p className="text-sm text-slate-400">Nothing recorded yet.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-800 text-xs text-slate-500">
+                  <th className="py-2 pr-3">Game</th>
+                  <th className="pr-3">Ply</th>
+                  <th className="pr-3">Move</th>
+                  <th className="pr-3">Classification</th>
+                  <th className="pr-3">Eval drop</th>
+                  <th className="pr-3">Phase</th>
+                  <th className="pr-3">Theme</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mistakes.map((m) => (
+                  <tr key={m.id} className="border-b border-slate-800/60 text-slate-300">
+                    <td className="py-2 pr-3 text-xs text-slate-500 max-w-xs truncate" title={m.pgnText}>
+                      #{m.gameId}
+                    </td>
+                    <td className="pr-3">{m.ply}</td>
+                    <td className="pr-3 font-medium">{m.san}</td>
+                    <td className="pr-3">{m.classification}</td>
+                    <td className="pr-3">{m.evalDropCp} cp</td>
+                    <td className="pr-3">{m.phase}</td>
+                    <td className="pr-3">{m.category}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

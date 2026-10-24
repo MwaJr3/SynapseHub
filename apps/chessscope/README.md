@@ -7,7 +7,7 @@ the portfolio product **ChessScope** (Velaqori Systems).
 
 > **Honesty statements (also in-product).** Heuristic flags mark suspicious
 > patterns for review — they are **NOT proof** that a move is a mistake. Engine
-> evaluations appear **only** when a local UCI engine (e.g. Stockfish) is
+> evaluations appear **only** when a local UCI engine is
 > configured; without one the app says so and invents no evaluations. Absence
 > of flags is not proof a game is mistake-free.
 
@@ -19,7 +19,15 @@ the portfolio product **ChessScope** (Velaqori Systems).
   move counts, material-balance timeline.
 - Heuristic flags (labelled): lower-value-piece captures into recapturable
   squares, possibly hanging pieces.
-- Optional engine tier: per-move centipawn evals + drop-based classification
+- Real engine tier: per-move centipawn evals + drop-based classification
+  (inaccuracy ≥ 50cp / mistake ≥ 100cp / blunder ≥ 200cp). **A compiled
+  Stockfish 11 binary is bundled** at `backend/engine/stockfish` and is
+  auto-discovered (override with `CHESSSCOPE_ENGINE`). It is not committed to
+  git — run `backend/scripts/setup-engine.sh` to download and compile it.
+- Training & improvement: every classified move is recorded (phase + theme
+  category), and the plan page aggregates mistakes into ranked focus areas
+  with concrete practice suggestions and a rough early-vs-recent blunder trend
+  ("suggestions, not guarantees").
   (inaccuracy / mistake / blunder) with thresholds documented in
   `backend/app/analysis.py`. Degrades gracefully to heuristic-only.
 - Portfolio insights: results by colour, openings from PGN labels, flag totals.
@@ -30,7 +38,7 @@ the portfolio product **ChessScope** (Velaqori Systems).
 
 FastAPI, SQLAlchemy (SQLite default, PostgreSQL-ready), `python-chess`,
 React 19, TypeScript (strict), Tailwind CSS 4, Vite.
-Tests: pytest (12) + Vitest (3).
+Tests: pytest (16) + Vitest (3).
 
 ## Run it
 
@@ -45,7 +53,10 @@ cd ../frontend
 npm install && npm run dev                 # http://localhost:5178 → :8005
 ```
 
-Optional engine: `export CHESSSCOPE_ENGINE=/path/to/stockfish` before starting
+Engine: the bundled binary is auto-discovered from `backend/engine/stockfish`.
+To use another engine: `export CHESSSCOPE_ENGINE=/path/to/stockfish` (and optional
+`CHESSSCOPE_ENGINE_DEPTH`, default 12) before starting. Without any engine the app
+degrades honestly to heuristic flags only.
 the backend. Without it, analysis is heuristic-only and says so.
 
 ### Demo account (fictional)
@@ -59,13 +70,14 @@ The seeded game is a simulated Scholar's-mate demonstration, labelled as such.
 ## Tests
 
 ```bash
-cd backend && python3 -m pytest tests/ -q    # 12 tests
+cd backend && python3 -m pytest tests/ -q    # 16 tests
 cd ../frontend && npm test                   # 3 tests
 ```
 
 Covered: PGN parsing (valid/invalid/empty), statistics on known games,
 material timeline, heuristic flag labelling, graceful engine absence,
-injected-fake engine classification path, threshold logic, game CRUD,
+injected-fake engine classification path, real bundled engine at shallow depth,
+threshold logic, mistake recording + plan building, game CRUD,
 per-user isolation, insights aggregation, auth enforcement.
 
 ## Known limitations

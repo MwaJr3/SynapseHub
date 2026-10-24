@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type User } from './api';
 import { ErrorBanner, Field, Loading } from './ui';
-import { GamesPage, InsightsPage, SettingsPage } from './pages';
+import { GamesPage, InsightsPage, SettingsPage, TrainingPage } from './pages';
 
-type Route = 'games' | 'insights' | 'settings';
+type Route = 'games' | 'training' | 'insights' | 'settings';
 
 const NAV: { id: Route; label: string }[] = [
   { id: 'games', label: 'Games & analysis' },
+  { id: 'training', label: 'Training & improvement' },
   { id: 'insights', label: 'Insights' },
   { id: 'settings', label: 'Settings' },
 ];
@@ -139,6 +140,7 @@ export default function App() {
       </aside>
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {route === 'games' ? <GamesPage /> : null}
+        {route === 'training' ? <TrainingPage /> : null}
         {route === 'insights' ? <InsightsPage /> : null}
         {route === 'settings' ? <SettingsPage user={user} /> : null}
       </main>

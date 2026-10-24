@@ -1,0 +1,3 @@
+# Compiled engine binary — install with backend/scripts/setup-engine.sh
+backend/engine/stockfish
+backend/engine/*.o
