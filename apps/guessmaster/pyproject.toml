@@ -1,0 +1,9 @@
+[project]
+name = "guessmaster"
+version = "0.1.0"
+description = "Number guessing game with difficulty levels and high scores"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+guessmaster = "app.cli:main"
