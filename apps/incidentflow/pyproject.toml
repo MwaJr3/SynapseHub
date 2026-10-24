@@ -1,0 +1,9 @@
+[project]
+name = "incidentflow"
+version = "0.1.0"
+description = "Digital forensics evidence analyzer with chain-of-custody records"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+incidentflow = "app.cli:main"
