@@ -13,6 +13,7 @@ const ProjectDetailPage = lazy(() => import('@/pages/ProjectDetailPage'));
 const SkillsPage = lazy(() => import('@/pages/SkillsPage'));
 const ApproachPage = lazy(() => import('@/pages/ApproachPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
+const EarlierWorkPage = lazy(() => import('@/pages/EarlierWorkPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 /**
@@ -44,6 +45,7 @@ export function AppShell() {
             <Route path="/skills" element={<SkillsPage />} />
             <Route path="/approach" element={<ApproachPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/earlier-work" element={<EarlierWorkPage />} />
 
             {/* Convenience aliases for older links. */}
             <Route path="/engineering-approach" element={<Navigate to="/approach" replace />} />

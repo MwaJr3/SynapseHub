@@ -11,6 +11,7 @@ export const primaryNav: NavItem[] = [
   { label: 'Home', to: '/', match: 'exact' },
   { label: 'About', to: '/about', match: 'exact' },
   { label: 'Projects', to: '/projects', match: 'prefix' },
+  { label: 'Earlier work', to: '/earlier-work', match: 'exact' },
   { label: 'Skills', to: '/skills', match: 'exact' },
   { label: 'Engineering Approach', to: '/approach', match: 'exact' },
   { label: 'Contact', to: '/contact', match: 'exact' },

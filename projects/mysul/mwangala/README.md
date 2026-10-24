@@ -108,3 +108,12 @@ GitHub stars, testimonials, or "confirmed attacks". Suspicious patterns are alwa
 labelled **patterns under investigation**, never proof of compromise. Scanner output
 is always separated from analyst conclusions. Hash matches are described as
 **integrity vs. baseline**, never proof of safety.
+
+## Where this work lives now
+
+These seven projects (SentinelLog, FileGuard, DependSecure, CampusFlow, ChessScope,
+CircuitLab Calc, SentinelCore) are preserved as an **“Earlier work” archive** in the
+company website portfolio at `projects/mysul/mwangala-portfolio/` (`/earlier-work`),
+which is the maintained portfolio hosted on GitHub. This directory remains the
+original static site and small demo apps, kept for the record — not the
+maintained portfolio.
