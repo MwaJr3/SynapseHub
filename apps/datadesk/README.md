@@ -35,3 +35,13 @@ items. Numeric inference uses a documented 30% tolerance for mixed columns.
 
 ## Future enhancements
 Interactive filters, dataset profiles, upload history, more chart types.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Column profiling** (`profile`): missing %, distinct, numeric min/max/mean
+  or an explicit `mixed/text` guess — one pass per column `O(n)`.
+- **Recipes**: each transform (trim, fill_missing) is recorded and replayable
+  (`replay_plan`); **reversible** via preserved originals `O(1)` per column.
+- **Bounded preview** (`preview`): 1..100 rows, refused beyond the bound.
+- Deferred candidates (with reasons): statistical outlier detection (needs
+  validated thresholds per domain); auto-type inference beyond the simple
+  numeric check (silent type guessing can corrupt analysis).

@@ -42,3 +42,14 @@ chosen provider's rate limits and terms.
 ## Future improvements
 Caching with explicit freshness display, accessible weather summaries, charts,
 location autocomplete.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Unit conversions** (`units`): deterministic metric/imperial math with the
+  unit echoed in the output (never ambiguous display).
+- **Hourly series** (`hourly`): bounded 1..48-hour preview; incomplete records
+  are flagged — **never interpolated or invented**.
+- **Favourites** (`favourite`): named locations registry.
+- Freshness/TTL cache labels and stale warnings (existing) remain the honesty
+  surface for cached observations.
+- Deferred candidates (with reasons): map views (assets/renderer out of
+  scope); severe-weather push alerts (would need outbound notification infra).
