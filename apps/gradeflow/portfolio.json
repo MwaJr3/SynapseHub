@@ -1,0 +1,30 @@
+{
+  "name": "GradeFlow",
+  "slug": "gradeflow",
+  "shortDescription": "Student grade management: registration, marks, configurable grading bands, results and ranking.",
+  "tags": [
+    "education",
+    "cli",
+    "data-processing"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Unique student IDs with duplicate protection",
+    "Marks validated to 0-100 with explicit update semantics",
+    "Configurable grade bands (boundaries tested exactly)",
+    "Total/average/letter results; incomplete records flagged",
+    "Top performers with ties listed; JSON persistence"
+  ],
+  "knownLimitations": [
+    "Single-user local tool; no authentication (out of scope for level 1)",
+    "Averages use recorded marks only",
+    "Screenshots pending capture"
+  ]
+}
