@@ -35,7 +35,7 @@ export const netScope: Project = {
   keyTech: ['Python', 'FastAPI', 'Scapy', 'Pandas', 'React', 'PostgreSQL'],
   featured: true,
   order: 2,
-  status: 'Complete — offline capture analysis with background processing',
+  status: 'Reconciled — offline capture analysis complete and tested as a dependency-free Python CLI in apps/netscope (stdlib pcap parsing); the full-stack interface described in this case study is design scope, not yet built',
   year: '2025',
   role: 'Design, parsing pipeline, analysis rules, frontend visualisation',
   accent: 'blue',

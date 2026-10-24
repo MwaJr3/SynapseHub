@@ -35,7 +35,7 @@ export const incidentFlow: Project = {
   keyTech: ['Python', 'FastAPI', 'SQLAlchemy', 'React', 'PostgreSQL'],
   featured: true,
   order: 4,
-  status: 'Complete — lifecycle, RBAC, audit trail and reporting implemented',
+  status: 'Reconciled — lifecycle, RBAC, audit trail and reporting complete and tested as a Python CLI in apps/incidentflow; the full-stack interface described in this case study is design scope, not yet built',
   year: '2025',
   role: 'Data modelling, workflow rules, permissions, frontend',
   accent: 'amber',

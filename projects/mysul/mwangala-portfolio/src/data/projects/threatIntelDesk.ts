@@ -34,7 +34,7 @@ export const threatIntelDesk: Project = {
   keyTech: ['Python', 'FastAPI', 'PostgreSQL', 'React', 'Background jobs'],
   featured: false,
   order: 3,
-  status: 'Complete — modular connectors with scheduled ingestion and deduplication',
+  status: 'Reconciled — modular connectors with ingestion and deduplication complete and tested as a Python CLI in apps/threatintel-desk; the full-stack interface described in this case study is design scope, not yet built',
   year: '2025',
   role: 'Design, connector framework, normalisation and deduplication, frontend',
   accent: 'violet',

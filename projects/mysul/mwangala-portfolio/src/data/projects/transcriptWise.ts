@@ -40,7 +40,7 @@ export const transcriptWise: Project = {
   keyTech: ['Python', 'FastAPI', 'React', 'TypeScript', 'LLM integration'],
   featured: true,
   order: 9,
-  status: 'Built to specification — core transcript-to-guide workflow complete; live retrieval depends on availability',
+  status: 'Complete — full-stack application in projects/transcriptwise (merged via PR #16); live retrieval depends on external availability',
   year: '2026',
   role: 'Product design, retrieval architecture, prompt engineering, analysis pipeline, frontend',
   accent: 'sky',
