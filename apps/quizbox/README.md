@@ -33,3 +33,14 @@ progress tracking and import/export are roadmap items.
 ## Future enhancements
 Examination mode with timers, question-bank import/export, progress tracking,
 web interface.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Review mode with explanations** (`review`): wrong answers queue with
+  recorded explanations (missing ones labelled as such).
+- **Confidence vs score** (`calibrate`): self-reported confidence compared
+  with actual results — descriptive calibration feedback, explicitly **not a
+  prediction**.
+- **Bank import/export** (`import-bank`/`export-bank`): schema validation with
+  per-row rejection reasons; round-trip tested.
+- Deferred candidates (with reasons): adaptive question selection (needs a
+  validated model of item difficulty); spaced repetition (FlashKit covers this).

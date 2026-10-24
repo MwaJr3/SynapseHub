@@ -31,3 +31,12 @@ items deliberately out of scope for level 1.
 
 ## Future enhancements
 Multiple players, shared leaderboards, timed challenges, graphical interface.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Seeded daily challenge** (`daily`): deterministic per-user-per-day seed —
+  same challenge all day, reproducible (`O(1)` hashing).
+- **Adaptive difficulty**: documented bounded heuristic (accuracy ≥0.8 →
+  harder, ≤0.3 → easier; clamped widths). Not a learning-science claim.
+- **Streaks** (`streak`): consecutive-day counts with a one-day grace.
+- Deferred candidates (with reasons): online leaderboards (multi-user hosting
+  out of scope); unlockable cosmetics (content design, not core learning).

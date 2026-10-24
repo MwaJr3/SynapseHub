@@ -16,6 +16,8 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("play")
     p.add_argument("--difficulty", choices=sorted(DIFFICULTIES), default="medium")
     p.add_argument("--player", default="anonymous")
+    p = sub.add_parser("daily"); p.add_argument("--date", default="today"); p.add_argument("--user", default="player")
+    p = sub.add_parser("streak"); p.add_argument("days", nargs="*", help="ISO dates played")
     p = sub.add_parser("scores")
     p.add_argument("--difficulty", choices=sorted(DIFFICULTIES))
     args = parser.parse_args(argv)
