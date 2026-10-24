@@ -1,0 +1,30 @@
+{
+  "name": "HostWatch",
+  "slug": "hostwatch",
+  "shortDescription": "Read-only endpoint observation: scoped file facts, process metadata, evidence-backed review alerts.",
+  "tags": [
+    "security",
+    "cli",
+    "endpoint",
+    "monitoring"
+  ],
+  "stack": [
+    "Python",
+    "psutil"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Mockable collector interface (psutil when available; unsupported features reported)",
+    "Explicit watch scope; missing paths marked explicitly",
+    "Optional SHA-256 file facts; change detection across observations",
+    "Read-only by design: never terminates processes or modifies files",
+    "Alerts carry evidence and honest disclaimers"
+  ],
+  "knownLimitations": [
+    "Command lines not collected (may contain secrets) \u2014 documented",
+    "No filesystem event streaming yet (polling observations)",
+    "Screenshots pending capture"
+  ]
+}
