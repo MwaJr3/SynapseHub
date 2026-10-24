@@ -60,6 +60,28 @@ export interface Insights {
   disclaimer: string;
 }
 
+export interface Mistake {
+  id: number;
+  gameId: number;
+  pgnText: string;
+  ply: number;
+  san: string;
+  classification: string;
+  evalDropCp: number;
+  phase: string;
+  category: string;
+  createdAt: string;
+}
+
+export interface TrainingPlan {
+  totalMistakes: number;
+  byClassification: Record<string, number>;
+  byCategory: Record<string, number>;
+  focusAreas: { category: string; title: string; advice: string; count: number; phases: string[] }[];
+  note: string;
+  progress: Record<string, unknown>;
+}
+
 export class ApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -103,4 +125,6 @@ export const api = {
   analyze: (id: number) => request<Analysis>(`/api/games/${id}/analyze`, { method: 'POST' }),
   deleteGame: (id: number) => request<{ ok: boolean }>(`/api/games/${id}`, { method: 'DELETE' }),
   insights: () => request<Insights>('/api/insights'),
+  trainingMistakes: () => request<{ mistakes: Mistake[] }>('/api/training/mistakes'),
+  trainingPlan: () => request<TrainingPlan>('/api/training/plan'),
 };

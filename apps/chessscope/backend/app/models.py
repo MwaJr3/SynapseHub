@@ -45,3 +45,24 @@ class Game(Base):
     pgn_text: Mapped[str] = mapped_column(Text)
     analysis_json: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class Mistake(Base):
+    """One recorded inaccuracy/mistake/blunder from an engine-classified game.
+
+    Immutable evidence row: game, move, evaluation context and theme category.
+    Re-analysis of a game replaces that game's rows (never duplicates).
+    """
+    __tablename__ = "mistakes"
+    __table_args__ = ({"sqlite_autoincrement": True},)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    game_id: Mapped[int] = mapped_column(ForeignKey("games.id"))
+    ply: Mapped[int] = mapped_column(Integer)
+    san: Mapped[str] = mapped_column(String(16))
+    classification: Mapped[str] = mapped_column(String(16))  # inaccuracy | mistake | blunder
+    eval_drop_cp: Mapped[int] = mapped_column(Integer, default=0)
+    phase: Mapped[str] = mapped_column(String(16), default="middlegame")
+    category: Mapped[str] = mapped_column(String(32), default="positional")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

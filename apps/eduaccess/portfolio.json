@@ -1,0 +1,23 @@
+{
+  "name": "EduAccess",
+  "slug": "eduaccess",
+  "shortDescription": "Affordable learning access with transparent scholarship review and auditable sponsorship ledgers.",
+  "tags": ["education", "scholarships", "sponsored-seats", "fairness", "reconciliation"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Five access-plan kinds with minimal-evidence application forms",
+    "Full application workflow with mandatory recorded decision reasons",
+    "Seat allocation capped by pool capacity (waitlist, never over-allocated)",
+    "Transparent documented eligibility rules with plain-language reasons",
+    "Manual reconciliation ledger (pending is never settled; reversals distinct)",
+    "Sponsor isolation with aggregate-only reporting and appeals"
+  ],
+  "knownLimitations": [
+    "No payment provider in the demo — manual reconciliation workflow only",
+    "Notification/background jobs are deployment steps",
+    "Screenshots pending capture"
+  ]
+}

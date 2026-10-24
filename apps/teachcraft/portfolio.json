@@ -1,0 +1,23 @@
+{
+  "name": "TeachCraft",
+  "slug": "teachcraft",
+  "shortDescription": "Teacher content and assessment studio with real review workflows.",
+  "tags": ["education", "authoring", "question-bank", "versioning", "publishing"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Template-driven lesson authoring with structured content blocks",
+    "draft-review-published-archived workflow with reviewer gate",
+    "Immutable version history with restore-as-new-version",
+    "Validated multi-kind question bank",
+    "XSS-safe static HTML export with honest interactivity note",
+    "Reviewer comments and audit log"
+  ],
+  "knownLimitations": [
+    "Structured blocks instead of a full rich-text editor in this MVP",
+    "No binary asset upload (image blocks carry alt text)",
+    "Screenshots pending capture"
+  ]
+}
