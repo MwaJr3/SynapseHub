@@ -1,0 +1,23 @@
+{
+  "name": "OpenLearn Commons",
+  "slug": "openlearn-commons",
+  "shortDescription": "OER discovery and localization hub with visible licensing and provenance.",
+  "tags": ["education", "oer", "licensing", "translation", "attribution", "localization"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Searchable catalogue with rights, attribution and provenance metadata",
+    "License-aware reuse guidance (unknown licenses grant nothing)",
+    "Adaptations linked to source obligations",
+    "Translation review workflow with labelled machine drafts",
+    "Collections with attribution export",
+    "Rights confirmation, duplicate detection, takedown/reporting"
+  ],
+  "knownLimitations": [
+    "No scraping connectors (explicit approved connectors only, none enabled)",
+    "Attribution text export only (no PDF pack export yet)",
+    "Screenshots pending capture"
+  ]
+}
