@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #b3541e;
+  --accent-soft: #fdeee3;
+  --ink: #26201c;
+  --muted: #6f625b;
+  --banner-bg: #ffe8a3;
+}
+body { font-family: system-ui, -apple-system, sans-serif; color: var(--ink); background: #faf7f4; margin: 0; }
+.shell { max-width: 72rem; margin: 0 auto; padding: 1.25rem; }
+.card { background: white; border: 1px solid #e8d9cd; border-radius: 10px; padding: 1rem; }
+.btn { background: var(--accent); color: white; border: 0; border-radius: 8px; padding: 0.55rem 1rem; cursor: pointer; font-size: 0.95rem; }
+.btn.secondary { background: white; color: var(--accent); border: 1px solid var(--accent); }
+.input { width: 100%; box-sizing: border-box; padding: 0.55rem; border: 1px solid #d2b8a4; border-radius: 8px; font-size: 0.95rem; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { border-bottom: 1px solid #f0e4da; padding: 0.55rem; text-align: left; font-size: 0.9rem; }
+.badge { padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); }
+.training-banner {
+  background: var(--banner-bg); border: 2px dashed #8a6d00; border-radius: 8px;
+  padding: 0.75rem 1rem; font-weight: 600; color: #6b5300;
+}
+.notice { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 0.75rem; border-radius: 6px; font-size: 0.88rem; }
