@@ -1,0 +1,9 @@
+[project]
+name = "unicore"
+version = "0.1.0"
+description = "Modular university management system (models/services/repositories/storage)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+unicore = "app.cli:main"
