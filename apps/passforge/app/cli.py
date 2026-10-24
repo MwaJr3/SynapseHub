@@ -31,7 +31,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="passforge", description="Generate strong passwords and passphrases.")
     sub = parser.add_subparsers(dest="command", required=True)
 
+    pres = sub.add_parser("presets", help="List generation presets (explicit rules).")
+    pres = sub.add_parser("properties", help="Explain what each generation property does and does not prove.")
+    pres.add_argument("--preset", default="web")
     gen = sub.add_parser("generate", help="Generate one or more passwords.")
+    gen.add_argument("--preset", default="", help="Apply a named preset (see 'presets').")
     gen.add_argument("--length", type=int, default=20)
     gen.add_argument("--count", type=int, default=1)
     gen.add_argument("--no-upper", action="store_true")
@@ -67,7 +71,16 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.count < 1 or args.count > 100:
             raise PolicyError("Count must be between 1 and 100.")
-        if args.command == "generate":
+        if args.command == "presets":
+            from .features import PRESETS
+            for name, cfg in PRESETS.items():
+                print(f"{name}: {cfg['notes']}")
+        elif args.command == "properties":
+            from .features import apply_preset, explain_properties
+            for item in explain_properties(apply_preset(args.preset)):
+                print(f"- {item['property']} = {item['value']}
+  {item['explanation']}")
+        elif args.command == "generate":
             policy = build_policy(args)
             results = [generate_password(policy) for _ in range(args.count)]
         else:

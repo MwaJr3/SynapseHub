@@ -95,3 +95,14 @@ policies as files; optional zxcvbn-style estimator behind an honest disclaimer.
 ## 16. References
 
 Python `secrets` documentation (standard library).
+
+## Modern features & performance notes (feature-candidate pass)
+- **Presets** (`presets`, `generate --preset`): web/legacy/wifi/passphrase with
+  explicit rules and stated trade-offs (e.g. legacy drops symbols and says why
+  that weakens it). Presets never silently narrow generation options.
+- **Property explanations** (`properties`): what length/classes/randomness/
+  uniqueness contribute **and what they do NOT prove** (no absolute claims).
+- No-logging posture retained (generation runs are never recorded).
+- Deferred candidates (with reasons): site-rule adapters (would require
+  per-site rule corpora); breach-check integrations (would require network
+  access to external corpora — out of offline scope).

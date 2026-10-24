@@ -29,3 +29,14 @@ Single-user local tool. Recurring tasks, reminders and a GUI are roadmap items.
 
 ## Future enhancements
 Recurring tasks, daily planner, productivity statistics, search, web interface.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Recurring tasks** (`recur`): daily/weekly/monthly expansion, bounded to
+  30 occurrences (`O(occurrences)`).
+- **Dependency cycle detection** (`check-cycles`): DFS `O(V+E)` returning the
+  cycle path — refuses scheduling loops explicitly.
+- **Focus view** (`focus`): top-N by (priority, due) in `O(n log n)`.
+- **Saved filters** (`save-filter`/`use-filter`): named criteria registry.
+- Deferred candidates (with reasons): calendar sync (requires external
+  services); automatic recurrence posting (a policy decision — templates
+  remain explicit).
