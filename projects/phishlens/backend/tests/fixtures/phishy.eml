@@ -1,0 +1,10 @@
+From: Security Team <alerts@bank-secure.example>
+Reply-To: recovery@evil-collection.example
+To: victim@training.example
+Subject: URGENT: verify your account suspended notice
+Content-Type: text/html
+
+<html><body>
+<p>Click to restore access:</p>
+<a href="https://login@secure-update-notice-please-verify-account-session.example/login">https://secure-login.training.example/login</a>
+</body></html>
