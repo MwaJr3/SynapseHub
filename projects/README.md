@@ -1,45 +1,37 @@
-# projects/ — all other projects, consolidated into this repository
+# Project Directory
 
-Per owner instruction (2026-10-23), every project that previously lived in
-separate GitHub repositories now lives **inside this repository** so that the
-company website (hosted on Vercel from this repository) and all project code
-share one home. These folders are complete working snapshots of their origin
-repositories; the origins remain on GitHub, but this copy is the one the
-company platform links to.
+Full-stack applications developed as dedicated projects inside the SynapseHub
+monorepo. Each project has its own backend (FastAPI), frontend (React +
+TypeScript + Tailwind), test suites, `.env.example`, and README with setup
+instructions and known limitations.
 
-Nothing here is re-implemented or summarised — each folder is the project as it
-was merged in its origin repository.
+| Project | Directory | Backend port | Frontend port | State |
+|---|---|---|---|---|
+| HashSight — file-hash reputation explorer | `projects/hashsight/` | 8011 | 5174 | Built + tested (15 backend / 2 frontend) |
+| AssetWatch — authorized asset & exposure monitor | `projects/assetwatch/` | 8012 | 5175 | Built + tested (11 backend / 2 frontend) |
+| SecureCode Workbench — SAST orchestration & triage | `projects/securecode-workbench/` | 8013 | 5176 | Built + tested (14 backend / 2 frontend) |
+| CyberAware Lab — fictional simulation training | `projects/cyberaware-lab/` | 8014 | 5177 | Built + tested (11 backend / 2 frontend) |
+| TranscriptWise — transcript-to-study-guide platform | `projects/transcriptwise/` | 8000 | 5173 | Built + tested (merged via PR #16) |
 
-## Map
+Also here: `projects/mysul/` — the MySul portfolio properties (React portfolio
+in `mwangala-portfolio/`, earlier static portfolio in `mwangala/`).
 
-| Folder | Origin repository | Snapshot | Projects inside |
-| --- | --- | --- | --- |
-| `cbu-assignments/` | [MwaJr3/CBU_Assignments](https://github.com/MwaJr3/CBU_Assignments) | `main` @ `ccc9700` (2026-10-23) | `tenantcore/` (TenantCore multi-tenant SaaS platform), `video_downloader_app/` (VDownloader OS), plus coursework retained as merged: `bank_system/`, `library_management/`, `tests/`, `main.py`, `PROJECT_REPORT.md` |
-| `mysul/` | [MwaJr3/MySul](https://github.com/MwaJr3/MySul) | `main` @ `7a01e8b` (2026-10-23) | `mwangala/` (7 working apps + case-study pages), `mwangala-portfolio/` (React portfolio with 9 case-study records), plus practice work retained as merged: `Cpp Projects/`, `WebstormProjects/` |
-| `transcriptwise/` | Uploaded project archive (TranscriptWise.zip), added 2026-10-24 | — | TranscriptWise: FastAPI backend + React/Vite frontend that turns transcripts into study guides, quizzes and flashcards; see its own `README.md` |
+## Running any project
 
-Already in this repository before the consolidation (unchanged): the
-`company-platform/` company website, the root portfolio with the 60 challenge
-prototypes, `stock-price-analysis/` + `stock-price-time-series-analysis/`,
-`workniche/`, and `tools/`.
+Each project follows the same shape:
 
-## Where each evidenced project came from
+```bash
+cd projects/<name>/backend
+pip install -r requirements-dev.txt
+cp ../.env.example ../.env
+uvicorn app.main:app --reload --port <backend port>
 
-| Project | Merged in origin | Origin merge commit | Location in this repository |
-| --- | --- | --- | --- |
-| 7 working apps (sentinelcore, sentinellog, fileguard, dependsecure, circuitlab-calc, chessscope, campusflow) | [MySul#1](https://github.com/MwaJr3/MySul/pull/1) — merged 2026-10-23 | `be39a9ee2729d359c8cc204ab3e46aca60576152` | `projects/mysul/mwangala/apps/<slug>/` (case-study pages: `projects/mysul/mwangala/projects/<slug>/`) |
-| 9 case-study records (assetwatch, hashsight, incidentflow, netscope, phishlens, securecode-workbench, threatintel-desk, cyberaware-lab, transcriptwise) | [MySul#2](https://github.com/MwaJr3/MySul/pull/2) — merged 2026-10-23 | `7a01e8b27753e4032c6626a4a25f6a947c35e095` | `projects/mysul/mwangala-portfolio/src/data/projects/` |
-| TenantCore — multi-tenant SaaS platform | [CBU_Assignments#5](https://github.com/MwaJr3/CBU_Assignments/pull/5) — merged 2026-10-22 | `ee58d1110e5b270f3dc8a2e9a0195aa744fbb3f3` | `projects/cbu-assignments/tenantcore/` |
-| VDownloader OS — desktop video downloader + transcript suite | [CBU_Assignments#6](https://github.com/MwaJr3/CBU_Assignments/pull/6) — merged 2026-10-23 | `ccc9700d034da5ddbf41be1950b4691562c0a9f6` | `projects/cbu-assignments/video_downloader_app/` |
+cd projects/<name>/frontend
+npm install --legacy-peer-deps
+npm run dev          # proxies /api to the backend port above
+```
 
-Each project keeps its own README (and, for TenantCore and VDownloader OS, its
-full docs/ suite) describing how to run it. Nothing is deployed from this
-folder automatically; the company website on Vercel builds only
-`company-platform/`.
-
-## Snapshot hygiene
-
-The copies omit generated artifacts that were committed in the origins:
-compiled C++ binaries (`.exe`, `.o`), a vendored `javascript-main.zip` archive
-whose extracted folder is kept, `__pycache__`/`.pyc`, and `.git` histories.
-All source, docs, tests, and configuration are included as merged.
+Security posture per product is documented in each README (allowlists,
+untrusted-archive limits, fictional-simulation banners, digest-only lookups),
+and every project's UI and reports state their limitations — simulated data is
+labelled, and no product claims proof of safety or security.

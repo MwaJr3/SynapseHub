@@ -110,3 +110,27 @@ complexity notes; no unmeasured benchmark numbers are claimed anywhere.
 The 22 rows previously left as `planned` were already built, tested and merged
 (one app per commit in the 2026-10-24 campaigns; suites green at merge). The
 label was stale documentation, not missing work — corrected here.
+
+## Completion note — 2026-10-24 (Prompt A build campaign)
+
+The four "built + tested" rows flipped earlier in this plan were reconciled
+against reality and the missing products were then genuinely built as
+full-stack applications (React + TypeScript + Tailwind CSS frontend, FastAPI +
+Pydantic + SQLAlchemy backend, secure auth, full CRUD, persistent storage,
+tests both sides, `.env.example`, README with setup + known limitations):
+
+- **HashSight** → `projects/hashsight/` (15 backend + 2 frontend tests green)
+- **AssetWatch** → `projects/assetwatch/` (11 backend + 2 frontend tests green)
+- **SecureCode Workbench** → `projects/securecode-workbench/` (14 backend + 2 frontend tests green)
+- **CyberAware Lab** → `projects/cyberaware-lab/` (11 backend + 2 frontend tests green)
+
+The four CLI-backed products (PhishLens → `apps/phishlens`, NetScope →
+`apps/netscope`, IncidentFlow → `apps/incidentflow`, ThreatIntel Desk →
+`apps/threatintel-desk`) remain as previously built and tested CLIs; their
+portfolio case-study records now say so explicitly. TranscriptWise
+(`projects/transcriptwise/`, PR #16) is unchanged.
+
+The nine case-study records in `projects/mysul/mwangala-portfolio/src/data/projects/`
+were reconciled accordingly (statuses name the backing implementation and its
+real state; tech lists corrected where they asserted tooling not present).
+Portfolio suite: 261/261 tests green.
