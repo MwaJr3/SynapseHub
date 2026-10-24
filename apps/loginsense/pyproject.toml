@@ -1,0 +1,9 @@
+[project]
+name = "loginsense"
+version = "0.1.0"
+description = "Suspicious login detection with transparent risk scoring"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+loginsense = "app.cli:main"

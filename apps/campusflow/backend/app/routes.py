@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
+from . import progression as prog
 from . import config, logic, security
 from .database import get_db
 from .models import (
@@ -488,3 +489,43 @@ def audit_log(user: User = Depends(current_user), db: Session = Depends(get_db))
         }
         for e in events
     ]
+
+
+class PrereqBody(BaseModel):
+    completed: list[str]
+    required: list[str]
+
+
+@router.post("/api/prereq-check")
+def prereq_check(body: PrereqBody, user: User = Depends(current_user)):
+    return prog.check_prerequisites(set(body.completed), set(body.required))
+
+
+class WaitlistBody(BaseModel):
+    section_id: int
+    student: str
+    seats_taken: int
+    capacity: int
+
+
+@router.post("/api/waitlist/join")
+def waitlist_join(body: WaitlistBody, user: User = Depends(current_user)):
+    try:
+        return prog._waitlists.join(body.section_id, body.student, body.seats_taken, body.capacity)
+    except prog.ProgressionError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+
+
+class ClashBody(BaseModel):
+    slots: list[dict]
+
+
+@router.post("/api/clashes")
+def clashes(body: ClashBody, user: User = Depends(current_user)):
+    return {"clashes": prog.detect_clashes(body.slots)}
+
+
+@router.get("/api/dashboard")
+def dashboard(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    rows = db.query(Enrollment).all()
+    return prog.dashboard_metrics([{"status": e.status} for e in rows])

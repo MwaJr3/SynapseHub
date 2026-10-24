@@ -1,0 +1,9 @@
+[project]
+name = "notekit"
+version = "0.1.0"
+description = "Personal knowledge management: notes, tags, links, sources, lessons"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+notekit = "app.cli:main"

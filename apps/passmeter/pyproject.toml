@@ -1,0 +1,9 @@
+[project]
+name = "passmeter"
+version = "0.1.0"
+description = "Local password strength analyzer (transparent heuristics)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+passmeter = "app.cli:main"

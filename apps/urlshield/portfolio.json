@@ -1,0 +1,31 @@
+{
+  "name": "URLShield",
+  "slug": "urlshield",
+  "shortDescription": "Explainable phishing-URL classification with offline structural features and honest estimates.",
+  "tags": [
+    "security",
+    "cli",
+    "machine-learning",
+    "phishing"
+  ],
+  "stack": [
+    "Python",
+    "scikit-learn",
+    "numpy"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "12 explainable structural URL features (extractor independent of the model)",
+    "Logistic-regression baseline with stratified hold-out evaluation (precision/recall/F1/confusion)",
+    "Explicit operating threshold; predictions carry probabilities + disclaimers",
+    "Deterministic SYNTHETIC dataset (labelled fictional demo data)",
+    "Model registry with metadata (features, dataset note, metrics)"
+  ],
+  "knownLimitations": [
+    "Synthetic dataset: real-world performance unverified (stated in-product)",
+    "Predictions are estimates, never proof; 'not-flagged' is not a safety guarantee",
+    "Screenshots pending capture"
+  ]
+}

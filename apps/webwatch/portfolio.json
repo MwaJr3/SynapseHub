@@ -1,0 +1,31 @@
+{
+  "name": "WebWatch",
+  "slug": "webwatch",
+  "shortDescription": "Web data collection from explicitly permitted sources with change detection and provenance.",
+  "tags": [
+    "cli",
+    "data",
+    "collection",
+    "sqlite"
+  ],
+  "stack": [
+    "Python",
+    "html.parser",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Allowlist + host-scope enforcement; unpermitted sources refused",
+    "Offline robots.txt evaluation; fixture transport by default",
+    "Conditional fetch (ETag) avoids re-parsing unchanged resources",
+    "Change detection with before/after diffs and dedupe by content hash",
+    "Run history with timestamps, status and schema-drift reporting"
+  ],
+  "knownLimitations": [
+    "Fixture transport is simulated demo data; HTTP adapter exists but is unverified against live sites here",
+    "Extractor handles h2/p patterns only (drift is reported, never hidden)",
+    "Screenshots pending capture"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "WattWise",
+  "slug": "wattwise",
+  "shortDescription": "Home energy analysis: meter imports, configurable tariffs, transparent anomalies, labelled estimates.",
+  "tags": [
+    "energy",
+    "cli",
+    "sqlite",
+    "data"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Interval + cumulative meter readings (unit-consistent kWh, timestamped)",
+    "CSV import with duplicate/invalid data-quality reporting (gaps never interpolated)",
+    "Versioned configurable tariffs incl. time-of-use windows; transparent bill estimates",
+    "Anomaly rule stated in every flag (never proof of a fault)",
+    "Naive baseline forecasts labelled ESTIMATE; scenario savings state assumptions"
+  ],
+  "knownLimitations": [
+    "No hardware integration (CSV imports only)",
+    "Solar/device-level breakdown only where data supports it (none in demo)",
+    "Screenshots pending capture"
+  ]
+}

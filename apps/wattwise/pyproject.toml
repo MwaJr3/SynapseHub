@@ -1,0 +1,9 @@
+[project]
+name = "wattwise"
+version = "0.1.0"
+description = "Home energy monitoring: readings, tariffs, anomalies, scenarios"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+wattwise = "app.cli:main"

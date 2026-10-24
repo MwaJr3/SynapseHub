@@ -1,0 +1,33 @@
+{
+  "name": "ShopDeck",
+  "slug": "shopdeck",
+  "shortDescription": "E-commerce operations admin: order/inventory state machines, pricing audit, data-quality-flagged reports.",
+  "tags": [
+    "e-commerce",
+    "web",
+    "fastapi",
+    "operations"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8019,
+  "frontendPort": 5192,
+  "features": [
+    "Order state machine (placed\u2192paid\u2192packed\u2192shipped\u2192delivered / cancelled / refunded) with illegal-transition rejections (409)",
+    "Inventory state machine incl. discontinued terminal state",
+    "Discount rules with guardrails (0\u201380% off, min-subtotal) and per-order pricing audit JSON",
+    "Low-stock alerts on threshold crossing",
+    "Sales report with data-quality flags (orders with no lines) and scope note"
+  ],
+  "knownLimitations": [
+    "Demo catalog simulated; no payment provider integration (by design)",
+    "Single-currency; no tax/shipping logic",
+    "Screenshots pending capture"
+  ]
+}

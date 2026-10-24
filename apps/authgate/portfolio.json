@@ -1,0 +1,36 @@
+{
+  "name": "AuthGate",
+  "slug": "authgate",
+  "shortDescription": "Authentication and authorization dashboard with MFA, lockout and security headers.",
+  "tags": [
+    "security",
+    "web",
+    "fastapi",
+    "authentication"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite",
+    "pyotp"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8016,
+  "frontendPort": 5189,
+  "features": [
+    "Password policy (length/classes/common-list/username-reuse) with explicit rejections",
+    "PBKDF2-SHA256 (200k) hashing + per-user salts; generic login errors (no username enumeration)",
+    "Failed-attempt lockout + per-IP/per-user fixed-window rate limiting",
+    "TOTP MFA (enable/disable with code verification)",
+    "Role-based access (admin page 403 for non-admins)",
+    "Security headers: CSP (default-src 'none'), frame deny, nosniff, no-referrer, no-store; HSTS flag documented",
+    "Server-side sessions with expiry + logout invalidation"
+  ],
+  "knownLimitations": [
+    "Demo scale: in-memory rate limiter resets on restart; single-process only",
+    "MFA secret shown on enable (demo convenience; production would show once via QR)",
+    "Screenshots pending capture"
+  ]
+}

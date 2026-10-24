@@ -1,0 +1,31 @@
+{
+  "name": "DataDesk",
+  "slug": "datadesk",
+  "shortDescription": "CSV analysis with explicit cleaning decisions, descriptive statistics, trends and accessible reports.",
+  "tags": [
+    "data",
+    "cli",
+    "visualization",
+    "reports"
+  ],
+  "stack": [
+    "Python",
+    "csv",
+    "HTML/SVG"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "CSV import with required-column validation",
+    "Explicit cleaning (dropped values reported, never zero-filled)",
+    "Descriptive stats incl. median/std and least-squares trend slope (labelled association-only)",
+    "Group totals; HTML report with SVG chart + text summary; JSON export",
+    "Source files never modified"
+  ],
+  "knownLimitations": [
+    "SVG charts are basic (roadmap: interactive filters)",
+    "Trend slopes are descriptive only",
+    "Screenshots pending capture"
+  ]
+}

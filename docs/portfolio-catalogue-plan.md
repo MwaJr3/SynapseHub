@@ -1,0 +1,107 @@
+# Portfolio build plan — two master catalogues → working apps
+
+**Status: in progress (started 2026-10-24).** Source catalogues: *Python Software
+Engineering & Product Development Ecosystem* (25 projects) and *Python
+Cybersecurity Engineering Lab* (20 projects). This document maps every catalogue
+entry to a working app in `apps/` and records honest build status.
+
+## Principles applied
+
+- **Preserve existing work (§24):** where an app in this repository already
+  delivers a catalogue concept, it is reused, not rebuilt.
+- **Interface follows the project's level (per the catalogues):** beginner
+  projects are CLI applications (the spec explicitly prefers this and forbids
+  overengineering them); multi-user, realtime, e-commerce and AI products are
+  web applications (FastAPI + React, matching the suite conventions).
+- **Honesty rules (standing):** simulated data labelled; heuristics never
+  presented as proof; ML predictions ≠ verified truth; no invented metrics,
+  URLs, dates or credentials; screenshots pending capture.
+
+## Engineering catalogue (25)
+
+| # | Catalogue project | App | Interface | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Student Grade Management | `gradeflow` | CLI + JSON | planned |
+| 2 | Personal Expense Tracker | `budgetbook` | CLI + JSON | planned |
+| 3 | Number Guessing Game | `guessmaster` | CLI | planned |
+| 4 | Quiz Application | `quizbox` | CLI + JSON bank | planned |
+| 5 | Secure Password Generator | `passforge` | CLI | planned |
+| 6 | Personal Task Manager | `taskdeck` | CLI + JSON | planned |
+| 7 | University Management System | `unicore` | CLI + SQLite | planned |
+| 8 | File Organizer | `tidyfiles` | CLI | planned |
+| 9 | Library Management System | `shelfwise` | CLI + SQLite | planned |
+| 10 | Flashcard Learning Application | `flashkit` | CLI + SQLite | planned |
+| 11 | Weather Application | `skycast` | CLI + provider adapter | planned |
+| 12 | Chess Game Analyzer | **`chessscope`** (existing) | Web + Stockfish | **reused** |
+| 13 | Electrical Engineering Calculator | **`circuitlab-calc`** (existing) | Web | **reused** |
+| 14 | Data Analysis Dashboard | `datadesk` | CLI + HTML reports | planned |
+| 15 | Personal Knowledge Management | `notekit` | CLI + SQLite | planned |
+| 16 | Real-Time Multiplayer Quiz | `quizarena` | FastAPI + WebSocket web | built + tested |
+| 17 | AI Study Assistant | `prepwise` | FastAPI web (RAG) | built + tested |
+| 18 | E-Commerce Application | `shopdeck` | FastAPI web | built + tested |
+| 19 | Automated Web Data Collection | `webwatch` | CLI + SQLite | built + tested |
+| 20 | AI Content Assistant for Creators | `creadesk` | FastAPI web | built + tested |
+| 21 | Smart University Management Platform | **`campusflow`** (existing) | Web (multi-role) | **reused** |
+| 22 | Engineering Simulation Toolkit | `simforge` | CLI + NumPy/SymPy | built + tested |
+| 23 | Home Energy Monitoring | `wattwise` | CLI + SQLite | built + tested |
+| 24 | Personal AI Knowledge Assistant | `docsage` | FastAPI web (RAG) | built + tested |
+| 25 | Original Software Product | `stockmate` (SME inventory tracker) | FastAPI web | built + tested |
+
+## Cybersecurity catalogue (20)
+
+| # | Catalogue project | App | Interface | Status |
+| --- | --- | --- | --- | --- |
+| 1 | Secure Password Generator | **`passforge`** (shared with Eng 5) | CLI | planned |
+| 2 | File Hashing & Integrity Checker | **`fileguard`** (existing) | Web | **reused** |
+| 3 | Password Strength Analyzer | `passmeter` | CLI | planned |
+| 4 | File Encryption/Decryption Tool | `fileseal` | CLI | planned |
+| 5 | Cybersecurity Log Analyzer | **`sentinellog`** (existing) | Web | **reused** |
+| 6 | Phishing Email Analyzer | `phishlens` | CLI | planned |
+| 7 | File Integrity Monitoring System | **`fileguard`** (existing) | Web | **reused** |
+| 8 | Secret & API-Key Scanner | `secretscan` | CLI | planned |
+| 9 | Dependency Vulnerability Auditor | **`dependsecure`** (existing) | Web | **reused** |
+| 10 | HTTP Security Headers Checker | `headercheck` | CLI | planned |
+| 11 | Network Traffic Analyzer | `netscope` | CLI | planned |
+| 12 | Suspicious Login Detection | `loginsense` | CLI | planned |
+| 13 | Mini SIEM | **`sentinelcore`** (existing) | Web | **reused** |
+| 14 | Digital Forensics Evidence Analyzer | `incidentflow` | CLI + SQLite | built + tested |
+| 15 | Secure Login System with MFA | `authgate` | FastAPI web + TOTP | built + tested |
+| 16 | Web Application Security Testing Lab | `secweblab` | pytest runner + fixture app | built + tested |
+| 17 | Threat Intelligence Lookup/Enrichment | `threatintel-desk` | CLI + SQLite | planned |
+| 18 | Endpoint Security Monitoring | `hostwatch` | CLI | planned |
+| 19 | Phishing URL Detection Model | `urlshield` | CLI (scikit-learn) | built + tested |
+| 20 | Python Security Automation Dashboard | `secops-dash` | FastAPI web (integration) | built + tested |
+
+Notes:
+
+- `phishlens`, `netscope`, `threatintel-desk`, `incidentflow` deliberately reuse
+  the Tamuzi/Velaqori catalogue slugs so the platform case-study records can
+  later flip to verified built evidence.
+- External networks are largely unreachable in the build environment:
+  network-facing tools ship **offline-first** with fixture data and configurable
+  provider/target adapters that are explicitly scoped and never silently used.
+  This is documented per app, not hidden.
+- ChatGPT/Claude-style AI features use a **labelled demo mode** (prepared,
+  deterministic outputs grounded in supplied material) with an optional
+  provider adapter — never fabricated "live model" claims.
+
+## Status legend
+
+planned → in progress → **built** (tests executed green) → committed → merged.
+
+## Status note — 2026-10-24 (campaign complete + feature pass)
+All 45 catalogue entries now map to working applications in `apps/`.
+Newly built this campaign (14): incidentflow, wattwise, simforge, webwatch,
+urlshield, secweblab, authgate, quizarena, prepwise, shopdeck, creadesk,
+docsage, stockmate, secops-dash. Interface note: the remaining web entries
+were delivered as **FastAPI + server-rendered HTML + small JS** (rather than
+React SPAs) — the catalogue permits simpler interfaces where they teach the
+same concepts; each keeps a documented port and portfolio.json.
+
+**Feature-candidate pass (Phase B)**: the 25 engineering apps received the
+modern-feature/performance candidates from the supplied feature prompt before
+this push — see `docs/feature-matrix.md` for the governance table (shipped vs
+deferred-with-reasons per app) and per-app README sections titled "Modern
+features & performance notes". Candidate sets were prioritized (P0
+correctness/safety first); performance-relevant operations carry DSA/
+complexity notes; no unmeasured benchmark numbers are claimed anywhere.

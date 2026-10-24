@@ -1,0 +1,34 @@
+{
+  "name": "SecOps Dash",
+  "slug": "secops-dash",
+  "shortDescription": "Offline security-operations triage: events, incidents, timelines and manual response playbooks.",
+  "tags": [
+    "security",
+    "web",
+    "fastapi",
+    "soc",
+    "triage"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite-free (in-memory demo)"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8023,
+  "frontendPort": 5196,
+  "features": [
+    "Offline ingest from local fixtures with per-row validation reasons (nothing dropped silently)",
+    "Asset-criticality-weighted incident scoring (transparent formula shown in-product)",
+    "Incident timeline with collection timestamps + provenance page",
+    "Category-mapped response playbooks \u2014 explicit manual runbook steps (no automated containment)",
+    "Status machine (new\u2192triaged\u2192contained\u2192closed) as human decisions; JSON export with integrity note"
+  ],
+  "knownLimitations": [
+    "Simulated demo data; in-memory incident state resets on restart",
+    "No live telemetry connectors by design (offline-first)",
+    "Screenshots pending capture"
+  ]
+}

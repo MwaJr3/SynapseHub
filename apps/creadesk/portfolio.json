@@ -1,0 +1,33 @@
+{
+  "name": "CreateDesk",
+  "slug": "creadesk",
+  "shortDescription": "Content pipeline: editorial states, role rights, version history, scheduling and link allowlist.",
+  "tags": [
+    "content",
+    "web",
+    "fastapi",
+    "workflow"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8020,
+  "frontendPort": 5193,
+  "features": [
+    "Editorial state machine (draft\u2192in_review\u2192approved\u2192published\u2192archived) with illegal-jump 409s",
+    "Role rights: authors submit, reviewers approve, editors publish (enforced)",
+    "Pre-publish validation gates (length, placeholder text, date format)",
+    "External links checked against a configured allowlist (flagged, not silently published)",
+    "Version history with per-change diffs; editorial calendar; transition audit log"
+  ],
+  "knownLimitations": [
+    "Demo workspace simulated; no real CMS integrations",
+    "Scheduling stores timestamps only (no background publisher)",
+    "Screenshots pending capture"
+  ]
+}

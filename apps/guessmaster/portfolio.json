@@ -1,0 +1,29 @@
+{
+  "name": "GuessMaster",
+  "slug": "guessmaster",
+  "shortDescription": "Number guessing game with configurable difficulty, attempt tracking and persistent high scores.",
+  "tags": [
+    "game",
+    "cli",
+    "state-machine"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "random",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Explicit game state machine (in_progress/won/lost)",
+    "Configurable difficulty ranges and attempt limits",
+    "Higher/lower hints; invalid guesses never consume attempts",
+    "Persistent high-score table ranked by attempts"
+  ],
+  "knownLimitations": [
+    "Single-player only (multiplayer is an advanced roadmap item)",
+    "Screenshots pending capture"
+  ]
+}

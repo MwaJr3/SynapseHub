@@ -36,3 +36,20 @@ app's honesty/limitation statements. Backend seeds run with
 > Honesty note that applies suite-wide: analytical output (detections, scans,
 > flags, alerts) marks patterns **for review** — it is never presented as proof
 > of an attack or of safety, and missing data is reported as missing.
+
+## Web app ports (this campaign)
+
+| App | Backend port | Frontend port |
+|-----|--------------|---------------|
+| authgate | 8016 | 5189 (server-rendered UI on 8016) |
+| quizarena | 8017 | 5190 (server-rendered UI on 8017) |
+| prepwise | 8018 | 5191 (server-rendered UI on 8018) |
+| shopdeck | 8019 | 5192 (server-rendered UI on 8019) |
+| creadesk | 8020 | 5193 (server-rendered UI on 8020) |
+| docsage | 8021 | 5194 (server-rendered UI on 8021) |
+| stockmate | 8022 | 5195 (server-rendered UI on 8022) |
+| secops-dash | 8023 | 5196 (server-rendered UI on 8023) |
+
+The 8 apps above are FastAPI + server-rendered HTML + small JS (the catalogue
+permits simpler interfaces where they teach the same concepts); their UIs run
+on the backend port directly (`uvicorn app.main:app --port <backend>`).

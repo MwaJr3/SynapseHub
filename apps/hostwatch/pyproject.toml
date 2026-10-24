@@ -1,0 +1,9 @@
+[project]
+name = "hostwatch"
+version = "0.1.0"
+description = "Endpoint observation: scoped file facts and process metadata (read-only)"
+requires-python = ">=3.10"
+dependencies = ["psutil>=5.9"]
+
+[project.scripts]
+hostwatch = "app.cli:main"

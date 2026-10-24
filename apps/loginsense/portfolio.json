@@ -1,0 +1,30 @@
+{
+  "name": "LoginSense",
+  "slug": "loginsense",
+  "shortDescription": "Suspicious login detection: normalised auth events, documented rules, transparent risk scores.",
+  "tags": [
+    "security",
+    "cli",
+    "identity",
+    "detection"
+  ],
+  "stack": [
+    "Python",
+    "re"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Auth-event normalisation from supported log formats (malformed lines never crash it)",
+    "Repeated-failure, fail-then-success and multi-account-source rules",
+    "Documented additive risk scores with named contributing signals",
+    "Working-hours context (configurable); false-positive-friendly defaults",
+    "Synthetic sample log included"
+  ],
+  "knownLimitations": [
+    "Geolocation is never inferred beyond source IPs",
+    "Unsuccessful logins alone are not proof of malice (stated in-product)",
+    "Screenshots pending capture"
+  ]
+}

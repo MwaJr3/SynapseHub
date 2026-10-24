@@ -1,0 +1,9 @@
+[project]
+name = "shelfwise"
+version = "0.1.0"
+description = "Library management: books, physical copies, borrowers, loans, overdue tracking"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+shelfwise = "app.cli:main"

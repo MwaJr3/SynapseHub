@@ -1,0 +1,30 @@
+{
+  "name": "UniCore",
+  "slug": "unicore",
+  "shortDescription": "Modular university management: students, lecturers, courses, enrolments, grades and transcripts.",
+  "tags": [
+    "education",
+    "cli",
+    "sqlite",
+    "layered-architecture"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Layered modules: models/services/repositories/storage per the catalogue blueprint",
+    "Unique identifiers with duplicate protection",
+    "Enrolment rules (no duplicates; must exist)",
+    "Grade validation 0-100; transcripts with documented unweighted mean",
+    "Search across students"
+  ],
+  "knownLimitations": [
+    "SQLite single-user tool (web/roles = project 21 territory; campusflow app covers that)",
+    "Unweighted mean only \u2014 credit weighting is never silently approximated",
+    "Screenshots pending capture"
+  ]
+}

@@ -1,0 +1,9 @@
+[project]
+name = "passforge"
+version = "0.1.0"
+description = "Secure password and passphrase generator using Python's secrets module"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+passforge = "app.cli:main"

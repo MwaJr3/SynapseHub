@@ -1,0 +1,33 @@
+{
+  "name": "PrepWise",
+  "slug": "prepwise",
+  "shortDescription": "Interview prep with question filters, mock sessions, timer and spaced review.",
+  "tags": [
+    "education",
+    "web",
+    "fastapi",
+    "interviews"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8018,
+  "frontendPort": 5191,
+  "features": [
+    "Question bank filtered by company, role and difficulty",
+    "Mock interview mode with countdown timer and suggested per-question pace",
+    "Self-assessment scores (labelled as learner estimates, never verified performance)",
+    "Spaced review with Leitner-style boxes and visible due queue (nothing silently overdue)",
+    "Answer templates shown in bank; session notes"
+  ],
+  "knownLimitations": [
+    "Demo content simulated; no real company question sets",
+    "Spaced review is a simple heuristic, not validated spaced-repetition research",
+    "Screenshots pending capture"
+  ]
+}

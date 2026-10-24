@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
+from . import tolerance as tol
 from . import circuit_math as cm
 from . import config, security
 from .database import get_db
@@ -251,3 +252,19 @@ def delete_calculation(calc_id: int, user: User = Depends(current_user), db: Ses
     db.delete(row)
     db.commit()
     return {"ok": True}
+
+
+class ToleranceBody(BaseModel):
+    r1: float
+    r2: float
+    tol_pct: float
+    vin: float = 1.0
+
+
+@router.post("/api/calc/tolerance")
+def calc_tolerance(body: ToleranceBody):
+    """Divider output range under resistor tolerances (worst-case + RSS estimate)."""
+    try:
+        return tol.divider_tolerance(body.r1, body.r2, body.tol_pct, body.vin)
+    except tol.ToleranceError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))

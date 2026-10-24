@@ -1,0 +1,33 @@
+{
+  "name": "StockMate",
+  "slug": "stockmate",
+  "shortDescription": "Inventory management with immutable movement ledger, role permissions and labelled demand estimates.",
+  "tags": [
+    "inventory",
+    "web",
+    "fastapi",
+    "operations"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8022,
+  "frontendPort": 5195,
+  "features": [
+    "Immutable movement ledger (receive/issue/adjust/reverse); corrections are reversing rows",
+    "Role permissions enforced server-side (viewer/clerk/manager) with 403s",
+    "Negative-stock guard refuses issues beyond on-hand (no silent backdating)",
+    "Reorder-level alerts; valuation at cost with book-estimate basis note",
+    "Demand projection labelled ESTIMATE with explicit assumptions"
+  ],
+  "knownLimitations": [
+    "Demo warehouse simulated; no FIFO lot tracking; no multi-location",
+    "Forecast is a flat average of the observed window \u2014 not a statistical model",
+    "Screenshots pending capture"
+  ]
+}

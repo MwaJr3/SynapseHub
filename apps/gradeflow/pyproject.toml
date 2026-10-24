@@ -1,0 +1,9 @@
+[project]
+name = "gradeflow"
+version = "0.1.0"
+description = "Student grade management system (CLI)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+gradeflow = "app.cli:main"

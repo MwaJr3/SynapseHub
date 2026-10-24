@@ -1,0 +1,30 @@
+{
+  "name": "NoteKit",
+  "slug": "notekit",
+  "shortDescription": "Personal knowledge management with versioned edits, tags, note links, sources and lesson summaries.",
+  "tags": [
+    "productivity",
+    "cli",
+    "sqlite",
+    "knowledge"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Notes with topics and tags; version history on every edit (no accidental loss)",
+    "Related-note links with relations",
+    "External sources stored separately from notes",
+    "Lesson-learned summaries; ranked search (title first)",
+    "SQLite persistence"
+  ],
+  "knownLimitations": [
+    "No full-text index yet (substring search)",
+    "No export/backup yet",
+    "Screenshots pending capture"
+  ]
+}

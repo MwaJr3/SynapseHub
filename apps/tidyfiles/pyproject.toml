@@ -1,0 +1,9 @@
+[project]
+name = "tidyfiles"
+version = "0.1.0"
+description = "Safe rule-driven file organizer with dry-run preview"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+tidyfiles = "app.cli:main"

@@ -1,0 +1,9 @@
+[project]
+name = "secretscan"
+version = "0.1.0"
+description = "Scoped secret/API-key candidate scanner with redacted reports"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+secretscan = "app.cli:main"

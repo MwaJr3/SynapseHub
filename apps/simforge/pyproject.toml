@@ -1,0 +1,9 @@
+[project]
+name = "simforge"
+version = "0.1.0"
+description = "Engineering simulation toolkit: bounded models, sweeps, reproducible reports"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24"]
+
+[project.scripts]
+simforge = "app.cli:main"

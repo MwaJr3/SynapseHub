@@ -1,0 +1,6 @@
+[project]
+name = "creadesk"
+version = "0.1.0"
+description = "Content pipeline with review states, versioning and scheduling (FastAPI)"
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29"]

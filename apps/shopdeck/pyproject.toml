@@ -1,0 +1,6 @@
+[project]
+name = "shopdeck"
+version = "0.1.0"
+description = "E-commerce operations admin with state machines and pricing audit (FastAPI)"
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29"]
