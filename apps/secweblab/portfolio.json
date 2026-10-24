@@ -1,0 +1,30 @@
+{
+  "name": "SecWebLab",
+  "slug": "secweblab",
+  "shortDescription": "Web-security training lab with seeded vulnerable samples and fix-oriented findings.",
+  "tags": [
+    "security",
+    "cli",
+    "training",
+    "web"
+  ],
+  "stack": [
+    "Python",
+    "re"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Seeded lab samples (insecure + contrasted safe version) for XSS, eval, pickle, shell=True",
+    "Findings carry evidence, OWASP-Top-10-style class labels (2021 naming), severity (indicative)",
+    "Reproduction steps for local labs only; candidate fixes on every finding",
+    "Explicit limitations on every report (passive, not proof, absence != safety)",
+    "JSON output for reports"
+  ],
+  "knownLimitations": [
+    "Static pattern checks only; deliberately incomplete (no execution/exploitation)",
+    "Findings are discussion starting points, not proof of exploitability",
+    "Screenshots pending capture"
+  ]
+}

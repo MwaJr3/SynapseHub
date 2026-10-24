@@ -1,0 +1,9 @@
+[project]
+name = "secweblab"
+version = "0.1.0"
+description = "Security code-review lab with seeded flawed samples (passive analysis)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+secweblab = "app.cli:main"
