@@ -35,3 +35,15 @@ are reported as `failed`, not silently lost.
 
 ## Future enhancements
 Undo manifests, custom rule files, scheduled organization, duplicate detection.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Rule profiles** (`profiles`, `classify-file`): named bucket maps
+  (student/developer/minimal); unknown extensions go to `other` explicitly.
+- **Undo manifest** (`undo`): every organize move recorded for exact reversal;
+  reversals **refuse to overwrite** existing files. **The organizer never
+  deletes files** (tested).
+- **Duplicate scan** (`duplicates`): size-first grouping `O(n)` then SHA-256
+  only within equal-size groups — bounded I/O.
+- Deferred candidates (with reasons): content-aware classification (needs
+  models/corpora); scheduled auto-tidy (would run unattended — conflicts with
+  the never-delete safety stance).

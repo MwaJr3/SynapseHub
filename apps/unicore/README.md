@@ -52,3 +52,13 @@ deliberately advanced items (the multi-user platform exists separately as
 
 ## Future enhancements
 Credit-weighted GPA, transcript exports, attendance/timetable modules.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Prerequisite checks** (`prereq-check`): missing prereqs listed explicitly.
+- **Timetable clash detection** (`clashes`): pairwise `O(e²)` over a student's
+  enrolments (small bounded sets) with overlap windows.
+- **Transcript export** (`transcript`): ordered rows; grades as recorded,
+  labelled **not verified against any external authority**.
+- **Append-only audit log** (`audit`): JSONL rows `O(1)` per event.
+- Deferred candidates (with reasons): SIS integration (vendor APIs), automated
+  waitlist promotion (policy decision — needs explicit institutional rules).

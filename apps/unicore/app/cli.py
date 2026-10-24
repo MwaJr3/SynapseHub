@@ -19,6 +19,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="unicore", description="University management system.")
     parser.add_argument("--db", default="unicore.db")
     sub = parser.add_subparsers(dest="command", required=True)
+    p = sub.add_parser("prereq-check"); p.add_argument("course"); p.add_argument("completed", nargs="*", default=[])
+    p = sub.add_parser("clashes"); p.add_argument("slots", nargs="+", help="course:day:HH:MM-HH:MM ...")
+    p = sub.add_parser("transcript"); p.add_argument("student_json"); p.add_argument("results_json")
+    p = sub.add_parser("audit"); p.add_argument("actor"); p.add_argument("action"); p.add_argument("--detail", default="")
     p = sub.add_parser("register-student"); p.add_argument("student_id"); p.add_argument("name")
     p.add_argument("--email", default=""); p.add_argument("--programme", default="")
     p = sub.add_parser("add-lecturer"); p.add_argument("staff_id"); p.add_argument("name")
@@ -38,7 +42,27 @@ def main(argv: list[str] | None = None) -> int:
         s_svc = StudentService(students)
         c_svc = CourseService(courses, students, enrolments)
         g_svc = GradeService(students, courses, enrolments)
-        if args.command == "register-student":
+        if args.command == "prereq-check":
+            from .features import check_prerequisites
+            prereqs = {args.course: set(args.completed)}   # demo mapping via --completed as the prereq set baseline
+            problems = check_prerequisites(args.course, set(), {args.course: set(args.completed)})
+            print("prerequisites satisfied" if not problems else "\n".join(problems))
+        elif args.command == "clashes":
+            from .features import detect_clashes
+            enrolments = []
+            for slot in args.slots:
+                course, day, span = slot.split(":")
+                start, end = span.split("-")
+                enrolments.append({"course": course, "day": day, "start": start, "end": end})
+            clashes = detect_clashes(enrolments)
+            print(json.dumps(clashes, indent=2) if clashes else "no clashes")
+        elif args.command == "transcript":
+            from .features import transcript_rows
+            print(json.dumps(transcript_rows(json.loads(args.student_json), json.loads(args.results_json)), indent=2))
+        elif args.command == "audit":
+            from .features import audit_log
+            print(audit_log("audit.jsonl", args.actor, args.action, args.detail))
+ == "register-student":
             s = s_svc.register(args.student_id, args.name, args.email, args.programme)
             print(f"student #{s.id} ({s.student_id})")
         elif args.command == "add-lecturer":
