@@ -1,0 +1,9 @@
+[project]
+name = "authgate"
+version = "0.1.0"
+description = "Authentication & authorization demo dashboard (FastAPI + SQLite)"
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29", "pyotp>=2.9"]
+
+[project.scripts]
+authgate = "app.main:app"
