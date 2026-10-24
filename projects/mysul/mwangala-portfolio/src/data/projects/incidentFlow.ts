@@ -35,7 +35,7 @@ export const incidentFlow: Project = {
   keyTech: ['Python', 'FastAPI', 'SQLAlchemy', 'React', 'PostgreSQL'],
   featured: true,
   order: 4,
-  status: 'Reconciled — lifecycle, RBAC, audit trail and reporting complete and tested as a Python CLI in apps/incidentflow; the full-stack interface described in this case study is design scope, not yet built',
+  status: 'Built — lifecycle, RBAC, audit trail and reporting complete and tested as a Python CLI in apps/incidentflow, and delivered as the full-stack application described in this case study at projects/incidentflow (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Data modelling, workflow rules, permissions, frontend',
   accent: 'amber',
@@ -222,7 +222,7 @@ export const incidentFlow: Project = {
     ],
     testing: {
       summary:
-        'Testing concentrates on lifecycle legality, permission enforcement and report correctness — the behaviours whose failure would be invisible in a demo.',
+        'Testing concentrates on lifecycle legality, permission enforcement and report correctness — the behaviours whose failure would be invisible in a demo. Verified current suite: 9 backend tests (pytest) and 2 frontend tests (vitest) pass.',
       items: [
         {
           title: 'State machine tests',
