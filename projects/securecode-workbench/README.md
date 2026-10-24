@@ -76,4 +76,4 @@ cd frontend && npm run typecheck && npm test  # 2 tests: UI boundaries + formatt
   imported).
 - No automatic fix application — by design.
 - Baseline matching is per project, per fingerprint (rule|path|line|evidence).
-- Screenshots pending capture.
+- Screenshots and Playwright e2e specs ship ready to run: `scripts/run-e2e.sh <project>` boots backend + frontend, runs the core-flow spec, and writes documentation screenshots to `docs/screenshots/<project>/`. They are **pending in this build environment** (browser downloads are network-blocked here); run the script once on any normal machine to capture them.

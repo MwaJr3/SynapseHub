@@ -75,4 +75,4 @@ cd frontend && npm run typecheck && npm test  # 2 tests: login UI + banner requi
 - Progress figures reflect recorded lab activity; no claim is made about
   durable behavior change.
 - Demonstration data only; no external email is sent by this platform.
-- Screenshots pending capture.
+- Screenshots and Playwright e2e specs ship ready to run: `scripts/run-e2e.sh <project>` boots backend + frontend, runs the core-flow spec, and writes documentation screenshots to `docs/screenshots/<project>/`. They are **pending in this build environment** (browser downloads are network-blocked here); run the script once on any normal machine to capture them.

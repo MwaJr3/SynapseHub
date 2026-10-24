@@ -71,4 +71,4 @@ cd frontend && npm run typecheck && npm test  # 2 tests: UI + verdict presentati
   response. No live reputation service was contacted during development.
 - Single-process sessions (no horizontal scale), no password reset/MFA.
 - Retention control is a per-record delete endpoint; no background sweeper yet.
-- Screenshots pending capture.
+- Screenshots and Playwright e2e specs ship ready to run: `scripts/run-e2e.sh <project>` boots backend + frontend, runs the core-flow spec, and writes documentation screenshots to `docs/screenshots/<project>/`. They are **pending in this build environment** (browser downloads are network-blocked here); run the script once on any normal machine to capture them.
