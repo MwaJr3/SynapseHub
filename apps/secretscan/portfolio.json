@@ -1,0 +1,31 @@
+{
+  "name": "SecretScan",
+  "slug": "secretscan",
+  "shortDescription": "Scoped scanner for candidate secrets in source code, with redacted reports and remediation guidance.",
+  "tags": [
+    "security",
+    "cli",
+    "secrets",
+    "sdld"
+  ],
+  "stack": [
+    "Python",
+    "re",
+    "pathlib"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "8 built-in candidate rules (cloud keys, tokens, PEM keys, JWTs, password assignments, DB URLs)",
+    "Explicit scan scope with skip rules (venv, node_modules, binaries)",
+    "Reports redact values (test-enforced) and carry remediation guidance",
+    "Pre-commit friendly exit codes",
+    "Findings framed as candidates, never confirmed credentials"
+  ],
+  "knownLimitations": [
+    "Pattern matching cannot confirm a credential is live",
+    "Configurable rules are file-based (no plugin system yet)",
+    "Screenshots pending capture"
+  ]
+}

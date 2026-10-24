@@ -1,0 +1,9 @@
+[project]
+name = "headercheck"
+version = "0.1.0"
+description = "HTTP security headers checker (offline fixtures; scoped live targets)"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+headercheck = "app.cli:main"
