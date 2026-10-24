@@ -85,7 +85,6 @@ def assess(password: str) -> Assessment:
         signals.append(Signal("common-pattern", 0, "No common weak pattern matched."))
 
     # Local weak list (explicitly small and bundled — not a breach corpus).
-    weak_list = (root_data := None, )
     from .weaklist import WEAK_LIST
     if password.lower() in WEAK_LIST:
         signals.append(Signal("weak-list", -8, "Appears in the bundled small weak-password list."))
