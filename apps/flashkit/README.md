@@ -37,3 +37,15 @@ import/export and sync are roadmap items.
 ## Future improvements
 A documented SM-2-style algorithm, statistics dashboard, import/export, goals,
 accessibility improvements for a future GUI.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Cloze cards** (`cloze`): `{{blank}}` parsing with exact answer spans.
+- **Tags** (`tag`): dedupe + tag filtering `O(n)`.
+- **Difficult-cards session** (`difficult`): lowest success rate first,
+  deterministic tie-break, bounded limit.
+- **Scheduler honesty**: interval logic is an **SM-2-style heuristic**
+  (Anki-family method) — it is **not FSRS** and is not presented as validated
+  spaced-repetition research.
+- Deferred candidates (with reasons): FSRS adoption (would require verifying
+  an implementation against the published algorithm before claiming it);
+  audio/image cards (media pipeline out of scope).

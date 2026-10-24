@@ -36,3 +36,13 @@ details are free-text demo values; no personal data leaves the machine.
 
 ## Future enhancements
 Barcode support, reservations, notifications, administrative reporting, roles.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Holds / waiting lists** (`hold`, `holds`): per-title FIFO with duplicate
+  refusal and queue positions; titles vs copies kept distinct (holds on
+  titles, loans on copies).
+- **Overdue reports** (`overdue`): computed against an explicit `--today`
+  (no hidden clock); default loan window documented.
+- **Extensions** (`extend`): bounded (≤2, ≤30 days) with hold-priority note.
+- Deferred candidates (with reasons): barcode/ISBN lookup (external data);
+  fines calculation (policy varies by institution).
