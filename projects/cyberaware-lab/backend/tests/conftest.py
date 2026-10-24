@@ -38,3 +38,10 @@ def learner():
     r = c.post("/api/auth/login", json={"email": "learn@example.org", "password": "demo-password-123"})
     assert r.status_code == 200
     return c
+
+@pytest.fixture()
+def auth_client(client):
+    client.post("/api/auth/register", json={"email": "ops@example.org", "password": "demo-password-123"})
+    r = client.post("/api/auth/login", json={"email": "ops@example.org", "password": "demo-password-123"})
+    assert r.status_code == 200
+    return client

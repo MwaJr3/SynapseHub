@@ -18,13 +18,19 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(32), default="learner")   # learner | instructor
     display_name: Mapped[str] = mapped_column(String(120), default="")
     created_at: Mapped[str] = mapped_column(String(40), default=now)
+    display_name: Mapped[str] = mapped_column(String(120), default="")
+    mfa_secret: Mapped[str] = mapped_column(String(64), default="")
+    mfa_enabled: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class SessionToken(Base):
     __tablename__ = "sessions"
     token: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    label: Mapped[str] = mapped_column(String(120), default="")
+    created_at: Mapped[str] = mapped_column(String(40), default=now)
     expires_at: Mapped[str] = mapped_column(String(40))
+    revoked: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class Group(Base):
@@ -87,3 +93,11 @@ class InstructorNote(Base):
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     body: Mapped[str] = mapped_column(Text)
     at: Mapped[str] = mapped_column(String(40))
+
+
+class ResetToken(Base):
+    __tablename__ = "reset_tokens"
+    token: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    expires_at: Mapped[str] = mapped_column(String(40))
+    used: Mapped[int] = mapped_column(Integer, default=0)

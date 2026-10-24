@@ -25,3 +25,10 @@ def client(tmp_path):
     c.post("/api/auth/register", json={"email": "analyst@example.test", "password": "Str0ng!Passw0rd"})
     c.post("/api/auth/login", json={"email": "analyst@example.test", "password": "Str0ng!Passw0rd"})
     yield c
+
+@pytest.fixture()
+def auth_client(client):
+    client.post("/api/auth/register", json={"email": "ops@example.org", "password": "demo-password-123"})
+    r = client.post("/api/auth/login", json={"email": "ops@example.org", "password": "demo-password-123"})
+    assert r.status_code == 200
+    return client
