@@ -36,16 +36,16 @@ entry to a working app in `apps/` and records honest build status.
 | 13 | Electrical Engineering Calculator | **`circuitlab-calc`** (existing) | Web | **reused** |
 | 14 | Data Analysis Dashboard | `datadesk` | CLI + HTML reports | planned |
 | 15 | Personal Knowledge Management | `notekit` | CLI + SQLite | planned |
-| 16 | Real-Time Multiplayer Quiz | `quizarena` | FastAPI + WebSocket web | planned |
-| 17 | AI Study Assistant | `prepwise` | FastAPI web (RAG) | planned |
-| 18 | E-Commerce Application | `shopdeck` | FastAPI web | planned |
-| 19 | Automated Web Data Collection | `webwatch` | CLI + SQLite | planned |
-| 20 | AI Content Assistant for Creators | `creadesk` | FastAPI web | planned |
+| 16 | Real-Time Multiplayer Quiz | `quizarena` | FastAPI + WebSocket web | built + tested |
+| 17 | AI Study Assistant | `prepwise` | FastAPI web (RAG) | built + tested |
+| 18 | E-Commerce Application | `shopdeck` | FastAPI web | built + tested |
+| 19 | Automated Web Data Collection | `webwatch` | CLI + SQLite | built + tested |
+| 20 | AI Content Assistant for Creators | `creadesk` | FastAPI web | built + tested |
 | 21 | Smart University Management Platform | **`campusflow`** (existing) | Web (multi-role) | **reused** |
-| 22 | Engineering Simulation Toolkit | `simforge` | CLI + NumPy/SymPy | planned |
-| 23 | Home Energy Monitoring | `wattwise` | CLI + SQLite | planned |
-| 24 | Personal AI Knowledge Assistant | `docsage` | FastAPI web (RAG) | planned |
-| 25 | Original Software Product | `stockmate` (SME inventory tracker) | FastAPI web | planned |
+| 22 | Engineering Simulation Toolkit | `simforge` | CLI + NumPy/SymPy | built + tested |
+| 23 | Home Energy Monitoring | `wattwise` | CLI + SQLite | built + tested |
+| 24 | Personal AI Knowledge Assistant | `docsage` | FastAPI web (RAG) | built + tested |
+| 25 | Original Software Product | `stockmate` (SME inventory tracker) | FastAPI web | built + tested |
 
 ## Cybersecurity catalogue (20)
 
@@ -64,13 +64,13 @@ entry to a working app in `apps/` and records honest build status.
 | 11 | Network Traffic Analyzer | `netscope` | CLI | planned |
 | 12 | Suspicious Login Detection | `loginsense` | CLI | planned |
 | 13 | Mini SIEM | **`sentinelcore`** (existing) | Web | **reused** |
-| 14 | Digital Forensics Evidence Analyzer | `incidentflow` | CLI + SQLite | planned |
-| 15 | Secure Login System with MFA | `authgate` | FastAPI web + TOTP | planned |
-| 16 | Web Application Security Testing Lab | `secweblab` | pytest runner + fixture app | planned |
+| 14 | Digital Forensics Evidence Analyzer | `incidentflow` | CLI + SQLite | built + tested |
+| 15 | Secure Login System with MFA | `authgate` | FastAPI web + TOTP | built + tested |
+| 16 | Web Application Security Testing Lab | `secweblab` | pytest runner + fixture app | built + tested |
 | 17 | Threat Intelligence Lookup/Enrichment | `threatintel-desk` | CLI + SQLite | planned |
 | 18 | Endpoint Security Monitoring | `hostwatch` | CLI | planned |
-| 19 | Phishing URL Detection Model | `urlshield` | CLI (scikit-learn) | planned |
-| 20 | Python Security Automation Dashboard | `secops-dash` | FastAPI web (integration) | planned |
+| 19 | Phishing URL Detection Model | `urlshield` | CLI (scikit-learn) | built + tested |
+| 20 | Python Security Automation Dashboard | `secops-dash` | FastAPI web (integration) | built + tested |
 
 Notes:
 
@@ -88,3 +88,20 @@ Notes:
 ## Status legend
 
 planned → in progress → **built** (tests executed green) → committed → merged.
+
+## Status note — 2026-10-24 (campaign complete + feature pass)
+All 45 catalogue entries now map to working applications in `apps/`.
+Newly built this campaign (14): incidentflow, wattwise, simforge, webwatch,
+urlshield, secweblab, authgate, quizarena, prepwise, shopdeck, creadesk,
+docsage, stockmate, secops-dash. Interface note: the remaining web entries
+were delivered as **FastAPI + server-rendered HTML + small JS** (rather than
+React SPAs) — the catalogue permits simpler interfaces where they teach the
+same concepts; each keeps a documented port and portfolio.json.
+
+**Feature-candidate pass (Phase B)**: the 25 engineering apps received the
+modern-feature/performance candidates from the supplied feature prompt before
+this push — see `docs/feature-matrix.md` for the governance table (shipped vs
+deferred-with-reasons per app) and per-app README sections titled "Modern
+features & performance notes". Candidate sets were prioritized (P0
+correctness/safety first); performance-relevant operations carry DSA/
+complexity notes; no unmeasured benchmark numbers are claimed anywhere.
