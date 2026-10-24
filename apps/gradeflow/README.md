@@ -41,3 +41,16 @@ mark count so this is visible. Screenshots pending capture.
 
 ## Future enhancements
 CSV export, subject-specific grading rules, GUI, teacher/admin roles.
+
+## Modern features & performance notes (feature-candidate pass)
+- **Weighted categories** (`weighted`) with strict weight-sum validation.
+- **What-if planner** (`what-if`): closed-form `O(1)` plan estimate, labelled
+  PLAN ESTIMATE with assumptions; impossible targets reported `feasible: false`
+  instead of optimistic numbers.
+- **Boundary validation** (`check-boundaries`): strictly-decreasing cutoffs in
+  0..100 with explicit problems.
+- DSA notes: all feature functions are `O(n)` in their inputs (or `O(1)` for
+  the what-if solver); no unbounded work added.
+- Deferred candidates (with reasons): SIS/LMS imports (require real vendor
+  APIs; out of offline scope); grade-curve automation (policy decision, not
+  tooling).

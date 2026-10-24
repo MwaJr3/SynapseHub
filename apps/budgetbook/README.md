@@ -41,3 +41,14 @@ No budgets, recurring transactions or charts yet — roadmap items.
 ## Future enhancements
 Budgets with honest variance reporting, recurring transactions, CSV import/export,
 charts with accessible text summaries, multiple accounts.
+
+## Modern features & performance notes (feature-candidate pass)
+- **CSV import with validation + duplicate warnings** (`import-csv`): invalid
+  rows carry reasons; duplicates are warnings (caller decides) — nothing is
+  dropped silently. `O(n)` expected via row hashing.
+- **Recurring templates** (`add-template`, `materialize`): daily/weekly/monthly
+  intervals; materialized transactions are flagged **needs-review** (human
+  confirmation before they count), bounded to 365 occurrences.
+- Deferred candidates (with reasons): bank CSV dialect auto-detection (needs
+  real bank samples; guessing would corrupt rows); budget rollover automation
+  (policy decision — needs explicit user setup).
