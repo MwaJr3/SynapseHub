@@ -1,0 +1,29 @@
+{
+  "name": "TaskDeck",
+  "slug": "taskdeck",
+  "shortDescription": "Personal task manager: priorities, deadlines, filters, and honest handling of malformed data.",
+  "tags": [
+    "productivity",
+    "cli",
+    "oop"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Task CRUD with validation (title, priority, ISO deadlines)",
+    "Filter by priority and status; deadline/priority sorting",
+    "Overdue flagging",
+    "JSON persistence; malformed rows are reported, never silently dropped"
+  ],
+  "knownLimitations": [
+    "Single-user local tool",
+    "No recurring tasks/reminders yet",
+    "Screenshots pending capture"
+  ]
+}
