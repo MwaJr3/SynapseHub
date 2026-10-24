@@ -1,0 +1,5 @@
+Active recall is the practice of retrieving information from memory rather than simply rereading it. Close your notes, explain the idea, then compare your explanation with the source.
+
+Spaced repetition means revisiting information over increasing intervals. The right interval depends on how easily you recall the material.
+
+Feedback helps compare performance with a desired result. First, recall the idea. Next, check missing qualifications. Finally, write a question to revisit tomorrow.

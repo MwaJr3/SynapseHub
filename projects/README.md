@@ -16,6 +16,7 @@ was merged in its origin repository.
 | --- | --- | --- | --- |
 | `cbu-assignments/` | [MwaJr3/CBU_Assignments](https://github.com/MwaJr3/CBU_Assignments) | `main` @ `ccc9700` (2026-10-23) | `tenantcore/` (TenantCore multi-tenant SaaS platform), `video_downloader_app/` (VDownloader OS), plus coursework retained as merged: `bank_system/`, `library_management/`, `tests/`, `main.py`, `PROJECT_REPORT.md` |
 | `mysul/` | [MwaJr3/MySul](https://github.com/MwaJr3/MySul) | `main` @ `7a01e8b` (2026-10-23) | `mwangala/` (7 working apps + case-study pages), `mwangala-portfolio/` (React portfolio with 9 case-study records), plus practice work retained as merged: `Cpp Projects/`, `WebstormProjects/` |
+| `transcriptwise/` | Uploaded project archive (TranscriptWise.zip), added 2026-10-24 | — | TranscriptWise: FastAPI backend + React/Vite frontend that turns transcripts into study guides, quizzes and flashcards; see its own `README.md` |
 
 Already in this repository before the consolidation (unchanged): the
 `company-platform/` company website, the root portfolio with the 60 challenge
