@@ -34,7 +34,7 @@ export const threatIntelDesk: Project = {
   keyTech: ['Python', 'FastAPI', 'PostgreSQL', 'React', 'Background jobs'],
   featured: false,
   order: 3,
-  status: 'Reconciled — modular connectors with ingestion and deduplication complete and tested as a Python CLI in apps/threatintel-desk; the full-stack interface described in this case study is design scope, not yet built',
+  status: 'Built — modular connectors with ingestion and deduplication complete and tested as a Python CLI in apps/threatintel-desk, and delivered as the full-stack application described in this case study at projects/threatintel-desk (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, connector framework, normalisation and deduplication, frontend',
   accent: 'violet',
@@ -219,7 +219,7 @@ export const threatIntelDesk: Project = {
     ],
     testing: {
       summary:
-        'Tests cover connector adapters against recorded fixtures, normalisation and deduplication semantics, scheduling failures and authorisation.',
+        'Tests cover connector adapters against recorded fixtures, normalisation and deduplication semantics, scheduling failures and authorisation. Verified current suite: 10 backend tests (pytest) and 2 frontend tests (vitest) pass.',
       items: [
         {
           title: 'Adapter tests with recorded payloads',

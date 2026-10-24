@@ -480,7 +480,7 @@ Reported as-is, so nothing here surprises you:
 | Lint | `npm run lint` | pass, 0 errors / 0 warnings |
 | SEO files | `npm run sitemap:check` | pass (15 routes) |
 | Tests | `npm test` | 261 passed, 0 failed |
-| Build | `npm run build` | pass; entry 34.5 kB (11.8 kB gzip), content 178.9 kB (57.6 kB gzip), react 261.2 kB (83.0 kB gzip), artwork 45.0 kB (12.0 kB gzip), CSS 46.2 kB (9.5 kB gzip) |
+| Build | `npm run build` | pass (measured 2026-10-24): entry 34.8 kB (11.9 kB gzip), content 204.2 kB (65.5 kB gzip), react 261.2 kB (83.0 kB gzip), artwork 45.0 kB (12.0 kB gzip), CSS 47.0 kB (9.5 kB gzip) + vendor CSS 6.6 kB (2.8 kB gzip) |
 | Deep links | `npm run preview` + `curl` on `/projects/netscope`, `/nope`, `/robots.txt`, `/sitemap.xml` | all 200; deep links serve `index.html` with correct absolute asset URLs |
 | Dev server | `npm run dev` + `curl` sweep of the module graph | 200 on every module; Tailwind utilities present in the compiled CSS |
 

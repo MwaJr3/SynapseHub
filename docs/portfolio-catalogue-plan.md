@@ -134,3 +134,32 @@ The nine case-study records in `projects/mysul/mwangala-portfolio/src/data/proje
 were reconciled accordingly (statuses name the backing implementation and its
 real state; tech lists corrected where they asserted tooling not present).
 Portfolio suite: 261/261 tests green.
+
+## Status note — 2026-10-24 (hardening + full-stack delivery campaign)
+
+This campaign superseded the CLI-only state of the four remaining products and
+hardened the earlier full-stack ones:
+
+- **PhishLens, NetScope, IncidentFlow, ThreatIntel Desk** are now genuinely
+  built as full-stack applications under `projects/<name>/` (FastAPI +
+  SQLAlchemy + Alembic, React + TypeScript + Tailwind), reusing their
+  `apps/<name>` analysis engines with behaviour preserved. Verified suites:
+  12+2, 11+2, 9+2, 10+2 (pytest + vitest). The case-study records in
+  `projects/mysul/mwangala-portfolio/src/data/projects/` were updated from
+  "design scope, not yet built" to the delivered state with verified counts.
+- **Auth extras + migrations retrofit** across HashSight, AssetWatch, SecureCode
+  Workbench and CyberAware Lab: password-reset flow (dev token; no email is
+  sent — SMTP delivery documented for deployment), TOTP MFA enrol/enable,
+  session listing + revoke-others, and Alembic migrations per backend. Verified
+  suites after the retrofit: 19, 15 (1 skipped: live nmap), 18, 15.
+- **Earlier work combined**: the seven archived case studies from
+  `projects/mysul/mwangala/` now live in the company website portfolio
+  (`/earlier-work`, module `src/data/earlierWork.ts`) with honest unavailable-
+  source states; the old directory keeps a pointer README.
+- **Captured metrics** (2026-10-24): backend statement coverage
+  (`pytest --cov=app`) PhishLens 90 %, NetScope 79 %, IncidentFlow 76 %,
+  ThreatIntel Desk 65 %, HashSight 93 %, AssetWatch 96 %, SecureCode Workbench
+  92 %, CyberAware Lab 95 %; portfolio production bundle measured in its README.
+- Playwright e2e specs exist for all eight frontends (`scripts/run-e2e.sh
+  <name>`); screenshot capture and the authorized nmap verification run are
+  environment-blocked here and documented as ready-to-run scripts.

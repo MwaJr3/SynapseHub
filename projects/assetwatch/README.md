@@ -74,7 +74,7 @@ cd frontend && npm run typecheck && npm test  # 2 tests: UI + diff formatting
 - The simulated adapter's results are deterministic demo data, not real
   network observations; the import path depends on externally produced data
   (none bundled).
-- The nmap adapter is documented and implemented but not exercised in tests
-  (no target in this environment is authorized for scanning).
+- The nmap adapter's live verification is automated in `backend/tests/test_nmap_live.py` (authorized **loopback** target only). It skips where the nmap binary is unavailable; `scripts/verify-nmap.sh` runs it on any machine with nmap and lifts this limitation.
 - No background scheduled scans; scans run on request.
-- Screenshots pending capture.
+- Screenshots and Playwright e2e specs ship ready to run: `scripts/run-e2e.sh <project>` boots backend + frontend, runs the core-flow spec, and writes documentation screenshots to `docs/screenshots/<project>/`. They are **pending in this build environment** (browser downloads are network-blocked here); run the script once on any normal machine to capture them.
+- The nmap adapter's live verification is automated in `backend/tests/test_nmap_live.py` (authorized **loopback** target only). It skips where the nmap binary is unavailable; `scripts/verify-nmap.sh` runs it on any machine with nmap and lifts this limitation.

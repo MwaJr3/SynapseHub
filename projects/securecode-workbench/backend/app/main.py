@@ -11,12 +11,13 @@ from sqlalchemy.orm import Session
 from .archive_guard import ArchiveRejected, extract_archive, iter_source_files
 from .config import settings
 from .db import Base, engine, get_db
-from .models import BaselineEntry, FindingRow, Project, ScanRun, SessionToken, User, now
+from .models import BaselineEntry, FindingRow, Project, ScanRun, SessionToken, User, now, ResetToken
 from .parsers.bandit_parser import parse_bandit_json
 from .redaction import AiConsentError, ai_payload
 from .rules.python_rules import python_ruleset
 from .rules.secrets_rules import secret_ruleset
-from .security import expiry, hash_password, new_token, verify_password
+from .security import (expiry, expiry_minutes, hash_password, new_token, otpauth_url,
+                       totp_secret, totp_verify, verify_password)
 from . import services
 
 Base.metadata.create_all(bind=engine)
@@ -28,7 +29,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5176", "http
 def current_user(request: Request, db: Session = Depends(get_db)) -> User:
     token = request.cookies.get("scw_session", "")
     row = db.get(SessionToken, token) if token else None
-    if row is None or row.expires_at < now():
+    if row is None or row.revoked or row.expires_at < now():
         raise HTTPException(401, "not authenticated")
     return db.get(User, row.user_id)
 
@@ -36,6 +37,18 @@ def current_user(request: Request, db: Session = Depends(get_db)) -> User:
 class AuthBody(BaseModel):
     email: str
     password: str
+    display_name: str = ""
+    mfa_code: str = ""
+
+
+def _session_response(db: Session, user: User) -> JSONResponse:
+    token = new_token()
+    db.add(SessionToken(token=token, user_id=user.id, label="web", expires_at=expiry(settings.session_days)))
+    db.commit()
+    resp = JSONResponse({"ok": True, "email": user.email, "role": user.role,
+                         "mfa_enabled": bool(user.mfa_enabled)})
+    resp.set_cookie("scw_session", token, httponly=True, samesite="lax", max_age=settings.session_days * 86400)
+    return resp
 
 
 @app.post("/api/auth/register")
@@ -45,7 +58,7 @@ def register(body: AuthBody, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == body.email).first():
         return JSONResponse({"error": "registration failed"}, status_code=422)
     pw, salt = hash_password(body.password)
-    db.add(User(email=body.email, password_hash=pw, salt=salt))
+    db.add(User(email=body.email, password_hash=pw, salt=salt, display_name=body.display_name[:120]))
     db.commit()
     return {"ok": True}
 
@@ -55,17 +68,108 @@ def login(body: AuthBody, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == body.email).first()
     if user is None or not verify_password(body.password, user.password_hash, user.salt):
         return JSONResponse({"error": "sign-in failed"}, status_code=401)
-    token = new_token()
-    db.add(SessionToken(token=token, user_id=user.id, expires_at=expiry(settings.session_days)))
-    db.commit()
-    resp = JSONResponse({"ok": True, "email": user.email, "role": user.role})
-    resp.set_cookie("scw_session", token, httponly=True, samesite="lax", max_age=settings.session_days * 86400)
+    if user.mfa_enabled:
+        if not body.mfa_code or not user.mfa_secret or not totp_verify(user.mfa_secret, body.mfa_code):
+            return JSONResponse({"error": "sign-in failed"}, status_code=401)
+    return _session_response(db, user)
+
+
+@app.post("/api/auth/logout")
+def logout(request: Request, db: Session = Depends(get_db)):
+    token = request.cookies.get("scw_session", "")
+    row = db.get(SessionToken, token) if token else None
+    if row is not None:
+        row.revoked = 1
+        db.commit()
+    resp = JSONResponse({"ok": True})
+    resp.delete_cookie("scw_session")
     return resp
 
 
 @app.get("/api/me")
 def me(user: User = Depends(current_user)):
-    return {"email": user.email, "role": user.role}
+    return {"email": user.email, "role": user.role, "mfa_enabled": bool(user.mfa_enabled)}
+
+
+class ResetRequest(BaseModel):
+    email: str
+
+
+@app.post("/api/auth/reset/request")
+def reset_request(body: ResetRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == body.email).first()
+    payload: dict = {"ok": True, "note": "If that account exists, a reset token was created."}
+    if user is not None:
+        token = new_token()
+        db.add(ResetToken(token=token, user_id=user.id, expires_at=expiry_minutes(settings.reset_token_minutes)))
+        db.commit()
+        if settings.reset_delivery == "dev":
+            payload["dev_token"] = token
+            payload["dev_note"] = ("DEV DELIVERY: no email is sent in this environment. "
+                                   "Configure SMTP + set RESET_DELIVERY=smtp at deployment.")
+    return payload
+
+
+class ResetConfirm(BaseModel):
+    token: str
+    new_password: str
+
+
+@app.post("/api/auth/reset/confirm")
+def reset_confirm(body: ResetConfirm, db: Session = Depends(get_db)):
+    row = db.get(ResetToken, body.token)
+    if row is None or row.used or row.expires_at < now() or len(body.new_password) < 12:
+        return JSONResponse({"error": "reset failed"}, status_code=422)
+    user = db.get(User, row.user_id)
+    pw, salt = hash_password(body.new_password)
+    user.password_hash, user.salt = pw, salt
+    row.used = 1
+    db.query(SessionToken).filter(SessionToken.user_id == user.id).update({"revoked": 1})
+    db.commit()
+    return {"ok": True, "note": "Password changed; all existing sessions were revoked."}
+
+
+class MfaEnable(BaseModel):
+    code: str
+
+
+@app.post("/api/auth/mfa/enroll")
+def mfa_enroll(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    secret = totp_secret()
+    user.mfa_secret = secret
+    user.mfa_enabled = 0
+    db.commit()
+    return {"secret": secret, "otpauth_url": otpauth_url(secret, user.email, "PhishLens"),
+            "note": "Enter the secret in any TOTP authenticator, then call mfa/enable with a code. "
+                    "No QR image is generated in this environment."}
+
+
+@app.post("/api/auth/mfa/enable")
+def mfa_enable(body: MfaEnable, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    if not user.mfa_secret or not totp_verify(user.mfa_secret, body.code):
+        return JSONResponse({"error": "invalid code"}, status_code=422)
+    user.mfa_enabled = 1
+    db.commit()
+    return {"ok": True, "mfa_enabled": True}
+
+
+@app.get("/api/auth/sessions")
+def list_sessions(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    rows = (db.query(SessionToken)
+            .filter(SessionToken.user_id == user.id, SessionToken.revoked == 0)
+            .order_by(SessionToken.created_at).all())
+    return {"sessions": [{"token": r.token[:8] + "…", "label": r.label,
+                          "created_at": r.created_at, "expires_at": r.expires_at} for r in rows]}
+
+
+@app.post("/api/auth/sessions/revoke-others")
+def revoke_others(request: Request, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    current = request.cookies.get("scw_session", "")
+    db.query(SessionToken).filter(SessionToken.user_id == user.id,
+                                  SessionToken.token != current).update({"revoked": 1})
+    db.commit()
+    return {"ok": True}
+
 
 
 class PasteBody(BaseModel):

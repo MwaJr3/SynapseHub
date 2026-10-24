@@ -1,0 +1,7 @@
+From: Helpdesk <helpdesk@training.example>
+To: staff@training.example
+Subject: Weekly policy reminder
+Content-Type: text/html
+
+<html><body><p>Hello,</p><p>Please review the
+<a href="https://intranet.training.example/policy">https://intranet.training.example/policy</a>.</p></body></html>

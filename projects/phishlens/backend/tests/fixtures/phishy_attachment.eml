@@ -1,0 +1,16 @@
+From: Billing <billing@supplier.example>
+To: ap@training.example
+Subject: Invoice attached
+Content-Type: multipart/mixed; boundary="BOUND"
+
+--BOUND
+Content-Type: text/plain
+
+Please see the attached invoice.
+
+--BOUND
+Content-Type: application/octet-stream; name="invoice.exe"
+Content-Disposition: attachment; filename="invoice.exe"
+
+MZfakebinarycontent
+--BOUND--
