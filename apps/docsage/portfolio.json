@@ -1,0 +1,33 @@
+{
+  "name": "DocSage",
+  "slug": "docsage",
+  "shortDescription": "Team knowledge base with citations, review status, version diffs and offline ranked search.",
+  "tags": [
+    "knowledge-base",
+    "web",
+    "fastapi",
+    "search"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8021,
+  "frontendPort": 5194,
+  "features": [
+    "Pages with owners, review status (draft/in_review/published) and visibility (team/restricted)",
+    "Sources/citations per page; external URLs must be on the configured allowlist (rejected with reasons)",
+    "Offline TF-IDF keyword search with scores + snippets (labelled: not semantic embeddings)",
+    "Restricted pages absent from non-admin results (not blurred)",
+    "Version diffs + audit trail; JSON import/export with rejection reasons"
+  ],
+  "knownLimitations": [
+    "Demo workspace simulated; keyword search only (no embeddings)",
+    "Roles via query parameter for demo; production would use real auth",
+    "Screenshots pending capture"
+  ]
+}
