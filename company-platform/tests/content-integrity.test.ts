@@ -139,16 +139,25 @@ describe('seed catalogue integrity', () => {
     }
   });
 
-  it('configures source links for exactly the seven products with working apps', () => {
+  it('configures source links for exactly the sixteen products with working apps', () => {
     const withSource = products.filter((p) => (p.repositoryUrl ?? '') !== '');
     expect(withSource.map((p) => p.slug).sort()).toEqual([
       'campusflow',
       'chessscope',
       'circuitlab-calc',
+      'classconnect',
       'dependsecure',
+      'eduaccess',
       'fileguard',
+      'learnbridge',
+      'learnpulse',
+      'openlearn-commons',
+      'pathwise',
+      'reachlearn',
       'sentinelcore',
       'sentinellog',
+      'teachcraft',
+      'tutorspring',
     ]);
     for (const product of withSource) {
       // Source links point into THIS repository — all project code is vendored

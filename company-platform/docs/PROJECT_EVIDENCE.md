@@ -26,8 +26,8 @@ claimed live.
 
 ## How the evidence maps to the 25 catalogue products
 
-All 25 products carry a verified record of *something real*; seven carry
-working application source. Source Code buttons appear only for the seven.
+All 25 products carry a verified record of *something real*; sixteen carry
+working application source. Source Code buttons appear only for the sixteen.
 
 ### Working apps — Source Code configured (7)
 
@@ -51,15 +51,20 @@ deployment is claimed.
 [MySul#2](https://github.com/MwaJr3/MySul/pull/2). Product source is **not
 linked**, so the Source Code button stays hidden.
 
-### Portfolio project registry — Source Code hidden (9)
+### Education suite — Source Code configured (9)
 
 `learnbridge`, `classconnect`, `tutorspring`, `pathwise`, `teachcraft`,
-`openlearn-commons`, `learnpulse`, `reachlearn`, `eduaccess` — portfolio
-case-study records exist in the owner-supplied Mwangala portfolio registry
-(verified location: `projects/mysul/mwangala-portfolio/src/data/projects/`).
-**Correction (2026-10-23):** an earlier draft of this document claimed
-verified records at the root registry path `src/data/projects/`; no such
-records exist and that claim is withdrawn. Product source is **not linked**.
+`openlearn-commons`, `learnpulse`, `reachlearn`, `eduaccess` — **full working
+full-stack applications built into this repository at `apps/<slug>/`**
+(backend + frontend + tests + seeded demo data, built 2026-10-24). Each
+product's Source Code button links to its `apps/<slug>/` folder **inside this
+repository**. Status: **Built (not publicly deployed)**.
+
+**Correction (2026-10-23), preserved:** an earlier draft of this document
+claimed verified registry records at the root path `src/data/projects/`; no
+such records exist and that claim was withdrawn. Before 2026-10-24 these nine
+were case-study-only; they now have verified working implementations as
+described above.
 
 ## Projects outside the 25-product catalogue
 
