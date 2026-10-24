@@ -1,0 +1,1 @@
+# stdlib only (struct-based pcap parsing; no libpcap dependency)

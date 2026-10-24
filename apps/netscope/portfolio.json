@@ -1,0 +1,30 @@
+{
+  "name": "NetScope",
+  "slug": "netscope",
+  "shortDescription": "Offline packet-capture analysis: protocol summaries, talkers, volume heuristics \u2014 payloads never inspected.",
+  "tags": [
+    "security",
+    "cli",
+    "network",
+    "pcap"
+  ],
+  "stack": [
+    "Python",
+    "struct"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Dependency-free libpcap parser (Ethernet/IPv4/TCP/UDP/ICMP)",
+    "Protocol distribution, top talkers, per-minute volumes",
+    "Configurable unusual-volume heuristics (flagged for review, never proof)",
+    "Payloads never inspected or exported (tested)",
+    "Stable pseudonymisation for shareable reports"
+  ],
+  "knownLimitations": [
+    "Classic pcap only (no pcapng), Ethernet/IPv4 only",
+    "No live capture (by design)",
+    "Screenshots pending capture"
+  ]
+}
