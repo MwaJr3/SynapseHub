@@ -1,0 +1,30 @@
+{
+  "name": "SimForge",
+  "slug": "simforge",
+  "shortDescription": "Engineering simulations with explicit units, bounded solvers and reproducible reports.",
+  "tags": [
+    "engineering",
+    "cli",
+    "simulation",
+    "numerical"
+  ],
+  "stack": [
+    "Python",
+    "numpy"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "RC discharge and spring-mass models validated against reference cases",
+    "Resistor series/parallel networks (bounded 1-64 elements)",
+    "Bounded parameter sweeps and central-difference sensitivity",
+    "Convergence checks with instability messages",
+    "Reproducible JSON exports: parameters, assumptions, formulas, versions"
+  ],
+  "knownLimitations": [
+    "Idealised models only (assumptions listed per report)",
+    "Sweeps capped at 1000 points; no background execution",
+    "Screenshots pending capture"
+  ]
+}
