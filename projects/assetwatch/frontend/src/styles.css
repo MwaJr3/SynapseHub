@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #1d5c46;
+  --accent-soft: #e6f2ec;
+  --ink: #17242e;
+  --muted: #5b6b7c;
+}
+body { font-family: system-ui, -apple-system, sans-serif; color: var(--ink); background: #f6f8f9; margin: 0; }
+.shell { max-width: 72rem; margin: 0 auto; padding: 1.25rem; }
+.card { background: white; border: 1px solid #d5e0dc; border-radius: 10px; padding: 1rem; }
+.btn { background: var(--accent); color: white; border: 0; border-radius: 8px; padding: 0.55rem 1rem; cursor: pointer; font-size: 0.95rem; }
+.btn.secondary { background: white; color: var(--accent); border: 1px solid var(--accent); }
+.input { width: 100%; box-sizing: border-box; padding: 0.55rem; border: 1px solid #b7c8c1; border-radius: 8px; font-size: 0.95rem; }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { border-bottom: 1px solid #e2ebe7; padding: 0.55rem; text-align: left; font-size: 0.9rem; }
+.badge { padding: 0.15rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); }
+.badge.high { background: #fde8e8; color: #9b2226; }
+.badge.medium { background: #fff3cd; color: #8a6d00; }
+.notice { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 0.75rem; border-radius: 6px; font-size: 0.88rem; }
+.stat { text-align: center; padding: 1rem; }
+.stat .n { font-size: 1.9rem; font-weight: 700; color: var(--accent); }
