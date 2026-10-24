@@ -1,0 +1,31 @@
+{
+  "name": "PassForge",
+  "slug": "passforge",
+  "shortDescription": "Secure password and passphrase generator built on Python's secrets module, with honest strength guidance.",
+  "tags": [
+    "security",
+    "cli",
+    "passwords",
+    "cryptography"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "secrets"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Configurable length and character groups with policy validation",
+    "Guaranteed character-group coverage; secrets-only randomness (Fisher-Yates via randbelow)",
+    "Passphrases from a bundled, documented word list",
+    "Optional export with 0600 permissions; passwords are never logged",
+    "Explain command that states what generation does and does not guarantee"
+  ],
+  "knownLimitations": [
+    "Does not store, score or transmit passwords (generation is not storage)",
+    "Strength guidance is honest, not a strength guarantee",
+    "Screenshots pending capture"
+  ]
+}
