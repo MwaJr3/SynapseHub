@@ -58,3 +58,14 @@ negative input, singular system), API/core parity, saved-calculation ownership.
 - Approximations are never presented as exact (in-app assumption notes).
 - Unsolvable inputs return explicit error messages, not silent wrong answers.
 - Screenshots pending capture in a browser environment (not fabricated).
+
+## Modern features & performance notes (feature-candidate pass)
+- **Tolerance sensitivity** (`POST /api/calc/tolerance`): divider output range
+  under resistor tolerances — **worst-case bounds are exact** for independent
+  tolerances; the RSS figure is a **STATISTICAL ESTIMATE** (independence +
+  normality assumed), labelled in every result.
+- **Sensitivity table** (`sensitivity_table`): ±1% one-at-a-time input
+  perturbations, `O(k)` evaluations.
+- Deferred candidates (with reasons): Monte-Carlo tolerance runs (worst-case
+  bounds are exact and sufficient here); tolerance-panel UI (API-complete in
+  this pass; frontend enhancement listed for follow-up).
