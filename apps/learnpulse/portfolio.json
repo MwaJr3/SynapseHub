@@ -1,0 +1,23 @@
+{
+  "name": "LearnPulse",
+  "slug": "learnpulse",
+  "shortDescription": "Privacy-conscious learning analytics with transparent, evidence-backed support flags.",
+  "tags": ["education", "analytics", "privacy", "csv-import", "teacher-support"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Idempotent CSV event import with row-level rejection reasons",
+    "Computed dashboards with date filters and metric definitions",
+    "Transparent support flags with exact rules and event evidence",
+    "Small-cohort suppression in comparisons",
+    "Teacher annotations and supportive follow-up actions",
+    "Exports with data sources, definitions and quality notes"
+  ],
+  "knownLimitations": [
+    "CSV/API ingestion only (no live LMS connector in this MVP)",
+    "Retention jobs are deployment-configured, not automated here",
+    "Screenshots pending capture"
+  ]
+}
