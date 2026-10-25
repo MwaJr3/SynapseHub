@@ -1,20 +1,19 @@
-"""hashsight — ASGI entry point.
+"""hashsight — ASGI entry point for the Vercel Python runtime.
 
-Vercel detects a FastAPI app exported as `app` from index.py at the project
-root and serves the whole application with its own routing, so no rewrites are
-needed (the earlier explicit rewrites conflicted with that detection).
-
+Vercel detects a FastAPI `app` exported from index.py in the project root and
+serves the whole application with its own routing, so no rewrites are needed.
 The repository layout keeps the code in the `app/` package; this file only
 re-exports it, so local development (`uvicorn app.main:app`) is unchanged.
 
-If the import fails, a fallback ASGI app answers with the scrubbed traceback
-rather than an opaque 500 - an import-time failure is otherwise invisible on a
-serverless platform, and the text contains no credentials.
+If the import fails, a minimal FastAPI fallback answers with the scrubbed
+traceback instead of an opaque FUNCTION_INVOCATION_FAILED. An import-time
+failure is otherwise invisible on a serverless platform, and this text contains
+no credentials - only module paths and exception types. (A bare ASGI callable is
+not accepted here; the fallback must be a real application object.)
 """
 
 from __future__ import annotations
 
-import json
 import pathlib
 import re
 import sys
@@ -33,29 +32,14 @@ def _scrub(text: str) -> str:
 
 
 try:
-    from app.main import app as application  # noqa: E402
-
-    app = application
+    from app.main import app  # noqa: E402
 
 except Exception:  # noqa: BLE001 - surface the real import failure
-    _DETAIL = _scrub(traceback.format_exc())
+    from fastapi import FastAPI  # imported here so the happy path stays clean
 
-    async def app(scope, receive, send):  # type: ignore[misc]
-        body = json.dumps(
-            {
-                "status": "import_failed",
-                "app": "hashsight",
-                "traceback": _DETAIL,
-            }
-        ).encode("utf-8")
-        await send(
-            {
-                "type": "http.response.start",
-                "status": 500,
-                "headers": [
-                    (b"content-type", b"application/json; charset=utf-8"),
-                    (b"cache-control", b"no-store"),
-                ],
-            }
-        )
-        await send({"type": "http.response.body", "body": body})
+    _DETAIL = _scrub(traceback.format_exc())
+    app = FastAPI(title="hashsight (import failed)")
+
+    @app.get("/{path:path}")
+    def _import_failed(path: str):
+        return {"status": "import_failed", "app": "hashsight", "traceback": _DETAIL}
