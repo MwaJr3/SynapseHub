@@ -31,8 +31,15 @@ project (`api/contact.py`) that delivers to both nominated inboxes. It answers
 ## Product APIs
 
 One Vercel project per backend, each rooted at its own `backend/` directory.
-Every backend exposes `api/index.py` (ASGI entry) and its own `vercel.json`
-(all paths → that function, 60 s max duration).
+Every backend exposes `index.py` in the backend root: Vercel detects the FastAPI
+`app` export and serves routing itself, so `vercel.json` holds nothing but the
+schema declaration. An earlier `api/index.py` + `rewrites` layout was abandoned —
+inside a backend-framework project those rewrites route on the rewritten
+destination path and never reach the application.
+
+Each backend also answers `GET /health` (liveness + a real `SELECT 1`) and, only
+when `HEALTH_WRITE_PROBE=1`, `GET /health/write` (creates, counts and removes a
+probe row, then reports which domain table resolved).
 
 | Product | Vercel project | Root directory | Supabase schema |
 | --- | --- | --- | --- |
@@ -40,23 +47,39 @@ Every backend exposes `api/index.py` (ASGI entry) and its own `vercel.json`
 | NetScope | `synapsehub-netscope-api` | `projects/netscope/backend` | `netscope` |
 | IncidentFlow | `synapsehub-incidentflow-api` | `projects/incidentflow/backend` | `incidentflow` |
 | ThreatIntel Desk | `synapsehub-threatintel-api` | `projects/threatintel-desk/backend` | `threatintel_desk` |
-| HashSight | *not yet created* | `projects/hashsight/backend` | `hashsight` (missing) |
-| AssetWatch | *not yet created* | `projects/assetwatch/backend` | `assetwatch` (missing) |
-| SecureCode Workbench | *not yet created* | `projects/securecode-workbench/backend` | `securecode` (missing) |
-| CyberAware Lab | *not yet created* | `projects/cyberaware-lab/backend` | `cyberaware` (missing) |
+| HashSight | `synapsehub-hashsight-api` | `projects/hashsight/backend` | `hashsight` |
+| AssetWatch | `synapsehub-assetwatch-api` | `projects/assetwatch/backend` | `assetwatch` |
+| SecureCode Workbench | `synapsehub-securecode-workbench-api` | `projects/securecode-workbench/backend` | `securecode` |
+| CyberAware Lab | `synapsehub-cyberaware-lab-api` | `projects/cyberaware-lab/backend` | `cyberaware` |
 
 ### Required environment variables (every API project)
 
 | Variable | Purpose |
 | --- | --- |
 | `DATABASE_URL` | Supabase Postgres connection string (session pooler, port 5432) |
-| `DB_SCHEMA` | Schema applied as the connection `search_path` — keeps the eight apps isolated in one database |
+| `DB_SCHEMA` | Schema that qualifies every table — keeps the eight apps isolated in one database |
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed by CORS (add the deployed frontends here) |
 | `RESET_DELIVERY` | `dev` returns reset tokens in the response; `smtp` is the real deployment mode |
 
-The four schemas marked *missing* have not been provisioned in Supabase yet, so
-those projects must not be deployed until their schema exists — a backend
-pointed at a nonexistent schema fails at first query rather than at boot.
+All eight schemas exist, each stamped to its Alembic head revision.
+
+### Two production findings worth keeping
+
+**Driver mismatch.** Supabase connection strings can name psycopg 3
+(`postgresql+psycopg://`) while the requirements install psycopg2-binary. Because
+`create_engine` runs at import, that mismatch killed every route with an opaque
+`FUNCTION_INVOCATION_FAILED` before any handler ran. `app/db.py` now normalises
+every Postgres spelling to `+psycopg2`.
+
+**search_path is not applied by the pooler.** The pooler
+(`...pooler.supabase.com`) does not forward libpq's `options` parameter, so a
+connection-level `search_path` was silently ignored and queries ran against
+`public` — where none of the apps have tables. Tables are therefore qualified
+through `Base.metadata.schema`, which travels with each statement.
+
+**Diagnostics.** A bare ASGI callable is not accepted as the entry point, so an
+import failure inside a hand-rolled fallback produces the same opaque 500 it was
+meant to explain. The fallback must be a real FastAPI app.
 
 ### Serverless constraints (documented, not hidden)
 
