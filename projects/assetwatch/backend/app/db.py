@@ -57,8 +57,21 @@ engine = _engine()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
 
+_SCHEMA = os.environ.get("DB_SCHEMA", "").strip()
+
+
 class Base(DeclarativeBase):
     pass
+
+
+if _SCHEMA and not _normalise_url(settings.database_url).startswith("sqlite"):
+    # Qualify every table with its schema explicitly.
+    #
+    # A connection-level search_path proved unreliable in production: Supabase's
+    # pooler drops libpq's `options` parameter, so queries silently ran against
+    # `public` instead of the application's schema. Metadata-level qualification
+    # travels with every statement and cannot be dropped.
+    Base.metadata.schema = _SCHEMA
 
 
 def get_db():

@@ -472,12 +472,19 @@ def health_write():
     def _scrub(value: str) -> str:
         return _re.sub(r"://[^@\s]*@", "://***@", value)[:200]
 
+    schema = Base.metadata.schema
+    probe = f"{schema}._health_probe" if schema else "_health_probe"
+
     try:
         with engine.begin() as connection:
-            connection.execute(text("CREATE TABLE IF NOT EXISTS _health_probe (id TEXT PRIMARY KEY)"))
-            connection.execute(text("INSERT INTO _health_probe (id) VALUES ('probe') ON CONFLICT DO NOTHING"))
-            rows = connection.execute(text("SELECT COUNT(*) FROM _health_probe")).scalar_one()
-            connection.execute(text("DELETE FROM _health_probe WHERE id = 'probe'"))
+            connection.execute(text(f"CREATE TABLE IF NOT EXISTS {probe} (id TEXT PRIMARY KEY)"))
+            connection.execute(text(f"INSERT INTO {probe} (id) VALUES ('probe') ON CONFLICT DO NOTHING"))
+            rows = connection.execute(text(f"SELECT COUNT(*) FROM {probe}")).scalar_one()
+            connection.execute(text(f"DELETE FROM {probe} WHERE id = 'probe'"))
+            # Prove a real domain table resolves from inside the function.
+            table = next(iter(Base.metadata.sorted_tables))
+            qualified = f"{table.schema}.{table.name}" if table.schema else table.name
+            domain_rows = connection.execute(text(f"SELECT COUNT(*) FROM {qualified}")).scalar_one()
     except Exception as exc:  # noqa: BLE001 - diagnostics surface the real cause
         return JSONResponse(
             status_code=500,
@@ -488,4 +495,13 @@ def health_write():
                 "detail": _scrub(str(exc)),
             },
         )
-    return JSONResponse(content={"status": "ok", "database": "writable", "rows_written": 1, "rows_seen": rows})
+    return JSONResponse(
+        content={
+            "status": "ok",
+            "database": "writable",
+            "rows_written": 1,
+            "rows_seen": rows,
+            "domain_table": qualified,
+            "domain_rows": domain_rows,
+        }
+    )
