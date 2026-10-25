@@ -98,6 +98,30 @@ Vercel usually detects Vite and adds the rewrite itself; keeping it explicit
 avoids surprises. Add environment variables under *Project → Settings →
 Environment Variables*.
 
+**This repository ships that file** as `vercel.json` (rewrite, SPA fallback,
+safe security headers, immutable caching for hashed assets). Verified live: the
+first deployment without it returned Vercel's `404: NOT_FOUND` for
+`/projects` and `/earlier-work`; with it, deep links serve `index.html` and the
+client router renders the right page.
+
+### Live deployment (current)
+
+| Item | Value |
+| --- | --- |
+| Production URL | https://mwangala-portfolio.vercel.app |
+| Vercel project | `mwangala-portfolio` (team `m-corp2`) |
+| Source | `MwaJr3/SynapseHub` → `main`, root directory `projects/mysul/mwangala-portfolio` |
+| Build / install / output | `npm run build` / `npm install --legacy-peer-deps` / `dist` |
+| Env var | `VITE_SITE_URL=https://mwangala-portfolio.vercel.app` (production + preview) |
+| Auto-deploy | enabled: every push to `main` that touches the project rebuilds it |
+
+`VITE_SITE_URL` is a **build-time** value: it is read by both the app
+(canonical / `og:url`) and `scripts/generate-seo.mjs` (absolute sitemap `<loc>`
+and the `robots.txt` `Sitemap:` line). The committed `public/sitemap.xml` stays
+relative on purpose so `npm run sitemap:check` passes in a checkout with no
+`.env`; the deployed file is regenerated during the Vercel build with the
+variable present.
+
 ### Cloudflare Pages
 
 - Build command: `npm run build`
