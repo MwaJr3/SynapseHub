@@ -10,8 +10,23 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from .config import settings
 
+def _normalise_url(url: str) -> str:
+    """Route every Postgres spelling to the driver that is actually installed.
+
+    Supabase hands out `postgresql://` (which SQLAlchemy maps to psycopg2) while
+    some integrations hand out `postgresql+psycopg://` (psycopg 3). Only
+    psycopg2-binary is installed, so an explicit `+psycopg` URL used to fail at
+    import time with ModuleNotFoundError - which surfaced as an opaque
+    FUNCTION_INVOCATION_FAILED on every route, before any handler ran.
+    """
+    for prefix in ("postgresql+psycopg://", "postgresql+psycopg2://", "postgresql://", "postgres://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg2://" + url[len(prefix):]
+    return url
+
+
 def _engine():
-    url = settings.database_url
+    url = _normalise_url(settings.database_url)
     if url.startswith("sqlite:///"):
         # ensure the data directory exists (fresh checkouts have none)
         Path(url.removeprefix("sqlite:///")).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
