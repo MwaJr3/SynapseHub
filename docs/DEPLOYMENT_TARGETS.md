@@ -37,9 +37,10 @@ schema declaration. An earlier `api/index.py` + `rewrites` layout was abandoned 
 inside a backend-framework project those rewrites route on the rewritten
 destination path and never reach the application.
 
-Each backend also answers `GET /health` (liveness + a real `SELECT 1`) and, only
-when `HEALTH_WRITE_PROBE=1`, `GET /health/write` (creates, counts and removes a
-probe row, then reports which domain table resolved).
+Each backend also answers `GET /health`: liveness plus a real `SELECT 1`, with a
+credential-scrubbed message on failure. All eight were verified beyond that with
+a temporary `/health/write` probe (insert, count, delete, plus the resolved
+domain table) which has since been removed from the code.
 
 | Product | Vercel project | Root directory | Supabase schema |
 | --- | --- | --- | --- |
