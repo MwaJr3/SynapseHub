@@ -322,15 +322,38 @@ def test_tutor_search_refuses_to_answer_from_outside_the_curriculum(client):
     assert "will not answer" in body["message"]
 
 
-def test_chatkit_refuses_to_serve_a_chat_that_cannot_answer(client, monkeypatch):
+def test_chat_refuses_to_serve_a_conversation_that_cannot_answer(client, monkeypatch):
     for name in ("TESSERA_TUTOR_API_KEY", "OPENAI_API_KEY", "TESSERA_TUTOR_BASE_URL", "TESSERA_TUTOR_MODEL"):
         monkeypatch.delenv(name, raising=False)
     register(client)
-    response = client.post("/api/tutor/chatkit", json={"type": "threads.create", "params": {}})
+    response = client.post("/api/tutor/chat", json={"message": "why is a bare except risky"})
     assert response.status_code == 503
     body = response.json()
     assert body["error"] == "tutor_not_configured"
     assert "TESSERA_TUTOR_API_KEY" in body["missing"]
+
+
+def test_threads_are_not_listed_for_another_learner(client):
+    from app.ai.store import ChatStore
+    from app.database import SessionLocal
+    from app.models import User
+
+    email, _ = register(client)
+    db = SessionLocal()
+    try:
+        owner = db.query(User).filter(User.email == email).one().id
+        thread = ChatStore(db).create_thread(owner, title="private")
+    finally:
+        db.close()
+
+    assert client.get(f"/api/tutor/threads/{thread.id}").status_code == 200
+
+    client.post("/api/auth/logout")
+    register(client)
+    # A different learner gets the same answer as for a thread that never existed.
+    assert client.get(f"/api/tutor/threads/{thread.id}").status_code == 404
+    assert thread.id not in client.get("/api/tutor/threads").text
+    assert client.delete(f"/api/tutor/threads/{thread.id}").status_code == 404
 
 
 def test_tutor_endpoints_require_a_session(client):

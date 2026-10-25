@@ -27,7 +27,7 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | Chess openings | A 10-line ECO reference with **position-based matching**, so transpositions resolve to the same opening. Every note is original. |
 | Puzzle import | The Lichess puzzle database (CC0) can be imported with `python3 -m app.lichess_import`; provenance and licence travel with each puzzle. |
 | Content catalogue | MIT OCW and OpenStax material is **catalogued and linked, never copied**, because their licences (and terms) do not permit redistribution here. |
-| AI tutor | Grounded retrieval works with no API key. The conversation (OpenAI ChatKit, self-hosted server) only appears when a key is configured. |
+| AI tutor | Grounded retrieval works with no model at all. The streamed conversation appears only when a model is configured, and says so honestly when it is not. |
 | Provenance | Every piece of material records source, author, licence, attribution and retrieval date; a licence gate decides full use / reference only / refuse. |
 
 ## The memory model
@@ -130,8 +130,9 @@ chatbot, and it is built so that it cannot bluff:
   curriculum text by token overlap, returns the passages with a citation, source
   URL and licence, and reports `generated: false`. It is presented as retrieval,
   not as an answer.
-- **The conversation** (`POST /api/tutor/chatkit`) implements the ChatKit server
-  protocol. If `OPENAI_API_KEY` is unset it returns **503** with
+- **The conversation** (`POST /api/tutor/chat`) streams Server-Sent Events:
+  `citations`, then `delta` frames, then `done` — or `error` with `retryable`. If
+  no model is configured it returns **503** with
   `{"error": "tutor_not_configured", "missing": [...]}` and the interface does not
   render a chat box at all. An empty box that cannot answer would be a fake
   integration.
@@ -140,8 +141,8 @@ chatbot, and it is built so that it cannot bluff:
   and refuse to hand over exam answers.
 - **Provider failure is reported, not hidden** — an upstream error returns 502
   `tutor_upstream_failed` and nothing is generated.
-- **Threads are per learner.** The ChatKit store is owner-scoped in the database;
-  another learner's thread is a 404, not a read.
+- **Threads are per learner.** Every read and write is scoped to the owner in the
+  database; another learner's thread is a 404, never a read.
 
 ### Running the tutor for free
 
@@ -151,6 +152,7 @@ no card:
 
 | Provider | `TESSERA_TUTOR_BASE_URL` | Example `TESSERA_TUTOR_MODEL` | Notes |
 | --- | --- | --- | --- |
+| **Hugging Face** | `https://router.huggingface.co/v1` | `meta-llama/Llama-3.3-70B-Instruct` | One token, many open-weight models; the same weights can be served locally later. Free monthly credits, then per-token. |
 | **Groq** | `https://api.groq.com/openai/v1` | `openai/gpt-oss-20b` | Free tier, no card, very fast. Limits are per organisation. |
 | **Google Gemini** | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-flash-latest` | Free tier. The free tier may use prompts for training outside the EU/UK — a real problem for learner data. |
 | **OpenRouter** | `https://openrouter.ai/api/v1` | `deepseek/deepseek-chat-v3:free` | Only ids ending `:free` are free; modest daily cap; free providers may log prompts. |
@@ -169,11 +171,11 @@ are a licensing and privacy decision, not just a cost one.
 
 The wiring is tested end to end **without any account**: `tests/stub_provider.py`
 serves the same chat-completions wire format these providers use, and
-`tests/test_chatkit_protocol.py` drives a real `threads.create` request through
-the real route, ChatKit server, store and agent. It asserts that the retrieved
-curriculum text reaches the provider before an answer is produced, that the
-answer carries its citation, and that the thread is persisted for that learner
-only. `tests/test_agent_loop.py` checks the same loop through the Agents SDK
+`tests/test_chat_stream.py` drives a real streaming request through the real
+route, store and agent. It asserts that the retrieved curriculum text reaches the
+provider before an answer is produced, that citations arrive before the text,
+that both turns are persisted for that learner only, and that a follow-up
+replays the history. `tests/test_agent_loop.py` checks the same loop through the Agents SDK
 directly, plus that an unreachable provider produces an error event and no
 assistant text.
 
@@ -198,8 +200,8 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 114 tests
-cd frontend && npm test && npm run build   # 18 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 137 tests
+cd frontend && npm test && npm run build   # 24 tests, then typecheck + bundle
 ```
 
 ## Known limitations (read this before trusting anything)
@@ -215,19 +217,20 @@ cd frontend && npm test && npm run build   # 18 tests, then typecheck + bundle
   the importers were tested against synthetic fixtures in the exact published
   formats. No external content is bundled, and no page was scraped.
 - **The tutor has been run end to end, but never against a live model.** The whole
-  path — HTTP request, ChatKit server, store, agent, tool call, grounding, cited
-  answer, error handling — is exercised against a local stub that speaks the same
-  wire format as Groq, Gemini, OpenRouter and Ollama. No real completion has been
+  path — HTTP request, store, agent, tool call, grounding, cited answer, error
+  handling — is exercised against a local stub that speaks the same wire format
+  as Hugging Face's router, Groq and Ollama. No real completion has been
   inspected, because every model provider is blocked from this sandbox. Treat
   answer quality, tone and refusal behaviour as unverified.
 - **Retrieval is token overlap, not semantic search.** It is explainable and
   deterministic, and it will miss paraphrases. It is not embeddings and is not
   described as such.
-- **The ChatKit UI comes from OpenAI's CDN.** `@openai/chatkit` ships types only,
-  so the widget script is loaded at runtime from
-  `cdn.platform.openai.com` and renders in an OpenAI-hosted iframe. That is a real
-  third-party dependency: it will not work offline, and it should be reviewed
-  before commercial use.
+- **There is no vendor chat SDK, deliberately.** An earlier version used OpenAI's
+  ChatKit. Its useful ideas — threads stored server-side, token streaming,
+  citations, retryable errors — are reimplemented in `app/ai/chat.py` and
+  `src/tutor.tsx`; the parts that cost more than they gave (a vendor protocol, an
+  iframe served from a third-party CDN, and a store interface that fought our
+  database layer) are gone.
 - **Chess has no engine.** Puzzles and the opening reference are here, but there
   is no evaluation of a game, no engine analysis and no game import. ChessScope in
   this repository covers game analysis separately.
@@ -265,12 +268,12 @@ backend/app/
   open_content.py    licence-gated catalogue of external courses (linked only)
   ai/retrieval.py    grounded passage search, no model involved
   ai/agent.py        tutor instructions and the grounded search tool
-  ai/store.py        owner-scoped ChatKit thread storage
-  ai/chatkit_server.py  ChatKit server protocol implementation
+  ai/chat.py         the SSE protocol and one streamed turn
+  ai/store.py        owner-scoped conversation storage
 frontend/src/
   board.tsx          click-to-move board
   pages.tsx          today, knowledge, map, concept, chess (tactics + openings)
   openings.tsx       opening reference and line matcher
-  tutor.tsx          grounded search and the ChatKit conversation
+  tutor.tsx          grounded search and the streamed conversation
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

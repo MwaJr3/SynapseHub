@@ -9,10 +9,14 @@ Two rules make this tutor different from a chatbot bolted onto a learning app:
    exists) that it came from, so a learner can check it.
 
 The provider is not hard-coded to OpenAI. Anything that speaks the OpenAI chat
-completions shape works, which matters because there are free options: Groq,
-Google Gemini's compatibility endpoint, OpenRouter's `:free` models, or a local
-Ollama. Point `TESSERA_TUTOR_BASE_URL` at one of them, set
-`TESSERA_TUTOR_API_KEY`, and name the model in `TESSERA_TUTOR_MODEL`.
+completions shape works: Hugging Face's Inference Providers router, Groq, Google
+Gemini's compatibility endpoint, OpenRouter's `:free` models, or a model running
+locally through Ollama or llama.cpp. Point `TESSERA_TUTOR_BASE_URL` at one of
+them, set `TESSERA_TUTOR_API_KEY`, and name the model in `TESSERA_TUTOR_MODEL`.
+
+Hugging Face is the intended default for this product: one token reaches many
+open-weight models, and the same weights can be served locally later without
+changing any of this code.
 
 If no key (and no local endpoint) is configured, the agent is never constructed.
 Callers get an honest `configured=False` and the UI shows the retrieval-only path
@@ -102,8 +106,8 @@ def tutor_config() -> TutorConfig:
         else:
             reason = (
                 "No model credential is configured, so no model is called. Set TESSERA_TUTOR_API_KEY "
-                "(free options: Groq, Google Gemini, OpenRouter) — sourced material is still available "
-                "through retrieval in the meantime."
+                "(a Hugging Face token works: TESSERA_TUTOR_BASE_URL=https://router.huggingface.co/v1) — "
+                "sourced material is still available through retrieval in the meantime."
             )
         return TutorConfig(
             configured=False,
@@ -126,8 +130,17 @@ def tutor_config() -> TutorConfig:
     )
 
 
-def build_agent(db_session_factory=database.SessionLocal, config: TutorConfig | None = None):
-    """Construct the Agents SDK agent. Only called when configured."""
+def build_agent(
+    db_session_factory=database.SessionLocal,
+    config: TutorConfig | None = None,
+    citations: list | None = None,
+):
+    """Construct the Agents SDK agent. Only called when configured.
+
+    `citations` is filled by the retrieval tool as a side effect, so the caller
+    can show the learner exactly which material the answer drew on without
+    parsing the model's output for markers it may or may not produce.
+    """
     from agents import Agent, function_tool
 
     from .retrieval import search
@@ -148,6 +161,19 @@ def build_agent(db_session_factory=database.SessionLocal, config: TutorConfig | 
             from .retrieval import context_block
 
             passages = search(db, question)
+            if citations is not None:
+                from .store import Citation
+
+                citations.clear()
+                citations.extend(
+                    Citation(
+                        title=passage.concept_title,
+                        citation=passage.as_citation(),
+                        source_url=passage.source_url,
+                        license_name=passage.license_name,
+                    )
+                    for passage in passages
+                )
             return context_block(passages)
         finally:
             db.close()

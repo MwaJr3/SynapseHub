@@ -1,4 +1,5 @@
 /** Typed API client. Every call is same-origin; cookies carry the session. */
+import { eventText, takeSseEvents } from './utils';
 
 export interface Recommendation {
   concept_id: string;
@@ -191,6 +192,21 @@ export interface OpeningMatchResponse {
   message: string | null;
 }
 
+export interface TutorMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  text: string;
+  created_at: string;
+  citations: { title: string; citation: string; source_url: string | null; license_name: string | null }[];
+}
+
+export interface TutorThread {
+  id: string;
+  title: string;
+  created_at: string;
+  message_count: number;
+}
+
 export interface TutorStatus {
   configured: boolean;
   model: string;
@@ -227,6 +243,72 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = 'ApiError';
+  }
+}
+
+export interface ChatHandlers {
+  onDelta: (text: string) => void;
+  onCitations: (citations: TutorMessage['citations']) => void;
+  onError: (message: string, retryable: boolean) => void;
+  onDone: (threadId: string) => void;
+}
+
+/**
+ * Stream one tutor turn.
+ *
+ * The response is a Server-Sent Event stream from our own backend, read with the
+ * browser's own fetch and a reader loop — no vendor script, no iframe, no CDN.
+ * A 503 means the deployment has no model configured; that is surfaced as an
+ * error rather than retried in a loop.
+ */
+export async function streamTutorChat(
+  body: { message: string; threadId: string | null },
+  handlers: ChatHandlers,
+  signal?: AbortSignal,
+): Promise<void> {
+  const response = await fetch('/api/tutor/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ message: body.message, thread_id: body.threadId }),
+    signal,
+  });
+
+  if (!response.ok || !response.body) {
+    let message = `The tutor is unavailable (${response.status}).`;
+    try {
+      const payload = (await response.json()) as { reason?: unknown };
+      if (typeof payload.reason === 'string') message = payload.reason;
+    } catch {
+      // Non-JSON error body: the status is all we know.
+    }
+    handlers.onError(message, false);
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parsed = takeSseEvents(buffer);
+    buffer = parsed.rest;
+    for (const event of parsed.events) {
+      if (event.name === 'delta') {
+        handlers.onDelta(eventText(event.data, 'text'));
+      } else if (event.name === 'citations') {
+        const raw = event.data.citations;
+        if (Array.isArray(raw)) handlers.onCitations(raw as TutorMessage['citations']);
+      } else if (event.name === 'error') {
+        handlers.onError(eventText(event.data, 'message'), event.data.retryable === true);
+      } else if (event.name === 'done') {
+        handlers.onDone(eventText(event.data, 'thread_id'));
+      }
+    }
   }
 }
 
@@ -293,6 +375,11 @@ export const api = {
     request<OpeningMatchResponse>(`/api/chess/openings/match?moves=${encodeURIComponent(uciMoves.join(' '))}`),
 
   tutorStatus: () => request<TutorStatus>('/api/tutor/status'),
+  tutorThreads: () => request<{ threads: TutorThread[] }>('/api/tutor/threads'),
+  tutorThread: (id: string) =>
+    request<{ thread: TutorThread; messages: TutorMessage[] }>(`/api/tutor/threads/${encodeURIComponent(id)}`),
+  deleteTutorThread: (id: string) =>
+    request<{ deleted: string }>(`/api/tutor/threads/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   tutorSearch: (question: string, limit = 4) =>
     request<TutorSearchResponse>('/api/tutor/search', {
       method: 'POST',

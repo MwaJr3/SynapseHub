@@ -1,56 +1,34 @@
-/** The AI tutor, built on OpenAI ChatKit against a self-hosted backend.
+/** The AI tutor: grounded retrieval, and a streamed conversation.
  *
  * Two things are deliberately separate here:
  *
  * 1. Grounded search (`/api/tutor/search`). It needs no API key, returns
  *    curriculum passages with citations, and says plainly that no model wrote
  *    anything. It works on every deployment.
- * 2. The conversation (`/api/tutor/chatkit`). It only renders when the backend
- *    reports an API key. Without a key the widget is not mounted at all — an
- *    empty chat box that cannot answer would be a fake integration.
+ * 2. The conversation (`/api/tutor/chat`). It only renders when the backend
+ *    reports a model. Without one the panel is not mounted at all — an empty
+ *    chat box that cannot answer would be a fake integration.
  *
- * ChatKit renders its UI in an iframe served by OpenAI, so the script comes
- * from OpenAI's CDN and the browser talks to it directly. That is a real
- * third-party dependency and is recorded in the README rather than hidden.
+ * The conversation is our own: a POST of one turn, answered with Server-Sent
+ * Events and read with `fetch`. There is no vendor chat SDK, no iframe and no
+ * third-party script — earlier versions used OpenAI's ChatKit for this, and the
+ * parts worth keeping (threads, streaming, citations, retryable errors) are
+ * reimplemented here in about a hundred lines.
  */
-import { ChatKit, useChatKit } from '@openai/chatkit-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { api, ApiError, type TutorPassage, type TutorStatus } from './api';
+import {
+  api,
+  ApiError,
+  streamTutorChat,
+  type TutorMessage,
+  type TutorPassage,
+  type TutorStatus,
+  type TutorThread,
+} from './api';
 import { Badge, Card, ErrorNote, Loading, SectionTitle } from './ui';
 
 const muted = 'text-[color:var(--muted)]';
-
-/** Where the ChatKit web component is published. Its React package ships types only. */
-const CHATKIT_SCRIPT_URL = 'https://cdn.platform.openai.com/deployments/chatkit/chatkit.js';
-
-/** Values are documented by ChatKit for a self-hosted backend; no key is a secret. */
-const CHATKIT_DOMAIN_KEY = 'local-dev';
-
-let scriptPromise: Promise<void> | null = null;
-
-function loadChatKitScript(): Promise<void> {
-  if (typeof window === 'undefined') return Promise.reject(new Error('no window'));
-  if (window.customElements?.get('openai-chatkit')) return Promise.resolve();
-  if (scriptPromise) return scriptPromise;
-
-  scriptPromise = new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>('script[data-chatkit]');
-    if (existing) {
-      existing.addEventListener('load', () => resolve(), { once: true });
-      existing.addEventListener('error', () => reject(new Error('The ChatKit script failed to load.')), { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = CHATKIT_SCRIPT_URL;
-    script.async = true;
-    script.dataset.chatkit = 'true';
-    script.addEventListener('load', () => resolve(), { once: true });
-    script.addEventListener('error', () => reject(new Error('The ChatKit script failed to load.')), { once: true });
-    document.head.append(script);
-  });
-  return scriptPromise;
-}
 
 export function TutorPage() {
   const [status, setStatus] = useState<TutorStatus | null>(null);
@@ -116,16 +94,16 @@ export function TutorPage() {
 
 const FREE_OPTIONS = [
   {
-    name: 'Groq',
-    detail: 'Free tier, no card, OpenAI-compatible. Fast.',
-    base: 'https://api.groq.com/openai/v1',
-    model: 'openai/gpt-oss-20b',
+    name: 'Hugging Face Inference Providers',
+    detail: 'One token, many open-weight models. The same weights can be served locally later.',
+    base: 'https://router.huggingface.co/v1',
+    model: 'meta-llama/Llama-3.3-70B-Instruct',
   },
   {
-    name: 'Google Gemini',
-    detail: 'Free tier. Note: the free tier may use prompts for training outside the EU/UK.',
-    base: 'https://generativelanguage.googleapis.com/v1beta/openai',
-    model: 'gemini-flash-latest',
+    name: 'Groq',
+    detail: 'Free tier, no card. Very fast.',
+    base: 'https://api.groq.com/openai/v1',
+    model: 'openai/gpt-oss-20b',
   },
   {
     name: 'OpenRouter',
@@ -135,7 +113,7 @@ const FREE_OPTIONS = [
   },
   {
     name: 'Ollama, on this machine',
-    detail: 'No account, no quota. Needs the model downloaded and a few GB of RAM.',
+    detail: 'No account, no quota, nothing leaves the machine. Needs the model downloaded.',
     base: 'http://127.0.0.1:11434/v1',
     model: 'qwen2.5:3b',
   },
@@ -151,19 +129,17 @@ function NotConfigured({ missing }: { missing: string[] }) {
         rather than shown broken.
       </p>
       <p className={`mt-3 text-sm ${muted}`}>
-        The tutor is not tied to OpenAI. Any endpoint that speaks the OpenAI chat-completions format works, including
-        free ones. Set these three variables and restart the backend:
+        The tutor is not tied to any one vendor. Anything that speaks the OpenAI chat-completions format works, and
+        several options are free. Set these three variables and restart the backend:
       </p>
       <ul className="mt-3 grid gap-2">
         {FREE_OPTIONS.map((option) => (
           <li key={option.name} className="rounded-md border p-3 text-sm" style={{ borderColor: 'var(--line)' }}>
             <p className="font-medium">{option.name}</p>
             <p className={`text-xs ${muted}`}>{option.detail}</p>
-            <p className={`mt-1 font-mono text-xs ${muted}`}>
-              TESSERA_TUTOR_BASE_URL={option.base}
-            </p>
+            <p className={`mt-1 font-mono text-xs ${muted}`}>TESSERA_TUTOR_BASE_URL={option.base}</p>
             <p className={`font-mono text-xs ${muted}`}>TESSERA_TUTOR_MODEL={option.model}</p>
-            <p className={`font-mono text-xs ${muted}`}>TESSERA_TUTOR_API_KEY=&lt;that provider's key&gt;</p>
+            <p className={`font-mono text-xs ${muted}`}>TESSERA_TUTOR_API_KEY=&lt;that provider's token&gt;</p>
           </li>
         ))}
       </ul>
@@ -188,7 +164,9 @@ function GroundedSearch() {
     try {
       const response = await api.tutorSearch(question);
       setPassages(response.passages);
-      setMessage(response.passages.length === 0 ? (response.message ?? 'Nothing in the curriculum covers that yet.') : null);
+      setMessage(
+        response.passages.length === 0 ? (response.message ?? 'Nothing in the curriculum covers that yet.') : null,
+      );
     } catch (cause) {
       setError(cause instanceof ApiError ? cause.message : 'Search failed.');
       setPassages(null);
@@ -226,7 +204,11 @@ function GroundedSearch() {
         </button>
       </form>
 
-      {error ? <div className="mt-3"><ErrorNote message={error} /></div> : null}
+      {error ? (
+        <div className="mt-3">
+          <ErrorNote message={error} />
+        </div>
+      ) : null}
 
       <div className="mt-3" aria-live="polite">
         {passages === null ? null : passages.length === 0 ? (
@@ -259,83 +241,267 @@ function GroundedSearch() {
   );
 }
 
-function TutorConversation() {
-  const [scriptError, setScriptError] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
+type Turn = TutorMessage & { pending?: boolean };
 
-  useEffect(() => {
-    let cancelled = false;
-    loadChatKitScript()
-      .then(() => {
-        if (!cancelled) setReady(true);
-      })
-      .catch(() => {
-        if (!cancelled) setScriptError('The ChatKit interface could not be loaded from OpenAI. Grounded search above still works.');
-      });
-    return () => {
-      cancelled = true;
-    };
+function TutorConversation() {
+  const [threads, setThreads] = useState<TutorThread[]>([]);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [turns, setTurns] = useState<Turn[]>([]);
+  const [draft, setDraft] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
+
+  const refreshThreads = useCallback(async () => {
+    try {
+      const data = await api.tutorThreads();
+      setThreads(data.threads);
+    } catch {
+      // The list is a convenience; a failure here must not block the chat.
+    }
   }, []);
 
-  if (scriptError) {
-    return (
-      <Card>
-        <SectionTitle>Conversation unavailable</SectionTitle>
-        <p className={`text-sm ${muted}`}>{scriptError}</p>
-      </Card>
-    );
+  useEffect(() => {
+    void refreshThreads();
+    return () => abortRef.current?.abort();
+  }, [refreshThreads]);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [turns]);
+
+  async function openThread(id: string) {
+    abortRef.current?.abort();
+    setError(null);
+    try {
+      const data = await api.tutorThread(id);
+      setThreadId(id);
+      setTurns(data.messages.map((message) => ({ ...message })));
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : 'That conversation could not be opened.');
+    }
   }
 
-  if (!ready) {
-    return (
-      <Card>
-        <Loading label="Loading the conversation interface" />
-      </Card>
-    );
+  function startNew() {
+    abortRef.current?.abort();
+    setThreadId(null);
+    setTurns([]);
+    setError(null);
+    setStreaming(false);
   }
 
-  return <ChatKitFrame />;
-}
+  async function send() {
+    const text = draft.trim();
+    if (!text || streaming) return;
 
-function ChatKitFrame() {
-  const { control } = useChatKit({
-    api: {
-      // Same origin: the dev server proxies /api to the backend, and cookies
-      // carry the session, so no credential ever reaches the browser bundle.
-      url: `${window.location.origin}/api/tutor/chatkit`,
-      domainKey: CHATKIT_DOMAIN_KEY,
-    },
-    theme: 'light',
-    header: { title: { enabled: true, text: 'Tessera tutor' } },
-    startScreen: {
-      greeting: 'Ask about something in your curriculum.',
-      prompts: [
-        { label: 'Explain a concept', prompt: 'Explain exceptions and error handling in simple terms.', icon: 'book-open' },
-        { label: 'What do I review next?', prompt: 'What should I review next, and why?', icon: 'sparkle' },
-      ],
-    },
-    composer: { placeholder: 'Ask about your curriculum' },
-    disclaimer: {
-      text: 'Answers are drawn from Tessera curriculum material and cite their source. Check anything important.',
-    },
-    onError: (event) => {
-      // ChatKit renders its own inline error state; this keeps the console honest.
-      console.error('ChatKit error', event.error);
-    },
-  });
+    setError(null);
+    setDraft('');
+    setStreaming(true);
+    const stamp = new Date().toISOString();
+    setTurns((current) => [
+      ...current,
+      { id: `local-${stamp}`, role: 'user', text, created_at: stamp, citations: [] },
+      { id: `pending-${stamp}`, role: 'assistant', text: '', created_at: stamp, citations: [], pending: true },
+    ]);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const updateAssistant = (update: (turn: Turn) => Turn) => {
+      setTurns((current) => {
+        const next = [...current];
+        for (let index = next.length - 1; index >= 0; index -= 1) {
+          const turn = next[index];
+          if (turn && turn.pending) {
+            next[index] = update(turn);
+            break;
+          }
+        }
+        return next;
+      });
+    };
+
+    try {
+      await streamTutorChat(
+        { message: text, threadId },
+        {
+          onDelta: (chunk) => updateAssistant((turn) => ({ ...turn, text: turn.text + chunk })),
+          onCitations: (citations) => updateAssistant((turn) => ({ ...turn, citations })),
+          onError: (message, retryable) => {
+            setError(
+              retryable ? `${message} Try again when the provider is reachable.` : message,
+            );
+            updateAssistant((turn) => ({ ...turn, pending: false }));
+          },
+          onDone: (id) => {
+            updateAssistant((turn) => ({ ...turn, pending: false }));
+            setThreadId(id);
+            void refreshThreads();
+          },
+        },
+        controller.signal,
+      );
+    } catch (cause) {
+      if (!(cause instanceof DOMException && cause.name === 'AbortError')) {
+        setError('The connection dropped before the answer finished.');
+      }
+      updateAssistant((turn) => ({ ...turn, pending: false }));
+    } finally {
+      setStreaming(false);
+      abortRef.current = null;
+    }
+  }
+
+  async function removeThread(id: string) {
+    try {
+      await api.deleteTutorThread(id);
+      if (id === threadId) startNew();
+      await refreshThreads();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : 'That conversation could not be deleted.');
+    }
+  }
 
   return (
-    <Card>
-      <SectionTitle hint="Conversation history is stored per learner on this server. The chat interface itself is served by OpenAI.">
-        Ask the tutor
-      </SectionTitle>
-      <div className="overflow-hidden rounded-md border" style={{ borderColor: 'var(--line)' }}>
-        <ChatKit control={control} className="h-[560px] w-full" />
-      </div>
-      <p className={`mt-2 text-xs ${muted}`}>
-        The tutor will not invent progress, mastery or exam answers. If the curriculum does not cover a question it is
-        expected to say so.
-      </p>
-    </Card>
+    <div className="grid gap-4 md:grid-cols-[220px_1fr]">
+      <Card className="h-fit">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold">Conversations</h3>
+          <button type="button" className="btn" onClick={startNew}>
+            New
+          </button>
+        </div>
+        {threads.length === 0 ? (
+          <p className={`mt-2 text-xs ${muted}`}>Nothing yet. Your first question starts a conversation.</p>
+        ) : (
+          <ul className="mt-2 grid gap-1">
+            {threads.map((thread) => (
+              <li key={thread.id} className="flex items-start gap-1">
+                <button
+                  type="button"
+                  className={`flex-1 rounded px-2 py-1 text-left text-xs ${thread.id === threadId ? 'font-semibold' : ''}`}
+                  style={thread.id === threadId ? { background: 'var(--accent-soft)', color: 'var(--accent)' } : undefined}
+                  onClick={() => void openThread(thread.id)}
+                >
+                  {thread.title || 'Conversation'}
+                  <span className={`block text-[10px] ${muted}`}>
+                    {thread.message_count} message{thread.message_count === 1 ? '' : 's'}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className={`px-1 text-xs ${muted}`}
+                  aria-label={`Delete conversation ${thread.title || ''}`}
+                  onClick={() => void removeThread(thread.id)}
+                >
+                  ✕
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card>
+        <SectionTitle hint="Answers are drawn from your curriculum, and the material each one used is listed beneath it.">
+          Ask the tutor
+        </SectionTitle>
+
+        <div className="grid max-h-[460px] gap-3 overflow-y-auto pr-1" aria-live="polite" aria-relevant="additions text">
+          {turns.length === 0 ? (
+            <p className={`text-sm ${muted}`}>
+              Ask about something in your curriculum — for example, why a bare except is risky, or what to review next.
+            </p>
+          ) : null}
+          {turns.map((turn) => (
+            <div
+              key={turn.id}
+              className={`rounded-md p-3 text-sm ${turn.role === 'user' ? 'ml-6' : 'mr-6'}`}
+              style={{
+                background: turn.role === 'user' ? 'var(--accent-soft)' : 'transparent',
+                border: turn.role === 'user' ? 'none' : '1px solid var(--line)',
+              }}
+            >
+              <p className={`mb-1 text-[10px] uppercase tracking-wide ${muted}`}>
+                {turn.role === 'user' ? 'You' : 'Tutor'}
+              </p>
+              <p className="whitespace-pre-wrap">
+                {turn.text}
+                {turn.pending && !turn.text ? <span className={muted}> thinking…</span> : null}
+              </p>
+              {turn.citations.length > 0 ? (
+                <ul className={`mt-2 grid gap-1 text-xs ${muted}`}>
+                  {turn.citations.map((citation) => (
+                    <li key={`${citation.title}-${citation.citation}`}>
+                      Used: <span className="font-medium">{citation.title}</span> — {citation.license_name ?? 'licence not recorded'}
+                      {citation.source_url ? (
+                        <>
+                          {' · '}
+                          <a className="underline" href={citation.source_url} target="_blank" rel="noopener noreferrer">
+                            source
+                          </a>
+                        </>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ))}
+          <div ref={endRef} />
+        </div>
+
+        {error ? (
+          <div className="mt-3">
+            <ErrorNote
+              message={error}
+              onRetry={() => {
+                setError(null);
+              }}
+            />
+          </div>
+        ) : null}
+
+        <form
+          className="mt-3 flex flex-wrap items-end gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void send();
+          }}
+        >
+          <label className="grid flex-1 gap-1 text-sm" htmlFor="tutor-message">
+            <span className="font-medium">Your message</span>
+            <textarea
+              id="tutor-message"
+              className="input min-h-16"
+              value={draft}
+              maxLength={4000}
+              rows={2}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                  event.preventDefault();
+                  void send();
+                }
+              }}
+              placeholder="Ask about your curriculum…"
+            />
+          </label>
+          <button type="submit" className="btn btn-primary" disabled={streaming || draft.trim().length === 0}>
+            {streaming ? 'Streaming…' : 'Send'}
+          </button>
+          {streaming ? (
+            <button type="button" className="btn" onClick={() => abortRef.current?.abort()}>
+              Stop
+            </button>
+          ) : null}
+        </form>
+        <p className={`mt-2 text-xs ${muted}`}>
+          The tutor will not invent progress, mastery or exam answers. If the curriculum does not cover a question it
+          is expected to say so.
+        </p>
+      </Card>
+    </div>
   );
 }

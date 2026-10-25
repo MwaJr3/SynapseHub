@@ -7,12 +7,15 @@ gating, retrieval grounding, citation, and per-learner isolation of threads.
 """
 from __future__ import annotations
 
+import json
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.ai.agent import tutor_config
 from app.ai.retrieval import context_block, search, tokenise
+from app.ai.store import ChatStore, ThreadNotFound
 from app.database import Base
 from app.models import Concept, Lesson, SourceRow, TutorItemRow, TutorThreadRow
 
@@ -72,8 +75,9 @@ def test_absent_key_is_reported_as_unconfigured(monkeypatch):
     assert state.configured is False
     assert "TESSERA_TUTOR_API_KEY" in state.missing
     assert "no model is called" in state.reason.lower()
-    # The reason must point at free options rather than leaving the reader stuck.
-    assert "Groq" in state.reason
+    # The reason must point at a way forward rather than leaving the reader stuck:
+    # Hugging Face is the intended default, and it is not a paid-only route.
+    assert "router.huggingface.co" in state.reason
 
 
 def test_blank_key_does_not_count_as_configured(monkeypatch):
@@ -204,101 +208,108 @@ def test_empty_context_is_stated_not_faked():
     assert "No material" in context_block([])
 
 
-# ------------------------------------------------------- per-learner isolation
+# ------------------------------------------------------- conversation storage
 
 
-def test_thread_rows_are_owned_and_filterable(db):
-    db.add(TutorThreadRow(id="t1", owner="alice", title="a", status="active", payload="{}"))
-    db.add(TutorThreadRow(id="t2", owner="bob", title="b", status="active", payload="{}"))
-    db.commit()
-    alice = db.query(TutorThreadRow).filter(TutorThreadRow.owner == "alice").all()
-    assert [row.id for row in alice] == ["t1"]
+def _store(db) -> ChatStore:
+    return ChatStore(db)
 
 
-def test_store_refuses_another_learners_thread(db):
-    import asyncio
-
-    from chatkit.store import NotFoundError
-
-    from app.ai.store import SqlChatKitStore
-
-    db.add(TutorThreadRow(id="t1", owner="alice", title="a", status="active", payload=_thread_payload("t1")))
-    db.commit()
-
-    store = SqlChatKitStore(db)
-    with pytest.raises(NotFoundError):
-        asyncio.run(store.load_thread("t1", {"owner": "bob"}))
-    # The owner can read it.
-    assert asyncio.run(store.load_thread("t1", {"owner": "alice"})).id == "t1"
+def test_a_thread_is_created_for_its_owner(db):
+    thread = _store(db).create_thread("alice", title="exceptions")
+    assert thread.id.startswith("thr_")
+    assert db.get(TutorThreadRow, thread.id).owner == "alice"
 
 
-def test_store_refuses_another_learners_items(db):
-    import asyncio
-
-    from chatkit.store import NotFoundError
-
-    from app.ai.store import SqlChatKitStore
-
-    db.add(TutorThreadRow(id="t1", owner="alice", title="a", status="active", payload=_thread_payload("t1")))
-    db.commit()
-    store = SqlChatKitStore(db)
-    with pytest.raises(NotFoundError):
-        asyncio.run(
-            store.load_thread_items("t1", after=None, limit=10, order="asc", context={"owner": "bob"})
-        )
+def test_another_learners_thread_is_not_found_not_forbidden(db):
+    """A 403 would confirm the thread exists; the store refuses to say that."""
+    store = _store(db)
+    thread = store.create_thread("alice")
+    with pytest.raises(ThreadNotFound):
+        store.get_thread("bob", thread.id)
+    assert store.get_thread("alice", thread.id).id == thread.id
 
 
-def test_delete_thread_removes_its_items(db):
-    from app.ai.store import SqlChatKitStore
+def test_listing_threads_only_returns_this_learners(db):
+    store = _store(db)
+    store.create_thread("alice", title="a")
+    store.create_thread("bob", title="b")
+    titles = [thread.title for thread in store.list_threads("alice")]
+    assert titles == ["a"]
 
-    db.add(TutorThreadRow(id="t1", owner="alice", title="a", status="active", payload=_thread_payload("t1")))
-    db.add(TutorItemRow(id="i1", thread_id="t1", owner="alice", type="message", payload="{}"))
-    db.commit()
-    import asyncio
 
-    asyncio.run(SqlChatKitStore(db).delete_thread("t1", {"owner": "alice"}))
+def test_messages_are_stored_in_order_with_their_citations(db):
+    store = _store(db)
+    thread = store.create_thread("alice")
+    store.add_message("alice", thread.id, "user", "why is a bare except risky")
+    store.add_message(
+        "alice",
+        thread.id,
+        "assistant",
+        "Catch the specific exception (Concept: Exceptions and error handling).",
+        citations=[
+            __import__("app.ai.store", fromlist=["Citation"]).Citation(
+                title="Exceptions and error handling",
+                citation="Exceptions and error handling — Tessera curriculum · CC BY 4.0",
+                source_url="https://example.org",
+                license_name="CC BY 4.0",
+            )
+        ],
+    )
+
+    messages = store.load_messages("alice", thread.id)
+    assert [message.role for message in messages] == ["user", "assistant"]
+    assert messages[1].citations[0].title == "Exceptions and error handling"
+    assert messages[1].citations[0].license_name == "CC BY 4.0"
+
+
+def test_writing_to_another_learners_thread_is_refused(db):
+    store = _store(db)
+    thread = store.create_thread("alice")
+    with pytest.raises(ThreadNotFound):
+        store.add_message("bob", thread.id, "user", "sneaking in")
+    with pytest.raises(ThreadNotFound):
+        store.load_messages("bob", thread.id)
     assert db.query(TutorItemRow).count() == 0
-    assert db.get(TutorThreadRow, "t1") is None
 
 
-def _thread_payload(thread_id: str) -> str:
+def test_deleting_a_thread_removes_its_messages(db):
+    store = _store(db)
+    thread = store.create_thread("alice")
+    store.add_message("alice", thread.id, "user", "hello")
+    store.delete_thread("alice", thread.id)
+    assert db.get(TutorThreadRow, thread.id) is None
+    assert db.query(TutorItemRow).count() == 0
+
+
+def test_history_replayed_to_the_model_is_text_only(db):
+    """Citations shown to the learner must not return as fresh evidence."""
+    from app.ai.chat import history_for_model
+    from app.ai.store import Citation, Message
+
     from datetime import datetime, timezone
 
-    from chatkit.types import ThreadMetadata
-
-    return ThreadMetadata(
-        id=thread_id, title="a", created_at=datetime.now(timezone.utc), status={"type": "active"}
-    ).model_dump_json()
-
-
-def test_build_agent_wires_a_free_provider_into_the_agents_sdk(monkeypatch):
-    """The agent object is provider-agnostic — proved without any network call.
-
-    Construction performs no request: it builds the chat-completions model the
-    Agents SDK uses for non-OpenAI endpoints, pointed at the configured host.
-    """
-    from agents import OpenAIChatCompletionsModel
-
-    from app.ai.agent import build_agent
-
-    _clear_tutor_env(monkeypatch)
-    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "https://api.groq.com/openai/v1")
-    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "gsk_test_value")
-    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "openai/gpt-oss-20b")
-
-    agent = build_agent()
-    assert isinstance(agent.model, OpenAIChatCompletionsModel)
-    assert agent.model.model == "openai/gpt-oss-20b"
-    # The SDK keeps the client private; that is the object carrying the base URL.
-    assert str(agent.model._client.base_url).startswith("https://api.groq.com/openai/v1")
-    # The credential is held by the client, never placed on the agent.
-    assert "gsk_test_value" not in repr(agent.instructions)
-    assert "gsk_test_value" not in str(agent.name)
+    messages = [
+        Message(id="1", role="user", text="hi", created_at=datetime.now(timezone.utc)),
+        Message(
+            id="2",
+            role="assistant",
+            text="an answer",
+            created_at=datetime.now(timezone.utc),
+            citations=[Citation(title="t", citation="c")],
+        ),
+    ]
+    assert history_for_model(messages) == [
+        {"role": "user", "content": "hi"},
+        {"role": "assistant", "content": "an answer"},
+    ]
 
 
-def test_build_agent_refuses_to_build_without_configuration(monkeypatch):
-    from app.ai.agent import build_agent
+def test_sse_frames_are_well_formed():
+    from app.ai.chat import sse
 
-    _clear_tutor_env(monkeypatch)
-    with pytest.raises(RuntimeError, match="not configured"):
-        build_agent()
+    frame = sse("delta", {"text": "a \"quoted\" word"})
+    assert frame.startswith("event: delta\ndata: ")
+    assert frame.endswith("\n\n")
+    payload = json.loads(frame.split("data: ", 1)[1])
+    assert payload["text"] == 'a "quoted" word'

@@ -213,14 +213,6 @@ class TutorItemRow(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
 
 
-class TutorAttachmentRow(Base):
-    __tablename__ = "tutor_attachments"
-
-    id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    owner: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
-    payload: Mapped[str] = mapped_column(Text)
-
-
 # ---------------------------------------------------------------- chess openings
 #
 # Opening names and ECO codes are factual reference data. Lines are stored as a

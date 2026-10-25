@@ -55,6 +55,25 @@ where AI is plausible later — the requirement is that each one would reuse
 that they would each grow a chatbot now. Nothing is stubbed: there is no button
 anywhere that claims to be AI and is not wired to something real.
 
-The one thing that is genuinely unverified is model output quality: no API key was
-available while this was built, so no live completion was ever inspected. The
-tests cover the boundaries around the model, not the model.
+## Why ChatKit was adopted and then dropped
+
+Tessera's first conversation layer was OpenAI's ChatKit, used as a self-hosted
+server. It was worth building because it made the protocol obvious: threads,
+streamed deltas, citations, structured errors. It was then removed, because the
+cost sat in the wrong place:
+
+| Kept | Dropped |
+| --- | --- |
+| Threads stored server-side, not in the browser | The vendor protocol and its Python server class |
+| Token-by-token streaming | An iframe UI served from a third-party CDN, which could not be styled or audited |
+| Citations travelling with the answer | A store interface whose async contract we had to bend the database layer into |
+| A retryable, structured error event | The dependency itself |
+
+`app/ai/chat.py` and `src/tutor.tsx` now implement those four good ideas over
+about a hundred lines each, on any OpenAI-compatible provider. The company
+platform's two assistants use the same four events, so the products behave alike
+without sharing a vendor.
+
+The one thing that is genuinely unverified is model output quality: no provider
+is reachable from this environment, so no live completion has ever been
+inspected. The tests cover the boundaries around the model, not the model.

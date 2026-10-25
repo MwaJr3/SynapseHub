@@ -4,8 +4,9 @@ sqlalchemy>=2.0
 pydantic>=2.5
 python-chess>=1.10
 psycopg2-binary>=2.9
-# ChatKit self-hosted server protocol + the Agents SDK that drives it.
-openai-chatkit>=1.6
+# The Agents SDK drives the model: tool calls, streaming, retry handling. It is
+# provider-agnostic — it talks to any OpenAI-compatible endpoint, which is how a
+# Hugging Face token or a local model works without changing code.
 openai-agents>=0.2
 # Reading the Lichess puzzle database, which is published zstd-compressed.
 zstandard>=0.22

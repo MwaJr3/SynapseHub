@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findMoveUci, groupByFamily, isLegalTarget, parseFen, parseUciLine, percent, squareIndex, squareName } from './utils';
+import { eventText, findMoveUci, groupByFamily, isLegalTarget, parseFen, parseUciLine, percent, squareIndex, squareName, takeSseEvents } from './utils';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const BACK_RANK = '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1';
@@ -119,5 +119,48 @@ describe('groupByFamily', () => {
 
   it('returns nothing for an empty list', () => {
     expect(groupByFamily([])).toEqual([]);
+  });
+});
+
+describe('takeSseEvents', () => {
+  it('parses named events and keeps the trailing partial frame', () => {
+    const buffer = 'event: delta\ndata: {"text":"Hello"}\n\nevent: delta\ndata: {"text":" wo';
+    const { events, rest } = takeSseEvents(buffer);
+    expect(events).toHaveLength(1);
+    expect(events[0]?.name).toBe('delta');
+    expect(events[0]?.data.text).toBe('Hello');
+    expect(rest).toContain('wo');
+  });
+
+  it('parses several events in one chunk', () => {
+    const buffer =
+      'event: citations\ndata: {"citations":[{"title":"Exceptions"}]}\n\n' +
+      'event: done\ndata: {"thread_id":"thr_1"}\n\n';
+    const { events, rest } = takeSseEvents(buffer);
+    expect(events.map((event) => event.name)).toEqual(['citations', 'done']);
+    expect(events[1]?.data.thread_id).toBe('thr_1');
+    expect(rest).toBe('');
+  });
+
+  it('drops a frame whose payload is not JSON', () => {
+    const { events } = takeSseEvents('event: delta\ndata: {not json}\n\n');
+    expect(events).toEqual([]);
+  });
+
+  it('ignores blank frames', () => {
+    expect(takeSseEvents('\n\n\n\n').events).toEqual([]);
+  });
+
+  it('treats an unnamed frame as a message event', () => {
+    const { events } = takeSseEvents('data: {"a":1}\n\n');
+    expect(events[0]?.name).toBe('message');
+  });
+});
+
+describe('eventText', () => {
+  it('returns the string, or empty for anything else', () => {
+    expect(eventText({ text: 'hi' }, 'text')).toBe('hi');
+    expect(eventText({ text: 5 }, 'text')).toBe('');
+    expect(eventText({}, 'text')).toBe('');
   });
 });

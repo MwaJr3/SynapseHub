@@ -702,16 +702,23 @@ def tutor_search(body: TutorSearchBody, request: Request, db: Session = Depends(
     }
 
 
-@router.post("/tutor/chatkit")
-async def tutor_chatkit(request: Request, db: Session = Depends(get_db)):
-    """ChatKit protocol endpoint.
+class TutorChatBody(BaseModel):
+    message: str = Field(min_length=1, max_length=4000)
+    thread_id: str | None = None
 
-    Returns 503 with an explicit reason when no provider is configured, rather
-    than serving a chat surface that cannot answer.
+
+@router.post("/tutor/chat")
+async def tutor_chat(body: TutorChatBody, request: Request, db: Session = Depends(get_db)):
+    """One turn of the conversation, streamed as Server-Sent Events.
+
+    Returns 503 with an explicit reason when no model is configured, rather than
+    serving a chat surface that cannot answer.
     """
     from fastapi.responses import JSONResponse, StreamingResponse
 
-    from .ai.agent import build_agent, tutor_config
+    from .ai.agent import tutor_config
+    from .ai.chat import stream_reply
+    from .ai.store import ChatStore
 
     user = _current(request, db)
     state = tutor_config()
@@ -725,32 +732,64 @@ async def tutor_chatkit(request: Request, db: Session = Depends(get_db)):
             },
         )
 
-    from chatkit.server import StreamingResult
+    store = ChatStore(db)
+    thread_id = body.thread_id
+    if thread_id is None:
+        thread = store.create_thread(user.id, title=body.message[:80])
+        thread_id = thread.id
+    else:
+        try:
+            store.get_thread(user.id, thread_id)
+        except LookupError:
+            # Not "forbidden": confirming existence would leak whose thread it is.
+            raise HTTPException(404, "no such conversation")
 
-    from .ai.chatkit_server import TesseraChatKitServer
+    return StreamingResponse(
+        stream_reply(store, state, user.id, thread_id, body.message),
+        media_type="text/event-stream",
+        headers={"cache-control": "no-cache", "x-accel-buffering": "no"},
+    )
 
-    body = await request.body()
+
+@router.get("/tutor/threads")
+def tutor_threads(request: Request, db: Session = Depends(get_db)):
+    """This learner's conversations, newest first."""
+    from .ai.store import ChatStore
+
+    user = _current(request, db)
+    store = ChatStore(db)
+    return {"threads": [thread.as_dict() for thread in store.list_threads(user.id)]}
+
+
+@router.get("/tutor/threads/{thread_id}")
+def tutor_thread(thread_id: str, request: Request, db: Session = Depends(get_db)):
+    """One conversation with its messages, including the citations used."""
+    from .ai.store import ChatStore
+
+    user = _current(request, db)
+    store = ChatStore(db)
     try:
-        # The agent opens its own session for retrieval; closing the request's
-        # session here would break the store mid-conversation.
-        agent = build_agent(config=state)
-        server = TesseraChatKitServer(db, agent=agent)
-        result = await server.process(body, {"owner": user.id, "email": user.email})
-    except Exception:
-        # A provider outage must not look like a bug in Tessera, and must never
-        # be answered with invented content. Log the detail, say what failed.
-        logger.exception("chatkit request failed")
-        return JSONResponse(
-            status_code=502,
-            content={
-                "error": "tutor_upstream_failed",
-                "reason": "The model provider could not be reached. Nothing was generated.",
-            },
-        )
+        thread = store.get_thread(user.id, thread_id)
+    except LookupError:
+        raise HTTPException(404, "no such conversation")
+    return {
+        "thread": thread.as_dict(),
+        "messages": [message.as_dict() for message in store.load_messages(user.id, thread_id)],
+    }
 
-    if isinstance(result, StreamingResult):
-        return StreamingResponse(result, media_type="text/event-stream")
-    return Response(content=result.json, media_type="application/json")
+
+@router.delete("/tutor/threads/{thread_id}")
+def tutor_thread_delete(thread_id: str, request: Request, db: Session = Depends(get_db)):
+    from .ai.store import ChatStore
+
+    user = _current(request, db)
+    store = ChatStore(db)
+    try:
+        store.delete_thread(user.id, thread_id)
+    except LookupError:
+        raise HTTPException(404, "no such conversation")
+    return {"deleted": thread_id}
+
 
 
 # ------------------------------------------------------------------------ goals

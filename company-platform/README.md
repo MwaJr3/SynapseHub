@@ -19,6 +19,7 @@ checks; legal details stay empty and configurable until officially supplied.
 - **Public routes**: `/`, `/companies(/[slug]` + `/about)`, `/solutions(/[slug])`,
   `/products(/[slug])` with working search + composing filters + sorting,
   `/case-studies(/[slug])`, `/people(/[slug])`, `/about`, `/contact`,
+  `/support` (Velaqori IT triage), `/study-plan` (Tamuzi study planning),
   `/privacy/[companySlug]`, `/terms/[companySlug]`, 404.
 - **Member area** (`/member/*`): sign in, dashboard, profile editor (education,
   experience, skills, certifications, links, resume), preview, resume management,
@@ -28,6 +29,28 @@ checks; legal details stay empty and configurable until officially supplied.
 - **Honesty rules built in**: status labels (built ≠ deployed), demo/source
   buttons hidden unless configured, seed content labelled fictional,
   visuals labelled illustrative, contact delivery states reported truthfully.
+- **Two assistants, one per company**, each grounded in that company's own
+  pages. See below.
+
+## The two assistants
+
+`/support` is Velaqori's IT and security triage helper; `/study-plan` is Tamuzi's
+study planner. They share code and nothing else: a separate corpus, a separate
+prompt, a separate conversation, and a separate company.
+
+| Layer | What it does | Where |
+| --- | --- | --- |
+| Grounding | Token-overlap retrieval over that assistant's own corpus. Nothing scores → the model is told there is no material and must say so. | `src/lib/assistant/retrieve.ts` |
+| Provider | Any OpenAI-compatible endpoint. Hugging Face's router is the intended default; Groq, OpenRouter and a local Ollama all work. | `src/lib/assistant/provider.ts` |
+| Streaming | `POST /api/assistant/<name>` returns SSE: `citations`, then `delta` frames, then `done` — or `error` with `retryable`. | `src/lib/assistant/stream.ts` |
+| UI | `AssistantChat` — streaming transcript, what the answer used, stop button, honest switched-off state. | `src/components/assistant-chat.tsx` |
+
+Rules the tests pin: the two corpora share no entries; the guardrails forbid
+promising response times, prices, breaches, mastery or enrolment; a client cannot
+inject a system turn; the token is sent as a bearer header and never appears in
+the request body; a provider outage produces an error and never a `done`; and
+with no configuration the route answers 503 with the reason instead of serving a
+chat box that cannot answer.
 
 ## Stack
 
@@ -93,6 +116,7 @@ Variables; the same names as `.env.example`):
 | `DATABASE_URL` | PostgreSQL 14+ connection string (e.g. a Supabase project). Unset in development falls back to embedded PGlite (`./data/`) — PGlite is development-only |
 | `NEXT_PUBLIC_SITE_URL` | The public origin once it exists (Vercel URL or custom domain) — drives canonical URLs and the sitemap |
 | Storage / contact variables | Optional; stay empty until supplied (see `.env.example`) |
+| `ASSISTANT_BASE_URL`, `ASSISTANT_MODEL`, `ASSISTANT_API_KEY` | Optional. Without them both assistants are switched off and say so. A Hugging Face token (`https://router.huggingface.co/v1`) is the intended default; `ASSISTANT_API_KEY` may also be `HUGGINGFACE_API_KEY` or `HF_TOKEN` |
 
 Only `company-platform/` is built and served — `projects/` ships the
 consolidated project source in the repository but is not part of the
@@ -104,7 +128,8 @@ deployment. Before public launch, complete `docs/LAUNCH_CHECKLIST.md`.
 npm test
 ```
 
-Vitest suite: catalogue integrity (25/13/12 counts, case-study completeness,
+Vitest suite (85 tests): assistant grounding, provider configuration, streaming
+and event framing; catalogue integrity (25/13/12 counts, case-study completeness,
 no invented URLs), product search/filter/sort, external-link policy,
 authorization (cross-company isolation, own-profile-only, suspended members,
 platform boundaries, audit), draft privacy (unpublished content and private
@@ -116,7 +141,12 @@ withdraw, resume withdrawal kills downloads).
 Seed products, case studies, and demo people are working records derived from
 project briefs — illustrative and labelled as such. "Built" means an
 implementation exists and was tested; it does **not** mean publicly deployed.
-Source Code buttons appear only for the seven products with working apps —
+The two assistants answer only from the company pages held in
+`src/content/assistants.ts`; they do not know grades, service levels, prices or
+security posture, and are instructed to say so. No model quality has been
+verified in this environment — no provider is reachable from it, so the streaming
+path is tested against a fake provider, not a live one. Source Code buttons appear
+only for the seven products with working apps —
 vendored in this repository at `projects/mysul/mwangala/apps/<slug>/`, with the
 buttons linking to those in-repo folders
 (`docs/PROJECT_EVIDENCE.md` records every provenance link and its verification

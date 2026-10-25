@@ -138,3 +138,53 @@ export function groupByFamily<T extends { family: string }>(openings: readonly T
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([family, items]) => ({ family, items }));
 }
+
+export interface SseEvent {
+  name: string;
+  data: Record<string, unknown>;
+}
+
+export interface SseParse {
+  events: SseEvent[];
+  rest: string;
+}
+
+/**
+ * Split a buffered Server-Sent Events stream into complete events.
+ *
+ * A network chunk can end mid-frame, so anything after the last blank line is
+ * returned as `rest` for the next call. Frames without a `data:` line are
+ * dropped rather than rendered as empty messages.
+ */
+export function takeSseEvents(buffer: string): SseParse {
+  const events: SseEvent[] = [];
+  const blocks = buffer.split('\n\n');
+  const rest = blocks.pop() ?? '';
+
+  for (const block of blocks) {
+    if (!block.trim()) continue;
+    let name = 'message';
+    let data = '';
+    for (const line of block.split('\n')) {
+      if (line.startsWith('event:')) name = line.slice(6).trim();
+      else if (line.startsWith('data:')) data += line.slice(5).trim();
+    }
+    if (!data) continue;
+    try {
+      const parsed: unknown = JSON.parse(data);
+      if (parsed && typeof parsed === 'object') {
+        events.push({ name, data: parsed as Record<string, unknown> });
+      }
+    } catch {
+      // A frame we cannot parse is dropped: showing half a JSON blob as an
+      // answer would be worse than showing nothing.
+    }
+  }
+  return { events, rest };
+}
+
+/** Read a text field out of an untyped SSE payload without casting to any. */
+export function eventText(payload: Record<string, unknown>, key: string): string {
+  const value = payload[key];
+  return typeof value === 'string' ? value : '';
+}
