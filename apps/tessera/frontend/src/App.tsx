@@ -2,11 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
+import { ProfilePage } from './profile';
 import { TutorPage } from './tutor';
 import { Loading } from './ui';
 
 type Route =
   | { name: 'today' }
+  | { name: 'profile' }
   | { name: 'knowledge' }
   | { name: 'map' }
   | { name: 'chess' }
@@ -16,6 +18,7 @@ type Route =
 
 const NAV: { label: string; route: Route }[] = [
   { label: 'Today', route: { name: 'today' } },
+  { label: 'Profile', route: { name: 'profile' } },
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
   { label: 'Chess', route: { name: 'chess' } },
@@ -102,6 +105,7 @@ export default function App() {
         ) : (
           <>
             {route.name === 'today' && <TodayPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
+            {route.name === 'profile' && <ProfilePage />}
             {route.name === 'knowledge' && <KnowledgePage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'map' && <MapPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'chess' && <ChessPage />}

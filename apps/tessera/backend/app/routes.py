@@ -4,16 +4,28 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import datetime, timezone
 
 import chess
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from . import chess_modality, config, learner, mastery as mastery_mod, openings as openings_mod, recommend
+from . import (
+    chess_modality,
+    config,
+    learner,
+    mastery as mastery_mod,
+    openings as openings_mod,
+    profile as profile_mod,
+    profile_baseline,
+    recommend,
+)
 from .content import LicenseClass, Source, decide
 from .database import get_db
 from .models import (
+    Assessment,
+    AssessmentScore,
     ChessAttempt,
     ChessPuzzle,
     Concept,
@@ -21,6 +33,7 @@ from .models import (
     ConceptState,
     Goal,
     Lesson,
+    LearnerProfile,
     OpeningRow,
     Question,
     SourceRow,
@@ -822,3 +835,129 @@ def create_goal(body: GoalBody, request: Request, db: Session = Depends(get_db))
     db.add(goal)
     db.commit()
     return {"id": goal.id, "title": goal.title, "concept_ids": goal.concept_ids}
+
+
+# -------------------------------------------------------------- learner profile
+#
+# Reading is open to the signed-in learner; every write is scoped by `user.id`.
+# Validation lives in app.profile — these routes only translate to HTTP.
+
+
+class ProfileContextBody(BaseModel):
+    context: str = Field(default="", max_length=4000)
+
+
+class ScoreBody(BaseModel):
+    axis: str = Field(max_length=20)
+    name: str = Field(min_length=1, max_length=60)
+    value: float | None = None
+    value_label: str = Field(default="", max_length=80)
+    note: str = Field(default="", max_length=500)
+
+
+class AssessmentBody(BaseModel):
+    instrument: str = Field(min_length=1, max_length=40)
+    label: str = Field(default="", max_length=120)
+    reported_by: str = Field(default="learner", max_length=20)
+    source_url: str = Field(default="", max_length=600)
+    source_note: str = Field(default="", max_length=2000)
+    administered_on: str = Field(default="", max_length=10)
+    scale_min: float | None = None
+    scale_max: float | None = None
+    scores: list[ScoreBody] = Field(default_factory=list, max_length=40)
+
+
+class ArchiveBody(BaseModel):
+    reason: str = Field(default="", max_length=300)
+
+
+def _assessment_detail(db: Session, row: Assessment) -> dict:
+    scores = db.query(AssessmentScore).filter(AssessmentScore.assessment_id == row.id).all()
+    return profile_mod.serialize_assessment(row, scores)
+
+
+def _store(db: Session, user: User, body: dict) -> Assessment:
+    try:
+        return profile_mod.create_assessment(db, user_id=user.id, **body)
+    except profile_mod.InvalidAssessment as error:
+        raise HTTPException(422, str(error)) from error
+
+
+def _owned_assessment(db: Session, user: User, assessment_id: str) -> Assessment:
+    row = db.get(Assessment, assessment_id)
+    # Another learner's assessment is a 404, never a read: the id alone must not
+    # be enough to confirm that a record exists.
+    if row is None or row.user_id != user.id:
+        raise HTTPException(404, "assessment not found")
+    return row
+
+
+@router.get("/profile")
+def get_profile(request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    return profile_mod.profile_payload(db, user)
+
+
+@router.put("/profile")
+def put_profile(body: ProfileContextBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    row = db.query(LearnerProfile).filter(LearnerProfile.user_id == user.id).first()
+    if row is None:
+        row = LearnerProfile(user_id=user.id, context=body.context.strip())
+        db.add(row)
+    else:
+        row.context = body.context.strip()
+        row.updated_at = datetime.now(timezone.utc)
+    db.commit()
+    return {
+        "context": row.context,
+        "updated_at": row.updated_at.isoformat(),
+    }
+
+
+@router.get("/profile/instruments")
+def get_instruments(request: Request, db: Session = Depends(get_db)):
+    _current(request, db)
+    return {"instruments": profile_mod.instrument_catalogue()}
+
+
+@router.post("/profile/assessments", status_code=201)
+def post_assessment(body: AssessmentBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    row = _store(db, user, body.model_dump())
+    return _assessment_detail(db, row)
+
+
+@router.post("/profile/assessments/{assessment_id}/archive")
+def post_assessment_archive(
+    assessment_id: str, body: ArchiveBody, request: Request, db: Session = Depends(get_db)
+):
+    user = _current(request, db)
+    row = _owned_assessment(db, user, assessment_id)
+    profile_mod.archive_assessment(db, row, body.reason)
+    return _assessment_detail(db, row)
+
+
+@router.post("/profile/baseline")
+def post_baseline(request: Request, db: Session = Depends(get_db)):
+    """Load the baseline the learner supplied. Skips anything already recorded.
+
+    Idempotent on (instrument, administered_on) so a double-click cannot create
+    duplicate history, and an explicit action so nothing appears without consent.
+    """
+    user = _current(request, db)
+    existing = {
+        (row.instrument, row.administered_on)
+        for row in db.query(Assessment).filter(Assessment.user_id == user.id).all()
+    }
+    created: list[dict] = []
+    skipped: list[str] = []
+    for entry in profile_baseline.BASELINE:
+        key = (entry["instrument"], entry["administered_on"])
+        if key in existing:
+            skipped.append(entry["instrument"])
+            continue
+        row = _store(db, user, dict(entry))
+        existing.add(key)
+        created.append(_assessment_detail(db, row))
+    return {"created": created, "skipped": skipped}

@@ -188,3 +188,14 @@ export function eventText(payload: Record<string, unknown>, key: string): string
   const value = payload[key];
   return typeof value === 'string' ? value : '';
 }
+
+/**
+ * A score with the scale it came from, e.g. "43 / 100" or "4.2 / 5".
+ *
+ * Showing the bare number is how a 0–5 attribute score gets mistaken for a
+ * percentage, so the scale always travels with it.
+ */
+export function formatScore(value: number, min: number, max: number): string {
+  const trim = (input: number) => (Number.isInteger(input) ? String(input) : String(Number(input.toFixed(2))));
+  return min === 0 ? `${trim(value)} / ${trim(max)}` : `${trim(value)} on ${trim(min)}–${trim(max)}`;
+}

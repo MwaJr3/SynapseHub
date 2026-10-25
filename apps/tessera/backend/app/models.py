@@ -243,3 +243,69 @@ class ChessAttempt(Base):
     solved: Mapped[bool] = mapped_column(Boolean, default=False)
     moves_uci: Mapped[list] = mapped_column(JSON, default=list)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+# ----------------------------------------------------------- learner profile
+#
+# What the learner reported about themselves, kept apart from what they have
+# demonstrated. Nothing here feeds mastery: a questionnaire score is a starting
+# hypothesis, while `attempts` is evidence. Two rules are enforced in app.profile
+# and tested: a score that was never supplied stays NULL (never zero), and
+# assessments are append-only — correcting one means adding a new row.
+
+
+class LearnerProfile(Base):
+    """The learner's own account of their situation. One row per learner."""
+
+    __tablename__ = "learner_profiles"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True)
+    #: Free text about constraints, goals and context. Deliberately not scored.
+    context: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class Assessment(Base):
+    """One instrument a learner completed, with where its numbers came from."""
+
+    __tablename__ = "assessments"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    #: Allow-listed in app.profile.INSTRUMENTS; an unknown id is rejected.
+    instrument: Mapped[str] = mapped_column(String(40), index=True)
+    label: Mapped[str] = mapped_column(String(120), default="")
+    #: Who put the numbers in: the learner, or a report the learner transcribed.
+    reported_by: Mapped[str] = mapped_column(String(20), default="learner")
+    source_url: Mapped[str] = mapped_column(String(600), default="")
+    source_note: Mapped[str] = mapped_column(Text, default="")
+    #: ISO date, or "" when the date was not supplied. Never guessed.
+    administered_on: Mapped[str] = mapped_column(String(10), default="")
+    scale_min: Mapped[float] = mapped_column(Float, default=0.0)
+    scale_max: Mapped[float] = mapped_column(Float, default=100.0)
+    #: Retiring a bad row is recorded, not destructive.
+    archived_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    archive_reason: Mapped[str] = mapped_column(String(300), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+class AssessmentScore(Base):
+    """One axis of one assessment. `value` is NULL when it was not supplied."""
+
+    __tablename__ = "assessment_scores"
+    __table_args__ = (UniqueConstraint("assessment_id", "axis", "name"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    assessment_id: Mapped[str] = mapped_column(
+        ForeignKey("assessments.id", ondelete="CASCADE"), index=True
+    )
+    #: dimension | process | preference | attribute | label
+    axis: Mapped[str] = mapped_column(String(20))
+    name: Mapped[str] = mapped_column(String(60))
+    #: NULL means "not supplied". Never coerced to 0.0 — see tests.
+    value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    #: For categorical results (e.g. "INTJ", "Kinesthetic") where a number would lie.
+    value_label: Mapped[str] = mapped_column(String(80), default="")
+    note: Mapped[str] = mapped_column(Text, default="")

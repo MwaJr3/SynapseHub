@@ -16,6 +16,7 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | Area | Behaviour |
 | --- | --- |
 | Accounts | Register / sign in / sign out. scrypt password hashing, DB-backed cookie sessions with expiry, per-learner data isolation (tested). |
+| Learner profile | Diagnostic results are stored as reported, with instrument, reporter and date. A score that was never supplied stays missing and is never shown as zero; a supplied 0 stays a 0. Assessments are append-only and can be retired with a reason. Nothing here touches mastery. |
 | Knowledge graph | 10 concepts across Python, Chess and Security, with typed `prerequisite` edges. Two endpoints expose it: a flat map and a per-concept view. |
 | Learner model | Per-concept mastery, memory stability, difficulty, review count and lapse count, updated only on graded evidence. |
 | Scheduling | A stability-based memory model (see below), not "correct → tomorrow". |
@@ -29,6 +30,39 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | Content catalogue | MIT OCW and OpenStax material is **catalogued and linked, never copied**, because their licences (and terms) do not permit redistribution here. |
 | AI tutor | Grounded retrieval works with no model at all. The streamed conversation appears only when a model is configured, and says so honestly when it is not. |
 | Provenance | Every piece of material records source, author, licence, attribution and retrieval date; a licence gate decides full use / reference only / refuse. |
+
+## The learner profile (Project LIFESYSTEM)
+
+Tessera is also the home of PROJECT LIFESYSTEM — the learner's own profile,
+evidence and (in later stages) sessions, retrieval and progression. The build
+orders the job software-first, which is a deliberate inversion of the master
+prompt's own sequencing rule; the reasoning and the stage plan are recorded in
+[`docs/lifesystem/README.md`](../../docs/lifesystem/README.md).
+
+The first slice is the profile, and its whole point is a distinction most learning
+products blur:
+
+```
+Reference (learning process)   =  0 / 100    a supplied score, kept as a score
+Self-management (dimension)    =  —          never supplied, so never a number
+```
+
+A missing score is stored as `NULL` and reported as missing. It is never coerced to
+zero to fill a table, and no average, composite or "learning quotient" is computed
+over the ten axes — the source material warns that equal weighting of subscales is
+unevidenced, so no weights are invented. Categorical results (MBTI, Enneagram,
+learner archetype) are stored as labels, never as magnitudes, and none of them
+affects what the system believes the learner can do.
+
+Assessments are append-only: a wrong row is **retired with a reason** and stays in
+the history, so a later review can see what the system believed and why. The
+instrument registry (`backend/app/profile.py`) is the only door scores can come
+through — an unknown instrument, an axis belonging to a different instrument, a
+value outside the scale, or a non-finite number is a 422 with a readable message
+rather than a stored mistake.
+
+The baseline supplied with the project brief is transcribed verbatim in
+`backend/app/profile_baseline.py` and loaded by an explicit button, not on sign-up.
 
 ## The memory model
 
@@ -163,6 +197,7 @@ no card:
 | **Google Gemini** | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-flash-latest` | Free tier. The free tier may use prompts for training outside the EU/UK — a real problem for learner data. |
 | **OpenRouter** | `https://openrouter.ai/api/v1` | `deepseek/deepseek-chat-v3:free` | Only ids ending `:free` are free; modest daily cap; free providers may log prompts. |
 | **Ollama (local)** | `http://127.0.0.1:11434/v1` | `qwen2.5:3b` | No account, no quota, no data leaving the machine. Needs the RAM. |
+| **Ollama Cloud** | `https://ollama.com/v1` | a model your account can run | OpenAI-compatible, so only the two variables and an API key are needed. **Unverified here** — the build environment cannot reach `ollama.com`, so endpoint, model ids and account limits are unconfirmed. |
 | **OpenAI** | *(unset)* | `gpt-4o-mini` (default) | No free tier. |
 
 Then set `TESSERA_TUTOR_API_KEY` (any value for a local endpoint — it is ignored)
@@ -206,8 +241,8 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 139 tests
-cd frontend && npm test && npm run build   # 24 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 163 tests
+cd frontend && npm test && npm run build   # 43 tests, then typecheck + bundle
 ```
 
 ## Known limitations (read this before trusting anything)
@@ -244,6 +279,14 @@ cd frontend && npm test && npm run build   # 24 tests, then typecheck + bundle
   the Ruy Lopez, the Queen's Gambit, the Indian and English openings. A line
   outside it returns an explicit "not in the reference" message rather than a
   wrong best guess. A full ECO table would come from an operator-supplied file.
+- **The Profile screen has been rendered and asserted in jsdom, not seen.** It is
+  driven by `src/profile.ui.test.tsx` (10 tests: the missing-vs-zero distinction,
+  the caveats, the empty state, the baseline load, a rejected write, a blank field
+  never becoming a zero, and retiring a row). This environment has no browser, so
+  layout, focus order and contrast are reasoned about rather than observed.
+- **LIFESYSTEM is one slice deep.** The profile exists; sessions, reference notes,
+  retrieval scheduling, competency records, quests and XP do not yet. The stage plan
+  and its gates are in `docs/lifesystem/README.md` rather than implied by the screen.
 - **No instructor or platform analytics** in this build; the schema supports
   attempts, but the dashboards are not implemented.
 - **No offline mode, no audio, no notifications.** Audio and offline were in the
@@ -266,6 +309,8 @@ backend/app/
   content.py         provenance and the licence gate
   chess_modality.py  legal-move validation and puzzle progression
   learner.py         evidence → learner-model updates
+  profile.py         supplied assessments: registry, validation, missing-vs-zero
+  profile_baseline.py the diagnostic baseline transcribed from the brief
   routes.py          HTTP API
   models.py          domain model
   seed.py            the demonstration curriculum
@@ -281,5 +326,7 @@ frontend/src/
   pages.tsx          today, knowledge, map, concept, chess (tactics + openings)
   openings.tsx       opening reference and line matcher
   tutor.tsx          grounded search and the streamed conversation
+  profile.tsx        the ten axes, assessment history and the add-assessment form
+  hooks.ts           the shared async-loading hook
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

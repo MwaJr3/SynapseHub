@@ -1,6 +1,94 @@
 /** Typed API client. Every call is same-origin; cookies carry the session. */
 import { eventText, takeSseEvents } from './utils';
 
+/* ------------------------------------------------------------ learner profile */
+
+export interface CoreAxisScore {
+  axis: string;
+  name: string;
+  value: number | null;
+  value_label: string;
+  note: string;
+  scale_min: number;
+  scale_max: number;
+  instrument: string;
+  instrument_label: string;
+  reported_by: string;
+  administered_on: string;
+  assessment_id: string;
+}
+
+export interface CoreAxis {
+  axis: string;
+  name: string;
+  label: string;
+  //: True when no score was ever supplied. Distinct from a score of zero.
+  missing: boolean;
+  score: CoreAxisScore | null;
+}
+
+export interface AssessmentScore {
+  axis: string;
+  name: string;
+  value: number | null;
+  value_label: string;
+  note: string;
+}
+
+export interface Assessment {
+  id: string;
+  instrument: string;
+  instrument_label: string;
+  label: string;
+  reported_by: string;
+  source_url: string;
+  source_note: string;
+  administered_on: string;
+  scale_min: number;
+  scale_max: number;
+  archived: boolean;
+  archive_reason: string;
+  created_at: string;
+  scores: AssessmentScore[];
+}
+
+export interface InstrumentAxis {
+  axis: string;
+  name: string;
+  label: string;
+}
+
+export interface Instrument {
+  id: string;
+  label: string;
+  value_kind: 'number' | 'label';
+  scale_min: number | null;
+  scale_max: number | null;
+  note: string;
+  axes: InstrumentAxis[];
+}
+
+export interface ProfileResponse {
+  learner: { email: string; display_name: string };
+  context: string;
+  updated_at: string | null;
+  axes: CoreAxis[];
+  missing: string[];
+  assessments: Assessment[];
+  instruments: Instrument[];
+  caveats: string[];
+}
+
+export interface AssessmentInput {
+  instrument: string;
+  label?: string;
+  reported_by?: string;
+  source_url?: string;
+  source_note?: string;
+  administered_on?: string;
+  scores: AssessmentScore[];
+}
+
 export interface Recommendation {
   concept_id: string;
   title: string;
@@ -350,6 +438,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  profile: () => request<ProfileResponse>('/api/profile'),
+  saveProfileContext: (context: string) =>
+    request<{ context: string; updated_at: string }>('/api/profile', {
+      method: 'PUT',
+      body: JSON.stringify({ context }),
+    }),
+  addAssessment: (body: AssessmentInput) =>
+    request<Assessment>('/api/profile/assessments', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  archiveAssessment: (id: string, reason: string) =>
+    request<Assessment>(`/api/profile/assessments/${encodeURIComponent(id)}/archive`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    }),
+  loadBaseline: () =>
+    request<{ created: Assessment[]; skipped: string[] }>('/api/profile/baseline', { method: 'POST' }),
   me: () => request<{ email: string; display_name: string }>('/api/auth/me'),
   register: (email: string, password: string, displayName: string) =>
     request<{ email: string }>('/api/auth/register', {
