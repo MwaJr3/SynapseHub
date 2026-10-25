@@ -18,7 +18,19 @@ from .models import FindingRow, Message, Note, ResetToken, SessionToken, User, n
 from .security import (expiry, expiry_minutes, hash_password, new_token, otpauth_url,
                        totp_secret, totp_verify, verify_password)
 
-Base.metadata.create_all(bind=engine)
+def _init_schema() -> None:
+    """Create tables for local SQLite only.
+
+    Postgres schemas are owned by Alembic. Connecting at import time would turn a
+    cold-start database hiccup into a 500 on every route, so production defers all
+    database contact until a request actually needs it.
+    """
+    if not settings.database_url.startswith("sqlite"):
+        return
+    Base.metadata.create_all(bind=engine)
+
+
+_init_schema()
 app = FastAPI(title="PhishLens", version="0.1.0")
 def _extra_origins() -> list[str]:
     """Origins added at deployment time via ALLOWED_ORIGINS (comma-separated)."""
@@ -309,3 +321,37 @@ def delete_message(message_id: int, user: User = Depends(current_user), db: Sess
 def health():
     return {"ok": True, "app": "phishlens",
             "note": "Email indicator analysis only — URLs are never visited; findings are warnings, not proof."}
+
+@app.get("/health")
+def health() -> JSONResponse:
+    """Liveness plus database reachability.
+
+    Kept separate from the domain routes: it reports whether the function booted
+    and whether Postgres answers `SELECT 1`, without touching any table. Failures
+    are returned as a short scrubbed message so a broken connection is
+    diagnosable from outside without exposing credentials.
+    """
+    import re as _re
+
+    from sqlalchemy import text
+
+    def _scrub(value: str) -> str:
+        # Remove any user:password@ fragment before it can reach a response.
+        return _re.sub(r"://[^@\s]*@", "://***@", value)[:200]
+
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except Exception as exc:  # noqa: BLE001 - diagnostics surface the real cause
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "degraded",
+                "database": "unavailable",
+                "error": type(exc).__name__,
+                "detail": _scrub(str(exc)),
+            },
+        )
+    return JSONResponse(
+        content={"status": "ok", "database": "connected", "app": "phishlens"}
+    )
