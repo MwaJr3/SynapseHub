@@ -6,8 +6,14 @@ import { submitContactAction } from '@/app/actions/contact';
 import type { ActionResult } from '@/lib/validation';
 
 type ContactResult = ActionResult & {
-  deliveryState?: 'received' | 'setup-required';
+  deliveryState?: 'delivered' | 'setup-required' | 'failed';
   deliveryMessage?: string;
+};
+
+const DELIVERY_HEADING: Record<NonNullable<ContactResult['deliveryState']>, string> = {
+  delivered: 'Message sent',
+  'setup-required': 'Recorded — delivery not yet configured',
+  failed: 'Recorded — sending failed',
 };
 
 export function ContactForm({ companySlug }: { companySlug?: string }) {
@@ -64,17 +70,15 @@ export function ContactForm({ companySlug }: { companySlug?: string }) {
       ) : null}
       {state?.ok && state.deliveryMessage ? (
         <div
-          role="status"
+          role={state.deliveryState === 'delivered' ? 'status' : 'alert'}
           className={`rounded-md border p-4 text-sm ${
-            state.deliveryState === 'setup-required'
-              ? 'border-[color:var(--accent-strong)]'
-              : 'border-line'
+            state.deliveryState === 'delivered'
+              ? 'border-line'
+              : 'border-[color:var(--accent-strong)]'
           }`}
         >
           <strong className="block font-medium">
-            {state.deliveryState === 'setup-required'
-              ? 'Recorded — delivery not yet configured'
-              : 'Message recorded'}
+            {DELIVERY_HEADING[state.deliveryState ?? 'setup-required']}
           </strong>
           <p className="mt-1 text-muted">{state.deliveryMessage}</p>
         </div>
