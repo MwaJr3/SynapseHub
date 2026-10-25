@@ -2,6 +2,8 @@
 visited; findings are suspicious-pattern warnings for review, never proof."""
 from __future__ import annotations
 
+import os
+
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -18,7 +20,13 @@ from .security import (expiry, expiry_minutes, hash_password, new_token, otpauth
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="PhishLens", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5178", "http://127.0.0.1:5178"],
+def _extra_origins() -> list[str]:
+    """Origins added at deployment time via ALLOWED_ORIGINS (comma-separated)."""
+    raw = os.environ.get("ALLOWED_ORIGINS", "")
+    return [value.strip() for value in raw.split(",") if value.strip()]
+
+
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5178", "http://127.0.0.1:5178"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 DISCLAIMER = ("These are suspicious-pattern warnings for human review. A suspicious pattern is NOT "
