@@ -127,10 +127,19 @@ Hands-on, using the running instance rather than a questionnaire:
 3. Find **Reference** in Learning processes. It must show `0 / 100` — a score —
    while Self-management shows an absence. If those two ever look the same, the
    build is wrong.
-4. Add an assessment of *your own*: iCanStudy dimensions, Retrieval = `140`. It
-   must be refused with a reason naming the scale. Then add it again with `61` on
-   today's date and confirm the axis now reads `61 / 100`, with the older `43`
-   still visible in the history.
+4. Add an assessment of *your own*: iCanStudy dimensions, Retrieval = `61`,
+   dated today. The axis should read `61 / 100` with the older `43` still in the
+   history. Then try an impossible value (`140`) and notice the field itself
+   refuses it — it is bounded to the instrument's scale, so the browser catches it
+   before a request is made. The server enforces the same rule independently, and
+   says so in a sentence rather than a stack trace:
+
+   ```bash
+   curl -s -b cookies.txt -X POST http://127.0.0.1:8024/api/profile/assessments \
+     -H 'content-type: application/json' \
+     -d '{"instrument":"icanstudy-dimensions","scores":[{"axis":"dimension","name":"retrieval","value":140}]}'
+   # {"detail":"Retrieval is 140, outside this instrument's scale of 0–100"}
+   ```
 5. Retire the `61` row with a reason. The axis must fall back to `43` — not to
    zero, and not to blank.
 
