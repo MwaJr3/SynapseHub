@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { site } from '@/config/site';
-import { profile, configuredLinks, hasContactEmail } from '@/config/profile';
+import { profile, configuredLinks, hasContactEmail, contactEmails } from '@/config/profile';
 import { projects } from '@/data/projects';
 import { usePageMeta } from '@/lib/seo';
 import { isUsableLink } from '@/lib/links';
@@ -43,6 +43,8 @@ export default function ContactPage() {
   });
 
   const endpoint = site.contactEndpoint.trim();
+  /** Every nominated inbox, comma-joined for mailto hand-off. */
+  const recipientList = contactEmails.join(',');
   const emailConfigured = hasContactEmail();
   const canDeliver = endpoint.length > 0 || emailConfigured;
 
@@ -168,7 +170,7 @@ export default function ContactPage() {
     }
 
     /* --- Route 2: explicit hand-off to the visitor's mail client --------- */
-    const href = composeMailtoHref(profile.email, values);
+    const href = composeMailtoHref(recipientList, values);
     if (mailtoRef.current) {
       mailtoRef.current.href = href;
       mailtoRef.current.click();
@@ -183,7 +185,7 @@ export default function ContactPage() {
     setRemaining(Math.ceil(COOLDOWN_MS / 1000));
     setDelivery({
       status: 'drafted',
-      detail: `Your email application was asked to open a draft addressed to ${profile.email}. This site cannot confirm it was sent — the message leaves from your mail client, not from here.`,
+      detail: `Your email application was asked to open a draft addressed to ${contactEmails.join(' and ')}. This site cannot confirm it was sent — the message leaves from your mail client, not from here.`,
     });
   }
 
@@ -227,10 +229,10 @@ export default function ContactPage() {
                       from this site, stored by it, or passed to a third party. If you would rather not use the
                       form, write directly to{' '}
                       <a
-                        href={`mailto:${profile.email}`}
+                        href={`mailto:${recipientList}`}
                         className="font-medium text-accent underline-offset-4 hover:underline"
                       >
-                        {profile.email}
+                        {contactEmails.join(' · ')}
                       </a>
                       .
                     </p>

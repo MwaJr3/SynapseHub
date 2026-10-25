@@ -43,6 +43,32 @@ export interface Profile {
   availability: string;
 }
 
+/**
+ * Addresses the contact form delivers to.
+ *
+ * These are the two monitored inboxes the site owner nominated. `VITE_CONTACT_EMAIL`
+ * (comma-separated) overrides the list at build time; invalid entries are dropped
+ * rather than shipped. The client can only ever *offer* these addresses — actual
+ * delivery happens in the serverless contact endpoint (see api/contact.py).
+ */
+const NOMINATED_CONTACT_EMAILS = ['mwangalamackjrv2@gmail.com', 'mackjrv2@gmail.com'];
+
+function readContactEmails(): string[] {
+  const raw = (import.meta.env.VITE_CONTACT_EMAIL as string | undefined)?.trim();
+  if (!raw) return NOMINATED_CONTACT_EMAILS;
+  const parsed = raw
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value));
+  return parsed.length > 0 ? parsed : NOMINATED_CONTACT_EMAILS;
+}
+
+/** Every address a contact message is delivered to. */
+export const contactEmails: string[] = readContactEmails();
+
+/** The first address, used wherever a single address must be shown. */
+export const primaryContactEmail: string = contactEmails[0] ?? '';
+
 export const profile: Profile = {
   name: 'Mwangala',
   role: 'Python Developer · Cybersecurity · Full-Stack Software Engineering',
@@ -115,8 +141,7 @@ export const profile: Profile = {
     },
   },
 
-  // TODO: set a real, monitored address (or VITE_CONTACT_EMAIL at build time).
-  email: (import.meta.env.VITE_CONTACT_EMAIL as string | undefined) ?? '',
+  email: primaryContactEmail,
 
   // TODO: confirm before publishing.
   location: 'Lusaka, Zambia',

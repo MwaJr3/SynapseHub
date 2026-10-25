@@ -3,7 +3,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { allRoutes } from '@/config/routes';
 import { getProject, projects } from '@/data/projects';
-import { profile } from '@/config/profile';
+import { profile, contactEmails } from '@/config/profile';
 import { renderAppAt } from '@/test/testUtils';
 
 describe('routing', () => {
@@ -285,15 +285,22 @@ describe('about, skills, approach and contact pages', () => {
     expect(screen.getByRole('heading', { level: 2, name: /Eight habits/i })).toBeInTheDocument();
   });
 
-  it('contact page explains honestly that no message can be delivered without configuration', async () => {
+  it('contact page offers both nominated inboxes', async () => {
     renderAppAt('/contact');
     await waitFor(() => {
       expect(screen.getByRole('heading', { level: 1, name: /Have a Problem Worth Solving/i })).toBeInTheDocument();
     });
 
-    expect(profile.email).toBe('');
-    expect(screen.getByText(/The contact form cannot deliver messages yet/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /open in my email app|send message|wait/i })).toBeDisabled();
+    // Both monitored addresses are published, and the mailto hand-off addresses
+    // all of them — the client can never pick a different recipient.
+    expect(profile.email).toBe(contactEmails[0]);
+    const mailto = screen
+      .getAllByRole('link')
+      .find((link) => (link.getAttribute('href') ?? '').startsWith('mailto:'));
+    expect(mailto).toBeDefined();
+    for (const email of contactEmails) {
+      expect(mailto?.getAttribute('href')).toContain(email);
+    }
   });
 });
 
