@@ -442,7 +442,12 @@ VITE_SITE_URL=https://your-domain.example npm run build   # -> dist/
 `dist/` is a static SPA: serve it from any static host, but configure a rewrite
 so every unknown path returns `index.html` (otherwise deep links such as
 `/projects/netscope` 404 on a hard reload). `vite.config.ts` already does this
-for `npm run preview`.
+for `npm run preview`, and `vercel.json` (shipped here) does it for Vercel.
+
+**Live:** https://mwangala-portfolio.vercel.app — deployed from
+`MwaJr3/SynapseHub` (`main`, root `projects/mysul/mwangala-portfolio`) with
+`VITE_SITE_URL` set, so canonical URLs and the sitemap are absolute in
+production. Pushes to `main` redeploy automatically.
 
 Set `VITE_BASE_PATH=/your-repo/` when deploying under a sub-path (GitHub Pages
 project sites, for example).
@@ -466,8 +471,9 @@ Reported as-is, so nothing here surprises you:
   `preview.screenshot` when you have them.
 - **All numbers shown inside preview artwork are illustrative sample data**,
   labelled as such, and are not measurements from a live system.
-- **The sitemap uses relative URLs** until `VITE_SITE_URL` is set, which most
-  search engines will ignore; regenerate after configuring a domain.
+- **The committed sitemap uses relative URLs** until `VITE_SITE_URL` is set,
+  which most search engines ignore. The deployed build sets the variable, so
+  the live sitemap is absolute; a local `npm run build` without it is not.
 - **Unknown routes return HTTP 200 with a client-rendered 404** (unavoidable
   for a static SPA). If you need a real 404 status, configure it at the host.
 - **No analytics, forms backend, CMS or auth** are included.
@@ -479,7 +485,7 @@ Reported as-is, so nothing here surprises you:
 | Types | `npm run typecheck` | pass, 0 errors |
 | Lint | `npm run lint` | pass, 0 errors / 0 warnings |
 | SEO files | `npm run sitemap:check` | pass (15 routes) |
-| Tests | `npm test` | 261 passed, 0 failed |
+| Tests | `npm test` | 271 passed, 0 failed |
 | Build | `npm run build` | pass (measured 2026-10-24): entry 34.8 kB (11.9 kB gzip), content 204.2 kB (65.5 kB gzip), react 261.2 kB (83.0 kB gzip), artwork 45.0 kB (12.0 kB gzip), CSS 47.0 kB (9.5 kB gzip) + vendor CSS 6.6 kB (2.8 kB gzip) |
 | Deep links | `npm run preview` + `curl` on `/projects/netscope`, `/nope`, `/robots.txt`, `/sitemap.xml` | all 200; deep links serve `index.html` with correct absolute asset URLs |
 | Dev server | `npm run dev` + `curl` sweep of the module graph | 200 on every module; Tailwind utilities present in the compiled CSS |
