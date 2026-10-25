@@ -1,13 +1,15 @@
-"""assetwatch — ASGI entry point for the Vercel Python runtime.
+"""incidentflow — ASGI entry point.
 
-Vercel serves this file at every path routed by ../vercel.json. The backend
-directory is added to sys.path so the application package imports exactly as it
-does locally (from app.main import app) with no duplicated code.
+Vercel detects a FastAPI app exported as `app` from index.py at the project
+root and serves the whole application with its own routing, so no rewrites are
+needed (the earlier explicit rewrites conflicted with that detection).
 
-If the package import fails, a fallback ASGI app answers with the scrubbed
-traceback instead of an opaque 500. On a serverless platform an import-time
-failure is otherwise invisible without a log session, and this text contains no
-credentials - only module paths and exception types.
+The repository layout keeps the code in the `app/` package; this file only
+re-exports it, so local development (`uvicorn app.main:app`) is unchanged.
+
+If the import fails, a fallback ASGI app answers with the scrubbed traceback
+rather than an opaque 500 - an import-time failure is otherwise invisible on a
+serverless platform, and the text contains no credentials.
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ import re
 import sys
 import traceback
 
-BACKEND_ROOT = pathlib.Path(__file__).resolve().parents[1]
+BACKEND_ROOT = pathlib.Path(__file__).resolve().parent
 if str(BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(BACKEND_ROOT))
 
@@ -33,9 +35,7 @@ def _scrub(text: str) -> str:
 try:
     from app.main import app as application  # noqa: E402
 
-    # The runtime looks for `app` (ASGI) or `handler`.
     app = application
-    handler = application
 
 except Exception:  # noqa: BLE001 - surface the real import failure
     _DETAIL = _scrub(traceback.format_exc())
@@ -44,7 +44,7 @@ except Exception:  # noqa: BLE001 - surface the real import failure
         body = json.dumps(
             {
                 "status": "import_failed",
-                "app": "assetwatch",
+                "app": "incidentflow",
                 "traceback": _DETAIL,
             }
         ).encode("utf-8")
@@ -59,5 +59,3 @@ except Exception:  # noqa: BLE001 - surface the real import failure
             }
         )
         await send({"type": "http.response.body", "body": body})
-
-    handler = app
