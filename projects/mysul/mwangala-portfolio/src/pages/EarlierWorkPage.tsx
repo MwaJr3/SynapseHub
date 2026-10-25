@@ -104,7 +104,7 @@ function EarlierCaseStudy({ project }: { project: EarlierProject }) {
 
 export function EarlierWorkPage() {
   usePageMeta({
-    title: 'Earlier work',
+    title: 'Earlier work — Mwangala',
     description:
       'Archived case studies from my standalone Mwangala portfolio: seven earlier full-stack and analytical applications, presented with their original honest framing.',
     path: '/earlier-work',
