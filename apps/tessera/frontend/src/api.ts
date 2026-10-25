@@ -1,0 +1,236 @@
+/** Typed API client. Every call is same-origin; cookies carry the session. */
+
+export interface Recommendation {
+  concept_id: string;
+  title: string;
+  score: number;
+  reasons: string[];
+  blocked_by: string[];
+  forgetting_risk: number;
+  due: boolean;
+}
+
+export interface KnowledgeRow {
+  concept_id: string;
+  title: string;
+  subject: string;
+  mastery: number;
+  retained: number;
+  tier: string;
+  stability_days: number | null;
+  next_review_at: string | null;
+  due?: boolean;
+  reps: number;
+  lapses: number;
+}
+
+export interface SubjectGroup {
+  subject: string;
+  average_mastery: number;
+  concepts: KnowledgeRow[];
+}
+
+export interface SessionItem {
+  kind: 'new_concept' | 'review' | 'weak_area';
+  concept_id: string;
+  title: string;
+  minutes: number;
+  reasons: string[];
+}
+
+export interface TodayResponse {
+  available_minutes: number;
+  items: SessionItem[];
+  empty_state: string | null;
+}
+
+export interface Provenance {
+  title: string;
+  author: string;
+  url: string;
+  license_class: string;
+  license_name: string;
+  attribution: string;
+  retrieved_at: string;
+}
+
+export interface QuestionView {
+  id: string;
+  prompt: string;
+  choices: string[];
+  difficulty: number;
+}
+
+export interface ConceptDetail {
+  concept: {
+    id: string;
+    title: string;
+    subject: string;
+    summary: string;
+    explanation: string;
+    difficulty: number;
+  };
+  lesson: {
+    id: string;
+    title: string;
+    hook: string;
+    explanation: string;
+    example: string;
+    application: string;
+    recap: string;
+    est_minutes: number;
+  } | null;
+  provenance: Provenance | null;
+  state: { mastery: number; tier: string; stability_days: number; reps: number; lapses: number } | null;
+  prerequisites: { concept_id: string; relation: string }[];
+  questions: QuestionView[];
+}
+
+export interface AnswerResult {
+  concept_id: string;
+  correct: boolean;
+  mastery: number;
+  mastery_delta: number;
+  tier: string;
+  retrievability_before: number;
+  interval_days: number;
+  next_review_at: string;
+  explanation: string;
+  correct_index: number;
+  misconception: string | null;
+}
+
+export interface MapNode {
+  id: string;
+  title: string;
+  subject: string;
+  difficulty: number;
+  mastery: number;
+  tier: string;
+}
+
+export interface MapEdge {
+  from: string;
+  to: string;
+  relation: string;
+}
+
+export interface PuzzleSummary {
+  id: string;
+  title: string;
+  theme: string;
+  difficulty: number;
+  side_to_move: string;
+}
+
+export interface PuzzleView {
+  id: string;
+  title: string;
+  theme: string;
+  difficulty: number;
+  board: {
+    fen: string;
+    side_to_move: string;
+    in_check: boolean;
+    plies_played: number;
+    legal_moves: string[];
+  };
+}
+
+export interface MoveResult {
+  legal: boolean;
+  on_solution: boolean;
+  solved: boolean;
+  fen: string;
+  plies_played: number;
+  san_history: string[];
+  opponent_reply: string | null;
+  error: string | null;
+}
+
+export interface SourceRow {
+  source_id: string;
+  title: string;
+  author: string;
+  url: string;
+  license_class: string;
+  license_name: string;
+  attribution: string;
+  retrieved_at: string;
+  usage: string;
+  reason: string;
+  commercial_deployment: boolean;
+}
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(path, {
+    ...init,
+    headers: { 'content-type': 'application/json', ...(init?.headers ?? {}) },
+    credentials: 'same-origin',
+  });
+
+  if (!response.ok) {
+    let message = `Request failed (${response.status})`;
+    try {
+      const body = (await response.json()) as { detail?: unknown };
+      if (typeof body.detail === 'string') message = body.detail;
+    } catch {
+      // Non-JSON error body: the status is all we know.
+    }
+    throw new ApiError(message, response.status);
+  }
+  return (await response.json()) as T;
+}
+
+export const api = {
+  me: () => request<{ email: string; display_name: string }>('/api/auth/me'),
+  register: (email: string, password: string, displayName: string) =>
+    request<{ email: string }>('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, display_name: displayName }),
+    }),
+  login: (email: string, password: string) =>
+    request<{ email: string }>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  logout: () => request<{ message: string }>('/api/auth/logout', { method: 'POST' }),
+
+  today: (minutes: number) => request<TodayResponse>(`/api/today?available_minutes=${minutes}`),
+  knowledge: () => request<{ concepts: KnowledgeRow[]; subjects: SubjectGroup[] }>('/api/knowledge'),
+  map: () => request<{ nodes: MapNode[]; edges: MapEdge[] }>('/api/map'),
+  recommendations: () =>
+    request<{ next: Recommendation[]; review_queue: Recommendation[]; weaknesses: Recommendation[] }>(
+      '/api/recommendations',
+    ),
+  concept: (id: string) => request<ConceptDetail>(`/api/concepts/${encodeURIComponent(id)}`),
+  answer: (questionId: string, choiceIndex: number, confidence: number, latencyMs: number) =>
+    request<AnswerResult>('/api/answers', {
+      method: 'POST',
+      body: JSON.stringify({
+        question_id: questionId,
+        choice_index: choiceIndex,
+        confidence,
+        latency_ms: latencyMs,
+      }),
+    }),
+  sources: () => request<{ sources: SourceRow[] }>('/api/sources'),
+
+  puzzles: () => request<{ puzzles: PuzzleSummary[] }>('/api/chess/puzzles'),
+  puzzle: (id: string) => request<PuzzleView>(`/api/chess/puzzles/${encodeURIComponent(id)}`),
+  move: (id: string, uci: string, pliesPlayed: number) =>
+    request<MoveResult>(`/api/chess/puzzles/${encodeURIComponent(id)}/move`, {
+      method: 'POST',
+      body: JSON.stringify({ uci, plies_played: pliesPlayed }),
+    }),
+};
