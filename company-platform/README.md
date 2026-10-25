@@ -42,7 +42,9 @@ prompt, a separate conversation, and a separate company.
 | --- | --- | --- |
 | Grounding | Token-overlap retrieval over that assistant's own corpus. Nothing scores → the model is told there is no material and must say so. | `src/lib/assistant/retrieve.ts` |
 | Provider | Any OpenAI-compatible endpoint. Hugging Face's router is the intended default; Groq, OpenRouter and a local Ollama all work. | `src/lib/assistant/provider.ts` |
-| Streaming | `POST /api/assistant/<name>` returns SSE: `citations`, then `delta` frames, then `done` — or `error` with `retryable`. | `src/lib/assistant/stream.ts` |
+| Flow | The declared steps, executed and traced; settings read from the nodes. | `src/content/flows.ts`, `src/lib/assistant/flow.ts` |
+| Streaming | `POST /api/assistant/<name>` returns SSE: `step`, then `citations`, then `delta` frames, then `done` — or `error` with `retryable`. | `src/lib/assistant/stream.ts` |
+| Handoff | Confirmed requests only, company from the assistant, triaged in `/admin/support`. | `src/lib/support/requests.ts`, `src/app/api/assistant/[assistant]/handoff/route.ts` |
 | UI | `AssistantChat` — streaming transcript, what the answer used, stop button, honest switched-off state. | `src/components/assistant-chat.tsx` |
 
 Rules the tests pin: the two corpora share no entries; the guardrails forbid
@@ -51,6 +53,24 @@ inject a system turn; the token is sent as a bearer header and never appears in
 the request body; a provider outage produces an error and never a `done`; and
 with no configuration the route answers 503 with the reason instead of serving a
 chat box that cannot answer.
+
+### Flows, traces and the support inbox
+
+Each assistant is declared as an ordered flow (`src/content/flows.ts`):
+`retrieve → guard → policy → compose → structure`. The route runs that flow, so
+the settings used in a request are the ones the page displays — the diagram cannot
+drift from the behaviour. If the `guard` node finds no material, no model is
+called and the visitor is told the site does not cover it.
+
+Every answer carries a trace ("How this answer was produced") and the material it
+used. `POST /api/assistant/<name>` emits `step` frames before the text.
+
+"Hand this to a person" creates a **support request**: a reference to quote, the
+transcript, the contact details and a status. Nothing is created until the visitor
+confirms — the server rejects an unconfirmed request with 409 and writes nothing.
+The company is resolved from the assistant, so a visitor cannot file into the
+other company's queue. Staff triage these at `/admin/support`, scoped to the
+companies they hold a role in, and each status change is written to the audit log.
 
 ## Stack
 
@@ -128,8 +148,8 @@ deployment. Before public launch, complete `docs/LAUNCH_CHECKLIST.md`.
 npm test
 ```
 
-Vitest suite (85 tests): assistant grounding, provider configuration, streaming
-and event framing; catalogue integrity (25/13/12 counts, case-study completeness,
+Vitest suite (108 tests): assistant grounding, provider configuration, flows and
+traces, streaming and event framing, the confirmed-only handoff and inbox scoping; catalogue integrity (25/13/12 counts, case-study completeness,
 no invented URLs), product search/filter/sort, external-link policy,
 authorization (cross-company isolation, own-profile-only, suspended members,
 platform boundaries, audit), draft privacy (unpublished content and private

@@ -246,11 +246,26 @@ export class ApiError extends Error {
   }
 }
 
+/** Trace entries, validated rather than trusted from the wire. */
+export function parseSteps(payload: Record<string, unknown>): { label: string; detail: string; ok: boolean }[] {
+  const raw = payload.steps;
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((entry) => {
+    if (!entry || typeof entry !== 'object') return [];
+    const label = (entry as { label?: unknown }).label;
+    const detail = (entry as { detail?: unknown }).detail;
+    const ok = (entry as { ok?: unknown }).ok;
+    if (typeof label !== 'string' || typeof detail !== 'string') return [];
+    return [{ label, detail, ok: ok !== false }];
+  });
+}
+
 export interface ChatHandlers {
+  onStep: (steps: { label: string; detail: string; ok: boolean }[]) => void;
   onDelta: (text: string) => void;
   onCitations: (citations: TutorMessage['citations']) => void;
   onError: (message: string, retryable: boolean) => void;
-  onDone: (threadId: string) => void;
+  onDone: (threadId: string, grounded: boolean) => void;
 }
 
 /**
@@ -298,7 +313,9 @@ export async function streamTutorChat(
     const parsed = takeSseEvents(buffer);
     buffer = parsed.rest;
     for (const event of parsed.events) {
-      if (event.name === 'delta') {
+      if (event.name === 'step') {
+        handlers.onStep(parseSteps(event.data));
+      } else if (event.name === 'delta') {
         handlers.onDelta(eventText(event.data, 'text'));
       } else if (event.name === 'citations') {
         const raw = event.data.citations;
@@ -306,7 +323,7 @@ export async function streamTutorChat(
       } else if (event.name === 'error') {
         handlers.onError(eventText(event.data, 'message'), event.data.retryable === true);
       } else if (event.name === 'done') {
-        handlers.onDone(eventText(event.data, 'thread_id'));
+        handlers.onDone(eventText(event.data, 'thread_id'), event.data.grounded !== false);
       }
     }
   }

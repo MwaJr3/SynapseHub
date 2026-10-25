@@ -124,16 +124,22 @@ def sse_body(first: bool) -> str:
 
 
 class StubProvider(BaseHTTPRequestHandler):
-    """Answers the first request with a tool call, then with text."""
+    """Answers the first request with a tool call, then with text.
+
+    Set `call_tool = False` on a subclass (or via RunningProvider) to model a
+    provider that answers without retrieving at all — the failure mode the tutor
+    is supposed to make visible rather than hide.
+    """
 
     requests: list[dict] = []
+    call_tool = True
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib naming
         length = int(self.headers.get("content-length") or 0)
         body = json.loads(self.rfile.read(length) or b"{}")
         type(self).requests.append(body)
 
-        first = len(type(self).requests) == 1
+        first = type(self).call_tool and len(type(self).requests) == 1
         if body.get("stream"):
             payload = sse_body(first).encode()
             content_type = "text/event-stream"
@@ -154,14 +160,16 @@ class StubProvider(BaseHTTPRequestHandler):
 class RunningProvider:
     """Context manager yielding the handler class and the base URL to use."""
 
-    def __init__(self) -> None:
-        self.server = ThreadingHTTPServer(("127.0.0.1", 0), StubProvider)
+    def __init__(self, *, call_tool: bool = True) -> None:
+        self.call_tool = call_tool
+        self.handler = type("Handler", (StubProvider,), {"call_tool": call_tool, "requests": []})
+        self.server = ThreadingHTTPServer(("127.0.0.1", 0), self.handler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
-        self.requests = StubProvider.requests
+        self.requests = self.handler.requests
 
     def __enter__(self) -> "RunningProvider":
-        StubProvider.requests = []
-        self.requests = StubProvider.requests
+        self.requests = []
+        self.handler.requests = self.requests
         self.thread.start()
         return self
 

@@ -58,6 +58,55 @@ def provider(monkeypatch):
         yield running
 
 
+def test_the_reply_traces_what_it_did_before_it_answers(client, provider):
+    """pi's bounded loop, made visible: a learner can see the turn was grounded.
+
+    The trace arrives before the text, and it names the retrieval that grounded
+    the answer rather than asserting that everything went fine.
+    """
+    register(client)
+
+    response = client.post("/api/tutor/chat", json={"message": "why is a bare except risky"})
+
+    stream = events(response.text)
+    names = [name for name, _ in stream]
+    assert names[0] == "step"
+
+    steps = next(payload["steps"] for name, payload in stream if name == "step")
+    labels = [entry["label"] for entry in steps]
+    assert "Searched the curriculum" in labels
+    assert "Grounded the answer" in labels
+    grounded = next(entry for entry in steps if entry["label"] == "Grounded the answer")
+    assert grounded["ok"] is True
+    assert "passage" in grounded["detail"]
+
+
+def test_an_answer_without_retrieval_is_reported_as_ungrounded(client, monkeypatch):
+    """A model that answers without calling the tool must not look sourced.
+
+    The provider is told not to call the tool — exactly the failure mode this
+    tutor exists to prevent. The turn still completes, but `grounded` is false and
+    the trace says no passage matched, so the interface can flag it.
+    """
+    register(client)
+
+    with RunningProvider(call_tool=False) as ungrounded:
+        monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", ungrounded.base_url)
+        monkeypatch.setenv("TESSERA_TUTOR_MODEL", "stub-model")
+        monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "stub-key")
+        response = client.post("/api/tutor/chat", json={"message": "why is a bare except risky"})
+        assert ungrounded.requests, "the provider must still have been called"
+
+    stream = events(response.text)
+    done = next(payload for name, payload in stream if name == "done")
+    assert done["grounded"] is False
+
+    steps = next(payload["steps"] for name, payload in stream if name == "step")
+    grounded = next(entry for entry in steps if entry["label"] == "Grounded the answer")
+    assert grounded["ok"] is False
+    assert "0 passages" in grounded["detail"]
+
+
 def test_the_reply_streams_with_citations_and_a_done_event(client, provider):
     register(client)
 

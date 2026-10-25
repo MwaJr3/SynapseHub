@@ -131,7 +131,9 @@ chatbot, and it is built so that it cannot bluff:
   URL and licence, and reports `generated: false`. It is presented as retrieval,
   not as an answer.
 - **The conversation** (`POST /api/tutor/chat`) streams Server-Sent Events:
-  `citations`, then `delta` frames, then `done` — or `error` with `retryable`. If
+  `step`, then `citations`, then `delta` frames, then `done` — or `error` with
+  `retryable`. The trace is bounded by a step budget (`MAX_TURNS`), so a looping
+  turn is cut and reported rather than left to run. If
   no model is configured it returns **503** with
   `{"error": "tutor_not_configured", "missing": [...]}` and the interface does not
   render a chat box at all. An empty box that cannot answer would be a fake
@@ -139,8 +141,12 @@ chatbot, and it is built so that it cannot bluff:
 - **Instructions** constrain the model to retrieved material only, require a
   `(Concept: <title>)` citation for claims, forbid inventing mastery or progress,
   and refuse to hand over exam answers.
-- **Provider failure is reported, not hidden** — an upstream error returns 502
-  `tutor_upstream_failed` and nothing is generated.
+- **An ungrounded answer is flagged.** If the model answers without calling the
+  retrieval tool, the turn reports `grounded: false` and the interface says the
+  answer is unverified. A confident answer with no source is the failure this
+  tutor exists to prevent, so it is surfaced rather than styled away.
+- **Provider failure is reported, not hidden** — a failure mid-stream emits an
+  error event with `retryable`, nothing is stored, and nothing is generated.
 - **Threads are per learner.** Every read and write is scoped to the owner in the
   database; another learner's thread is a 404, never a read.
 
@@ -200,7 +206,7 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 137 tests
+cd backend  && python3 -m pytest -q     # 139 tests
 cd frontend && npm test && npm run build   # 24 tests, then typecheck + bundle
 ```
 

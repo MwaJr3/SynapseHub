@@ -163,19 +163,39 @@ describe('prompt construction', () => {
 });
 
 describe('streaming', () => {
-  it('emits citations before the text, then done', async () => {
+  it('emits the trace, then citations, then the text, then done', async () => {
     const fetchImpl = vi.fn(async () => sseResponse(['Plan ', 'twenty ', 'minutes.']));
     const out = await frames(
       streamAnswer('tamuzi-study-plan', '20 minutes a day', [], { fetchImpl, config: CONFIGURED }),
     );
 
-    expect(out[0]).toContain('event: citations');
+    // The trace comes first: what it did, before what it says.
+    expect(out[0]).toContain('event: step');
+    expect(out[0]).toContain('Retrieve Tamuzi study principles');
+    expect(out[1]).toContain('event: citations');
     expect(out.filter((frame) => frame.includes('event: delta'))).toHaveLength(3);
     expect(out.at(-1)).toContain('event: done');
   });
 
+  it('stops at the guard when nothing on the site covers the question', async () => {
+    const fetchImpl = vi.fn(async () => sseResponse(['should not happen']));
+    const out = await frames(
+      streamAnswer('tamuzi-study-plan', 'photosynthesis chloroplast ribosome', [], {
+        fetchImpl,
+        config: CONFIGURED,
+      }),
+    );
+
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(out[0]).toContain('event: step');
+    expect(out[0]).toContain('No material');
+    expect(out[1]).toContain('event: error');
+    expect(out[1]).toContain('not going to guess');
+    expect(out.join('')).not.toContain('event: done');
+  });
+
   it('sends the provider token as a bearer header and nothing else secret', async () => {
-    const fetchImpl = vi.fn(async () => sseResponse(['ok']));
+    const fetchImpl = vi.fn(async (_input: string, _init: RequestInit) => sseResponse(['ok']));
     vi.stubEnv('ASSISTANT_API_KEY', 'hf_secret_value');
 
     await frames(streamAnswer('velaqori-triage', 'leaked key', [], { fetchImpl, config: CONFIGURED }));
@@ -191,17 +211,17 @@ describe('streaming', () => {
       throw new Error('connect ECONNREFUSED');
     });
     const out = await frames(streamAnswer('velaqori-triage', 'leaked key', [], { fetchImpl, config: CONFIGURED }));
-    expect(out).toHaveLength(1);
-    expect(out[0]).toContain('event: error');
-    expect(out[0]).toContain('could not be reached');
+    const errors = out.filter((frame) => frame.includes('event: error'));
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain('could not be reached');
     expect(out.join('')).not.toContain('event: done');
   });
 
   it('turns a provider error status into a retryable error', async () => {
     const fetchImpl = vi.fn(async () => new Response('nope', { status: 503 }));
     const out = await frames(streamAnswer('velaqori-triage', 'leaked key', [], { fetchImpl, config: CONFIGURED }));
-    expect(out[0]).toContain('event: error');
-    expect(out[0]).toContain('"retryable":true');
+    const error = out.find((frame) => frame.includes('event: error')) ?? '';
+    expect(error).toContain('"retryable":true');
   });
 
   it('refuses to run at all when nothing is configured', async () => {

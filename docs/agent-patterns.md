@@ -19,6 +19,28 @@ rather than dependencies.
 None of them is imported, copied, or required at build or run time. No line of
 their source is in this repository.
 
+**A correction worth recording.** GitHub's API reports `chatwoot` and `Flowise` as
+`NOASSERTION`, which reads like "no licence". Reading the licence files themselves
+shows something different and more permissive:
+
+- **Flowise** — Apache-2.0 for everything outside `packages/server/src/enterprise/`
+  and files carrying an explicit commercial notice. Apache-2.0 is a real,
+  irrevocable grant, including patent terms.
+- **Chatwoot** — MIT Expat for everything outside `enterprise/`.
+- **opencode**, **pi** — MIT, unmodified.
+
+So the useful parts of all four are legally reusable with attribution, and the
+"the owners stopped working on it" argument is not what makes them usable — the
+licence is. A maintained licence grant does not expire when a project is
+abandoned, and an abandoned project does not become free because nobody is
+watching. Both statements are true at once, and only the first one matters.
+
+Vendoring was still the wrong move for a different reason: these are a Rails
+helpdesk, a TypeScript flow-builder monorepo, a terminal coding agent and a
+personal agent runtime. There is no small piece of them that belongs inside these
+products. What follows is therefore independent implementation of the *ideas*,
+with the ideas named so the borrowing is auditable.
+
 ## The patterns that were adopted, and where they live
 
 The patterns are ordinary and well known; they are listed so the design is
@@ -35,10 +57,34 @@ auditable, not to imply a derivation.
 | Upstream failure surfaced as a failure | `routes.py` → `502 tutor_upstream_failed` | A stack trace, or worse, a fabricated reply |
 | Server owns the session identity | `server.process(body, {"owner": …})` | Trusting a client-supplied user id |
 
+## What was taken from each, and where it landed
+
+| Source | Idea | What was built |
+| --- | --- | --- |
+| **Flowise** | Behaviour as a declared graph, not code buried in a handler | `company-platform/src/content/flows.ts` declares each assistant as ordered nodes (`retrieve → guard → policy → compose → structure`). `src/lib/assistant/flow.ts` executes it and emits a trace. The settings used at request time (retrieval limit, temperature, token cap) are read from those nodes, and the page renders the same flow — so the diagram cannot drift from the behaviour. |
+| **Chatwoot** | A conversation ends in a queue a person reads | `support_requests` table, `/api/assistant/<name>/handoff`, and `/admin/support`. Each request carries a short reference (`VLQ-7VKEY4`), the transcript, and a status a person moves. Company scoping is enforced in the query, not the UI. |
+| **opencode** | Side-effecting actions need explicit approval | Raising a request requires `confirmed: true`; the server returns 409 without it and creates nothing. The UI asks before it sends. The company is resolved from the assistant, never from the request body, so a visitor cannot file into the other queue. |
+| **pi** | A bounded agent loop with a visible trace | Tessera's `app/ai/chat.py` emits `step` events before the text and stops at `MAX_TURNS`, reporting the cut rather than looping. The company platform emits the same shape. Both interfaces show "How this answer was produced" under each answer. |
+
+Two things came out of implementing those rather than out of the source repos:
+
+- **A guard that refuses.** If nothing in an assistant's corpus matches, the flow
+  stops at the `guard` node and no model is called at all. The visitor is told
+  plainly. This is cheaper and more honest than prompting a model to decline.
+- **`grounded` on every Tessera turn.** If the model answers without the retrieval
+  tool — the exact failure this tutor exists to prevent — the turn still completes
+  but is reported as ungrounded and flagged in the interface. Silence there would
+  let an invented answer look sourced.
+
 ## What was deliberately rejected
 
 - **Running their agents as ours.** A coding agent in a learning app is a
   different product with a different threat model.
+- **A visual flow canvas.** Flowise's canvas is its product. Two assistants with
+  five nodes each need a declaration and a readable list, not a graph editor that
+  would then have to be maintained.
+- **A helpdesk.** Chatwoot is a multi-channel inbox with teams, SLAs and routing.
+  What is needed here is one queue per company with a reference and a status.
 - **Importing their prompts.** Prompts are the part most likely to be copied
   without a licence and the least likely to fit this curriculum.
 - **A per-feature chatbot.** One tutor module serves the whole product; more than

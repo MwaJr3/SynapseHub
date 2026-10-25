@@ -18,6 +18,7 @@ What was dropped, because it cost more than it gave:
 The wire format is Server-Sent Events with four event names, documented here and
 consumed by `frontend/src/utils.ts` in `takeSseEvents`:
 
+    event: step       data: {"steps": [{label, detail, ok}]}
     event: delta      data: {"text": "..."}
     event: citations  data: {"citations": [{title, citation, source_url, license_name}]}
     event: error      data: {"message": "...", "retryable": true}
@@ -40,6 +41,11 @@ logger = logging.getLogger("tessera.tutor")
 #: that a long conversation becomes an expensive prompt.
 HISTORY_LIMIT = 20
 
+#: Model turns allowed in one reply. The agent has a single tool, so a healthy
+#: turn is two (call the tool, then answer). A loop beyond this is a bug, and the
+#: budget is what stops it costing a learner a long wait and a large bill.
+MAX_TURNS = 4
+
 
 def sse(event: str, payload: dict[str, Any]) -> str:
     """One Server-Sent Event frame."""
@@ -60,6 +66,11 @@ def history_for_model(messages: list[Any]) -> list[dict[str, str]]:
         if text:
             turns.append({"role": role, "content": text})
     return turns
+
+
+def step(label: str, detail: str, ok: bool = True) -> dict:
+    """One line of the trace shown to the learner."""
+    return {"label": label, "detail": detail, "ok": ok}
 
 
 async def stream_reply(
@@ -88,19 +99,49 @@ async def stream_reply(
             agent,
             input=[*history, {"role": "user", "content": user_text}],
         )
+
+        # The trace is built as the turn runs, then sent once, before the text.
+        steps: list[dict] = []
         collected: list[str] = []
+        turns_used = 0
+
         async for event in result.stream_events():
+            if getattr(event, "type", "") == "run_item_stream_event":
+                turns_used += 1
+                item = getattr(event, "item", None)
+                if getattr(item, "type", "") == "tool_call_item":
+                    name = getattr(getattr(item, "raw_item", None), "name", "search_knowledge")
+                    steps.append(step("Searched the curriculum", f"Tool: {name}"))
+                if turns_used >= MAX_TURNS:
+                    steps.append(
+                        step(
+                            "Stopped at the step budget",
+                            f"Reached {MAX_TURNS} steps, so the turn was cut rather than looping.",
+                            ok=False,
+                        )
+                    )
+                    break
+                continue
             if getattr(event, "type", "") != "raw_response_event":
                 continue
             data = getattr(event, "data", None)
             if getattr(data, "type", "") != "response.output_text.delta":
                 continue
 
-            # Retrieval happens inside the tool call, so the first delta is the
-            # earliest point at which we know what grounded the answer.
-            if citations and not emitted_citations:
+            if not emitted_citations:
                 emitted_citations = True
-                yield sse("citations", {"citations": [c.as_dict() for c in citations]})
+                # Retrieval happens inside the tool call, so by the first delta we
+                # know what grounded the answer — including when nothing did.
+                steps.append(
+                    step(
+                        "Grounded the answer",
+                        f"{len(citations)} passage{'' if len(citations) == 1 else 's'} from the curriculum.",
+                        ok=bool(citations),
+                    )
+                )
+                yield sse("step", {"steps": steps})
+                if citations:
+                    yield sse("citations", {"citations": [c.as_dict() for c in citations]})
 
             delta = getattr(data, "delta", "") or ""
             if delta:
@@ -118,11 +159,19 @@ async def stream_reply(
             )
             return
 
-        if citations and not emitted_citations:
+        if not emitted_citations:
+            steps.append(step("Grounded the answer", "No passage matched.", ok=False))
+            yield sse("step", {"steps": steps})
             yield sse("citations", {"citations": [c.as_dict() for c in citations]})
 
         stored = store.add_message(owner, thread_id, "assistant", answer, citations)
-        yield sse("done", {"thread_id": thread_id, "message_id": stored.id})
+        # `grounded` is reported, not hidden: an answer produced without any
+        # retrieved material is exactly the thing this tutor is meant not to do,
+        # so the interface can say so instead of presenting it as sourced.
+        yield sse(
+            "done",
+            {"thread_id": thread_id, "message_id": stored.id, "grounded": bool(citations)},
+        )
 
     except Exception:
         logger.exception("tutor generation failed")

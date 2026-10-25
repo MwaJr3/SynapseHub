@@ -241,7 +241,8 @@ function GroundedSearch() {
   );
 }
 
-type Turn = TutorMessage & { pending?: boolean };
+type TraceStep = { label: string; detail: string; ok: boolean };
+type Turn = TutorMessage & { pending?: boolean; steps?: TraceStep[]; grounded?: boolean };
 
 function TutorConversation() {
   const [threads, setThreads] = useState<TutorThread[]>([]);
@@ -326,6 +327,7 @@ function TutorConversation() {
       await streamTutorChat(
         { message: text, threadId },
         {
+          onStep: (steps) => updateAssistant((turn) => ({ ...turn, steps })),
           onDelta: (chunk) => updateAssistant((turn) => ({ ...turn, text: turn.text + chunk })),
           onCitations: (citations) => updateAssistant((turn) => ({ ...turn, citations })),
           onError: (message, retryable) => {
@@ -334,8 +336,8 @@ function TutorConversation() {
             );
             updateAssistant((turn) => ({ ...turn, pending: false }));
           },
-          onDone: (id) => {
-            updateAssistant((turn) => ({ ...turn, pending: false }));
+          onDone: (id, grounded) => {
+            updateAssistant((turn) => ({ ...turn, pending: false, grounded }));
             setThreadId(id);
             void refreshThreads();
           },
@@ -430,6 +432,24 @@ function TutorConversation() {
                 {turn.text}
                 {turn.pending && !turn.text ? <span className={muted}> thinking…</span> : null}
               </p>
+              {turn.role === 'assistant' && turn.grounded === false ? (
+                <p className="mt-2 text-xs" style={{ color: 'var(--warn)' }}>
+                  This answer did not use any curriculum material, so it is unverified. Ask again, or use grounded
+                  search below.
+                </p>
+              ) : null}
+              {turn.role === 'assistant' && (turn.steps?.length ?? 0) > 0 ? (
+                <details className={`mt-2 text-xs ${muted}`}>
+                  <summary className="cursor-pointer">How this answer was produced</summary>
+                  <ol className="mt-1 grid gap-1 pl-4" style={{ listStyle: 'decimal' }}>
+                    {turn.steps?.map((entry) => (
+                      <li key={entry.label} style={entry.ok ? undefined : { color: 'var(--bad)' }}>
+                        {entry.label} — {entry.detail}
+                      </li>
+                    ))}
+                  </ol>
+                </details>
+              ) : null}
               {turn.citations.length > 0 ? (
                 <ul className={`mt-2 grid gap-1 text-xs ${muted}`}>
                   {turn.citations.map((citation) => (

@@ -4,6 +4,7 @@
  * Shape of the response — the same four events the Tessera tutor uses, so the
  * two products behave alike without sharing a vendor:
  *
+ *   event: step       data: {"steps": [{label, detail, ok}]}
  *   event: delta      data: {"text": "..."}
  *   event: citations  data: {"citations": [{id, title}]}
  *   event: error      data: {"message": "...", "retryable": true}
@@ -16,6 +17,8 @@
  *   invented and no success event is emitted.
  */
 import { ASSISTANTS, type AssistantName } from '@/content/assistants';
+import { FLOWS, composeTemperature, maxTokens, retrieveLimit } from '@/content/flows';
+import { runFlow } from './flow';
 import { assistantConfig, providerToken, type AssistantProviderConfig } from './provider';
 import { contextBlock, retrieve } from './retrieve';
 
@@ -59,13 +62,21 @@ export function requestBody(
   message: string,
   history: readonly Turn[],
 ): Record<string, unknown> {
-  const passages = retrieve(ASSISTANTS[name].corpus, message);
+  const flow = FLOWS[name];
+  const passages = retrieve(ASSISTANTS[name].corpus, message, retrieveLimit(flow));
   const messages = [
     { role: 'system', content: systemPrompt(name, contextBlock(passages)) },
     ...cleanHistory(history).map((turn) => ({ role: turn.role, content: turn.text })),
     { role: 'user', content: message },
   ];
-  return { model: config.model, messages, stream: true, temperature: 0.2, max_tokens: 700 };
+  return {
+    model: config.model,
+    messages,
+    stream: true,
+    // Read from the flow, so the settings and the displayed diagram agree.
+    temperature: composeTemperature(flow),
+    max_tokens: maxTokens(flow),
+  };
 }
 
 /** Pull the text out of one OpenAI-style streaming chunk. */
@@ -92,7 +103,22 @@ export async function* streamAnswer(
   }
   const fetchImpl = deps.fetchImpl ?? (fetch as FetchLike);
 
-  const passages = retrieve(ASSISTANTS[name].corpus, message);
+  const flow = FLOWS[name];
+  const passages = retrieve(ASSISTANTS[name].corpus, message, retrieveLimit(flow));
+  const decision = runFlow(flow, {
+    question: message,
+    passages: passages.map(({ id, title, score }) => ({ id, title, score })),
+  });
+
+  // The trace goes first: what the assistant did, before what it says.
+  yield sse('step', { steps: decision.steps.map(({ label, detail, ok }) => ({ label, detail, ok })) });
+
+  if (!decision.proceed) {
+    // A guard stopped it. The visitor is told plainly, and no model is called.
+    yield sse('error', { message: decision.refusal ?? 'No material covers that.', retryable: false });
+    return;
+  }
+
   const body = requestBody(config, name, message, history);
 
   let response: Response;

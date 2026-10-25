@@ -15,6 +15,13 @@
       "when": 1792738200000,
       "tag": "0001_product_status_case_study_only",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792931201187,
+      "tag": "0002_previous_puff_adder",
+      "breakpoints": true
     }
   ]
 }

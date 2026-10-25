@@ -3,21 +3,46 @@
 /**
  * The assistant panel, shared by both companies with different content.
  *
- * It renders nothing but a switched-off notice when the deployment has no model:
- * a chat box that cannot answer is worse than an honest sentence. When a model is
- * configured the answer streams in, and the material it was allowed to use is
- * listed underneath it.
+ * Behaviour worth knowing:
+ * - With no model configured it renders a switched-off notice. A chat box that
+ *   cannot answer is worse than an honest sentence.
+ * - Each answer carries the trace of the flow that produced it, and the material
+ *   it was allowed to use.
+ * - "Hand this to a person" creates a support request. It asks for confirmation
+ *   first, and the server refuses to create anything without it.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { AssistantName } from '@/content/assistants';
 import { citationsFrom, takeFrames, textField, type Citation } from '@/lib/assistant/sse';
 
+interface TraceStep {
+  label: string;
+  detail: string;
+  ok: boolean;
+}
+
 interface Turn {
   role: 'user' | 'assistant';
   text: string;
   citations: Citation[];
+  steps: TraceStep[];
   pending?: boolean;
+}
+
+const FIELD = 'rounded-md border border-line bg-transparent p-2 text-sm';
+
+function parseSteps(payload: Record<string, unknown>): TraceStep[] {
+  const raw = payload.steps;
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((entry) => {
+    if (!entry || typeof entry !== 'object') return [];
+    const label = (entry as { label?: unknown }).label;
+    const detail = (entry as { detail?: unknown }).detail;
+    const ok = (entry as { ok?: unknown }).ok;
+    if (typeof label !== 'string' || typeof detail !== 'string') return [];
+    return [{ label, detail, ok: ok !== false }];
+  });
 }
 
 export function AssistantChat({
@@ -54,8 +79,8 @@ export function AssistantChat({
       const history = turns.map((turn) => ({ role: turn.role, text: turn.text }));
       setTurns((current) => [
         ...current,
-        { role: 'user', text: message, citations: [] },
-        { role: 'assistant', text: '', citations: [], pending: true },
+        { role: 'user', text: message, citations: [], steps: [] },
+        { role: 'assistant', text: '', citations: [], steps: [], pending: true },
       ]);
 
       const patchLast = (update: (turn: Turn) => Turn) =>
@@ -109,7 +134,10 @@ export function AssistantChat({
           buffer = parsed.rest;
 
           for (const event of parsed.events) {
-            if (event.name === 'delta') {
+            if (event.name === 'step') {
+              const steps = parseSteps(event.data);
+              patchLast((turn) => ({ ...turn, steps }));
+            } else if (event.name === 'delta') {
               const chunk = textField(event.data, 'text');
               patchLast((turn) => ({ ...turn, text: turn.text + chunk }));
             } else if (event.name === 'citations') {
@@ -144,12 +172,14 @@ export function AssistantChat({
         <p className="mt-2 text-sm text-muted">
           This deployment has no model configured, so the assistant is switched off rather than shown as a chat box
           that cannot answer. An operator sets <code className="text-xs">ASSISTANT_BASE_URL</code>,{' '}
-          <code className="text-xs">ASSISTANT_MODEL</code> and <code className="text-xs">ASSISTANT_API_KEY</code>;
-          a Hugging Face token or a local model both work. The rest of the site is unaffected.
+          <code className="text-xs">ASSISTANT_MODEL</code> and <code className="text-xs">ASSISTANT_API_KEY</code>; a
+          Hugging Face token or a local model both work. The rest of the site is unaffected.
         </p>
       </div>
     );
   }
+
+  const canHandOff = turns.some((turn) => turn.role === 'assistant' && turn.text.trim().length > 0);
 
   return (
     <section className="card mt-6" aria-labelledby={`${name}-heading`}>
@@ -163,7 +193,12 @@ export function AssistantChat({
         {turns.length === 0 ? (
           <div className="flex flex-wrap gap-2">
             {starters.map((starter) => (
-              <button key={starter} type="button" className="btn btn-secondary text-left text-xs" onClick={() => void send(starter)}>
+              <button
+                key={starter}
+                type="button"
+                className="btn btn-secondary text-left text-xs"
+                onClick={() => void send(starter)}
+              >
                 {starter}
               </button>
             ))}
@@ -182,6 +217,20 @@ export function AssistantChat({
               {turn.text}
               {turn.pending && !turn.text ? <span className="text-muted"> working…</span> : null}
             </p>
+
+            {turn.role === 'assistant' && turn.steps.length > 0 ? (
+              <details className="mt-2 text-xs text-muted">
+                <summary className="cursor-pointer">How this was produced</summary>
+                <ol className="mt-1 grid gap-1 pl-4" style={{ listStyle: 'decimal' }}>
+                  {turn.steps.map((step) => (
+                    <li key={step.label} className={step.ok ? '' : 'text-danger'}>
+                      {step.label} — {step.detail}
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            ) : null}
+
             {turn.citations.length > 0 ? (
               <ul className="mt-2 grid gap-1 text-xs text-muted">
                 {turn.citations.map((citation) => (
@@ -210,7 +259,7 @@ export function AssistantChat({
           <span className="font-medium">Your message</span>
           <textarea
             id={`${name}-message`}
-            className="min-h-16 rounded-md border border-line bg-transparent p-2"
+            className={`min-h-16 ${FIELD}`}
             rows={2}
             maxLength={4000}
             value={draft}
@@ -233,9 +282,146 @@ export function AssistantChat({
           </button>
         ) : null}
       </form>
+
       <p className="mt-2 text-xs text-muted">
         Answers come from this site’s own pages. Never paste passwords, keys or personal data into this box.
       </p>
+
+      {canHandOff ? <Handoff name={name} turns={turns} /> : null}
     </section>
+  );
+}
+
+function Handoff({ name, turns }: { name: AssistantName; turns: Turn[] }) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [confirmed, setConfirmed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [created, setCreated] = useState<{ reference: string; companyName: string } | null>(null);
+
+  if (created) {
+    return (
+      <div className="mt-4 rounded-md border border-line p-3 text-sm" role="status">
+        <p className="font-medium">Sent to {created.companyName}. Reference {created.reference}</p>
+        <p className="mt-1 text-xs text-muted">
+          Quote that reference if you follow up. It is stored for the team to read; this page cannot promise how
+          quickly anyone will reply.
+        </p>
+      </div>
+    );
+  }
+
+  if (!open) {
+    return (
+      <div className="mt-4 border-t border-line pt-3">
+        <button type="button" className="btn btn-secondary" onClick={() => setOpen(true)}>
+          Hand this to a person
+        </button>
+        <span className="ml-2 text-xs text-muted">Sends the conversation so far, and where to reply.</span>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      className="mt-4 grid gap-2 border-t border-line pt-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void (async () => {
+          setSubmitting(true);
+          setErrors({});
+          try {
+            const response = await fetch(`/api/assistant/${name}/handoff`, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                confirmed,
+                name: form.name,
+                email: form.email,
+                message: form.message,
+                transcript: turns.map((turn) => ({ role: turn.role, text: turn.text })).filter((turn) => turn.text),
+              }),
+            });
+            const payload = (await response.json()) as {
+              reference?: string;
+              companyName?: string;
+              fieldErrors?: Record<string, string>;
+            };
+            if (response.status === 201 && payload.reference) {
+              setCreated({ reference: payload.reference, companyName: payload.companyName ?? '' });
+              return;
+            }
+            setErrors(payload.fieldErrors ?? { message: 'That could not be sent. Please try again.' });
+          } catch {
+            setErrors({ message: 'That could not be sent. Please try again.' });
+          } finally {
+            setSubmitting(false);
+          }
+        })();
+      }}
+    >
+      <h3 className="text-sm font-semibold">Send this to a person</h3>
+      <p className="text-xs text-muted">
+        Nothing is created until you confirm below. The conversation above is included so nobody has to repeat it.
+      </p>
+
+      <label className="grid gap-1 text-sm" htmlFor={`${name}-handoff-name`}>
+        <span>Name</span>
+        <input
+          id={`${name}-handoff-name`}
+          className={FIELD}
+          value={form.name}
+          maxLength={120}
+          onChange={(event) => setForm({ ...form, name: event.target.value })}
+        />
+        {errors.name ? <span className="text-xs text-danger">{errors.name}</span> : null}
+      </label>
+
+      <label className="grid gap-1 text-sm" htmlFor={`${name}-handoff-email`}>
+        <span>Reply address</span>
+        <input
+          id={`${name}-handoff-email`}
+          type="email"
+          className={FIELD}
+          value={form.email}
+          onChange={(event) => setForm({ ...form, email: event.target.value })}
+        />
+        {errors.email ? <span className="text-xs text-danger">{errors.email}</span> : null}
+      </label>
+
+      <label className="grid gap-1 text-sm" htmlFor={`${name}-handoff-message`}>
+        <span>What should a person look at?</span>
+        <textarea
+          id={`${name}-handoff-message`}
+          className={FIELD}
+          rows={3}
+          maxLength={4000}
+          value={form.message}
+          onChange={(event) => setForm({ ...form, message: event.target.value })}
+        />
+        {errors.message ? <span className="text-xs text-danger">{errors.message}</span> : null}
+      </label>
+
+      <label className="flex items-start gap-2 text-xs">
+        <input
+          type="checkbox"
+          checked={confirmed}
+          onChange={(event) => setConfirmed(event.target.checked)}
+          className="mt-0.5"
+        />
+        <span>Send these details and the conversation to the team. I understand nothing is emailed to me.</span>
+      </label>
+      {errors.confirmed ? <span className="text-xs text-danger">{errors.confirmed}</span> : null}
+
+      <div className="flex flex-wrap gap-2">
+        <button type="submit" className="btn btn-primary" disabled={submitting}>
+          {submitting ? 'Sending…' : 'Send to the team'}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={() => setOpen(false)}>
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }

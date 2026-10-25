@@ -21,6 +21,7 @@ const ADMIN_NAV = [
   { href: '/admin/case-studies', label: 'Case studies' },
   { href: '/admin/people', label: 'People' },
   { href: '/admin/review-queue', label: 'Review queue' },
+  { href: '/admin/support', label: 'Support inbox' },
   { href: '/admin/media', label: 'Media' },
   { href: '/admin/settings', label: 'Settings' },
 ] as const;

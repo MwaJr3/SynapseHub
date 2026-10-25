@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { AssistantChat } from '@/components/assistant-chat';
 import { Badge } from '@/components/ui';
 import { ASSISTANTS } from '@/content/assistants';
+import { FLOWS } from '@/content/flows';
 
 export const metadata: Metadata = {
   title: 'IT and security triage — Velaqori Systems',
@@ -29,6 +30,23 @@ export default function SupportPage() {
           <li>For anything live, use the contact form: a person decides scope and timing.</li>
         </ul>
       </div>
+
+      <section className="card" aria-labelledby="how-it-works">
+        <h2 id="how-it-works" className="text-sm font-semibold">
+          How this assistant works
+        </h2>
+        <p className="mt-1 text-xs text-muted">
+          These are the steps below, in this order, and they are the ones the request actually runs — the settings
+          shown here are the settings used.
+        </p>
+        <ol className="mt-2 grid gap-1 pl-5 text-sm text-muted" style={{ listStyle: 'decimal' }}>
+          {FLOWS['velaqori-triage'].nodes.map((node) => (
+            <li key={node.id}>
+              <span className="font-medium text-ink">{node.label}</span> — {node.kind}
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <AssistantChat
         name={triage.name}
