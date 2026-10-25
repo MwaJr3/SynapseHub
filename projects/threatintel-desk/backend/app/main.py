@@ -2,6 +2,8 @@
 honest verdict framing — one feed is never treated as proof of maliciousness."""
 from __future__ import annotations
 
+import os
+
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -18,7 +20,13 @@ from .security import (expiry, expiry_minutes, hash_password, new_token, otpauth
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="ThreatIntel Desk", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5181", "http://127.0.0.1:8018"],
+def _extra_origins() -> list[str]:
+    """Origins added at deployment time via ALLOWED_ORIGINS (comma-separated)."""
+    raw = os.environ.get("ALLOWED_ORIGINS", "")
+    return [value.strip() for value in raw.split(",") if value.strip()]
+
+
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5181", "http://127.0.0.1:8018"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 DISCLAIMER = ("Indicator records are unverified third-party claims and feed observations. "

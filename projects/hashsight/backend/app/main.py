@@ -22,7 +22,13 @@ from . import services
 
 Base.metadata.create_all(bind=engine)
 app = FastAPI(title="HashSight", version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+def _extra_origins() -> list[str]:
+    """Origins added at deployment time via ALLOWED_ORIGINS (comma-separated)."""
+    raw = os.environ.get("ALLOWED_ORIGINS", "")
+    return [value.strip() for value in raw.split(",") if value.strip()]
+
+
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
