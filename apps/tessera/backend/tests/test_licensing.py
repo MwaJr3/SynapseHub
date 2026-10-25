@@ -82,3 +82,56 @@ def test_a_source_without_a_url_is_rejected():
 def test_unknown_cannot_claim_a_licence_name():
     with pytest.raises(ValueError):
         make(LicenseClass.UNKNOWN, name="CC BY", commercial=False)
+
+
+# ------------------------------------------------- rights versus possession
+
+
+def test_catalogue_entry_without_a_copy_is_reference_only_even_when_licensed():
+    """MIT OCW material is CC BY-NC-SA: adaptable, but Tessera holds no copy.
+
+    The gate must not report `full` for a record that is only a link, or the
+    product would be claiming to hold material it never obtained.
+    """
+    source = Source(
+        source_id="src-ocw-6-0001",
+        title="MIT OpenCourseWare — Introduction to Computer Science",
+        author="MIT OpenCourseWare",
+        url="https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+        license_class=LicenseClass.OPEN,
+        license_name="CC BY-NC-SA 4.0",
+        commercial_use_ok=False,
+        attribution="Referenced by link; not reproduced.",
+        retrieved_at=TODAY,
+        holds_copy=False,
+    )
+    decision = decide(source, commercial_deployment=False)
+    assert decision.usage is Usage.REFERENCE_ONLY
+    assert "holds only a catalogue record" in decision.reason
+    # Attribution is still required: the learner must be sent to the original.
+    assert decision.attribution_required is True
+
+    with pytest.raises(PermissionError):
+        assert_ingestible(source, commercial_deployment=False)
+
+
+def test_holding_a_copy_is_the_default():
+    decision = decide(make(LicenseClass.OPEN, name="CC BY 4.0", commercial=False), commercial_deployment=False)
+    assert decision.usage is Usage.FULL
+
+
+def test_refusal_beats_the_no_copy_rule():
+    """An unknown licence is still a refusal, copy or no copy."""
+    source = Source(
+        source_id="s2",
+        title="Unknown material",
+        author="Someone",
+        url="https://example.org/x",
+        license_class=LicenseClass.UNKNOWN,
+        license_name="",
+        commercial_use_ok=False,
+        attribution="",
+        retrieved_at=TODAY,
+        holds_copy=False,
+    )
+    assert decide(source, commercial_deployment=False).usage is Usage.REFUSED

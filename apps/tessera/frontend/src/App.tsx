@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
+import { TutorPage } from './tutor';
 import { Loading } from './ui';
 
 type Route =
@@ -9,6 +10,7 @@ type Route =
   | { name: 'knowledge' }
   | { name: 'map' }
   | { name: 'chess' }
+  | { name: 'tutor' }
   | { name: 'sources' }
   | { name: 'concept'; id: string };
 
@@ -17,6 +19,7 @@ const NAV: { label: string; route: Route }[] = [
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
   { label: 'Chess', route: { name: 'chess' } },
+  { label: 'Tutor', route: { name: 'tutor' } },
   { label: 'Sources', route: { name: 'sources' } },
 ];
 
@@ -102,6 +105,7 @@ export default function App() {
             {route.name === 'knowledge' && <KnowledgePage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'map' && <MapPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'chess' && <ChessPage />}
+            {route.name === 'tutor' && <TutorPage />}
             {route.name === 'sources' && <SourcesPage />}
             {route.name === 'concept' && (
               <ConceptPage conceptId={route.id} onBack={() => setRoute({ name: 'knowledge' })} />
@@ -114,7 +118,8 @@ export default function App() {
         <p>
           {signedIn ? `Signed in as ${email}. ` : ''}
           Demo content is original material written for this project. Mastery reflects only answers you have given
-          here; nothing is inferred from other activity.
+          here; nothing is inferred from other activity. The tutor section reports whether a model is configured
+          instead of implying one is.
         </p>
         <p className="mt-1">Tessera is a Tamuzi Learning product and is operated independently of any other company.</p>
       </footer>

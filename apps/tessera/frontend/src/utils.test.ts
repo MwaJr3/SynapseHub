@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findMoveUci, isLegalTarget, parseFen, percent, squareIndex, squareName } from './utils';
+import { findMoveUci, groupByFamily, isLegalTarget, parseFen, parseUciLine, percent, squareIndex, squareName } from './utils';
 
 const START = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const BACK_RANK = '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1';
@@ -73,5 +73,51 @@ describe('percent', () => {
     expect(percent(0.756)).toBe('76%');
     expect(percent(1.4)).toBe('100%');
     expect(percent(-1)).toBe('0%');
+  });
+});
+
+describe('parseUciLine', () => {
+  it('reads a coordinate line', () => {
+    expect(parseUciLine('e2e4 e7e5 g1f3').moves).toEqual(['e2e4', 'e7e5', 'g1f3']);
+  });
+
+  it('drops move numbers and is case-insensitive', () => {
+    expect(parseUciLine('1. E2E4 e7e5 2. G1F3').moves).toEqual(['e2e4', 'e7e5', 'g1f3']);
+  });
+
+  it('accepts a promotion suffix', () => {
+    expect(parseUciLine('b7b8q').moves).toEqual(['b7b8q']);
+  });
+
+  it('reports notation it cannot resolve instead of guessing', () => {
+    const parsed = parseUciLine('e2e4 Nf3');
+    expect(parsed.moves).toEqual(['e2e4']);
+    expect(parsed.rejected).toEqual(['nf3']);
+    expect(parsed.note).toContain('nf3');
+  });
+
+  it('asks for coordinates when there is nothing usable', () => {
+    expect(parseUciLine('   ').moves).toEqual([]);
+    expect(parseUciLine('   ').note).toContain('coordinates');
+  });
+
+  it('handles commas as separators', () => {
+    expect(parseUciLine('e2e4, e7e5').moves).toEqual(['e2e4', 'e7e5']);
+  });
+});
+
+describe('groupByFamily', () => {
+  it('groups and sorts families', () => {
+    const grouped = groupByFamily([
+      { family: 'Sicilian', name: 'a' },
+      { family: 'Queen\'s Gambit', name: 'b' },
+      { family: 'Sicilian', name: 'c' },
+    ]);
+    expect(grouped.map((group) => group.family)).toEqual(['Queen\'s Gambit', 'Sicilian']);
+    expect(grouped[1]?.items).toHaveLength(2);
+  });
+
+  it('returns nothing for an empty list', () => {
+    expect(groupByFamily([])).toEqual([]);
   });
 });

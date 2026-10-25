@@ -85,3 +85,56 @@ export function tierColour(tier: string): string {
   if (tier === 'weak') return 'var(--bad)';
   return 'var(--muted)';
 }
+
+/** A UCI move: from-square, to-square, optional promotion piece. */
+const UCI = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
+
+export interface ParsedLine {
+  moves: string[];
+  rejected: string[];
+  note: string | null;
+}
+
+/**
+ * Read a typed move line into UCI moves.
+ *
+ * The opening matcher compares coordinates, not notation, so a line typed as
+ * "1. e4 e5" cannot be guessed at — SAN would need a board to resolve. Move
+ * numbers are stripped because they carry no information, and anything that is
+ * not a coordinate is reported back rather than silently dropped.
+ */
+export function parseUciLine(input: string): ParsedLine {
+  const tokens = input
+    .split(/[\s,]+/)
+    .map((token) => token.trim().toLowerCase())
+    // "1." and "1..." are move numbers; keep everything else for inspection.
+    .filter((token) => token.length > 0 && !/^\d+\.*$/.test(token));
+
+  const moves: string[] = [];
+  const rejected: string[] = [];
+  for (const token of tokens) {
+    if (UCI.test(token)) moves.push(token);
+    else rejected.push(token);
+  }
+
+  let note: string | null = null;
+  if (rejected.length > 0) {
+    note = `Ignored ${rejected.length} token${rejected.length === 1 ? '' : 's'} that are not coordinate moves: ${rejected.join(', ')}.`;
+  } else if (moves.length === 0) {
+    note = 'Type the move line in coordinates, for example e2e4 e7e5 g1f3.';
+  }
+  return { moves, rejected, note };
+}
+
+/** Group openings by family, families sorted by name for a stable list. */
+export function groupByFamily<T extends { family: string }>(openings: readonly T[]): { family: string; items: T[] }[] {
+  const groups = new Map<string, T[]>();
+  for (const opening of openings) {
+    const bucket = groups.get(opening.family);
+    if (bucket) bucket.push(opening);
+    else groups.set(opening.family, [opening]);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([family, items]) => ({ family, items }));
+}

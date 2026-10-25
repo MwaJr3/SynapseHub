@@ -51,6 +51,11 @@ class Source:
     commercial_use_ok: bool
     attribution: str
     retrieved_at: date
+    #: Whether this deployment actually holds a copy of the material. Rights and
+    #: possession are different questions: a CC BY-NC-SA course may be adaptable,
+    #: but if all that exists here is a catalogue record and a link, the honest
+    #: usage is reference-only whatever the licence permits.
+    holds_copy: bool = True
 
     def __post_init__(self) -> None:
         if not self.url.startswith(("http://", "https://")):
@@ -87,6 +92,15 @@ def decide(source: Source, *, commercial_deployment: bool) -> Decision:
             f"'{source.license_name}' reserves the rights to this material. It may not be copied or adapted.",
             attribution_required=False,
         )
+    if not source.holds_copy:
+        return Decision(
+            Usage.REFERENCE_ONLY,
+            (
+                f"Licence '{source.license_name}' permits reuse, but this deployment holds only a catalogue "
+                "record and links to the original. No material was copied, so none may be presented as Tessera's."
+            ),
+            attribution_required=True,
+        )
     if source.license_class is LicenseClass.LINK_ONLY:
         return Decision(
             Usage.REFERENCE_ONLY,
@@ -114,8 +128,13 @@ def decide(source: Source, *, commercial_deployment: bool) -> Decision:
 
 
 def assert_ingestible(source: Source, *, commercial_deployment: bool) -> Decision:
-    """Raise instead of ingesting material that the gate refuses."""
+    """Raise instead of ingesting material the gate does not clear for full use.
+
+    `reference_only` is not permission to copy: it means link to the original and
+    keep nothing. Treating it as ingestible is exactly how a product ends up
+    redistributing content it only had the right to point at.
+    """
     decision = decide(source, commercial_deployment=commercial_deployment)
-    if decision.usage is Usage.REFUSED:
+    if decision.usage is not Usage.FULL:
         raise PermissionError(f"{source.title}: {decision.reason}")
     return decision

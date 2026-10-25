@@ -13,7 +13,9 @@ from datetime import date
 
 from .chess_modality import validate_puzzle
 from .database import Base, SessionLocal, engine
-from .models import ChessPuzzle, Concept, ConceptEdge, Lesson, Question, SourceRow
+from .open_content import seed_catalogue
+from .openings_data import build_openings
+from .models import ChessPuzzle, Concept, ConceptEdge, Lesson, OpeningRow, Question, SourceRow
 
 SOURCE_ID = "src-tessera-original"
 
@@ -691,7 +693,28 @@ def seed() -> dict[str, int]:
             if db.get(ChessPuzzle, puzzle["id"]) is None:
                 db.add(ChessPuzzle(source_id=SOURCE_ID, **puzzle))
 
+        # Opening names, ECO codes and move sequences are reference data; the
+        # study notes are original. Every line is validated against real rules.
+        for opening in build_openings():
+            if db.get(OpeningRow, opening.id) is None:
+                db.add(
+                    OpeningRow(
+                        id=opening.id,
+                        eco=opening.eco,
+                        name=opening.name,
+                        family=opening.family,
+                        moves_san=opening.moves_san,
+                        moves_uci=opening.moves_uci,
+                        idea=opening.idea,
+                        concept_id="chess.tactics",
+                    )
+                )
+
         db.commit()
+
+        # Catalogue of openly-licensed external material - metadata and links
+        # only, each gated by its licence. No third-party text is stored.
+        catalogue = seed_catalogue(db)
 
         return {
             "concepts": db.query(Concept).count(),
@@ -699,7 +722,10 @@ def seed() -> dict[str, int]:
             "lessons": db.query(Lesson).count(),
             "questions": db.query(Question).count(),
             "puzzles": db.query(ChessPuzzle).count(),
+            "openings": db.query(OpeningRow).count(),
             "sources": db.query(SourceRow).count(),
+            "catalogue_imported": catalogue.imported,
+            "catalogue_rejected": len(catalogue.rejected),
         }
     finally:
         db.close()

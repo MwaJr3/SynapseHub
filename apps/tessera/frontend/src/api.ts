@@ -162,6 +162,61 @@ export interface SourceRow {
   commercial_deployment: boolean;
 }
 
+export interface OpeningSummary {
+  id: string;
+  eco: string;
+  name: string;
+  family: string;
+  moves_san: string;
+  moves_uci: string;
+  idea: string;
+  plies: number;
+}
+
+export interface OpeningsResponse {
+  openings: OpeningSummary[];
+  families: Record<string, number>;
+}
+
+export interface OpeningMatch {
+  eco: string;
+  name: string;
+  family: string;
+  moves_san: string;
+}
+
+export interface OpeningMatchResponse {
+  matched: boolean;
+  matches: OpeningMatch[];
+  message: string | null;
+}
+
+export interface TutorStatus {
+  configured: boolean;
+  model: string;
+  missing: string[];
+  reason: string;
+  retrieval_available: boolean;
+  note: string;
+}
+
+export interface TutorPassage {
+  concept_id: string;
+  concept_title: string;
+  subject: string;
+  text: string;
+  citation: string;
+  source_url: string;
+  license_name: string;
+}
+
+export interface TutorSearchResponse {
+  mode: 'retrieval';
+  generated: false;
+  passages: TutorPassage[];
+  message: string | null;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -227,6 +282,20 @@ export const api = {
   sources: () => request<{ sources: SourceRow[] }>('/api/sources'),
 
   puzzles: () => request<{ puzzles: PuzzleSummary[] }>('/api/chess/puzzles'),
+  openings: (family?: string) =>
+    request<OpeningsResponse>(
+      family ? `/api/chess/openings?family=${encodeURIComponent(family)}` : '/api/chess/openings',
+    ),
+  openingMatchByMoves: (uciMoves: string[]) =>
+    request<OpeningMatchResponse>(`/api/chess/openings/match?moves=${encodeURIComponent(uciMoves.join(' '))}`),
+
+  tutorStatus: () => request<TutorStatus>('/api/tutor/status'),
+  tutorSearch: (question: string, limit = 4) =>
+    request<TutorSearchResponse>('/api/tutor/search', {
+      method: 'POST',
+      body: JSON.stringify({ question, limit }),
+    }),
+
   puzzle: (id: string) => request<PuzzleView>(`/api/chess/puzzles/${encodeURIComponent(id)}`),
   move: (id: string, uci: string, pliesPlayed: number) =>
     request<MoveResult>(`/api/chess/puzzles/${encodeURIComponent(id)}/move`, {

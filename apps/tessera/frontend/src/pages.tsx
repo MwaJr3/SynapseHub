@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { api, ApiError, type AnswerResult, type ConceptDetail, type KnowledgeRow, type MoveResult, type PuzzleSummary, type PuzzleView, type SourceRow, type TodayResponse } from './api';
+import { api, ApiError, type AnswerResult, type ConceptDetail, type KnowledgeRow, type MoveResult, type OpeningsResponse, type PuzzleSummary, type PuzzleView, type SourceRow, type TodayResponse } from './api';
 import { ChessBoard } from './board';
+import { OpeningsPanel } from './openings';
 import { Badge, Card, EmptyState, ErrorNote, Loading, MasteryBar, ReasonList, SectionTitle } from './ui';
 import { percent, tierColour } from './utils';
 
@@ -469,7 +470,54 @@ function PracticeCard({
 
 /* --------------------------------------------------------------------- chess */
 
+type ChessTab = 'tactics' | 'openings';
+
+/** Chess is two activities, so the page is a real tabbed surface rather than a
+ *  list with a second list stapled underneath. */
 export function ChessPage() {
+  const [tab, setTab] = useState<ChessTab>('tactics');
+
+  return (
+    <div className="grid gap-4">
+      <div role="tablist" aria-label="Chess activities" className="flex flex-wrap gap-1">
+        {([
+          ['tactics', 'Tactics'],
+          ['openings', 'Openings'],
+        ] as const).map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            role="tab"
+            id={`chess-tab-${value}`}
+            aria-selected={tab === value}
+            aria-controls={`chess-panel-${value}`}
+            className={`rounded-md px-3 py-1.5 text-sm ${tab === value ? 'font-semibold' : ''}`}
+            style={tab === value ? { background: 'var(--accent-soft)', color: 'var(--accent)' } : undefined}
+            onClick={() => setTab(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div role="tabpanel" id={`chess-panel-${tab}`} aria-labelledby={`chess-tab-${tab}`}>
+        {tab === 'tactics' ? <TacticsPage /> : <OpeningsPage />}
+      </div>
+    </div>
+  );
+}
+
+function OpeningsPage() {
+  const { data, error, loading, reload } = useAsync<OpeningsResponse>(() => api.openings());
+
+  if (loading) return <Loading label="Loading the opening reference" />;
+  if (error) return <ErrorNote message={error} onRetry={reload} />;
+  if (!data) return null;
+
+  return <OpeningsPanel openings={data.openings} />;
+}
+
+function TacticsPage() {
   const { data, error, loading, reload } = useAsync(() => api.puzzles());
   const [activeId, setActiveId] = useState<string | null>(null);
 

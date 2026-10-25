@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 
 import chess
@@ -9,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
-from . import chess_modality, config, learner, mastery as mastery_mod, recommend
+from . import chess_modality, config, learner, mastery as mastery_mod, openings as openings_mod, recommend
 from .content import LicenseClass, Source, decide
 from .database import get_db
 from .models import (
@@ -20,6 +21,7 @@ from .models import (
     ConceptState,
     Goal,
     Lesson,
+    OpeningRow,
     Question,
     SourceRow,
     User,
@@ -62,6 +64,9 @@ def _set_session(response: Response, token: str) -> None:
         max_age=config.SESSION_MAX_AGE_SECONDS,
         secure=False,
     )
+
+
+logger = logging.getLogger("tessera.api")
 
 
 @router.post("/auth/register")
@@ -432,6 +437,7 @@ def sources(request: Request, db: Session = Depends(get_db)):
                 commercial_use_ok=row.commercial_use_ok,
                 attribution=row.attribution,
                 retrieved_at=__import__("datetime").date.fromisoformat(row.retrieved_at or "1970-01-01"),
+                holds_copy=row.holds_copy,
             )
             decision = decide(source, commercial_deployment=config.COMMERCIAL_DEPLOYMENT)
             usage, reason = decision.usage.value, decision.reason
@@ -544,6 +550,200 @@ def play_move(puzzle_id: str, body: ChessMove, request: Request, db: Session = D
         "opponent_reply": progress.opponent_reply,
         "error": progress.error,
     }
+
+
+# ------------------------------------------------------------------ chess openings
+
+
+def _opening_records(db: Session) -> list[openings_mod.Opening]:
+    return [
+        openings_mod.Opening(
+            id=row.id,
+            eco=row.eco,
+            name=row.name,
+            family=row.family,
+            moves_san=row.moves_san,
+            moves_uci=row.moves_uci,
+            idea=row.idea,
+        )
+        for row in db.query(OpeningRow).order_by(OpeningRow.eco).all()
+    ]
+
+
+@router.get("/chess/openings")
+def openings(request: Request, db: Session = Depends(get_db), family: str | None = None):
+    """The opening reference, grouped by family."""
+    _current(request, db)
+    rows = db.query(OpeningRow).order_by(OpeningRow.eco).all()
+    if family:
+        rows = [row for row in rows if row.family.lower() == family.lower()]
+    families: dict[str, int] = {}
+    for row in rows:
+        families[row.family] = families.get(row.family, 0) + 1
+    return {
+        "openings": [
+            {
+                "id": row.id,
+                "eco": row.eco,
+                "name": row.name,
+                "family": row.family,
+                "moves_san": row.moves_san,
+                # The coordinate line lets the interface hand a catalogue entry
+                # straight back to the matcher instead of the learner retyping it.
+                "moves_uci": row.moves_uci,
+                "idea": row.idea,
+                "plies": len(row.moves_uci.split()),
+            }
+            for row in rows
+        ],
+        "families": families,
+    }
+
+
+@router.get("/chess/openings/match")
+def opening_match(
+    request: Request,
+    db: Session = Depends(get_db),
+    moves: str = "",
+    fen: str = "",
+):
+    """Identify an opening from a move line or a position.
+
+    Position matching is what makes transpositions work: two different move
+    orders that reach the same board resolve to the same opening.
+    """
+    _current(request, db)
+    entries = _opening_records(db)
+    line = [token for token in moves.split() if token]
+
+    if line:
+        matches = openings_mod.lookup_by_moves(line, entries)
+        return {
+            "matched": len(matches) > 0,
+            "matches": [{"eco": m.eco, "name": m.name, "family": m.family, "moves_san": m.moves_san} for m in matches],
+            "message": None
+            if matches
+            else "That move order is not in the reference yet — you may have left the lines this trainer covers.",
+        }
+
+    if fen:
+        try:
+            match = openings_mod.lookup_by_position(fen, entries)
+        except ValueError:
+            raise HTTPException(422, "that is not a valid FEN")
+        return {
+            "matched": match is not None,
+            "matches": []
+            if match is None
+            else [{"eco": match.eco, "name": match.name, "family": match.family, "moves_san": match.moves_san}],
+            "message": None if match else "No catalogued opening reaches this position.",
+        }
+
+    raise HTTPException(422, "provide either moves (UCI, space separated) or fen")
+
+
+# ----------------------------------------------------------------------- AI tutor
+
+
+class TutorSearchBody(BaseModel):
+    question: str = Field(min_length=3, max_length=500)
+    limit: int = Field(default=4, ge=1, le=10)
+
+
+@router.get("/tutor/status")
+def tutor_status(request: Request, db: Session = Depends(get_db)):
+    """Whether the AI tutor can run, and what is missing. Never fakes a key."""
+    _current(request, db)
+    from .ai.agent import tutor_config
+
+    state = tutor_config()
+    return {
+        "configured": state.configured,
+        "model": state.model,
+        "missing": list(state.missing),
+        "reason": state.reason,
+        "retrieval_available": True,
+        "note": (
+            "Retrieval returns sourced passages from the curriculum with no model involved. "
+            "It is not a conversation and is labelled as such in the interface."
+        ),
+    }
+
+
+@router.post("/tutor/search")
+def tutor_search(body: TutorSearchBody, request: Request, db: Session = Depends(get_db)):
+    """Retrieval-only grounding. Works with no API key; does not generate text."""
+    _current(request, db)
+    from .ai.retrieval import search
+
+    passages = search(db, body.question, limit=body.limit)
+    return {
+        "mode": "retrieval",
+        "generated": False,
+        "passages": [
+            {
+                "concept_id": p.concept_id,
+                "concept_title": p.concept_title,
+                "subject": p.subject,
+                "text": p.text,
+                "citation": p.as_citation(),
+                "source_url": p.source_url,
+                "license_name": p.license_name,
+            }
+            for p in passages
+        ],
+        "message": None
+        if passages
+        else "Nothing in the curriculum matched that question. The tutor will not answer from outside it.",
+    }
+
+
+@router.post("/tutor/chatkit")
+async def tutor_chatkit(request: Request, db: Session = Depends(get_db)):
+    """ChatKit protocol endpoint.
+
+    Returns 503 with an explicit reason when no provider is configured, rather
+    than serving a chat surface that cannot answer.
+    """
+    from fastapi.responses import JSONResponse, StreamingResponse
+
+    from .ai.agent import tutor_config
+
+    user = _current(request, db)
+    state = tutor_config()
+    if not state.configured:
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": "tutor_not_configured",
+                "missing": list(state.missing),
+                "reason": state.reason,
+            },
+        )
+
+    from chatkit.server import StreamingResult
+
+    from .ai.chatkit_server import TesseraChatKitServer
+
+    server = TesseraChatKitServer(db)
+    body = await request.body()
+    try:
+        result = await server.process(body, {"owner": user.id, "email": user.email})
+    except Exception:
+        # A provider outage must not look like a bug in Tessera, and must never
+        # be answered with invented content. Log the detail, say what failed.
+        logger.exception("chatkit request failed")
+        return JSONResponse(
+            status_code=502,
+            content={
+                "error": "tutor_upstream_failed",
+                "reason": "The model provider could not be reached. Nothing was generated.",
+            },
+        )
+
+    if isinstance(result, StreamingResult):
+        return StreamingResponse(result, media_type="text/event-stream")
+    return Response(content=result.json, media_type="application/json")
 
 
 # ------------------------------------------------------------------------ goals

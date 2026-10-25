@@ -67,6 +67,8 @@ class SourceRow(Base):
     commercial_use_ok: Mapped[bool] = mapped_column(Boolean, default=False)
     attribution: Mapped[str] = mapped_column(Text, default="")
     retrieved_at: Mapped[str] = mapped_column(String(20), default="")
+    #: False for catalogue entries: metadata and a link only, no reproduced text.
+    holds_copy: Mapped[bool] = mapped_column(Boolean, default=True)
 
 
 class Concept(Base):
@@ -179,6 +181,63 @@ class ChessPuzzle(Base):
     solution_uci: Mapped[list] = mapped_column(JSON, default=list)
     theme: Mapped[str] = mapped_column(String(80), default="tactics")
     difficulty: Mapped[float] = mapped_column(Float, default=3.0)
+    concept_id: Mapped[str | None] = mapped_column(ForeignKey("concepts.id"), nullable=True)
+    source_id: Mapped[str | None] = mapped_column(ForeignKey("sources.id"), nullable=True)
+
+
+# --------------------------------------------------------------------- AI tutor
+#
+# Threads and items are stored as JSON payloads so ChatKit's own wire models can
+# evolve without a migration of their internals. `owner` keeps conversations
+# private: the store filters on it, so a guessed id reveals nothing.
+
+class TutorThreadRow(Base):
+    __tablename__ = "tutor_threads"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    owner: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(300), default="")
+    status: Mapped[str] = mapped_column(String(40), default="active")
+    payload: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+class TutorItemRow(Base):
+    __tablename__ = "tutor_items"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    thread_id: Mapped[str] = mapped_column(ForeignKey("tutor_threads.id", ondelete="CASCADE"), index=True)
+    owner: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    type: Mapped[str] = mapped_column(String(40), default="message")
+    payload: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+class TutorAttachmentRow(Base):
+    __tablename__ = "tutor_attachments"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    owner: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    payload: Mapped[str] = mapped_column(Text)
+
+
+# ---------------------------------------------------------------- chess openings
+#
+# Opening names and ECO codes are factual reference data. Lines are stored as a
+# normalised UCI sequence so a transposition (same position, different order)
+# resolves to the same opening.
+
+class OpeningRow(Base):
+    __tablename__ = "openings"
+
+    id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    eco: Mapped[str] = mapped_column(String(3), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    family: Mapped[str] = mapped_column(String(80), index=True)
+    moves_san: Mapped[str] = mapped_column(Text)
+    moves_uci: Mapped[str] = mapped_column(Text, index=True)
+    #: Short study note written for this project.
+    idea: Mapped[str] = mapped_column(Text, default="")
     concept_id: Mapped[str | None] = mapped_column(ForeignKey("concepts.id"), nullable=True)
     source_id: Mapped[str | None] = mapped_column(ForeignKey("sources.id"), nullable=True)
 

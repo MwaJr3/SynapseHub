@@ -213,3 +213,124 @@ def test_learning_is_per_learner(client):
         row for row in client.get("/api/knowledge").json()["concepts"]
         if row["concept_id"] == "py.variables"
     )["mastery"] == 0.0
+
+
+# ------------------------------------------------------------ openings and tutor
+
+
+def test_openings_are_listed_with_families_and_coordinate_lines(client):
+    register(client)
+    response = client.get("/api/chess/openings")
+    assert response.status_code == 200
+    body = response.json()
+    assert len(body["openings"]) == 10
+    assert set(body["families"]) >= {"Sicilian", "Italian"}
+    first = body["openings"][0]
+    # The coordinate line is what the matcher accepts, so it must be exposed.
+    assert all(part[0] in "abcdefgh" for part in first["moves_uci"].split())
+    assert first["idea"], "every catalogued opening carries an original note"
+
+
+def test_openings_can_be_filtered_by_family(client):
+    register(client)
+    response = client.get("/api/chess/openings?family=sicilian")
+    assert response.status_code == 200
+    assert len(response.json()["openings"]) == 3
+
+
+def test_opening_match_prefers_the_exact_line(client):
+    register(client)
+    response = client.get(
+        "/api/chess/openings/match",
+        params={"moves": "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["matched"] is True
+    assert body["matches"][0]["eco"] == "B50"
+
+
+def test_opening_match_names_transpositions_from_a_position(client):
+    """1.d4 d5 2.c4 and 1.c4 d5 2.d4 reach the same board.
+
+    Matching by move prefix cannot see this — the lines differ — so the position
+    is what identifies the opening. Both orders must resolve to D06.
+    """
+    register(client)
+    fen = "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2"
+    body = client.get("/api/chess/openings/match", params={"fen": fen}).json()
+    assert body["matched"] is True
+    assert body["matches"][0]["eco"] == "D06"
+
+    by_line = client.get("/api/chess/openings/match", params={"moves": "d2d4 d7d5 c2c4"}).json()
+    assert by_line["matches"][0]["eco"] == "D06"
+
+
+def test_opening_match_rejects_an_impossible_position(client):
+    register(client)
+    response = client.get("/api/chess/openings/match", params={"fen": "not a position"})
+    assert response.status_code == 422
+
+
+def test_opening_match_says_so_when_the_line_is_not_covered(client):
+    register(client)
+    response = client.get("/api/chess/openings/match", params={"moves": "a2a3 h7h6"})
+    body = response.json()
+    assert response.status_code == 200
+    assert body["matched"] is False
+    assert body["matches"] == []
+    assert "not in the reference" in body["message"]
+
+
+def test_opening_match_requires_an_input(client):
+    register(client)
+    assert client.get("/api/chess/openings/match").status_code == 422
+
+
+def test_tutor_status_is_honest_about_a_missing_key(client, monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    register(client)
+    body = client.get("/api/tutor/status").json()
+    assert body["configured"] is False
+    assert body["missing"] == ["OPENAI_API_KEY"]
+    assert body["retrieval_available"] is True
+    assert "not a conversation" in body["note"]
+
+
+def test_tutor_search_is_labelled_as_retrieval_not_generation(client):
+    register(client)
+    response = client.post("/api/tutor/search", json={"question": "bare except"})
+    assert response.status_code == 200
+    body = response.json()
+    assert body["mode"] == "retrieval"
+    assert body["generated"] is False
+    assert body["passages"]
+    passage = body["passages"][0]
+    # A passage without its provenance would be unattributable, so both the
+    # source name and the licence travel with the text.
+    assert passage["citation"].startswith(passage["concept_title"])
+    assert passage["license_name"]
+    assert passage["source_url"].startswith("https://")
+
+
+def test_tutor_search_refuses_to_answer_from_outside_the_curriculum(client):
+    register(client)
+    body = client.post("/api/tutor/search", json={"question": "quantum chromodynamics"}).json()
+    assert body["passages"] == []
+    assert "will not answer" in body["message"]
+
+
+def test_chatkit_refuses_to_serve_a_chat_that_cannot_answer(client, monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    register(client)
+    response = client.post("/api/tutor/chatkit", json={"type": "threads.create", "params": {}})
+    assert response.status_code == 503
+    body = response.json()
+    assert body["error"] == "tutor_not_configured"
+    assert "OPENAI_API_KEY" in body["missing"]
+
+
+def test_tutor_endpoints_require_a_session(client):
+    assert client.get("/api/tutor/status").status_code == 401
+    assert client.post("/api/tutor/search", json={"question": "bare except"}).status_code == 401
+    assert client.get("/api/chess/openings").status_code == 401
