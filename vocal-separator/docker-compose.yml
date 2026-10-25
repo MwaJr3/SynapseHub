@@ -1,0 +1,100 @@
+name: vocal-separator
+
+x-backend-environment: &backend-environment
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-vocal_separator}:${POSTGRES_PASSWORD:-change-this-password}@db:5432/${POSTGRES_DB:-vocal_separator}
+  QUEUE_BACKEND: redis
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: ${JWT_SECRET:-change-me-to-a-long-random-secret}
+  JWT_TTL_HOURS: ${JWT_TTL_HOURS:-72}
+  DOWNLOAD_TOKEN_TTL: ${DOWNLOAD_TOKEN_TTL:-3600}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+  MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-100}
+  MAX_DURATION_S: ${MAX_DURATION_S:-1200}
+  RETENTION_DAYS: ${RETENTION_DAYS:-7}
+  WORKER_THREADS: ${WORKER_THREADS:-1}
+  SEPARATION_ENGINE: ${SEPARATION_ENGINE:-auto}
+  DEMUCS_MODEL: ${DEMUCS_MODEL:-htdemucs}
+  FFMPEG_BINARY: ffmpeg
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vocal_separator}
+      POSTGRES_USER: ${POSTGRES_USER:-vocal_separator}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-this-password}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-vocal_separator} -d $${POSTGRES_DB:-vocal_separator}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    image: vocal-separator-backend:local
+    build:
+      context: ./backend
+      args:
+        INSTALL_ML: ${INSTALL_ML:-false}
+    restart: unless-stopped
+    environment: *backend-environment
+    volumes:
+      - app-data:/data
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: vocal-separator-backend:local
+    build:
+      context: ./backend
+      args:
+        INSTALL_ML: ${INSTALL_ML:-false}
+    restart: unless-stopped
+    command: ["python", "-m", "app.worker"]
+    environment: *backend-environment
+    volumes:
+      - app-data:/data
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  web:
+    image: vocal-separator-web:local
+    build:
+      context: ./web
+    restart: unless-stopped
+    environment:
+      API_UPSTREAM: http://api:8000
+    ports:
+      - "${WEB_PORT:-5174}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  app-data:
+  postgres-data:
+  redis-data:

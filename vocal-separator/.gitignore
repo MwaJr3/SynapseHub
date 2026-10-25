@@ -1,0 +1,49 @@
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node dependencies and build output
+web/node_modules/
+web/dist/
+web/.vite/
+
+# Local runtime state and generated audio
+backend/data/
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*.wav
+**/*.flac
+**/*.mp3
+**/*.m4a
+**/*.aac
+**/*.ogg
+**/*.oga
+**/*.opus
+**/*.aif
+**/*.aiff
+**/*.zip
+
+# Local environment files (keep examples)
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# Model caches and downloaded weights
+.cache/
+models/**/*.bin
+models/**/*.pt
+models/**/*.pth
+models/**/*.onnx
+models/**/*.safetensors
+
+# Logs and editor/OS noise
+*.log
+.DS_Store
+.idea/
+.vscode/
