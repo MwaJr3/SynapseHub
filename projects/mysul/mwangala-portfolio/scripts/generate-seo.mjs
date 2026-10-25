@@ -96,11 +96,23 @@ const home = byPath.get('/');
 const directory = byPath.get('/projects');
 const rest = staticRoutes.filter((route) => route.path !== '/' && route.path !== '/projects');
 
+/*
+ * Public URL shape: the company site owns `/`, and the portfolio is served under
+ * `/portfolio`. The router keeps unprefixed paths internally (its basename adds
+ * the prefix), so the public sitemap is built by prefixing here.
+ */
+const SITE_BASE = '/portfolio';
+
 const routes = [
-  home,
-  directory,
-  ...slugs.map((slug) => ({ path: `/projects/${slug}`, priority: '0.8', changefreq: 'monthly' })),
-  ...rest,
+  { path: '/', priority: '1.0', changefreq: 'monthly' },
+  { ...directory, path: `${SITE_BASE}/projects` },
+  ...slugs.map((slug) => ({
+    path: `${SITE_BASE}/projects/${slug}`,
+    priority: '0.8',
+    changefreq: 'monthly',
+  })),
+  ...rest.map((route) => ({ ...route, path: `${SITE_BASE}${route.path}` })),
+  { ...home, path: SITE_BASE, priority: '0.9', changefreq: 'weekly' },
 ].filter(Boolean);
 
 /* ------------------------------------------------------------------ output */

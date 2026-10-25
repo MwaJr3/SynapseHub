@@ -30,7 +30,7 @@ describe('app composition', () => {
   });
 
   it('renders a case study when the browser is already on that URL', async () => {
-    window.history.pushState({}, '', '/projects/netscope');
+    window.history.pushState({}, '', '/portfolio/projects/netscope');
     render(<App />);
 
     await waitFor(() => {
