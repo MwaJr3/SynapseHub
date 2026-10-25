@@ -2,7 +2,7 @@
 
 A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.
 
-The repository also retains separate stock-analysis and WorkNiche applications, a private browser-local Personal Operating System, and an operations-specification page. Each feature is documented with its real scope and limitations; no unconfigured external links or measured outcomes are claimed.
+The repository also retains separate stock-analysis, WorkNiche and AI Music & Vocal Part Separator applications, a private browser-local Personal Operating System, and an operations-specification page. Each feature is documented with its real scope and limitations; no unconfigured external links or measured outcomes are claimed.
 
 ## Challenge collection and prototypes
 
@@ -46,6 +46,29 @@ labelled fictional inside the product. See [workniche/README.md](workniche/READM
 for setup, demo accounts, its honesty statement and the values required before
 treating it as a real product, and [workniche/docs/DEPLOYMENT.md](workniche/docs/DEPLOYMENT.md)
 for deployment.
+
+---
+
+## The AI Music & Vocal Part Separator application
+
+`vocal-separator/` is a standalone full-stack audio workspace — catalogued as
+[AI Music & Vocal Part Separator](src/data/projects/vocal-separator.ts) without
+changing the separate 60-record Frontend Mentor challenge manifest. It combines
+a React/TypeScript practice workspace with a FastAPI backend, owner-scoped
+projects, staged separation jobs, synchronized stem playback, estimated pitch
+tracks, confidence-gated experimental voice-part reconstruction, signed media
+downloads and ZIP exports.
+
+Level-1 separation uses a Demucs adapter only when that engine and its weights
+are genuinely available; otherwise Auto mode visibly falls back to a real
+exact-sum DSP engine. Individual soprano/alto/tenor/bass-style outputs are
+labelled as reconstructions, probabilities remain visible, and insufficient
+evidence yields Unknown or a withheld part instead of a fabricated stem. See
+[vocal-separator/README.md](vocal-separator/README.md) for setup and honesty
+limits, [vocal-separator/docs/ARCHITECTURE.md](vocal-separator/docs/ARCHITECTURE.md)
+for the system design, and
+[vocal-separator/docs/DEPLOYMENT.md](vocal-separator/docs/DEPLOYMENT.md) for
+Docker/PostgreSQL/Redis deployment.
 
 ---
 
@@ -162,6 +185,7 @@ src/
   pages/                Portfolio, challenge, prototype, operations and personal-system routes
   styles/               Portfolio and prototype styling
 workniche/              Separate Next.js job-marketplace application
+vocal-separator/        Separate FastAPI + React AI music/vocal-part separator
 company-platform/       Separate Next.js company-discovery application
 projects/               All other projects, consolidated here (mysul/, cbu-assignments/) — see projects/README.md
 stock-price-analysis/   Guided stock-analysis notebook edition
