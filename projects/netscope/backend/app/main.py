@@ -380,3 +380,42 @@ def health() -> JSONResponse:
     return JSONResponse(
         content={"status": "ok", "database": "connected", "app": "netscope"}
     )
+
+
+@app.get("/health/write")
+def health_write():
+    """Write probe: proves the deployed API can write to its database.
+
+    Disabled unless `HEALTH_WRITE_PROBE=1`, so a public deployment does not expose
+    a writable endpoint. It creates a one-column probe table if absent, inserts a
+    row, counts it and deletes it again - the write is real and nothing is
+    retained. Returns a scrubbed message on failure.
+    """
+    import os as _os
+    import re as _re
+
+    from sqlalchemy import text
+
+    if _os.environ.get("HEALTH_WRITE_PROBE") != "1":
+        raise HTTPException(404, "not found")
+
+    def _scrub(value: str) -> str:
+        return _re.sub(r"://[^@\s]*@", "://***@", value)[:200]
+
+    try:
+        with engine.begin() as connection:
+            connection.execute(text("CREATE TABLE IF NOT EXISTS _health_probe (id TEXT PRIMARY KEY)"))
+            connection.execute(text("INSERT INTO _health_probe (id) VALUES ('probe') ON CONFLICT DO NOTHING"))
+            rows = connection.execute(text("SELECT COUNT(*) FROM _health_probe")).scalar_one()
+            connection.execute(text("DELETE FROM _health_probe WHERE id = 'probe'"))
+    except Exception as exc:  # noqa: BLE001 - diagnostics surface the real cause
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "database": "not writable",
+                "error": type(exc).__name__,
+                "detail": _scrub(str(exc)),
+            },
+        )
+    return JSONResponse(content={"status": "ok", "database": "writable", "rows_written": 1, "rows_seen": rows})
