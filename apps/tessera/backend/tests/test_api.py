@@ -288,11 +288,13 @@ def test_opening_match_requires_an_input(client):
 
 
 def test_tutor_status_is_honest_about_a_missing_key(client, monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    for name in ("TESSERA_TUTOR_API_KEY", "OPENAI_API_KEY", "TESSERA_TUTOR_BASE_URL", "TESSERA_TUTOR_MODEL"):
+        monkeypatch.delenv(name, raising=False)
     register(client)
     body = client.get("/api/tutor/status").json()
     assert body["configured"] is False
-    assert body["missing"] == ["OPENAI_API_KEY"]
+    assert body["missing"] == ["TESSERA_TUTOR_API_KEY"]
+    assert body["provider"] == "openai"
     assert body["retrieval_available"] is True
     assert "not a conversation" in body["note"]
 
@@ -321,13 +323,14 @@ def test_tutor_search_refuses_to_answer_from_outside_the_curriculum(client):
 
 
 def test_chatkit_refuses_to_serve_a_chat_that_cannot_answer(client, monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    for name in ("TESSERA_TUTOR_API_KEY", "OPENAI_API_KEY", "TESSERA_TUTOR_BASE_URL", "TESSERA_TUTOR_MODEL"):
+        monkeypatch.delenv(name, raising=False)
     register(client)
     response = client.post("/api/tutor/chatkit", json={"type": "threads.create", "params": {}})
     assert response.status_code == 503
     body = response.json()
     assert body["error"] == "tutor_not_configured"
-    assert "OPENAI_API_KEY" in body["missing"]
+    assert "TESSERA_TUTOR_API_KEY" in body["missing"]
 
 
 def test_tutor_endpoints_require_a_session(client):

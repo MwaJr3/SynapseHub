@@ -143,8 +143,44 @@ chatbot, and it is built so that it cannot bluff:
 - **Threads are per learner.** The ChatKit store is owner-scoped in the database;
   another learner's thread is a 404, not a read.
 
-`TESSERA_TUTOR_MODEL` (default `gpt-4o-mini`) selects the model. The key lives in
-the environment only and never reaches the bundle.
+### Running the tutor for free
+
+The tutor is **not tied to OpenAI**. Anything that speaks the OpenAI
+chat-completions format can drive it, which means an operator can start today with
+no card:
+
+| Provider | `TESSERA_TUTOR_BASE_URL` | Example `TESSERA_TUTOR_MODEL` | Notes |
+| --- | --- | --- | --- |
+| **Groq** | `https://api.groq.com/openai/v1` | `openai/gpt-oss-20b` | Free tier, no card, very fast. Limits are per organisation. |
+| **Google Gemini** | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-flash-latest` | Free tier. The free tier may use prompts for training outside the EU/UK — a real problem for learner data. |
+| **OpenRouter** | `https://openrouter.ai/api/v1` | `deepseek/deepseek-chat-v3:free` | Only ids ending `:free` are free; modest daily cap; free providers may log prompts. |
+| **Ollama (local)** | `http://127.0.0.1:11434/v1` | `qwen2.5:3b` | No account, no quota, no data leaving the machine. Needs the RAM. |
+| **OpenAI** | *(unset)* | `gpt-4o-mini` (default) | No free tier. |
+
+Then set `TESSERA_TUTOR_API_KEY` (any value for a local endpoint — it is ignored)
+and restart. `GET /api/tutor/status` reports which provider is live; the
+credential itself is never returned.
+
+Quotas and terms change; the table is a starting point, not a contract. For a
+commercial deployment handling learner data, the free tiers that train on prompts
+are a licensing and privacy decision, not just a cost one.
+
+### What is actually verified
+
+The wiring is tested end to end **without any account**: `tests/stub_provider.py`
+serves the same chat-completions wire format these providers use, and
+`tests/test_chatkit_protocol.py` drives a real `threads.create` request through
+the real route, ChatKit server, store and agent. It asserts that the retrieved
+curriculum text reaches the provider before an answer is produced, that the
+answer carries its citation, and that the thread is persisted for that learner
+only. `tests/test_agent_loop.py` checks the same loop through the Agents SDK
+directly, plus that an unreachable provider produces an error event and no
+assistant text.
+
+What is **not** verified is model quality: the stub's replies are scripted. That
+part needs a real key on a machine with outbound HTTPS — the preview sandbox this
+was built in can reach GitHub, npm and PyPI only, and every model provider is
+blocked from it.
 
 ## Run it
 
@@ -178,11 +214,12 @@ cd frontend && npm test && npm run build   # 18 tests, then typecheck + bundle
   was built in has no outbound access to OCW, OpenStax or the Lichess database, so
   the importers were tested against synthetic fixtures in the exact published
   formats. No external content is bundled, and no page was scraped.
-- **The tutor has never been run against a live model in this environment.** No
-  API key was available, so the conversation path is tested at its boundaries —
-  configuration gating, the 503, retrieval grounding, citation, thread isolation,
-  upstream-failure handling — and not with a real completion. Treat the generated
-  answer quality as unverified.
+- **The tutor has been run end to end, but never against a live model.** The whole
+  path — HTTP request, ChatKit server, store, agent, tool call, grounding, cited
+  answer, error handling — is exercised against a local stub that speaks the same
+  wire format as Groq, Gemini, OpenRouter and Ollama. No real completion has been
+  inspected, because every model provider is blocked from this sandbox. Treat
+  answer quality, tone and refusal behaviour as unverified.
 - **Retrieval is token overlap, not semantic search.** It is explainable and
   deterministic, and it will miss paraphrases. It is not embeddings and is not
   described as such.

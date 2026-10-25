@@ -56,25 +56,105 @@ def db():
 # ------------------------------------------------------------------ configuration
 
 
+def _clear_tutor_env(monkeypatch):
+    for name in (
+        "TESSERA_TUTOR_API_KEY",
+        "OPENAI_API_KEY",
+        "TESSERA_TUTOR_BASE_URL",
+        "TESSERA_TUTOR_MODEL",
+    ):
+        monkeypatch.delenv(name, raising=False)
+
+
 def test_absent_key_is_reported_as_unconfigured(monkeypatch):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    _clear_tutor_env(monkeypatch)
     state = tutor_config()
     assert state.configured is False
-    assert "OPENAI_API_KEY" in state.missing
+    assert "TESSERA_TUTOR_API_KEY" in state.missing
     assert "no model is called" in state.reason.lower()
+    # The reason must point at free options rather than leaving the reader stuck.
+    assert "Groq" in state.reason
 
 
 def test_blank_key_does_not_count_as_configured(monkeypatch):
+    _clear_tutor_env(monkeypatch)
     monkeypatch.setenv("OPENAI_API_KEY", "   ")
     assert tutor_config().configured is False
 
 
 def test_key_presence_is_reported_without_ever_echoing_it(monkeypatch):
+    _clear_tutor_env(monkeypatch)
     monkeypatch.setenv("OPENAI_API_KEY", "sk-test-secret-value")
     state = tutor_config()
     assert state.configured is True
     assert "sk-test-secret-value" not in str(state)
+    assert state.key_source == "OPENAI_API_KEY"
     assert state.missing == ()
+
+
+# --------------------------------------------------- any OpenAI-compatible host
+
+
+def test_openai_is_the_default_provider(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+    state = tutor_config()
+    assert state.provider == "openai"
+    assert state.base_url == ""
+    assert state.model == "gpt-4o-mini"
+
+
+def test_a_free_provider_is_configured_by_base_url(monkeypatch):
+    """Groq: free tier, OpenAI-compatible, no card. This is the configuration."""
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "https://api.groq.com/openai/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "gsk_test_value")
+    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "openai/gpt-oss-20b")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.provider == "api.groq.com"
+    assert state.model == "openai/gpt-oss-20b"
+    assert state.key_source == "TESSERA_TUTOR_API_KEY"
+    assert "gsk_test_value" not in str(state)
+
+
+def test_a_custom_endpoint_without_a_model_name_is_not_configured(monkeypatch):
+    """Guessing a model id would fail at request time with a provider error."""
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "https://api.groq.com/openai/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "gsk_test")
+    state = tutor_config()
+    assert state.configured is False
+    assert state.missing == ("TESSERA_TUTOR_MODEL",)
+    assert "TESSERA_TUTOR_MODEL" in state.reason
+
+
+def test_a_local_endpoint_needs_no_credential(monkeypatch):
+    """Ollama or llama.cpp on the same machine: free and offline."""
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "http://127.0.0.1:11434/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "qwen2.5:3b")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.provider == "local"
+    assert state.key_source is None
+    assert state.missing == ()
+
+
+def test_a_remote_endpoint_still_needs_a_credential(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "https://openrouter.ai/api/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "deepseek/deepseek-chat-v3:free")
+    state = tutor_config()
+    assert state.configured is False
+    assert state.missing == ("TESSERA_TUTOR_API_KEY",)
+
+
+def test_the_generic_key_wins_over_the_openai_one(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-openai")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "generic")
+    assert tutor_config().key_source == "TESSERA_TUTOR_API_KEY"
 
 
 # --------------------------------------------------------------------- retrieval
@@ -136,6 +216,8 @@ def test_thread_rows_are_owned_and_filterable(db):
 
 
 def test_store_refuses_another_learners_thread(db):
+    import asyncio
+
     from chatkit.store import NotFoundError
 
     from app.ai.store import SqlChatKitStore
@@ -145,12 +227,14 @@ def test_store_refuses_another_learners_thread(db):
 
     store = SqlChatKitStore(db)
     with pytest.raises(NotFoundError):
-        store.load_thread("t1", {"owner": "bob"})
+        asyncio.run(store.load_thread("t1", {"owner": "bob"}))
     # The owner can read it.
-    assert store.load_thread("t1", {"owner": "alice"}).id == "t1"
+    assert asyncio.run(store.load_thread("t1", {"owner": "alice"})).id == "t1"
 
 
 def test_store_refuses_another_learners_items(db):
+    import asyncio
+
     from chatkit.store import NotFoundError
 
     from app.ai.store import SqlChatKitStore
@@ -159,7 +243,9 @@ def test_store_refuses_another_learners_items(db):
     db.commit()
     store = SqlChatKitStore(db)
     with pytest.raises(NotFoundError):
-        store.load_thread_items("t1", after=None, limit=10, order="asc", context={"owner": "bob"})
+        asyncio.run(
+            store.load_thread_items("t1", after=None, limit=10, order="asc", context={"owner": "bob"})
+        )
 
 
 def test_delete_thread_removes_its_items(db):
@@ -168,7 +254,9 @@ def test_delete_thread_removes_its_items(db):
     db.add(TutorThreadRow(id="t1", owner="alice", title="a", status="active", payload=_thread_payload("t1")))
     db.add(TutorItemRow(id="i1", thread_id="t1", owner="alice", type="message", payload="{}"))
     db.commit()
-    SqlChatKitStore(db).delete_thread("t1", {"owner": "alice"})
+    import asyncio
+
+    asyncio.run(SqlChatKitStore(db).delete_thread("t1", {"owner": "alice"}))
     assert db.query(TutorItemRow).count() == 0
     assert db.get(TutorThreadRow, "t1") is None
 
@@ -181,3 +269,36 @@ def _thread_payload(thread_id: str) -> str:
     return ThreadMetadata(
         id=thread_id, title="a", created_at=datetime.now(timezone.utc), status={"type": "active"}
     ).model_dump_json()
+
+
+def test_build_agent_wires_a_free_provider_into_the_agents_sdk(monkeypatch):
+    """The agent object is provider-agnostic — proved without any network call.
+
+    Construction performs no request: it builds the chat-completions model the
+    Agents SDK uses for non-OpenAI endpoints, pointed at the configured host.
+    """
+    from agents import OpenAIChatCompletionsModel
+
+    from app.ai.agent import build_agent
+
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "https://api.groq.com/openai/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "gsk_test_value")
+    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "openai/gpt-oss-20b")
+
+    agent = build_agent()
+    assert isinstance(agent.model, OpenAIChatCompletionsModel)
+    assert agent.model.model == "openai/gpt-oss-20b"
+    # The SDK keeps the client private; that is the object carrying the base URL.
+    assert str(agent.model._client.base_url).startswith("https://api.groq.com/openai/v1")
+    # The credential is held by the client, never placed on the agent.
+    assert "gsk_test_value" not in repr(agent.instructions)
+    assert "gsk_test_value" not in str(agent.name)
+
+
+def test_build_agent_refuses_to_build_without_configuration(monkeypatch):
+    from app.ai.agent import build_agent
+
+    _clear_tutor_env(monkeypatch)
+    with pytest.raises(RuntimeError, match="not configured"):
+        build_agent()

@@ -25,7 +25,16 @@ ItemType = Literal["thread", "message", "tool_call", "task", "workflow", "attach
 
 
 class SqlChatKitStore(Store[dict[str, Any]]):
-    """Store implementation bound to one database session per request."""
+    """Store implementation bound to one database session per request.
+
+    Every method that ChatKit awaits is `async`, because the base class awaits
+    them: a plain `def` here returns None and fails at call time with
+    "object NoneType can't be used in 'await' expression". The SQLAlchemy calls
+    inside are synchronous and brief (local SQLite, or a pooled psycopg2
+    connection), so they run on the event loop as-is; moving them to a worker
+    thread would also need a per-thread session, which is a change for a later
+    day rather than a silent one now.
+    """
 
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -42,7 +51,7 @@ class SqlChatKitStore(Store[dict[str, Any]]):
 
     # --------------------------------------------------------------------- threads
 
-    def save_thread(self, thread: ThreadMetadata, context: dict[str, Any]) -> None:
+    async def save_thread(self, thread: ThreadMetadata, context: dict[str, Any]) -> None:
         owner = context["owner"]
         row = self.db.get(TutorThreadRow, thread.id)
         payload = thread.model_dump_json()
@@ -65,13 +74,13 @@ class SqlChatKitStore(Store[dict[str, Any]]):
             row.payload = payload
         self.db.commit()
 
-    def load_thread(self, thread_id: str, context: dict[str, Any]) -> ThreadMetadata:
+    async def load_thread(self, thread_id: str, context: dict[str, Any]) -> ThreadMetadata:
         row = self.db.get(TutorThreadRow, thread_id)
         if row is None or row.owner != context["owner"]:
             raise NotFoundError(f"thread {thread_id} not found")
         return ThreadMetadata.model_validate_json(row.payload)
 
-    def load_threads(
+    async def load_threads(
         self, limit: int, after: str | None, order: str, context: dict[str, Any]
     ) -> Page[ThreadMetadata]:
         query = self.db.query(TutorThreadRow).filter(TutorThreadRow.owner == context["owner"])
@@ -90,7 +99,7 @@ class SqlChatKitStore(Store[dict[str, Any]]):
             data = list(reversed(data))
         return Page(data=data, has_more=has_more, after=data[-1].id if data else None)
 
-    def delete_thread(self, thread_id: str, context: dict[str, Any]) -> None:
+    async def delete_thread(self, thread_id: str, context: dict[str, Any]) -> None:
         row = self.db.get(TutorThreadRow, thread_id)
         if row is None or row.owner != context["owner"]:
             raise NotFoundError(f"thread {thread_id} not found")
@@ -100,7 +109,7 @@ class SqlChatKitStore(Store[dict[str, Any]]):
 
     # ----------------------------------------------------------------------- items
 
-    def save_item(self, thread_id: str, item: ThreadItem, context: dict[str, Any]) -> None:
+    async def save_item(self, thread_id: str, item: ThreadItem, context: dict[str, Any]) -> None:
         self._assert_owned(thread_id, context)
         row = self.db.get(TutorItemRow, item.id)
         payload = item.model_dump_json()
@@ -119,16 +128,16 @@ class SqlChatKitStore(Store[dict[str, Any]]):
             row.payload = payload
         self.db.commit()
 
-    def add_thread_item(self, thread_id: str, item: ThreadItem, context: dict[str, Any]) -> None:
-        self.save_item(thread_id, item, context)
+    async def add_thread_item(self, thread_id: str, item: ThreadItem, context: dict[str, Any]) -> None:
+        await self.save_item(thread_id, item, context)
 
-    def load_item(self, thread_id: str, item_id: str, context: dict[str, Any]) -> ThreadItem:
+    async def load_item(self, thread_id: str, item_id: str, context: dict[str, Any]) -> ThreadItem:
         row = self.db.get(TutorItemRow, item_id)
         if row is None or row.owner != context["owner"] or row.thread_id != thread_id:
             raise NotFoundError(f"item {item_id} not found")
         return _parse_item(row.payload)
 
-    def load_thread_items(
+    async def load_thread_items(
         self,
         thread_id: str,
         after: str | None,
@@ -155,7 +164,7 @@ class SqlChatKitStore(Store[dict[str, Any]]):
             items = list(reversed(items))
         return Page(data=items, has_more=has_more, after=items[-1].id if items else None)
 
-    def delete_thread_item(self, thread_id: str, item_id: str, context: dict[str, Any]) -> None:
+    async def delete_thread_item(self, thread_id: str, item_id: str, context: dict[str, Any]) -> None:
         row = self.db.get(TutorItemRow, item_id)
         if row is None or row.owner != context["owner"] or row.thread_id != thread_id:
             raise NotFoundError(f"item {item_id} not found")
@@ -164,7 +173,7 @@ class SqlChatKitStore(Store[dict[str, Any]]):
 
     # ----------------------------------------------------------------- attachments
 
-    def save_attachment(self, attachment: Attachment, context: dict[str, Any]) -> None:
+    async def save_attachment(self, attachment: Attachment, context: dict[str, Any]) -> None:
         # Files are not accepted by this tutor; the row is kept so the protocol
         # stays coherent if an attachment ever reaches the server.
         self.db.add(
@@ -176,13 +185,13 @@ class SqlChatKitStore(Store[dict[str, Any]]):
         )
         self.db.commit()
 
-    def load_attachment(self, attachment_id: str, context: dict[str, Any]) -> Attachment:
+    async def load_attachment(self, attachment_id: str, context: dict[str, Any]) -> Attachment:
         row = self.db.get(TutorAttachmentRow, attachment_id)
         if row is None or row.owner != context["owner"]:
             raise NotFoundError(f"attachment {attachment_id} not found")
         return Attachment.model_validate_json(row.payload)
 
-    def delete_attachment(self, attachment_id: str, context: dict[str, Any]) -> None:
+    async def delete_attachment(self, attachment_id: str, context: dict[str, Any]) -> None:
         row = self.db.get(TutorAttachmentRow, attachment_id)
         if row is None or row.owner != context["owner"]:
             raise NotFoundError(f"attachment {attachment_id} not found")

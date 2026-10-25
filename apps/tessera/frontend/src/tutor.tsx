@@ -91,7 +91,12 @@ export function TutorPage() {
             {status.configured ? 'conversation enabled' : 'conversation not configured'}
           </Badge>
           <Badge>grounded search always available</Badge>
-          {status.configured ? <span className={`text-xs ${muted}`}>model: {status.model}</span> : null}
+          {status.configured ? (
+            <span className={`text-xs ${muted}`}>
+              {status.provider === 'openai' ? 'OpenAI' : status.provider} · {status.model}
+              {status.key_source ? ` · key from ${status.key_source}` : ' · no key needed'}
+            </span>
+          ) : null}
         </div>
         <p className={`mt-2 text-sm ${muted}`}>{status.reason}</p>
         {!status.configured ? (
@@ -109,14 +114,62 @@ export function TutorPage() {
   );
 }
 
+const FREE_OPTIONS = [
+  {
+    name: 'Groq',
+    detail: 'Free tier, no card, OpenAI-compatible. Fast.',
+    base: 'https://api.groq.com/openai/v1',
+    model: 'openai/gpt-oss-20b',
+  },
+  {
+    name: 'Google Gemini',
+    detail: 'Free tier. Note: the free tier may use prompts for training outside the EU/UK.',
+    base: 'https://generativelanguage.googleapis.com/v1beta/openai',
+    model: 'gemini-flash-latest',
+  },
+  {
+    name: 'OpenRouter',
+    detail: 'Models whose id ends in :free cost nothing; modest daily cap.',
+    base: 'https://openrouter.ai/api/v1',
+    model: 'deepseek/deepseek-chat-v3:free',
+  },
+  {
+    name: 'Ollama, on this machine',
+    detail: 'No account, no quota. Needs the model downloaded and a few GB of RAM.',
+    base: 'http://127.0.0.1:11434/v1',
+    model: 'qwen2.5:3b',
+  },
+];
+
 function NotConfigured({ missing }: { missing: string[] }) {
   return (
     <Card>
       <SectionTitle>Conversation is switched off on this deployment</SectionTitle>
       <p className={`text-sm ${muted}`}>
         The service is missing {missing.length > 0 ? missing.join(', ') : 'a model key'}. An operator sets it in the
-        environment; it is never held in the browser or in this repository. Until then the chat panel is not rendered
+        environment; it never reaches the browser or this repository. Until then the chat panel is not rendered
         rather than shown broken.
+      </p>
+      <p className={`mt-3 text-sm ${muted}`}>
+        The tutor is not tied to OpenAI. Any endpoint that speaks the OpenAI chat-completions format works, including
+        free ones. Set these three variables and restart the backend:
+      </p>
+      <ul className="mt-3 grid gap-2">
+        {FREE_OPTIONS.map((option) => (
+          <li key={option.name} className="rounded-md border p-3 text-sm" style={{ borderColor: 'var(--line)' }}>
+            <p className="font-medium">{option.name}</p>
+            <p className={`text-xs ${muted}`}>{option.detail}</p>
+            <p className={`mt-1 font-mono text-xs ${muted}`}>
+              TESSERA_TUTOR_BASE_URL={option.base}
+            </p>
+            <p className={`font-mono text-xs ${muted}`}>TESSERA_TUTOR_MODEL={option.model}</p>
+            <p className={`font-mono text-xs ${muted}`}>TESSERA_TUTOR_API_KEY=&lt;that provider's key&gt;</p>
+          </li>
+        ))}
+      </ul>
+      <p className={`mt-3 text-xs ${muted}`}>
+        This environment cannot reach any model provider, so the panel stays switched off here whatever key is
+        entered. Run the app locally or deploy it where outbound HTTPS is allowed.
       </p>
     </Card>
   );

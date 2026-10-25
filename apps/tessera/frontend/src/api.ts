@@ -194,6 +194,9 @@ export interface OpeningMatchResponse {
 export interface TutorStatus {
   configured: boolean;
   model: string;
+  provider: string;
+  base_url: string;
+  key_source: string | null;
   missing: string[];
   reason: string;
   retrieval_available: boolean;

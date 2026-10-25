@@ -660,6 +660,10 @@ def tutor_status(request: Request, db: Session = Depends(get_db)):
     return {
         "configured": state.configured,
         "model": state.model,
+        "provider": state.provider,
+        # The endpoint is public information; the credential never is.
+        "base_url": state.base_url,
+        "key_source": state.key_source,
         "missing": list(state.missing),
         "reason": state.reason,
         "retrieval_available": True,
@@ -707,7 +711,7 @@ async def tutor_chatkit(request: Request, db: Session = Depends(get_db)):
     """
     from fastapi.responses import JSONResponse, StreamingResponse
 
-    from .ai.agent import tutor_config
+    from .ai.agent import build_agent, tutor_config
 
     user = _current(request, db)
     state = tutor_config()
@@ -725,9 +729,12 @@ async def tutor_chatkit(request: Request, db: Session = Depends(get_db)):
 
     from .ai.chatkit_server import TesseraChatKitServer
 
-    server = TesseraChatKitServer(db)
     body = await request.body()
     try:
+        # The agent opens its own session for retrieval; closing the request's
+        # session here would break the store mid-conversation.
+        agent = build_agent(config=state)
+        server = TesseraChatKitServer(db, agent=agent)
         result = await server.process(body, {"owner": user.id, "email": user.email})
     except Exception:
         # A provider outage must not look like a bug in Tessera, and must never

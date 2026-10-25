@@ -10,6 +10,7 @@ is SQL-backed and a session is not safe to share across threads.
 
 from __future__ import annotations
 
+import logging
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -20,6 +21,8 @@ from sqlalchemy.orm import Session
 
 from .agent import build_agent
 from .store import SqlChatKitStore
+
+logger = logging.getLogger("tessera.tutor")
 
 
 class TesseraChatKitServer(ChatKitServer[dict[str, Any]]):
@@ -52,6 +55,22 @@ class TesseraChatKitServer(ChatKitServer[dict[str, Any]]):
             store=self.store,
             request_context=context,
         )
-        result = Runner.run_streamed(self.agent, input_items, context=agent_context)
-        async for event in stream_agent_response(agent_context, result):
-            yield event
+        try:
+            result = Runner.run_streamed(self.agent, input_items, context=agent_context)
+            async for event in stream_agent_response(agent_context, result):
+                yield event
+        except Exception:
+            # The stream has already started, so the failure has to be reported
+            # inside it. ChatKit renders this as a retryable error; the learner
+            # gets a sentence rather than a silent stop, and nothing is invented.
+            logger.exception("tutor generation failed")
+            from chatkit.types import ErrorEvent
+
+            yield ErrorEvent(
+                code="custom",
+                message=(
+                    "The tutor could not reach the model provider, so nothing was generated. "
+                    "Grounded search above still works."
+                ),
+                allow_retry=True,
+            )

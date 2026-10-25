@@ -1,4 +1,4 @@
-"""The tutor agent, grounded in the knowledge graph.
+"""The tutor agent, grounded in the knowledge graph, on any OpenAI-compatible model.
 
 Two rules make this tutor different from a chatbot bolted onto a learning app:
 
@@ -8,20 +8,33 @@ Two rules make this tutor different from a chatbot bolted onto a learning app:
 2. **It must cite.** Every claim carries the concept (and source, where one
    exists) that it came from, so a learner can check it.
 
-If `OPENAI_API_KEY` is absent the agent is never constructed. Callers get an
-honest `configured=False` and the UI shows the retrieval-only path instead of a
-fake conversation.
+The provider is not hard-coded to OpenAI. Anything that speaks the OpenAI chat
+completions shape works, which matters because there are free options: Groq,
+Google Gemini's compatibility endpoint, OpenRouter's `:free` models, or a local
+Ollama. Point `TESSERA_TUTOR_BASE_URL` at one of them, set
+`TESSERA_TUTOR_API_KEY`, and name the model in `TESSERA_TUTOR_MODEL`.
+
+If no key (and no local endpoint) is configured, the agent is never constructed.
+Callers get an honest `configured=False` and the UI shows the retrieval-only path
+instead of a fake conversation.
 """
 
 from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from urllib.parse import urlparse
 
 from .. import database
 
-#: The model used for the tutor. Configurable so a deployment can choose.
-DEFAULT_MODEL = os.environ.get("TESSERA_TUTOR_MODEL", "gpt-4o-mini")
+#: Environment variables checked for the credential, in order.
+KEY_ENV_VARS = ("TESSERA_TUTOR_API_KEY", "OPENAI_API_KEY")
+
+#: Hosts that count as "runs on this machine": no credential is needed there.
+LOCAL_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1", "host.docker.internal"}
+
+#: Used only when talking to OpenAI itself. Any other endpoint must name its model.
+OPENAI_DEFAULT_MODEL = "gpt-4o-mini"
 
 INSTRUCTIONS = """You are Tessera's study tutor, part of Tamuzi Learning.
 
@@ -44,37 +57,84 @@ Ground rules:
 
 @dataclass(frozen=True)
 class TutorConfig:
-    """Whether the AI tutor can run, and why not when it cannot."""
+    """Whether the AI tutor can run, on what, and why not when it cannot."""
 
     configured: bool
     model: str
+    #: "openai", "local", or the endpoint host (e.g. "api.groq.com").
+    provider: str
+    #: Empty string means the default OpenAI endpoint.
+    base_url: str
+    #: The environment variable the credential came from, never the value.
+    key_source: str | None
     missing: tuple[str, ...]
     reason: str
 
 
+def _read(name: str) -> str:
+    return (os.environ.get(name) or "").strip()
+
+
 def tutor_config() -> TutorConfig:
     """Report real configuration state. Never guesses, never fakes a key."""
+    base_url = _read("TESSERA_TUTOR_BASE_URL").rstrip("/")
+    host = (urlparse(base_url).hostname or "") if base_url else ""
+    is_local = host in LOCAL_HOSTS
+    provider = "openai" if not base_url else ("local" if is_local else host)
+
+    key_source = next((name for name in KEY_ENV_VARS if _read(name)), None)
+    # A model name is required for any non-OpenAI endpoint: guessing one would
+    # fail at request time with a provider-specific error instead of here.
+    model = _read("TESSERA_TUTOR_MODEL") or (OPENAI_DEFAULT_MODEL if not base_url else "")
+
     missing: list[str] = []
-    if not (os.environ.get("OPENAI_API_KEY") or "").strip():
-        missing.append("OPENAI_API_KEY")
+    if key_source is None and not is_local:
+        missing.append("TESSERA_TUTOR_API_KEY")
+    if not model:
+        missing.append("TESSERA_TUTOR_MODEL")
+
     if missing:
+        if "TESSERA_TUTOR_MODEL" in missing:
+            reason = (
+                f"An endpoint other than OpenAI is configured ({host or 'none'}), so the model must be "
+                "named in TESSERA_TUTOR_MODEL. No model is called until it is."
+            )
+        else:
+            reason = (
+                "No model credential is configured, so no model is called. Set TESSERA_TUTOR_API_KEY "
+                "(free options: Groq, Google Gemini, OpenRouter) — sourced material is still available "
+                "through retrieval in the meantime."
+            )
         return TutorConfig(
             configured=False,
-            model=DEFAULT_MODEL,
+            model=model or "",
+            provider=provider,
+            base_url=base_url,
+            key_source=key_source,
             missing=tuple(missing),
-            reason=(
-                "No OpenAI API key is configured, so no model is called. Sourced "
-                "material is still available through retrieval."
-            ),
+            reason=reason,
         )
-    return TutorConfig(configured=True, model=DEFAULT_MODEL, missing=(), reason="Configured.")
+
+    return TutorConfig(
+        configured=True,
+        model=model,
+        provider=provider,
+        base_url=base_url,
+        key_source=key_source,
+        missing=(),
+        reason=f"Configured for {provider} using model {model}.",
+    )
 
 
-def build_agent(db_session_factory=database.SessionLocal):
+def build_agent(db_session_factory=database.SessionLocal, config: TutorConfig | None = None):
     """Construct the Agents SDK agent. Only called when configured."""
     from agents import Agent, function_tool
 
     from .retrieval import search
+
+    state = config or tutor_config()
+    if not state.configured:
+        raise RuntimeError(f"the tutor is not configured: {', '.join(state.missing)}")
 
     @function_tool
     def search_knowledge(question: str) -> str:
@@ -92,9 +152,28 @@ def build_agent(db_session_factory=database.SessionLocal):
         finally:
             db.close()
 
+    model: object = state.model
+    if state.base_url:
+        # Any OpenAI-compatible endpoint: Groq, Gemini, OpenRouter, Ollama, vLLM.
+        # The chat-completions model object is what the Agents SDK uses for
+        # non-OpenAI providers, and tracing is switched off so a free provider
+        # never causes an upload attempt to api.openai.com.
+        from agents import OpenAIChatCompletionsModel, set_tracing_disabled
+        from openai import AsyncOpenAI
+
+        set_tracing_disabled(True)
+        client = AsyncOpenAI(
+            base_url=state.base_url,
+            # Local servers usually ignore the key; the SDK still requires one.
+            api_key=_read(state.key_source) if state.key_source else "not-needed",
+            timeout=60.0,
+            max_retries=1,
+        )
+        model = OpenAIChatCompletionsModel(model=state.model, openai_client=client)
+
     return Agent(
         name="Tessera tutor",
-        model=DEFAULT_MODEL,
+        model=model,
         instructions=INSTRUCTIONS,
         tools=[search_knowledge],
     )
