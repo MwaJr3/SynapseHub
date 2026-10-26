@@ -1,0 +1,31 @@
+{
+  "name": "TidyFiles",
+  "slug": "tidyfiles",
+  "shortDescription": "File organizer that moves files by content-aware rules with dry-run safety and honest reports.",
+  "tags": [
+    "productivity",
+    "cli",
+    "filesystem",
+    "safety"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "pathlib"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Content sniffing first; extension fallback (mismatches flagged, never assumed)",
+    "Dry-run by default; explicit source/target selection",
+    "Deterministic conflict handling (never overwrites)",
+    "OS errors reported per-file; files are never deleted",
+    "JSON reports"
+  ],
+  "knownLimitations": [
+    "Single-directory scan only (no recursive crawling by design)",
+    "No undo manifest yet (roadmap)",
+    "Screenshots pending capture"
+  ]
+}

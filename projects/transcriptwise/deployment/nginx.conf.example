@@ -1,0 +1,44 @@
+# Adapt inside nginx's http context. Replace domain and certificate paths.
+# This example is a recipe, not an installed/verified TLS deployment.
+limit_req_zone $binary_remote_addr zone=tw_api:10m rate=60r/m;
+limit_req_zone $binary_remote_addr zone=tw_auth:10m rate=10r/m;
+# Avoid query-string logging: search terms can be sensitive.
+log_format tw_safe '$remote_addr [$time_local] "$request_method $uri $server_protocol" $status $body_bytes_sent';
+server {
+    listen 80;
+    server_name learn.example.com;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name learn.example.com;
+    ssl_certificate /etc/letsencrypt/live/learn.example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/learn.example.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    access_log /var/log/nginx/transcriptwise-access.log tw_safe;
+    client_max_body_size 3m;
+    proxy_read_timeout 150s;
+    location /api/v1/auth/ {
+        limit_req zone=tw_auth burst=5 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /api/ {
+        limit_req zone=tw_api burst=30 nodelay;
+        limit_req_status 429;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        add_header Cache-Control "no-store" always;
+    }
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

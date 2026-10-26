@@ -73,3 +73,17 @@ cd ../frontend && npm test                   # 2 tests
 - No integration with external student-record systems; this MVP validates its
   own inputs and logs administrative changes.
 - Screenshots pending capture in a browser environment (not fabricated).
+
+## Modern features & performance notes (feature-candidate pass)
+- **Prerequisite checks** (`POST /api/prereq-check`): missing prerequisites
+  from recorded completions only (set difference `O(p)`).
+- **Waitlists** (`POST /api/waitlist/join`): FIFO with positions and
+  capacity-aware promotion; duplicates refused (409). Demo store is
+  per-process in-memory (documented).
+- **Timetable clash detection** (`POST /api/clashes`): pairwise `O(e²)` over a
+  student's sections (small bounded sets).
+- **Dashboard** (`GET /api/dashboard`): counts with explicit metric
+  definitions in the payload.
+- Deferred candidates (with reasons): automatic waitlist promotion on drop
+  (institutional policy decision); self-service UI surfaces for these APIs
+  (API-complete in this pass; frontend enhancement listed for follow-up).

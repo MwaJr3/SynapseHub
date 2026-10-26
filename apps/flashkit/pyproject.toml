@@ -1,0 +1,9 @@
+[project]
+name = "flashkit"
+version = "0.1.0"
+description = "Flashcard learning with documented review scheduling"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+flashkit = "app.cli:main"

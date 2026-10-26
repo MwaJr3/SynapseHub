@@ -1,0 +1,29 @@
+{
+  "name": "FlashKit",
+  "slug": "flashkit",
+  "shortDescription": "Flashcard learning: decks, documented review scheduling, and confidence tracked apart from recall.",
+  "tags": [
+    "education",
+    "cli",
+    "sqlite",
+    "spaced-repetition"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Decks/cards separated from review history",
+    "Documented v1 scheduling algorithm (doubling, cap, confidence nudges)",
+    "Confidence recorded separately from actual correctness",
+    "Due-card selection; progress with honest accuracy"
+  ],
+  "knownLimitations": [
+    "v1 scheduler is intentionally simple (documented), not SM-2",
+    "No import/export yet",
+    "Screenshots pending capture"
+  ]
+}

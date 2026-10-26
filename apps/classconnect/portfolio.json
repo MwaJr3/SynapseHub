@@ -1,0 +1,23 @@
+{
+  "name": "ClassConnect",
+  "slug": "classconnect",
+  "shortDescription": "Low-bandwidth virtual classroom with honest provider integration and async follow-up.",
+  "tags": ["education", "virtual-classroom", "low-bandwidth", "webrtc-adapter", "moderation"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Session lifecycle with conflict detection and local-time display",
+    "Short-lived signed room tokens (members only)",
+    "Explicit provider-unavailable state — async workflows keep working, calls never faked",
+    "Attendance, moderated chat and question queue, polls",
+    "Async follow-up space with assignments and teacher responses",
+    "Recording off by default with per-session consent"
+  ],
+  "knownLimitations": [
+    "No WebRTC credentials ship with the demo; adapter ready for configuration",
+    "Provider-dependent connection quality indicators not shown without a provider",
+    "Screenshots pending capture"
+  ]
+}

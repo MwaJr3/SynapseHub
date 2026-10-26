@@ -1,0 +1,31 @@
+{
+  "name": "IncidentFlow",
+  "slug": "incidentflow",
+  "shortDescription": "Forensics evidence intake, chain of custody, hash verification and honest timelines.",
+  "tags": [
+    "security",
+    "cli",
+    "forensics",
+    "sqlite"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3",
+    "hashlib"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Streamed SHA-256 intake with content-based duplicate detection",
+    "Chain-of-custody log for every action",
+    "Hash verification with honest scope (integrity since collection, not authenticity)",
+    "Metadata-derived timelines labelled as non-chronological proof",
+    "Investigation report with documented limitations"
+  ],
+  "knownLimitations": [
+    "Not a forensic/legal admissibility tool (stated in-product)",
+    "Classic metadata only; no filesystem journaling",
+    "Screenshots pending capture"
+  ]
+}

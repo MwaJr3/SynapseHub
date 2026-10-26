@@ -1,0 +1,9 @@
+[project]
+name = "skycast"
+version = "0.1.0"
+description = "Weather application with explicit provider adapters"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+skycast = "app.cli:main"

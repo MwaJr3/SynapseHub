@@ -1,0 +1,9 @@
+[project]
+name = "budgetbook"
+version = "0.1.0"
+description = "Personal expense tracker with exact decimal arithmetic"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+budgetbook = "app.cli:main"

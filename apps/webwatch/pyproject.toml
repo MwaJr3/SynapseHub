@@ -1,0 +1,9 @@
+[project]
+name = "webwatch"
+version = "0.1.0"
+description = "Permitted-source web data collection with change detection"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+webwatch = "app.cli:main"

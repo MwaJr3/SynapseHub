@@ -114,12 +114,6 @@ const CASE_STUDY_ADDENDUM =
   'repository at projects/mysul/mwangala-portfolio/src/data/projects/. Product source code is not ' +
   'linked yet — the Source Code button stays hidden.';
 
-const REGISTRY_ADDENDUM =
-  'A portfolio case-study record for this product exists in the owner-supplied Mwangala portfolio registry ' +
-  '(verified location: projects/mysul/mwangala-portfolio/src/data/projects/). No record exists at the root ' +
-  'registry path src/data/projects/ — a previously drafted claim of records there was incorrect and has been ' +
-  'withdrawn. Product source code is not linked — the Source Code button stays hidden.';
-
 function appAddendum(slug: string): string {
   return (
     `Working full-stack application built and verified in this repository at apps/${slug} (backend + frontend + tests), ` +
@@ -128,6 +122,16 @@ function appAddendum(slug: string): string {
     `projects/mysul/mwangala/apps/${slug} and projects/mysul/mwangala/projects/${slug}. ` +
     'Not publicly deployed; no hosted demo is claimed.'
   );
+}
+
+function educationAppEvidence(slug: string): ProductEvidence {
+  return {
+    repositoryUrl: appSourceUrl(slug),
+    verificationAddendum:
+      `Working full-stack application built and verified in this repository at apps/${slug} ` +
+      '(backend + frontend + tests, including seeded demo data and documented limitations). ' +
+      'Not publicly deployed; no hosted demo is claimed.',
+  };
 }
 
 function appEvidence(slug: string): ProductEvidence {
@@ -141,15 +145,11 @@ function caseStudyEvidence(): ProductEvidence {
   return { verificationAddendum: CASE_STUDY_ADDENDUM };
 }
 
-function registryEvidence(): ProductEvidence {
-  return { verificationAddendum: REGISTRY_ADDENDUM };
-}
-
 /**
  * Per-product evidence, keyed by product slug. The 25 catalogue products are
  * covered by exactly one of three verified record sets; source links exist
- * only for the seven with working apps — pointing into this repository, where
- * the code now lives.
+ * only for products with working apps — pointing into this repository, where
+ * the code now lives (seven portfolio apps plus nine education-suite apps).
  */
 export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
   // Working apps (vendored from MySul PR #1) — Source Code configured.
@@ -170,16 +170,16 @@ export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
   'threatintel-desk': caseStudyEvidence(),
   'cyberaware-lab': caseStudyEvidence(),
   transcriptwise: caseStudyEvidence(),
-  // Portfolio project registry (this repository) — no product source linked.
-  learnbridge: registryEvidence(),
-  classconnect: registryEvidence(),
-  tutorspring: registryEvidence(),
-  pathwise: registryEvidence(),
-  teachcraft: registryEvidence(),
-  'openlearn-commons': registryEvidence(),
-  learnpulse: registryEvidence(),
-  reachlearn: registryEvidence(),
-  eduaccess: registryEvidence(),
+  // Education suite (built in this workspace, apps/<slug>) — Source Code configured.
+  learnbridge: educationAppEvidence('learnbridge'),
+  classconnect: educationAppEvidence('classconnect'),
+  tutorspring: educationAppEvidence('tutorspring'),
+  pathwise: educationAppEvidence('pathwise'),
+  teachcraft: educationAppEvidence('teachcraft'),
+  'openlearn-commons': educationAppEvidence('openlearn-commons'),
+  learnpulse: educationAppEvidence('learnpulse'),
+  reachlearn: educationAppEvidence('reachlearn'),
+  eduaccess: educationAppEvidence('eduaccess'),
 };
 
 /** The only external URLs permitted in the seed catalogue. */

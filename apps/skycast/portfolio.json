@@ -1,0 +1,29 @@
+{
+  "name": "SkyCast",
+  "slug": "skycast",
+  "shortDescription": "Weather application with pluggable providers, explicit units/timezones and honest data labelling.",
+  "tags": [
+    "cli",
+    "api-integration",
+    "weather"
+  ],
+  "stack": [
+    "Python",
+    "urllib"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Provider adapter interface (fixture vs HTTP)",
+    "Simulated demo data always labelled as such",
+    "Explicit units (\u00b0C/km/h/%), timezone and observation timestamp",
+    "Timeouts and response validation for live mode",
+    "Favourite locations"
+  ],
+  "knownLimitations": [
+    "Default fixture provider is simulated demo data",
+    "Live mode requires explicit configuration + network + provider terms",
+    "Screenshots pending capture"
+  ]
+}

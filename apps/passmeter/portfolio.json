@@ -1,0 +1,29 @@
+{
+  "name": "PassMeter",
+  "slug": "passmeter",
+  "shortDescription": "Local password strength analysis with transparent signals and honest limitations.",
+  "tags": [
+    "security",
+    "cli",
+    "passwords"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "re"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Named, explainable signals (length, variety, repetition, sequences, patterns)",
+    "Local-only analysis; hidden input; reports never echo the password",
+    "Batch mode for synthetic test inputs",
+    "Approximate entropy estimate labelled as such"
+  ],
+  "knownLimitations": [
+    "Small bundled weak list cannot stand in for breach corpora",
+    "Rubric score is a heuristic estimate, not proof of strength",
+    "Screenshots pending capture"
+  ]
+}

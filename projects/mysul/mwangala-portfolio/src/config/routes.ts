@@ -11,6 +11,7 @@ export const staticRoutes = [
   { path: '/skills', priority: '0.7', changefreq: 'monthly' },
   { path: '/approach', priority: '0.6', changefreq: 'monthly' },
   { path: '/contact', priority: '0.6', changefreq: 'yearly' },
+  { path: '/earlier-work', priority: '0.6', changefreq: 'monthly' },
 ] as const;
 
 export function projectRoutes(): { path: string; priority: string; changefreq: string }[] {

@@ -10,73 +10,83 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>/projects</loc>
+    <loc>/portfolio/projects</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>/projects/phishlens</loc>
+    <loc>/portfolio/projects/phishlens</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/netscope</loc>
+    <loc>/portfolio/projects/netscope</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/threatintel-desk</loc>
+    <loc>/portfolio/projects/threatintel-desk</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/incidentflow</loc>
+    <loc>/portfolio/projects/incidentflow</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/hashsight</loc>
+    <loc>/portfolio/projects/hashsight</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/assetwatch</loc>
+    <loc>/portfolio/projects/assetwatch</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/securecode-workbench</loc>
+    <loc>/portfolio/projects/securecode-workbench</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/cyberaware-lab</loc>
+    <loc>/portfolio/projects/cyberaware-lab</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/projects/transcriptwise</loc>
+    <loc>/portfolio/projects/transcriptwise</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>/about</loc>
+    <loc>/portfolio/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>/skills</loc>
+    <loc>/portfolio/skills</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>/approach</loc>
+    <loc>/portfolio/approach</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>/contact</loc>
+    <loc>/portfolio/contact</loc>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>/portfolio/earlier-work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>/portfolio</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>

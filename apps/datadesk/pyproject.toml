@@ -1,0 +1,9 @@
+[project]
+name = "datadesk"
+version = "0.1.0"
+description = "CSV data analysis dashboard with honest reports"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.scripts]
+datadesk = "app.cli:main"

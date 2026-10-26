@@ -1,0 +1,24 @@
+{
+  "name": "LearnBridge",
+  "slug": "learnbridge",
+  "shortDescription": "Offline-first e-learning platform for learners with unreliable internet access.",
+  "tags": ["education", "offline-first", "e-learning", "quizzes", "pwa"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Course catalogue with metadata, search and filters",
+    "Lessons with mixed content blocks and configurable completion requirements",
+    "Quizzes (mcq, multi-select, true/false, short answer) with explanations",
+    "Progress states driven by requirements, not page views",
+    "Downloadable course packs for low-bandwidth study",
+    "Offline sync queue with explicit conflict resolution",
+    "Bookmarks, notes and per-user privacy"
+  ],
+  "knownLimitations": [
+    "PWA service-worker shell represented by course packs + sync API in this MVP",
+    "Media links open only online; offline availability never claimed",
+    "Screenshots pending capture"
+  ]
+}

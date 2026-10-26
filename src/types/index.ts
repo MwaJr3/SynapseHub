@@ -22,7 +22,8 @@ export type ProjectSlug =
   | 'learnpulse'
   | 'reachlearn'
   | 'eduaccess'
-  | 'workniche';
+  | 'workniche'
+  | 'vocal-separator';
 
 export interface ProjectFeature {
   /** Short feature name shown as a heading in the case study. */

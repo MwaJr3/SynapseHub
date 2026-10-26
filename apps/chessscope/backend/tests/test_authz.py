@@ -1,4 +1,7 @@
 """Game CRUD, analysis endpoint and ownership tests."""
+import os
+
+from app import config
 
 PGN = """[White "A"]
 [Black "B"]
@@ -8,7 +11,9 @@ PGN = """[White "A"]
 """
 
 
-def test_upload_analyse_report_roundtrip(authed_client):
+def test_upload_analyse_report_roundtrip(authed_client, monkeypatch):
+    from app import config
+    monkeypatch.setattr(config, "ENGINE_DEPTH", 3)  # real engine, fast depth for tests
     upload = authed_client.post("/api/games", json={"pgn_text": PGN})
     assert upload.status_code == 200
     game_id = upload.json()["id"]
@@ -19,7 +24,7 @@ def test_upload_analyse_report_roundtrip(authed_client):
 
     analysis_body = authed_client.post(f"/api/games/{game_id}/analyze").json()
     assert analysis_body["stats"]["plies"] == 7
-    assert analysis_body["engine"]["available"] is False
+    assert analysis_body["engine"]["available"] is bool(config.ENGINE_PATH and os.path.exists(config.ENGINE_PATH))
     assert "NOT proof" in analysis_body["disclaimer"]
 
     report = authed_client.get(f"/api/games/{game_id}/report.json").json()
@@ -50,7 +55,7 @@ def test_insights_aggregate_results(authed_client):
     body = authed_client.get("/api/insights").json()
     assert body["games"] == 1
     assert body["results"]["white_wins"] == 1
-    assert body["engine_available"] is False
+    assert body["engine_available"] is bool(config.ENGINE_PATH and os.path.exists(config.ENGINE_PATH))
     assert "NOT proof" in body["disclaimer"]
 
 

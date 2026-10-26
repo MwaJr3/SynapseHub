@@ -1,0 +1,40 @@
+name: transcriptwise
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: transcriptwise
+      POSTGRES_USER: transcriptwise
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a generated URL-safe POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U transcriptwise -d transcriptwise"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  app:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://transcriptwise:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/transcriptwise
+      SERVE_FRONTEND: "true"
+      WORKER_ENABLED: "true"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:8000}
+    ports:
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 1g
+    restart: unless-stopped
+volumes:
+  postgres-data:

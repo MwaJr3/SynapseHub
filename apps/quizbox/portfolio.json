@@ -1,0 +1,29 @@
+{
+  "name": "QuizBox",
+  "slug": "quizbox",
+  "shortDescription": "Categorized, difficulty-tagged multiple-choice quizzes with explanations and scored results.",
+  "tags": [
+    "education",
+    "cli",
+    "quiz"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Validated question model (options, correct index, explanations)",
+    "Randomised selection with category/difficulty filters",
+    "Seeded reproducible selection for tests",
+    "Scoring with per-category breakdown; double answers rejected"
+  ],
+  "knownLimitations": [
+    "Question bank content is fictional demo data",
+    "No timed examinations yet",
+    "Screenshots pending capture"
+  ]
+}

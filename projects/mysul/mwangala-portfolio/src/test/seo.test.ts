@@ -20,7 +20,11 @@ const sitemapPaths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) =
 
 describe('sitemap.xml', () => {
   it('lists every route the app serves, exactly once', () => {
-    const expected = allRoutes().map((route) => route.path);
+    // Public shape: company site at `/`, portfolio under `/portfolio`.
+    const expected = [
+      '/',
+      ...allRoutes().map((route) => (route.path === '/' ? '/portfolio' : `/portfolio${route.path}`)),
+    ];
     expect([...sitemapPaths].sort()).toEqual([...expected].sort());
     expect(new Set(sitemapPaths).size).toBe(sitemapPaths.length);
   });
@@ -28,7 +32,7 @@ describe('sitemap.xml', () => {
   it('includes all nine case-study routes', () => {
     for (const project of projects) {
       expect(sitemapPaths, `${project.slug} case study missing from the sitemap`).toContain(
-        `/projects/${project.slug}`,
+        `/portfolio/projects/${project.slug}`,
       );
     }
   });

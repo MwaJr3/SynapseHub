@@ -1,0 +1,29 @@
+{
+  "name": "FileSeal",
+  "slug": "fileseal",
+  "shortDescription": "File encryption/decryption with AES-256-GCM and scrypt key derivation; safe, documented container format.",
+  "tags": [
+    "security",
+    "cli",
+    "cryptography"
+  ],
+  "stack": [
+    "Python",
+    "cryptography"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "AES-256-GCM authenticated encryption (established library, never custom ciphers)",
+    "scrypt KDF with random per-file salt",
+    "Versioned container format with header bound as associated data",
+    "Wrong-key and tamper detection (deliberately indistinguishable errors)",
+    "Originals preserved; atomic writes leave no partial output"
+  ],
+  "knownLimitations": [
+    "Passphrase loss makes recovery impossible (documented)",
+    "No key-management service integration",
+    "Screenshots pending capture"
+  ]
+}

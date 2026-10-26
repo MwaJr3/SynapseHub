@@ -1,0 +1,29 @@
+{
+  "name": "ShelfWise",
+  "slug": "shelfwise",
+  "shortDescription": "Library management distinguishing titles from physical copies, with loans, overdue rules and inventory.",
+  "tags": [
+    "cli",
+    "sqlite",
+    "relational-modeling"
+  ],
+  "stack": [
+    "Python",
+    "sqlite3"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Book titles modelled separately from physical copies",
+    "Borrow/return with single-loan-per-copy invariant",
+    "Configurable due-date rule; overdue calculation with injectable today",
+    "Case-insensitive search; inventory report",
+    "SQLite with parameterised queries"
+  ],
+  "knownLimitations": [
+    "No barcode hardware integration",
+    "No reservations/notifications yet",
+    "Screenshots pending capture"
+  ]
+}

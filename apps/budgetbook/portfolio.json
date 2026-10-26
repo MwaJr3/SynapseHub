@@ -1,0 +1,31 @@
+{
+  "name": "BudgetBook",
+  "slug": "budgetbook",
+  "shortDescription": "Personal expense tracker: exact decimal money math, refunds, audited corrections, period summaries.",
+  "tags": [
+    "finance",
+    "cli",
+    "data-processing"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "decimal",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Decimal arithmetic (never floats) with 2-dp policy",
+    "Income/expense/refund types; refunds reduce expenditure",
+    "Inclusive period summaries separating totals from balance",
+    "Top spending categories and monthly breakdown",
+    "Corrections require a reason and leave an audit trail"
+  ],
+  "knownLimitations": [
+    "Single-user local tool; no bank integrations",
+    "No budgets/charts yet (roadmap)",
+    "Screenshots pending capture"
+  ]
+}

@@ -33,7 +33,7 @@ export const phishLens: Project = {
   keyTech: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
   featured: true,
   order: 1,
-  status: 'Complete — working end to end with a rule-based analysis engine',
+  status: 'Built — rule-based analysis engine complete and tested as a Python CLI in apps/phishlens, and delivered as the full-stack application described in this case study at projects/phishlens (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, backend, frontend, testing',
   accent: 'cyan',
@@ -90,7 +90,6 @@ export const phishLens: Project = {
   repoUrl: links.repo,
   needsAuthorReview: [
     'challenges — confirm the wording matches your own implementation history',
-    'testing — replace the described coverage with your verified test count once you have run the suite',
   ],
   caseStudy: {
     problem: [
@@ -209,7 +208,7 @@ export const phishLens: Project = {
     ],
     testing: {
       summary:
-        'The test suite targets the parts where being wrong is expensive: parsing, indicator behaviour, classification policy, file validation and authorisation.',
+        'The test suite targets the parts where being wrong is expensive: parsing, indicator behaviour, classification policy, file validation and authorisation. Verified current suite: 12 backend tests (pytest) and 2 frontend tests (vitest) pass.',
       items: [
         {
           title: 'Parser tests',

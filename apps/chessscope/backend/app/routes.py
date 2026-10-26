@@ -9,9 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
-from . import analysis, config, security
+from . import analysis, config, recommendations, security
 from .database import get_db
-from .models import Game, User
+from .models import Game, Mistake, User
 
 router = APIRouter()
 
@@ -168,6 +168,18 @@ def analyze_game(game_id: int, user: User = Depends(current_user), db: Session =
         result = analysis.analyse_game(game.pgn_text, engine_path=config.ENGINE_PATH, depth=config.ENGINE_DEPTH)
     except analysis.PgnError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    # Record every classified move as durable training evidence (re-analysis replaces).
+    db.query(Mistake).filter(Mistake.game_id == game.id).delete()
+    for stat in result.moves:
+        if not stat.classification:
+            continue
+        phase = recommendations.phase_of(stat.ply, stat.material_total)
+        category = recommendations.categorise(list(stat.flags), bool(stat.is_capture), phase)
+        db.add(Mistake(
+            user_id=user.id, game_id=game.id, ply=stat.ply, san=stat.san,
+            classification=stat.classification, eval_drop_cp=stat.eval_drop_cp or 0,
+            phase=phase, category=category,
+        ))
     payload = {
         "headers": result.headers,
         "result": result.result,
@@ -190,6 +202,60 @@ def game_report(game_id: int, user: User = Depends(current_user), db: Session = 
     if not game.analysis_json:
         raise HTTPException(status_code=400, detail="Run an analysis before exporting a report.")
     return json.loads(game.analysis_json)
+
+
+# -------------------------------------------------------------- training --
+
+
+@router.get("/api/training/mistakes")
+def training_mistakes(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    rows = (
+        db.query(Mistake, Game.pgn_text)
+        .join(Game, Mistake.game_id == Game.id)
+        .filter(Mistake.user_id == user.id)
+        .order_by(Mistake.created_at, Mistake.ply)
+        .all()
+    )
+    return {
+        "mistakes": [
+            {
+                "id": m.id,
+                "gameId": m.game_id,
+                "pgnText": pgn,
+                "ply": m.ply,
+                "san": m.san,
+                "classification": m.classification,
+                "evalDropCp": m.eval_drop_cp,
+                "phase": m.phase,
+                "category": m.category,
+                "createdAt": m.created_at.isoformat(),
+            }
+            for m, pgn in rows
+        ]
+    }
+
+
+@router.get("/api/training/plan")
+def training_plan(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    rows = db.query(Mistake).filter(Mistake.user_id == user.id).order_by(Mistake.created_at).all()
+    mistakes = [
+        {"classification": m.classification, "category": m.category, "phase": m.phase,
+         "created_at": m.created_at.isoformat()}
+        for m in rows
+    ]
+    plan = recommendations.build_plan(mistakes)
+    return {
+        "totalMistakes": plan.total_mistakes,
+        "byClassification": plan.by_classification,
+        "byCategory": plan.by_category,
+        "focusAreas": [
+            {"category": f.category, "title": f.title, "advice": f.advice,
+             "count": f.count, "phases": f.phases}
+            for f in plan.focus_areas
+        ],
+        "note": plan.note,
+        "progress": recommendations.progress_summary(mistakes),
+    }
 
 
 # -------------------------------------------------------------- insights --

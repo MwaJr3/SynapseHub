@@ -35,7 +35,7 @@ export const netScope: Project = {
   keyTech: ['Python', 'FastAPI', 'Scapy', 'Pandas', 'React', 'PostgreSQL'],
   featured: true,
   order: 2,
-  status: 'Complete — offline capture analysis with background processing',
+  status: 'Built — offline capture analysis complete and tested as a dependency-free Python CLI in apps/netscope (stdlib pcap parsing), and delivered as the full-stack application described in this case study at projects/netscope (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, parsing pipeline, analysis rules, frontend visualisation',
   accent: 'blue',
@@ -226,7 +226,7 @@ export const netScope: Project = {
     ],
     testing: {
       summary:
-        'Tests focus on parsing correctness, aggregation arithmetic, filter semantics and failure handling — the places where a silent bug would mislead an investigation.',
+        'Tests focus on parsing correctness, aggregation arithmetic, filter semantics and failure handling — the places where a silent bug would mislead an investigation. Verified current suite: 11 backend tests (pytest) and 2 frontend tests (vitest) pass.',
       items: [
         {
           title: 'Parser tests with fixture captures',

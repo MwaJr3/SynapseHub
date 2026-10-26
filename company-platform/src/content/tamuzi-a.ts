@@ -386,7 +386,7 @@ export const tamuziProducts: ProductContent[] = [
       'Delivers structured digital courses that remain usable during unreliable connectivity.',
     summary:
       'An offline-first e-learning platform: course catalogue, lessons and modules, downloadable lesson packs, offline progress with sync and conflict handling, quizzes, bookmarks and notes, and course versioning.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Next.js', 'Python', 'FastAPI', 'PostgreSQL', 'IndexedDB', 'Service worker'],
@@ -488,7 +488,7 @@ export const tamuziProducts: ProductContent[] = [
       'Supports scheduled remote lessons and asynchronous follow-up for teachers and learners with different connectivity constraints.',
     summary:
       'A low-bandwidth virtual classroom: class scheduling, enrolment, live sessions through a configured WebRTC provider, audio-priority mode, chat and question queue, polls, attendance, materials, and asynchronous follow-up.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. Live calls require a configured WebRTC provider (e.g. LiveKit); demo mode is simulated and labelled.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'PostgreSQL', 'Redis', 'LiveKit (configured)'],
@@ -590,7 +590,7 @@ export const tamuziProducts: ProductContent[] = [
       'Provides grounded, supportive tutoring that helps learners understand concepts, practice, and seek teacher support when needed.',
     summary:
       'An AI learning companion with Explain, Hint, Practice, Check Reasoning, and Summarize modes — grounded in approved sources with citations, adaptive explanation levels, a teacher review queue, and a deterministic demo mode.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
       'Implementation complete as a portfolio build; not publicly deployed. AI correctness and learning mastery are not claimed.',
     technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Python', 'FastAPI', 'Pydantic', 'PostgreSQL', 'Model-provider adapter'],

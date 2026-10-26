@@ -68,10 +68,10 @@ frontend when `frontend/dist` exists.
 cd backend
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements.txt
-python3 -m uvicorn app.main:app --port 8007
+python3 -m uvicorn app.main:app --port 8024
 
 cd ../frontend
-npm install && npm run dev        # http://localhost:5180 → :8007
+npm install && npm run dev        # http://localhost:5189 → :8024
 ```
 
 Single-process production style: `npm run build` in `frontend/`, then run

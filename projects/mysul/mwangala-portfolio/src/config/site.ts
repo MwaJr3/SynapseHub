@@ -18,6 +18,25 @@ export const siteUrl: string = (env.VITE_SITE_URL ?? '').replace(/\/+$/, '');
  *  says so instead of pretending a message was delivered. */
 export const contactEndpoint: string = env.VITE_CONTACT_ENDPOINT ?? '';
 
+/**
+ * The portfolio lives in a sub-section of the company site.
+ *
+ * The company landing page owns `/`; everything documented as portfolio work is
+ * served under this prefix. Keeping it in one constant means the router, the
+ * sitemap generator and outbound links cannot drift apart.
+ */
+/** Name shown for the company section. Override with VITE_COMPANY_NAME. */
+export const companyName: string =
+  (env.VITE_COMPANY_NAME as string | undefined)?.trim() || 'SynapseHub';
+
+export const PORTFOLIO_BASE = '/portfolio';
+
+/** Absolute path to a portfolio page, e.g. portfolioPath('/projects') -> '/portfolio/projects'. */
+export function portfolioPath(path = '/'): string {
+  const clean = path === '/' ? '' : path.startsWith('/') ? path : `/${path}`;
+  return `${PORTFOLIO_BASE}${clean}`;
+}
+
 export const site = {
   name: 'Mwangala',
   shortName: 'MW',
@@ -45,4 +64,15 @@ export const site = {
 export function absoluteUrl(path: string): string | null {
   if (!siteUrl) return null;
   return `${siteUrl}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+/**
+ * True when a URL belongs to the portfolio section.
+ *
+ * `App` uses this to pick the router: the portfolio mounts with
+ * `basename={PORTFOLIO_BASE}`, which is what keeps its unprefixed internal
+ * routes (`/projects`, `/about`) working under the public prefix.
+ */
+export function isPortfolioPath(pathname: string): boolean {
+  return pathname === PORTFOLIO_BASE || pathname.startsWith(`${PORTFOLIO_BASE}/`);
 }

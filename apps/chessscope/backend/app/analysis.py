@@ -43,6 +43,7 @@ class MoveStat:
     engine_eval_cp: int | None = None
     eval_drop_cp: int | None = None
     classification: str | None = None
+    material_total: int = 0
 
 
 @dataclass
@@ -133,6 +134,10 @@ def run_engine_analysis(
     results: list[tuple[int | None, int | None, str | None]] = []
     engine = engine_factory()
     try:
+        try:
+            engine_name = (engine.id or {}).get("name", "UCI engine")  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001 — id lookup must never crash analysis
+            engine_name = "UCI engine"
         for move in moves:
             before = engine.analyse(board, chess.engine.Limit(depth=depth))["score"].white().score(mate_score=10000)
             board.push(move)
@@ -153,7 +158,8 @@ def run_engine_analysis(
             engine.quit()
         except Exception:  # noqa: BLE001 — engine shutdown must never crash analysis
             pass
-    return results, {"available": True, "name": getattr(engine, "id", {}).get("name", "UCI engine") if isinstance(getattr(engine, "id", None), dict) else "UCI engine", "depth": depth, "message": "Evaluations computed with a local UCI engine."}
+    return results, {"available": True, "name": engine_name, "depth": depth,
+                     "message": "Evaluations computed with a local UCI engine."}
 
 
 def classify_eval_drop(drop_cp: int) -> str | None:
@@ -202,6 +208,9 @@ def analyse_game(text: str, engine_path: str = "", depth: int = 12, engine_facto
         stat.is_check = board.is_check()
         stat.is_mate = board.is_checkmate()
         stat.material_after = material_balance(board)
+        stat.material_total = sum(
+            MATERIAL[piece.piece_type] for piece in board.piece_map().values() if piece.piece_type != chess.KING
+        )
         move_stats.append(stat)
 
     engine_rows, engine_info = run_engine_analysis(moves, engine_path, depth, engine_factory)

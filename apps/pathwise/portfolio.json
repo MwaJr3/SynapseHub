@@ -1,0 +1,24 @@
+{
+  "name": "PathWise",
+  "slug": "pathwise",
+  "shortDescription": "Diagnostic assessment and explainable adaptive learning paths.",
+  "tags": ["education", "assessment", "mastery", "adaptive-learning", "spaced-repetition"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Skills graph with prerequisites and question-to-skill mapping",
+    "Diagnostics, formative checks, practice sets and post-tests",
+    "Transparent weighted-evidence mastery model (not ML) with uncertainty",
+    "Recommendations with plain-language rationale and machine-readable evidence",
+    "Spaced review scheduling",
+    "Pre/post comparison separating participation from proficiency",
+    "Teacher overrides with recorded reasons"
+  ],
+  "knownLimitations": [
+    "No psychometric/IRT model is claimed — rules-based mastery only",
+    "Short-response rubrics are manual-review notes in this MVP",
+    "Screenshots pending capture"
+  ]
+}

@@ -1,0 +1,6 @@
+[project]
+name = "docsage"
+version = "0.1.0"
+description = "Team knowledge base with citations, review workflow and offline search (FastAPI)"
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29"]

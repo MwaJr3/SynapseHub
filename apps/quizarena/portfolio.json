@@ -1,0 +1,34 @@
+{
+  "name": "QuizArena",
+  "slug": "quizarena",
+  "shortDescription": "Collaborative quiz platform with seeded shuffling, leaderboards and quiz-bank import/export.",
+  "tags": [
+    "education",
+    "web",
+    "fastapi",
+    "collaboration"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "SQLite"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "port": 8017,
+  "frontendPort": 5190,
+  "features": [
+    "Quiz creation with prompts, options, explanations, difficulty, tags",
+    "Attempts are deterministic from a recorded shuffle seed (reproducible)",
+    "Wrong-answer review with explanations after submit",
+    "Leaderboard: best score then fastest time (documented tie-break)",
+    "Quiz-bank JSON import with per-row validation errors (nothing dropped silently)",
+    "Quiz-bank export; report/moderate question workflow (hide/restore/remove)"
+  ],
+  "knownLimitations": [
+    "Demo data simulated; realtime collaboration is polling-based here",
+    "Duration tracking is optional; not a proctoring tool",
+    "Screenshots pending capture"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "TutorSpring",
+  "slug": "tutorspring",
+  "shortDescription": "AI learning companion grounded in approved curriculum material with honest citations.",
+  "tags": ["education", "ai-tutor", "grounded-answers", "privacy", "review-queue"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Five tutor modes (Explain, Hint, Practice, Check Reasoning, Summarize)",
+    "Source-grounded answers with visible citations",
+    "Explicit refusal when approved material does not cover a question",
+    "Labelled demo mode with provider-agnostic live adapter",
+    "Learner flags routed to a private teacher review queue",
+    "Aggregate-only teacher summaries and learner-controlled deletion"
+  ],
+  "knownLimitations": [
+    "Demo mode uses prepared responses; no live LLM is called without configuration",
+    "Keyword retrieval in this MVP (embeddings are a documented future step)",
+    "Screenshots pending capture"
+  ]
+}

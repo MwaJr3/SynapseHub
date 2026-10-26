@@ -1,0 +1,30 @@
+{
+  "name": "HeaderCheck",
+  "slug": "headercheck",
+  "shortDescription": "HTTP security header evaluation with context-aware severities and scoped targets.",
+  "tags": [
+    "security",
+    "cli",
+    "web"
+  ],
+  "stack": [
+    "Python",
+    "argparse",
+    "JSON"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Documented header rules (HSTS, CSP, nosniff, framing, referrer, permissions)",
+    "Context-aware severities (missing != equal-weight vulnerability)",
+    "Offline response fixtures by default",
+    "Allowlist enforcement for any live target",
+    "Redirect recording; server-version disclosure noted"
+  ],
+  "knownLimitations": [
+    "No crawling (by design)",
+    "Live HTTP evaluation needs network + explicit authorization",
+    "Screenshots pending capture"
+  ]
+}

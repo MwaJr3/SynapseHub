@@ -1,0 +1,23 @@
+{
+  "name": "ReachLearn",
+  "slug": "reachlearn",
+  "shortDescription": "SMS, USSD and IVR microlearning gateway with real consent and delivery workflows.",
+  "tags": ["education", "sms", "ussd", "ivr", "microlearning", "low-connectivity"],
+  "stack": ["FastAPI", "SQLAlchemy", "React", "TypeScript", "Tailwind CSS", "Vite"],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Channel-neutral lessons rendering to SMS/USSD/IVR/web",
+    "Correct SMS segmentation and USSD menu limits",
+    "Learner state machine with STOP-wins opt-out",
+    "Consent, quiet hours and frequency caps per subscription",
+    "Idempotent provider callbacks with delivery states",
+    "Labelled local simulator — never presented as real delivery"
+  ],
+  "knownLimitations": [
+    "Simulator only in the demo (provider adapter ready for configuration)",
+    "Job scheduling uses explicit local_hour in this MVP",
+    "Screenshots pending capture"
+  ]
+}

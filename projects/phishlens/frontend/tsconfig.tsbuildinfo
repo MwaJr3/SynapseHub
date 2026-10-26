@@ -1,0 +1,1 @@
+{"root":["./src/App.tsx","./src/main.tsx","./src/test-setup.ts","./src/lib/api.ts","./src/pages/AnalyzePage.tsx","./src/pages/HistoryPage.tsx","./src/pages/LoginPage.tsx","./src/pages/MessagePage.tsx","./src/tests/disclaimer.test.ts","./src/tests/ui.test.tsx","./vite.config.ts","./vitest.config.ts"],"version":"5.9.3"}

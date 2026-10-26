@@ -1,0 +1,6 @@
+[project]
+name = "stockmate"
+version = "0.1.0"
+description = "Inventory management with immutable ledger and role permissions (FastAPI)"
+requires-python = ">=3.10"
+dependencies = ["fastapi>=0.110", "uvicorn>=0.29"]
