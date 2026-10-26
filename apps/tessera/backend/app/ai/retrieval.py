@@ -18,7 +18,9 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 
-from ..models import Concept, Lesson, SourceRow
+from sqlalchemy import or_
+
+from ..models import Concept, Lesson, ReferenceNote, SourceRow
 
 #: Words too common to be useful evidence of relevance.
 STOPWORDS = frozenset(
@@ -81,14 +83,30 @@ def _score(question_tokens: set[str], text: str, title: str) -> float:
     return title_hits * 3.0 + body_hits
 
 
-def search(db: Session, question: str, limit: int = 4) -> list[Passage]:
-    """Return the most relevant passages for a question, best first."""
+def search(db: Session, question: str, limit: int = 4, owner_id: str | None = None) -> list[Passage]:
+    """Return the most relevant passages for a question, best first.
+
+    `owner_id` scopes the search to what that learner may see: catalogue material
+    plus their own concepts and notes. It is a *required* argument in practice —
+    every caller in the app passes the session's user. Leaving it at None is for
+    catalogue-only contexts (seeding checks, tests), and is never used by a route,
+    because an unscoped search would ground one learner's answer in another's
+    private notes.
+    """
     question_tokens = set(tokenise(question))
     if not question_tokens:
         return []
 
     passages: list[Passage] = []
-    for concept in db.query(Concept).all():
+    concept_query = db.query(Concept)
+    if owner_id is None:
+        concept_query = concept_query.filter(Concept.owner_id.is_(None))
+    else:
+        concept_query = concept_query.filter(
+            or_(Concept.owner_id.is_(None), Concept.owner_id == owner_id)
+        )
+
+    for concept in concept_query.all():
         lesson = db.query(Lesson).filter(Lesson.concept_id == concept.id).first()
         source = db.get(SourceRow, lesson.source_id) if lesson and lesson.source_id else None
 
@@ -116,6 +134,30 @@ def search(db: Session, question: str, limit: int = 4) -> list[Passage]:
                 attribution=source.attribution if source else None,
             )
         )
+
+    # The learner's own notes are searchable too, and cited as their own: an answer
+    # grounded in what they wrote is different evidence from one grounded in the
+    # curriculum, and the citation says which it was.
+    if owner_id is not None:
+        for note in db.query(ReferenceNote).filter(ReferenceNote.user_id == owner_id).all():
+            body = note.body
+            score = _score(question_tokens, body, note.title)
+            if score <= 0:
+                continue
+            excerpt = body if len(body) <= MAX_PASSAGE_CHARS else body[:MAX_PASSAGE_CHARS] + " …[truncated]"
+            passages.append(
+                Passage(
+                    concept_id=note.concept_id,
+                    concept_title=note.title,
+                    subject="Your note",
+                    text=excerpt,
+                    score=score,
+                    source_title="Your own note",
+                    source_url=None,
+                    license_name=None,
+                    attribution=None,
+                )
+            )
 
     passages.sort(key=lambda item: item.score, reverse=True)
     return passages[:limit]

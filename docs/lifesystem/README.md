@@ -39,8 +39,8 @@ before the next major phase.
 | 0 | Repository and environment | Tessera inspected, toolchain and tests green, plan written | **done** |
 | 1 | Software: learner profile foundation | Profile + diagnostic history persisted, validated, tested, on screen | **done** |
 | 1.1 | Software: one profile per learner, on a real database | Migration history, PostgreSQL path, isolation tests, baseline gated | **done** |
-| 2 | Software: knowledge and sessions | Subjects/topics/concepts with typed relations, session log, reference notes + search | next |
-| 3 | Software: retrieval + review scheduling | Retrieval formats, attempt history, explainable due queue, missed-review recovery | |
+| 2 | Software: knowledge and sessions | Learner-authored concepts, typed relations, session log, notes + search | **done** |
+| 3 | Software: retrieval + review scheduling | Retrieval formats, attempt history, explainable due queue, missed-review recovery | next |
 | 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps | |
 | 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | |
 | 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | |
@@ -86,6 +86,88 @@ No ability score is derived from anything. The profile stores what an instrument
 reported, with its name, date and reporter attached, and no composite is computed
 over the ten axes. Learner development (stage 7) can therefore change what the
 product *says* about these numbers without a migration of history.
+
+## Stage 2 — what the learner adds themselves
+
+Stage 1 held what an instrument said about a learner. Nothing yet held what the
+learner *did*, so the knowledge graph was a fixed curriculum of ten seeded
+concepts and every support for deliberate practice had nowhere to write.
+
+**Concepts belong to someone.** `concepts.owner_id` is NULL for catalogue material
+and a learner id for a concept they authored. That column is the whole visibility
+model, and it is applied in one function (`app.library.visible_concepts`) called by
+the knowledge bank, the map, recommendations, the daily plan, goals and the tutor's
+retrieval. A private concept that surfaced in another learner's answer would be the
+worst bug this product could have, so it is tested through HTTP: the second
+learner's guessed ids are 404s, their note search returns nothing of the first's,
+and their `map` has none of the first's nodes or edges.
+
+**The catalogue is read-only.** Seeded concepts are shared; one learner's edit
+would silently change everyone's curriculum, so editing or deleting one answers
+403 and names the reason.
+
+**Relations are typed, and only one of them changes behaviour.** Eight relations,
+of which `prerequisite` gates recommendations; the rest describe how the learner
+thinks about the ideas (`contrasts_with`, `example_of`, `evidence_for`…). A
+learner-authored prerequisite cycle is refused with 409, because a cycle makes the
+gate unsatisfiable — each concept would wait for another member of the loop. A
+soft relation may loop freely. Repeating a relation is idempotent rather than a
+duplicate arrow, and an existing catalogue relation is not copied.
+
+**A note is not evidence.** Notes are tied to a concept, searchable, and cited as
+*"Your own note"* when the tutor retrieves them. They never touch `concept_states`.
+That separation is the reference gap made structural: writing things down feels
+productive, changes nothing about what the system believes you can do, and the
+interface says so in as many words.
+
+**Sessions have a beginning and an end, and both matter.** A session requires an
+objective and a stopping condition before it starts — time without them is not
+practice — and a session you worked in requires one line of reflection before it
+closes. An abandoned session does not, because the point is not to punish stopping.
+One open session per concept, so work is resumed rather than duplicated after an
+interruption; closed sessions are records and cannot be edited. No XP is awarded:
+XP belongs to stage 5, where the anti-farming and idempotency rules live, and
+inventing it now would mean inventing those rules now.
+
+### Two database facts this stage forced into the open
+
+1. **SQLite was not enforcing foreign keys.** `ON DELETE CASCADE` is a no-op there
+   unless `PRAGMA foreign_keys=ON` runs per connection, so deleting a concept
+   deleted nothing downstream — while the same delete in PostgreSQL would have
+   cascaded. The pragma is now set for every SQLite connection and two fixtures
+   that had relied on the lax behaviour were corrected.
+2. **Alembic's SQLite batch mode cascaded into children.** Adding a column to
+   `concepts` rebuilds the table (create copy, copy rows, drop original, rename),
+   and with foreign keys enforced that `DROP` fired `ON DELETE CASCADE` into
+   `concept_edges` *before* the copy into the rebuilt table — silently emptying the
+   graph on any database that had one. Enforcement is now suspended for the
+   duration of a SQLite migration and `PRAGMA foreign_key_check` confirms the
+   result has no dangling references. PostgreSQL never rebuilds, so this bug was
+   invisible on the deployment target and would have destroyed data at home first.
+   Both facts have tests (`test_migrations.py`) that run the real history.
+
+### Exercise — stage 2
+
+Still local, no deployment. With the two servers from stage 1 running:
+
+1. Open **Library**. Add a concept of your own — something you are actually
+   learning now, not an example.
+2. Write one note on it that you would genuinely want to look up in a month, with
+   its source.
+3. Search the note by a word from its body. The result should say which words
+   matched, and a word only in the title should rank higher than one only in the
+   body.
+4. Start a session on it: an objective and a stopping condition. Record one
+   activity, then try to finish it with no reflection — the server should refuse.
+   Write a line, finish it.
+5. Delete your concept. The first attempt should *refuse* and tell you how many
+   notes and sessions would go with it; confirming should remove them.
+6. Sign in as a second account and confirm none of it is visible — not the
+   concept, not the notes, not the session, not the relation.
+
+**Assessed on:** whether the first delete really refuses (nothing destroyed by a
+stray click), whether a second account sees an empty library and gets 404s for the
+first account's ids, and whether the session refused to close without a reflection.
 
 ## Stage 1 — the learner profile (built)
 

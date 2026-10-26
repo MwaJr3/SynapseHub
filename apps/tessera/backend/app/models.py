@@ -72,9 +72,26 @@ class SourceRow(Base):
 
 
 class Concept(Base):
+    """A node in the knowledge graph.
+
+    `owner_id` distinguishes the two kinds of concept that now share this table:
+
+    * **NULL — catalogue material.** The seeded curriculum. Everyone can read it;
+      nobody can edit it through the API.
+    * **A learner id — their own concept.** Visible to that learner alone, at the
+      cost of being invisible to everyone else, including the tutor's retrieval.
+      Getting this wrong would leak one learner's private notes into another's
+      answers, so every read path filters on `owner_id IS NULL OR owner_id = :me`
+      (one helper: `app.library.visible_concepts`).
+    """
+
     __tablename__ = "concepts"
 
     id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    #: NULL for catalogue material; a learner id for a learner-authored concept.
+    owner_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     title: Mapped[str] = mapped_column(String(200))
     subject: Mapped[str] = mapped_column(String(80), index=True)
     summary: Mapped[str] = mapped_column(Text, default="")
@@ -86,15 +103,40 @@ class Concept(Base):
 
 
 class ConceptEdge(Base):
-    """A typed edge between concepts. `prerequisite` gates recommendations."""
+    """A typed edge between concepts. `prerequisite` gates recommendations.
+
+    Edges belong to the catalogue (`owner_id` NULL) or to one learner. A learner's
+    edges are how they record that *they* find two ideas related — which is the
+    relationship-building the curriculum asks for, and personal by nature: two
+    learners can disagree about what contrasts with what, and both are right.
+
+    The unique constraint includes the owner so the same pair can carry the same
+    relation once per learner. Note that PostgreSQL treats NULLs as distinct, so
+    catalogue edges rely on the seeder being idempotent plus a check in
+    `app.library.relate`; neither the database alone nor the code alone is enough,
+    which is why the tests cover both paths.
+    """
 
     __tablename__ = "concept_edges"
-    __table_args__ = (UniqueConstraint("from_concept_id", "to_concept_id", "relation"),)
+    __table_args__ = (
+        # Named so the migration can drop and recreate it explicitly, and so the
+        # database and the model agree on what the constraint is called.
+        UniqueConstraint(
+            "from_concept_id",
+            "to_concept_id",
+            "relation",
+            "owner_id",
+            name="uq_concept_edges_owner_relation",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    owner_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     from_concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
     to_concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
-    relation: Mapped[str] = mapped_column(String(20), default="prerequisite")
+    relation: Mapped[str] = mapped_column(String(24), default="prerequisite")
 
 
 class Lesson(Base):
@@ -309,3 +351,64 @@ class AssessmentScore(Base):
     #: For categorical results (e.g. "INTJ", "Kinesthetic") where a number would lie.
     value_label: Mapped[str] = mapped_column(String(80), default="")
     note: Mapped[str] = mapped_column(Text, default="")
+
+
+# ------------------------------------------------------- sessions and reference
+#
+# The first tables in Tessera that hold something a learner *did* rather than
+# something they answered. A session is deliberately not a pomodoro timer: it is a
+# statement of intent (objective, stopping condition) and a record of what
+# happened, so the weekly review has something to read other than a duration.
+
+
+class LearningSession(Base):
+    """One deliberate sitting on one concept.
+
+    `status='open'` is the interruption-recovery mechanism: a session that is not
+    finished stays open, is listed on return, and can be resumed or abandoned
+    without pretending it did not happen.
+    """
+
+    __tablename__ = "learning_sessions"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
+    #: What this sitting is for, in the learner's words. Required: a session with
+    #: no objective is just time spent.
+    objective: Mapped[str] = mapped_column(Text)
+    #: When to stop. Required for the same reason.
+    stopping_condition: Mapped[str] = mapped_column(Text)
+    planned_minutes: Mapped[int] = mapped_column(Integer, default=25)
+    #: priming | encoding | reference | retrieval | application | reflection
+    activities: Mapped[list] = mapped_column(JSON, default=list)
+    reflection: Mapped[str] = mapped_column(Text, default="")
+    evidence: Mapped[str] = mapped_column(Text, default="")
+    #: open | completed | partial | abandoned
+    status: Mapped[str] = mapped_column(String(16), default="open", index=True)
+    minutes_spent: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class ReferenceNote(Base):
+    """A note kept for later lookup, tied to a concept and to its owner.
+
+    The distinction this table exists to make: a note is not learning. Writing one
+    is cheap and feels productive, which is why the diagnosed reference gap is not
+    fixed by more notes. The API therefore reports notes *separately* from
+    mastery, and nothing here feeds `concept_states`.
+    """
+
+    __tablename__ = "reference_notes"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
+    title: Mapped[str] = mapped_column(String(200))
+    body: Mapped[str] = mapped_column(Text)
+    #: Where the note came from. Free text on purpose: a URL, a page number, a
+    #: lecture. Never inferred, never filled in with a placeholder.
+    source_ref: Mapped[str] = mapped_column(String(300), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)

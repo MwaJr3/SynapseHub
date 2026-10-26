@@ -242,9 +242,38 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 205 tests
-cd frontend && npm test && npm run build   # 53 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 233 tests
+cd frontend && npm test && npm run build   # 60 tests, then typecheck + bundle
 ```
+
+## Your material: concepts, relations, notes, sessions
+
+The **Library** is where a learner stops consuming a fixed curriculum and starts
+building their own. Four things live there:
+
+| | What it is | What it changes |
+| --- | --- | --- |
+| **Concepts** | Ideas they name, with a subject and a 1–5 difficulty | Appear in the knowledge bank, the map, the daily plan and the tutor's retrieval — for them only |
+| **Relations** | Eight typed links between two concepts | Only `prerequisite` gates recommendations; the rest describe their thinking |
+| **Notes** | Material worth looking up again, with an optional source | Nothing. A note is not evidence and never touches mastery |
+| **Sessions** | An objective, a stopping condition, what happened, one line of reflection | Nothing but the record — XP waits for stage 5 |
+
+Three rules are enforced by the API rather than left to the interface:
+
+- **The catalogue is read-only.** Seeded concepts are shared by every learner, so
+  editing or deleting one answers 403 and says why.
+- **Deleting your concept needs two requests.** The first is refused with a count
+  of the notes, sessions and relations that would go with it; only
+  `confirm=true` removes anything. The interface shows that number before asking.
+- **A session you worked in needs a reflection to close**, while abandoning one
+  needs nothing. Closed sessions are records and cannot be edited afterwards.
+
+Isolation is the load-bearing property, so it has its own tests: a second learner
+gets 404 for the first learner's concept, notes, sessions and relations, does not
+see them on the map, and cannot retrieve the first learner's notes as tutor
+evidence. The visibility rule lives in exactly one place
+(`app.library.visible_concepts`) because a leak here would surface one person's
+private notes inside another person's answer.
 
 ## Storage: SQLite for one, PostgreSQL for a product
 
@@ -373,6 +402,13 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
   the caveats, the empty state, the baseline load, a rejected write, a blank field
   never becoming a zero, and retiring a row). This environment has no browser, so
   layout, focus order and contrast are reasoned about rather than observed.
+- **No XP, levels or streaks yet.** Stage 2 records sessions; it does not reward
+  them. Reward mechanics need the idempotent XP ledger and anti-farming rules
+  described in the brief, and inventing them early would mean inventing those
+  rules early too.
+- **Sessions do not feed mastery.** Answering a question moves mastery; running a
+  session does not. That is deliberate — self-reported activity is not evidence —
+  but it does mean the session log is currently a diary rather than an input.
 - **Never run against PostgreSQL.** Migrations render Postgres DDL and the schema
   tests pass, but no live PostgreSQL has been used. Treat the compose file and the
   deployment instructions as unproven until someone runs them.
@@ -406,6 +442,7 @@ backend/app/
   learner.py         evidence → learner-model updates
   profile.py         supplied assessments: registry, validation, missing-vs-zero
   profile_baseline.py the diagnostic baseline transcribed from the brief
+  library.py         concepts, relations, notes and sessions (one visibility rule)
   ai/budget.py       the context-window estimate shown in the tutor trace
 alembic/            the migration history (the schema's source of truth)
   routes.py          HTTP API
@@ -426,6 +463,7 @@ frontend/src/
   profile.tsx        the ten axes, assessment history and the add-assessment form
   hooks.ts           the shared async-loading hook
   rings.tsx          score rings and the profile header
+  library.tsx        the Library screen: own concepts, relations, notes, sessions
   site.ts            the link to the umbrella site, or none
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

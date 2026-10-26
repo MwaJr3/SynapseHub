@@ -17,7 +17,7 @@ from app.ai.agent import PROVIDER_PRESETS, tutor_config
 from app.ai.retrieval import context_block, search, tokenise
 from app.ai.store import ChatStore, ThreadNotFound
 from app.database import Base
-from app.models import Concept, Lesson, SourceRow, TutorItemRow, TutorThreadRow
+from app.models import Concept, Lesson, SourceRow, TutorItemRow, TutorThreadRow, User
 
 
 @pytest.fixture()
@@ -25,6 +25,9 @@ def db():
     engine = create_engine("sqlite://")
     Base.metadata.create_all(bind=engine)
     session = sessionmaker(bind=engine, expire_on_commit=False)()
+    # Threads carry an owner foreign key, so the learners have to exist first.
+    for name in ("alice", "bob"):
+        session.add(User(id=name, email=f"{name}@example.test", password_hash="x"))
     session.add(SourceRow(
         id="s1", title="Tessera curriculum", author="Tamuzi", url="https://example.org",
         license_class="OPEN", license_name="CC BY 4.0", commercial_use_ok=True,
@@ -36,6 +39,10 @@ def db():
         explanation="A bare except catches everything, including KeyboardInterrupt, and hides bugs.",
         difficulty=3.0,
     ))
+    # The lesson points at the concept above, and foreign keys are enforced
+    # (as they are in PostgreSQL), so the concept has to land in the database
+    # before the row that references it.
+    session.flush()
     session.add(Lesson(
         id="ls1", concept_id="py.exceptions", title="Catch narrowly, fail loudly",
         explanation="Catch the specific exception you can handle.",

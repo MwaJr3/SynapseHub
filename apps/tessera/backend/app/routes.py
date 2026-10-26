@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from . import (
     chess_modality,
     config,
+    library,
     learner,
     mastery as mastery_mod,
     openings as openings_mod,
@@ -145,7 +146,8 @@ def knowledge(request: Request, db: Session = Depends(get_db)):
     user = _current(request, db)
     now = learner.utcnow()
     rows = []
-    for concept in db.query(Concept).order_by(Concept.ordering).all():
+    # Catalogue + this learner's own. Never another learner's concepts.
+    for concept in library.visible_concepts(db, user).all():
         state = _state_for(db, user, concept.id)
         if state is None:
             rows.append(
@@ -203,8 +205,10 @@ def knowledge(request: Request, db: Session = Depends(get_db)):
 def knowledge_map(request: Request, db: Session = Depends(get_db)):
     """The graph: nodes with mastery, edges with their relation type."""
     user = _current(request, db)
+    scope = library.visible_concepts(db, user).all()
+    visible_ids = {concept.id for concept in scope}
     nodes = []
-    for concept in db.query(Concept).order_by(Concept.ordering).all():
+    for concept in scope:
         state = _state_for(db, user, concept.id)
         nodes.append(
             {
@@ -216,9 +220,18 @@ def knowledge_map(request: Request, db: Session = Depends(get_db)):
                 "tier": mastery_mod.tier(state.mastery if state else 0.0, concept.mastery_threshold),
             }
         )
+    # An edge is visible only when both ends are, and when it is catalogue-wide or
+    # the learner's own: one learner's private relation is not another's business.
     edges = [
-        {"from": edge.from_concept_id, "to": edge.to_concept_id, "relation": edge.relation}
+        {
+            "id": edge.id,
+            "from": edge.from_concept_id,
+            "to": edge.to_concept_id,
+            "relation": edge.relation,
+            "own": edge.owner_id is not None,
+        }
         for edge in db.query(ConceptEdge).all()
+        if library.edge_visible(edge, visible_ids, user)
     ]
     return {"nodes": nodes, "edges": edges}
 
@@ -308,9 +321,9 @@ def today(request: Request, db: Session = Depends(get_db), available_minutes: in
 @router.get("/concepts/{concept_id}")
 def concept_detail(concept_id: str, request: Request, db: Session = Depends(get_db)):
     user = _current(request, db)
-    concept = db.get(Concept, concept_id)
-    if concept is None:
-        raise HTTPException(404, "concept not found")
+    # 404 rather than 403 for another learner's concept: the id alone must not
+    # confirm that a private record exists.
+    concept = _library_call(lambda: library.get_concept(db, user, concept_id))
     lesson = db.query(Lesson).filter(Lesson.concept_id == concept_id).first()
     state = _state_for(db, user, concept_id)
     prerequisites = [
@@ -385,9 +398,8 @@ def _questions_for(db: Session, concept_id: str, *, include_answers: bool) -> li
 @router.get("/concepts/{concept_id}/questions")
 def questions(concept_id: str, request: Request, db: Session = Depends(get_db)):
     """Questions without answers — grading happens server-side."""
-    _current(request, db)
-    if db.get(Concept, concept_id) is None:
-        raise HTTPException(404, "concept not found")
+    user = _current(request, db)
+    _library_call(lambda: library.get_concept(db, user, concept_id))
     return {"questions": _questions_for(db, concept_id, include_answers=False)}
 
 
@@ -408,9 +420,7 @@ def answer(body: Answer, request: Request, db: Session = Depends(get_db)):
     question = db.get(Question, body.question_id)
     if question is None:
         raise HTTPException(404, "question not found")
-    concept = db.get(Concept, question.concept_id)
-    if concept is None:
-        raise HTTPException(404, "concept not found")
+    concept = _library_call(lambda: library.get_concept(db, user, question.concept_id))
 
     correct = body.choice_index == question.correct_index
     result = learner.record_attempt(
@@ -690,10 +700,12 @@ def tutor_status(request: Request, db: Session = Depends(get_db)):
 @router.post("/tutor/search")
 def tutor_search(body: TutorSearchBody, request: Request, db: Session = Depends(get_db)):
     """Retrieval-only grounding. Works with no API key; does not generate text."""
-    _current(request, db)
+    user = _current(request, db)
     from .ai.retrieval import search
 
-    passages = search(db, body.question, limit=body.limit)
+    # Retrieval is scoped: the catalogue plus this learner's own material. An
+    # unscoped search would ground answers in somebody else's private notes.
+    passages = search(db, body.question, limit=body.limit, owner_id=user.id)
     return {
         "mode": "retrieval",
         "generated": False,
@@ -827,7 +839,8 @@ def list_goals(request: Request, db: Session = Depends(get_db)):
 @router.post("/goals")
 def create_goal(body: GoalBody, request: Request, db: Session = Depends(get_db)):
     user = _current(request, db)
-    known = {concept.id for concept in db.query(Concept).all()}
+    # A goal may only point at something this learner can actually open.
+    known = {concept.id for concept in library.visible_concepts(db, user).all()}
     unknown = [concept_id for concept_id in body.concept_ids if concept_id not in known]
     if unknown:
         raise HTTPException(422, f"unknown concepts: {', '.join(unknown[:5])}")
@@ -972,3 +985,309 @@ def post_baseline(request: Request, db: Session = Depends(get_db)):
         existing.add(key)
         created.append(_assessment_detail(db, row))
     return {"created": created, "skipped": skipped}
+
+
+# ------------------------------------------------- concepts, relations, notes
+#
+# Stage 2: the learner's own material. Everything here is scoped by the session's
+# user, and the one visibility rule lives in app.library. Routes translate library
+# errors into HTTP and never contain business rules of their own.
+
+
+class ConceptBody(BaseModel):
+    title: str = Field(min_length=2, max_length=200)
+    subject: str = Field(min_length=1, max_length=80)
+    summary: str = Field(default="", max_length=2000)
+    explanation: str = Field(default="", max_length=8000)
+    difficulty: float = Field(default=3.0, ge=1.0, le=5.0)
+
+
+class ConceptPatch(BaseModel):
+    title: str | None = Field(default=None, max_length=200)
+    subject: str | None = Field(default=None, max_length=80)
+    summary: str | None = Field(default=None, max_length=2000)
+    explanation: str | None = Field(default=None, max_length=8000)
+    difficulty: float | None = Field(default=None, ge=1.0, le=5.0)
+
+
+class ConfirmBody(BaseModel):
+    confirm: bool = False
+
+
+class RelateBody(BaseModel):
+    to: str = Field(min_length=1, max_length=80)
+    relation: str = Field(min_length=1, max_length=24)
+
+
+class NoteBody(BaseModel):
+    concept_id: str = Field(min_length=1, max_length=80)
+    title: str = Field(min_length=1, max_length=200)
+    body: str = Field(min_length=1, max_length=20_000)
+    source_ref: str = Field(default="", max_length=300)
+
+
+class NotePatch(BaseModel):
+    title: str | None = Field(default=None, max_length=200)
+    body: str | None = Field(default=None, max_length=20_000)
+    source_ref: str | None = Field(default=None, max_length=300)
+    concept_id: str | None = Field(default=None, max_length=80)
+
+
+class SessionBody(BaseModel):
+    concept_id: str = Field(min_length=1, max_length=80)
+    objective: str = Field(min_length=3, max_length=500)
+    stopping_condition: str = Field(min_length=3, max_length=500)
+    planned_minutes: int = Field(default=25, ge=5, le=240)
+
+
+class SessionPatch(BaseModel):
+    objective: str | None = Field(default=None, max_length=500)
+    stopping_condition: str | None = Field(default=None, max_length=500)
+    reflection: str | None = Field(default=None, max_length=4000)
+    activities: list[dict] | None = Field(default=None, max_length=20)
+
+
+class SessionFinish(BaseModel):
+    outcome: str = Field(min_length=1, max_length=16)
+    reflection: str = Field(default="", max_length=4000)
+    evidence: str = Field(default="", max_length=4000)
+    minutes_spent: int | None = Field(default=None, ge=0, le=600)
+
+
+def _library_call(action):
+    """Run a library operation, translating its errors into HTTP status codes."""
+    try:
+        return action()
+    except library.NotFound as error:
+        raise HTTPException(404, str(error)) from error
+    except library.LibraryError as error:
+        raise HTTPException(error.status, str(error)) from error
+
+
+def _concept_brief(concept: Concept) -> dict:
+    return {
+        "id": concept.id,
+        "title": concept.title,
+        "subject": concept.subject,
+        "summary": concept.summary,
+        "explanation": concept.explanation,
+        "difficulty": concept.difficulty,
+        "own": concept.owner_id is not None,
+    }
+
+
+@router.get("/library")
+def library_overview(request: Request, db: Session = Depends(get_db)):
+    """The learner's own material at a glance, plus the vocabulary the UI needs."""
+    user = _current(request, db)
+    return {
+        "concepts": [
+            _concept_brief(concept)
+            for concept in library.visible_concepts(db, user).all()
+            if concept.owner_id is not None
+        ],
+        "relations": [
+            {"id": name, **meta} for name, meta in library.RELATIONS.items()
+        ],
+        "activities": [
+            {"id": name, "label": label} for name, label in library.ACTIVITIES.items()
+        ],
+        "stats": library.stats(db, user),
+    }
+
+
+@router.post("/concepts", status_code=201)
+def create_concept(body: ConceptBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    concept = _library_call(
+        lambda: library.create_concept(
+            db,
+            user,
+            title=body.title,
+            subject=body.subject,
+            summary=body.summary,
+            explanation=body.explanation,
+            difficulty=body.difficulty,
+        )
+    )
+    return _concept_brief(concept)
+
+
+@router.patch("/concepts/{concept_id}")
+def patch_concept(concept_id: str, body: ConceptPatch, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    concept = _library_call(
+        lambda: library.update_concept(db, user, concept_id, body.model_dump(exclude_unset=True))
+    )
+    return _concept_brief(concept)
+
+
+@router.delete("/concepts/{concept_id}")
+def delete_concept(concept_id: str, request: Request, db: Session = Depends(get_db), confirm: bool = False):
+    """Remove an own concept. Without `confirm=true` this answers 409 and says what
+    would go with it, so nothing is destroyed by a stray request."""
+    user = _current(request, db)
+    removed = _library_call(lambda: library.delete_concept(db, user, concept_id, confirmed=confirm))
+    return {"deleted": concept_id, "removed": removed}
+
+
+@router.get("/concepts/{concept_id}/relations")
+def get_relations(concept_id: str, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    # Visibility first: relations on somebody else's concept are not a read.
+    _library_call(lambda: library.get_concept(db, user, concept_id))
+    return {"relations": library.relations_for(db, user, concept_id)}
+
+
+@router.post("/concepts/{concept_id}/relate", status_code=201)
+def post_relate(concept_id: str, body: RelateBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    edge, created = _library_call(
+        lambda: library.relate(db, user, from_id=concept_id, to_id=body.to, relation=body.relation)
+    )
+    return {
+        "id": edge.id,
+        "from": edge.from_concept_id,
+        "to": edge.to_concept_id,
+        "relation": edge.relation,
+        # False when the relation already existed: a double-submitted form must not
+        # draw the same arrow twice.
+        "created": created,
+    }
+
+
+@router.delete("/relations/{edge_id}")
+def delete_relation(edge_id: str, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    _library_call(lambda: library.unrelate(db, user, edge_id))
+    return {"deleted": edge_id}
+
+
+@router.get("/notes")
+def list_notes(
+    request: Request,
+    db: Session = Depends(get_db),
+    q: str = "",
+    concept: str | None = None,
+    limit: int = 50,
+):
+    user = _current(request, db)
+    notes = _library_call(
+        lambda: library.list_notes(
+            db, user, query=q, concept_id=concept, limit=max(1, min(200, limit))
+        )
+    )
+    return {
+        "notes": notes,
+        "query": q,
+        "terms": library.search_terms(q),
+        "explanation": (
+            "Notes are ranked by how many of your search terms they contain, with a title match "
+            "worth three. No hidden relevance: the matched terms are returned with each note."
+            if q
+            else "All notes, most recently edited first."
+        ),
+    }
+
+
+@router.post("/notes", status_code=201)
+def post_note(body: NoteBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    note = _library_call(
+        lambda: library.create_note(
+            db,
+            user,
+            concept_id=body.concept_id,
+            title=body.title,
+            body=body.body,
+            source_ref=body.source_ref,
+        )
+    )
+    concept = db.get(Concept, note.concept_id)
+    return library.note_payload(note, concept.title if concept else "")
+
+
+@router.patch("/notes/{note_id}")
+def patch_note(note_id: str, body: NotePatch, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    note = _library_call(
+        lambda: library.update_note(db, user, note_id, body.model_dump(exclude_unset=True))
+    )
+    concept = db.get(Concept, note.concept_id)
+    return library.note_payload(note, concept.title if concept else "")
+
+
+@router.delete("/notes/{note_id}")
+def remove_note(note_id: str, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    _library_call(lambda: library.delete_note(db, user, note_id))
+    return {"deleted": note_id}
+
+
+@router.get("/sessions")
+def get_sessions(
+    request: Request,
+    db: Session = Depends(get_db),
+    status: str | None = None,
+    concept: str | None = None,
+    limit: int = 50,
+):
+    user = _current(request, db)
+    sessions = _library_call(
+        lambda: library.list_sessions(
+            db, user, status=status, concept_id=concept, limit=max(1, min(200, limit))
+        )
+    )
+    return {"sessions": sessions, "stats": library.stats(db, user)}
+
+
+@router.post("/sessions", status_code=201)
+def post_session(body: SessionBody, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    session = _library_call(
+        lambda: library.start_session(
+            db,
+            user,
+            concept_id=body.concept_id,
+            objective=body.objective,
+            stopping_condition=body.stopping_condition,
+            planned_minutes=body.planned_minutes,
+        )
+    )
+    return library.session_payload(session)
+
+
+@router.get("/sessions/{session_id}")
+def get_session(session_id: str, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    session = _library_call(lambda: library.get_session(db, user, session_id))
+    title = db.get(Concept, session.concept_id)
+    return library.session_payload(session, title.title if title else "")
+
+
+@router.patch("/sessions/{session_id}")
+def patch_session(session_id: str, body: SessionPatch, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    session = _library_call(
+        lambda: library.update_session(db, user, session_id, body.model_dump(exclude_unset=True))
+    )
+    title = db.get(Concept, session.concept_id)
+    return library.session_payload(session, title.title if title else "")
+
+
+@router.post("/sessions/{session_id}/finish")
+def finish_session(session_id: str, body: SessionFinish, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    session = _library_call(
+        lambda: library.finish_session(
+            db,
+            user,
+            session_id,
+            outcome=body.outcome,
+            reflection=body.reflection,
+            evidence=body.evidence,
+            minutes_spent=body.minutes_spent,
+        )
+    )
+    title = db.get(Concept, session.concept_id)
+    return library.session_payload(session, title.title if title else "")

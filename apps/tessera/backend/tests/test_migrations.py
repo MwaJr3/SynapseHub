@@ -122,3 +122,120 @@ def test_a_migrated_database_can_be_seeded_and_read(tmp_path):
     sources = connection.execute("select count(*) from sources").fetchone()[0]
     assert concepts >= 10
     assert sources >= 1
+
+
+# ------------------------------------------- the stage 2 table rebuild, in detail
+
+BASELINE = "ba2a346c0567"
+
+
+def test_the_edge_rebuild_keeps_existing_rows_and_their_ids(tmp_path):
+    """`concept_edges` is copied across rather than dropped and re-created empty.
+
+    A rebuild that forgot the copy would look fine on a fresh database and delete
+    part of the curriculum graph on a real one.
+    """
+    database = tmp_path / "rebuild.db"
+    url = f"sqlite:///{database}"
+    assert _alembic("upgrade", BASELINE, database_url=url).returncode == 0
+
+    connection = sqlite3.connect(database)
+    with connection:
+        connection.execute(
+            "insert into concepts (id, title, subject, summary, explanation, difficulty,"
+            " mastery_threshold, ordering) values ('a', 'A', 'S', '', '', 1.0, 0.8, 0)"
+        )
+        connection.execute(
+            "insert into concepts (id, title, subject, summary, explanation, difficulty,"
+            " mastery_threshold, ordering) values ('b', 'B', 'S', '', '', 1.0, 0.8, 0)"
+        )
+        connection.execute(
+            "insert into concept_edges (id, from_concept_id, to_concept_id, relation)"
+            " values ('e1', 'a', 'b', 'prerequisite')"
+        )
+    connection.close()
+
+    assert _alembic("upgrade", "head", database_url=url).returncode == 0
+
+    connection = sqlite3.connect(database)
+    rows = connection.execute(
+        "select id, from_concept_id, to_concept_id, relation, owner_id from concept_edges"
+    ).fetchall()
+    assert rows == [("e1", "a", "b", "prerequisite", None)], "the catalogue edge must survive as catalogue"
+    connection.close()
+
+
+def test_the_relation_unique_key_now_includes_the_owner(tmp_path):
+    """The old UNIQUE was ownerless, which meant a second learner's identical
+    relation was rejected — so the constraint has to move, not just be renamed."""
+    database = tmp_path / "unique.db"
+    url = f"sqlite:///{database}"
+    assert _alembic("upgrade", "head", database_url=url).returncode == 0
+
+    connection = sqlite3.connect(database)
+    with connection:
+        for concept_id in ("a", "b"):
+            connection.execute(
+                "insert into concepts (id, title, subject, summary, explanation, difficulty,"
+                " mastery_threshold, ordering) values (?, ?, 'S', '', '', 1.0, 0.8, 0)",
+                (concept_id, concept_id.upper()),
+            )
+        for user_id in ("u1", "u2"):
+            connection.execute(
+                "insert into users (id, email, display_name, password_hash, created_at)"
+                " values (?, ?, '', 'x', '2026-01-01 00:00:00')",
+                (user_id, f"{user_id}@example.test"),
+            )
+        # Two learners, same relation, same concepts: both are allowed.
+        connection.execute(
+            "insert into concept_edges (id, owner_id, from_concept_id, to_concept_id, relation)"
+            " values ('e1', 'u1', 'a', 'b', 'related_to')"
+        )
+        connection.execute(
+            "insert into concept_edges (id, owner_id, from_concept_id, to_concept_id, relation)"
+            " values ('e2', 'u2', 'a', 'b', 'related_to')"
+        )
+    # The same learner entering it twice is still refused by the database, not
+    # only by the code-level idempotency check.
+    with pytest.raises(sqlite3.IntegrityError):
+        connection.execute(
+            "insert into concept_edges (id, owner_id, from_concept_id, to_concept_id, relation)"
+            " values ('e3', 'u1', 'a', 'b', 'related_to')"
+        )
+    connection.close()
+
+
+def test_the_stage_two_downgrade_drops_learner_edges_but_keeps_the_catalogue(tmp_path):
+    database = tmp_path / "roundtrip.db"
+    url = f"sqlite:///{database}"
+    assert _alembic("upgrade", "head", database_url=url).returncode == 0
+
+    connection = sqlite3.connect(database)
+    with connection:
+        for concept_id in ("a", "b"):
+            connection.execute(
+                "insert into concepts (id, title, subject, summary, explanation, difficulty,"
+                " mastery_threshold, ordering) values (?, ?, 'S', '', '', 1.0, 0.8, 0)",
+                (concept_id, concept_id.upper()),
+            )
+        connection.execute(
+            "insert into users (id, email, display_name, password_hash, created_at)"
+            " values ('u1', 'u@e.test', '', 'x', '2026-01-01 00:00:00')"
+        )
+        connection.execute(
+            "insert into concept_edges (id, owner_id, from_concept_id, to_concept_id, relation)"
+            " values ('catalogue', null, 'a', 'b', 'related_to')"
+        )
+        connection.execute(
+            "insert into concept_edges (id, owner_id, from_concept_id, to_concept_id, relation)"
+            " values ('mine', 'u1', 'b', 'a', 'related_to')"
+        )
+    connection.close()
+
+    assert _alembic("downgrade", BASELINE, database_url=url).returncode == 0
+
+    connection = sqlite3.connect(database)
+    assert [row[0] for row in connection.execute("select id from concept_edges")] == ["catalogue"]
+    tables = {row[0] for row in connection.execute("select name from sqlite_master where type='table'")}
+    assert "learning_sessions" not in tables and "reference_notes" not in tables
+    connection.close()

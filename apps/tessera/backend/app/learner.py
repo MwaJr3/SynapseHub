@@ -184,6 +184,13 @@ def concept_signal(db: Session, user: User, concept: Concept, *, now: datetime |
 
 
 def all_signals(db: Session, user: User, *, now: datetime | None = None):
+    """Signals for every concept this learner can see.
+
+    The filter is `app.library.visible_concepts`, not `Concept.query()`: once
+    learners can author concepts, an unscoped query would score somebody else's
+    private concept and surface it in the daily plan.
+    """
+    from .library import visible_concepts
+
     now = now or utcnow()
-    concepts = db.query(Concept).order_by(Concept.ordering).all()
-    return [concept_signal(db, user, concept, now=now) for concept in concepts]
+    return [concept_signal(db, user, concept, now=now) for concept in visible_concepts(db, user).all()]

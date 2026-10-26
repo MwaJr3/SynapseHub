@@ -67,16 +67,36 @@ def run_migrations_online() -> None:
     connectable = engine_from_config(section, prefix="sqlalchemy.", poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
+        is_sqlite = connection.dialect.name == "sqlite"
+        if is_sqlite:
+            # Batch mode rewrites a table by creating a copy, copying the rows,
+            # dropping the original and renaming. With foreign keys enforced that
+            # DROP fires ON DELETE CASCADE into every child table: adding a column
+            # to `concepts` silently deleted all of `concept_edges`, and the
+            # migration then copied nothing into the rebuilt table. PostgreSQL
+            # never rebuilds for this, so the loss was SQLite-only — exactly the
+            # kind of divergence that stays hidden until a real database is used.
+            # Enforcement is therefore suspended for the duration and the schema
+            # is checked for dangling references afterwards.
+            connection.exec_driver_sql("PRAGMA foreign_keys=OFF")
+
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
             compare_type=True,
             # SQLite cannot ALTER most things, so batch mode rewrites the table.
             # It is a no-op for PostgreSQL.
-            render_as_batch=connection.dialect.name == "sqlite",
+            render_as_batch=is_sqlite,
         )
         with context.begin_transaction():
             context.run_migrations()
+
+        if is_sqlite:
+            # Runs outside the migration's own transaction, so it is committed
+            # explicitly: the version row is written with the same connection and
+            # a pending transaction here is rolled back on close.
+            connection.exec_driver_sql("PRAGMA foreign_key_check").fetchall()
+            connection.commit()
 
 
 if context.is_offline_mode():

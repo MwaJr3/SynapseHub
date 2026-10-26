@@ -437,6 +437,108 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
+
+/* ------------------------------------------------- learner's own material */
+
+export interface OwnConcept {
+  id: string;
+  title: string;
+  subject: string;
+  summary: string;
+  explanation: string;
+  difficulty: number;
+  own: boolean;
+}
+
+export interface RelationType {
+  id: string;
+  label: string;
+  meaning: string;
+  //: "true" when the relation gates recommendations rather than just describing.
+  gates: string;
+}
+
+export interface ActivityType {
+  id: string;
+  label: string;
+}
+
+export interface LibraryStats {
+  concepts_own: number;
+  notes: number;
+  sessions_open: number;
+  sessions_finished: number;
+  minutes_recorded: number;
+  note: string;
+}
+
+export interface LibraryResponse {
+  concepts: OwnConcept[];
+  relations: RelationType[];
+  activities: ActivityType[];
+  stats: LibraryStats;
+}
+
+export interface Relation {
+  id: string;
+  from_id: string;
+  to_id: string;
+  from_title: string;
+  to_title: string;
+  relation: string;
+  label: string;
+  removable: boolean;
+}
+
+export interface Note {
+  id: string;
+  concept_id: string;
+  concept_title: string;
+  title: string;
+  body: string;
+  source_ref: string;
+  created_at: string;
+  updated_at: string;
+  score: number;
+  matched: string[];
+}
+
+export interface NotesResponse {
+  notes: Note[];
+  query: string;
+  terms: string[];
+  explanation: string;
+}
+
+export interface SessionActivity {
+  stage: string;
+  note: string;
+}
+
+export type SessionStatus = 'open' | 'completed' | 'partial' | 'abandoned';
+
+export interface LearningSession {
+  id: string;
+  concept_id: string;
+  concept_title: string;
+  objective: string;
+  stopping_condition: string;
+  planned_minutes: number;
+  activities: SessionActivity[];
+  reflection: string;
+  evidence: string;
+  status: SessionStatus;
+  minutes_spent: number | null;
+  started_at: string | null;
+  finished_at: string | null;
+  covered: string[];
+}
+
+export interface SessionsResponse {
+  sessions: LearningSession[];
+  stats: LibraryStats;
+}
+
 export const api = {
   profile: () => request<ProfileResponse>('/api/profile'),
   saveProfileContext: (context: string) =>
@@ -514,5 +616,56 @@ export const api = {
     request<MoveResult>(`/api/chess/puzzles/${encodeURIComponent(id)}/move`, {
       method: 'POST',
       body: JSON.stringify({ uci, plies_played: pliesPlayed }),
+    }),
+  // ------------------------------------------------- the learner's own material
+  library: () => request<LibraryResponse>('/api/library'),
+  createConcept: (body: {
+    title: string;
+    subject: string;
+    summary?: string;
+    explanation?: string;
+    difficulty?: number;
+  }) => request<OwnConcept>('/api/concepts', { method: 'POST', body: JSON.stringify(body) }),
+  deleteConcept: (id: string, confirm = false) =>
+    request<{ deleted: string; removed: Record<string, number> }>(
+      `/api/concepts/${encodeURIComponent(id)}?confirm=${confirm ? 'true' : 'false'}`,
+      { method: 'DELETE' },
+    ),
+  relations: (conceptId: string) =>
+    request<{ relations: Relation[] }>(`/api/concepts/${encodeURIComponent(conceptId)}/relations`),
+  relate: (fromId: string, to: string, relation: string) =>
+    request<{ id: string; from: string; to: string; relation: string; created: boolean }>(
+      `/api/concepts/${encodeURIComponent(fromId)}/relate`,
+      { method: 'POST', body: JSON.stringify({ to, relation }) },
+    ),
+  unrelate: (edgeId: string) =>
+    request<{ deleted: string }>(`/api/relations/${encodeURIComponent(edgeId)}`, { method: 'DELETE' }),
+
+  notes: (query = '') => request<NotesResponse>(`/api/notes?q=${encodeURIComponent(query)}`),
+  createNote: (body: { concept_id: string; title: string; body: string; source_ref?: string }) =>
+    request<Note>('/api/notes', { method: 'POST', body: JSON.stringify(body) }),
+  deleteNote: (id: string) =>
+    request<{ deleted: string }>(`/api/notes/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+
+  sessions: (status?: SessionStatus) =>
+    request<SessionsResponse>(status ? `/api/sessions?status=${status}` : '/api/sessions'),
+  startSession: (body: {
+    concept_id: string;
+    objective: string;
+    stopping_condition: string;
+    planned_minutes: number;
+  }) => request<LearningSession>('/api/sessions', { method: 'POST', body: JSON.stringify(body) }),
+  updateSession: (id: string, body: { activities?: SessionActivity[]; reflection?: string }) =>
+    request<LearningSession>(`/api/sessions/${encodeURIComponent(id)}`, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    }),
+  finishSession: (
+    id: string,
+    body: { outcome: 'completed' | 'partial' | 'abandoned'; reflection?: string; minutes_spent?: number },
+  ) =>
+    request<LearningSession>(`/api/sessions/${encodeURIComponent(id)}/finish`, {
+      method: 'POST',
+      body: JSON.stringify(body),
     }),
 };

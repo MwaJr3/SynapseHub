@@ -247,12 +247,17 @@ def build_agent(
     db_session_factory=database.SessionLocal,
     config: TutorConfig | None = None,
     citations: list | None = None,
+    owner_id: str | None = None,
 ):
     """Construct the Agents SDK agent. Only called when configured.
 
     `citations` is filled by the retrieval tool as a side effect, so the caller
     can show the learner exactly which material the answer drew on without
     parsing the model's output for markers it may or may not produce.
+
+    `owner_id` scopes what the tool may retrieve. Without it the search would see
+    every learner's private concepts and notes, which is the one thing this tutor
+    must never do; `stream_reply` always passes the thread's owner.
     """
     from agents import Agent, function_tool
 
@@ -273,7 +278,7 @@ def build_agent(
         try:
             from .retrieval import context_block
 
-            passages = search(db, question)
+            passages = search(db, question, owner_id=owner_id)
             if citations is not None:
                 from .store import Citation
 

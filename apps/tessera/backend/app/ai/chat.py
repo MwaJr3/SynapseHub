@@ -92,7 +92,8 @@ async def stream_reply(
     store.add_message(owner, thread_id, "user", user_text)
 
     citations: list[Citation] = []
-    agent = build_agent(config=state, citations=citations)
+    # The owner scopes retrieval: catalogue + this learner's own material only.
+    agent = build_agent(config=state, citations=citations, owner_id=owner)
     emitted_citations = False
 
     try:
