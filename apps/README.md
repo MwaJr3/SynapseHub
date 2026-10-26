@@ -19,6 +19,7 @@ never fabricated.
 | [circuitlab-calc](circuitlab-calc/) | CircuitLab Calc (Velaqori) | :8004 | :5177 | 12 + 3 | complete |
 | [chessscope](chessscope/) | ChessScope (Velaqori) | :8005 | :5178 | 12 + 3 | complete |
 | [sentinelcore](sentinelcore/) | SentinelCore (Velaqori, flagship) | :8006 | :5179 | 17 + 3 | complete |
+| [frontpage](frontpage/) | Frontpage (Frontend Mentor challenge) | :8007 | :5180 | 67 + 7 | complete |
 
 Each `README.md` documents setup, demo credentials, test commands, and the
 app's honesty/limitation statements. Backend seeds run with
