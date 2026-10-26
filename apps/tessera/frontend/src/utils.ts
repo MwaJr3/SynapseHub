@@ -199,3 +199,15 @@ export function formatScore(value: number, min: number, max: number): string {
   const trim = (input: number) => (Number.isInteger(input) ? String(input) : String(Number(input.toFixed(2))));
   return min === 0 ? `${trim(value)} / ${trim(max)}` : `${trim(value)} on ${trim(min)}–${trim(max)}`;
 }
+
+/**
+ * A score's position on its own scale, clamped to [0, 1].
+ *
+ * Used for the ring around a score. It is a pure ratio of what the instrument
+ * said, not a judgement: a 33% on an overlearning score draws a third of a ring
+ * because that is what was reported.
+ */
+export function ringShare(value: number, min: number, max: number): number {
+  if (!Number.isFinite(value) || !Number.isFinite(min) || !Number.isFinite(max) || max <= min) return 0;
+  return Math.min(1, Math.max(0, (value - min) / (max - min)));
+}

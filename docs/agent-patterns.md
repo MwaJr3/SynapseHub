@@ -123,3 +123,57 @@ without sharing a vendor.
 The one thing that is genuinely unverified is model output quality: no provider
 is reachable from this environment, so no live completion has ever been
 inspected. The tests cover the boundaries around the model, not the model.
+
+
+## Second batch: CrewAI, Mastra, LLMs from Scratch
+
+Checked before use, same as the first batch. GitHub reports `NOASSERTION` for two
+of the three, which is a statement about the licence *file*, not about the
+licence:
+
+| Repo | What the licence file actually says | Reusable? |
+| --- | --- | --- |
+| CrewAI | MIT (1055 bytes) | Yes, with attribution |
+| Mastra | Apache-2.0 everywhere except `ee/` directories, which have their own licence | Yes outside `ee/` |
+| LLMs from Scratch | Apache-2.0, with an explicit carve-out: the *book text and images* are excluded from the source-form definition | The code, yes; the book, no |
+
+That last carve-out is worth naming: "Apache-2.0" on that repository does not
+cover the book chapters or figures, so nothing from them is reproduced here. The
+licence says so itself.
+
+### Adopted
+
+**CrewAI — declared expected output** (`company-platform/src/lib/assistant/flow.ts`).
+A CrewAI task states what the finished work should look like, and the work is
+checked against that before it is accepted. Applied to a streamed answer: each
+flow now declares `minChars`, `maxChars` and whether it must end on an action, and
+`checkAnswer()` runs after the stream finishes. A truncated answer used to arrive
+looking finished, because "the model returned something" was the only success
+condition. `done` now carries `{ ok, problems[] }` and the interface labels the
+answer *incomplete* instead of presenting it as an answer.
+
+**LLMs from Scratch — the context window as a budget** (`apps/tessera/backend/app/ai/budget.py`).
+One idea, put where a learner can see it: a model reads a fixed window of tokens,
+and retrieval competes for it. The tutor now estimates what a turn spends and says
+so in its trace — *"Estimated 412 of 8192 tokens … 5% of the window"* — and warns
+when less than a quarter is left for the answer itself. The estimate is
+approximate (4 characters per token, punctuation counted separately) and is
+labelled as an estimate everywhere it appears. No decision depends on it; what it
+prevents is the silent case where a long thread crowds out the material that was
+supposed to justify the answer.
+
+### Considered and rejected
+
+- **Mastra's agent/workflow DSL.** The pieces worth having — typed tool calls, a
+  step trace, provider presets — are already implemented in roughly 250 lines
+  here, against our own storage and our own SSE protocol. Adopting it would mean a
+  second abstraction over the same three ideas, plus a dependency whose licence is
+  split across `ee/` directories. The *provider preset* idea was taken (see
+  `PROVIDER_PRESETS` in `apps/tessera/backend/app/ai/agent.py`): a name and a key
+  rather than a URL and a model id from memory.
+- **Multi-agent crews.** Two single-purpose assistants and one tutor do not need a
+  planner/worker/reviewer hierarchy. The failure mode of adding one is a system
+  that spends three model calls deciding what to do and one doing it.
+- **Training or fine-tuning anything.** "From scratch" material is a teaching aid
+  here, not a plan: the weights are somebody else's, served over an
+  OpenAI-compatible endpoint, and that is stated rather than dressed up.

@@ -13,7 +13,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.ai.agent import tutor_config
+from app.ai.agent import PROVIDER_PRESETS, tutor_config
 from app.ai.retrieval import context_block, search, tokenise
 from app.ai.store import ChatStore, ThreadNotFound
 from app.database import Base
@@ -65,6 +65,7 @@ def _clear_tutor_env(monkeypatch):
         "OPENAI_API_KEY",
         "TESSERA_TUTOR_BASE_URL",
         "TESSERA_TUTOR_MODEL",
+        "TESSERA_TUTOR_PROVIDER",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -313,3 +314,84 @@ def test_sse_frames_are_well_formed():
     assert frame.endswith("\n\n")
     payload = json.loads(frame.split("data: ", 1)[1])
     assert payload["text"] == 'a "quoted" word'
+
+
+# ------------------------------------------------------------------- presets
+#
+# The presets exist so an operator sets a provider name and a key, not a URL and
+# a model id from memory. These tests pin the two things that could go wrong:
+# a preset must never be mistaken for a verified connection, and a misspelt
+# provider must fail loudly instead of silently using a different backend.
+
+
+def test_a_preset_supplies_the_endpoint_and_a_model(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", "huggingface")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "hf_test_value")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.base_url == "https://router.huggingface.co/v1"
+    assert state.model == "meta-llama/Llama-3.3-70B-Instruct"
+    assert "hf_test_value" not in state.reason
+
+
+def test_ollama_cloud_preset_names_the_model_the_operator_asked_for(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", "ollama-cloud")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "not-a-real-key")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.base_url == "https://ollama.com/v1"
+    assert state.model == "nemotron-3-nano:30b"
+    # Ollama Cloud is not local, so it does need a key even though the local
+    # preset does not.
+    assert PROVIDER_PRESETS["ollama-local"].needs_key is False
+
+
+def test_explicit_settings_beat_a_preset(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", "ollama-cloud")
+    monkeypatch.setenv("TESSERA_TUTOR_BASE_URL", "http://127.0.0.1:11434/v1")
+    monkeypatch.setenv("TESSERA_TUTOR_MODEL", "qwen2.5:3b")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.base_url == "http://127.0.0.1:11434/v1"
+    assert state.model == "qwen2.5:3b"
+    # A local preset needs no credential; an explicit local URL must behave the
+    # same way, or the local path breaks the moment a provider is named.
+    assert state.missing == ()
+
+
+def test_a_local_preset_needs_no_key(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", "ollama-local")
+    state = tutor_config()
+    assert state.configured is True
+    assert state.missing == ()
+    assert state.base_url.startswith("http://127.0.0.1")
+
+
+def test_a_misspelt_provider_fails_loudly_rather_than_falling_back(monkeypatch):
+    _clear_tutor_env(monkeypatch)
+    monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", "huggingfacee")
+    monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "hf_test_value")
+    state = tutor_config()
+    assert state.configured is False
+    assert "TESSERA_TUTOR_PROVIDER" in state.missing
+    assert "huggingfacee" in state.reason
+    # The message lists what is valid, so the fix is in front of the reader.
+    for known in ("huggingface", "ollama-cloud", "groq"):
+        assert known in state.reason
+
+
+def test_every_preset_is_usable_as_written(monkeypatch):
+    """Each preset must be complete: a name and a key is enough, or it is a trap."""
+    for name, preset in PROVIDER_PRESETS.items():
+        _clear_tutor_env(monkeypatch)
+        monkeypatch.setenv("TESSERA_TUTOR_PROVIDER", name)
+        if preset.needs_key:
+            monkeypatch.setenv("TESSERA_TUTOR_API_KEY", "test-value")
+        state = tutor_config()
+        assert state.configured is True, (name, state.missing, state.reason)
+        assert state.model, name
+        assert state.base_url == preset.base_url, name

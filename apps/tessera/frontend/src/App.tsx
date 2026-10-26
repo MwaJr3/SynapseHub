@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
 import { ProfilePage } from './profile';
+import { parentLabel, parentLink } from './site';
 import { TutorPage } from './tutor';
 import { Loading } from './ui';
 
@@ -74,7 +75,19 @@ export default function App() {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 p-4">
           <div>
             <p className="text-lg font-semibold" style={{ color: 'var(--accent)' }}>Tessera</p>
-            <p className="text-xs text-[color:var(--muted)]">A Tamuzi Learning product</p>
+            {parentLink() ? (
+              <a
+                className="text-xs text-[color:var(--muted)] hover:underline"
+                href={parentLink()!.href}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {parentLink()!.label}
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            ) : (
+              <p className="text-xs text-[color:var(--muted)]">{parentLabel()}</p>
+            )}
           </div>
           {signedIn ? (
             <nav aria-label="Sections" className="flex flex-wrap items-center gap-1">

@@ -230,7 +230,8 @@ blocked from it.
 ```bash
 cd backend
 python3 -m pip install -r requirements-dev.txt
-python3 -m app.seed            # idempotent: 10 concepts, 7 edges, 10 lessons, 20 questions, 3 puzzles, 10 openings, 9 sources
+python3 -m alembic upgrade head     # the schema, from the migration history
+python3 -m app.seed                 # idempotent: 10 concepts, 7 edges, 10 lessons, 20 questions, 3 puzzles, 10 openings, 9 sources
 python3 -m uvicorn app.main:app --reload --port 8024
 
 cd ../frontend
@@ -241,9 +242,97 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 163 tests
-cd frontend && npm test && npm run build   # 43 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 205 tests
+cd frontend && npm test && npm run build   # 53 tests, then typecheck + bundle
 ```
+
+## Storage: SQLite for one, PostgreSQL for a product
+
+Every learner's profile, answers, review schedule and tutor threads live in one
+database and are separated by `user_id` alone, so the database is the thing that
+must not lose them. SQLite is the default because it is one file and needs no
+server; PostgreSQL is the deployment target.
+
+Schema changes are **Alembic migrations**, not `create_all()`. That distinction is
+tested rather than assumed (`tests/test_migrations.py`):
+
+- the history builds an empty database whose tables match the models exactly;
+- `alembic check` finds no drift, so a model change cannot ship unwritten;
+- running the history twice is a no-op rather than an error;
+- `alembic upgrade head --sql` renders the PostgreSQL DDL without a server, which
+  is how the Postgres path is checked in an environment with no PostgreSQL;
+- a migrated database can be seeded and read.
+
+```bash
+docker compose up -d                                  # PostgreSQL 16 (see docker-compose.yml)
+export DATABASE_URL=postgresql://tessera:tessera@127.0.0.1:5432/tessera
+python3 -m alembic upgrade head
+python3 -m app.seed
+```
+
+A bare `postgresql://` URL is rewritten to `postgresql+psycopg2://` in
+`app/config.py`. That is not cosmetic: `requirements.txt` ships `psycopg2-binary`,
+while SQLAlchemy 2.1 resolves an unqualified URL to **psycopg 3**, which is not
+installed — the failure looks like the database is down.
+
+**What is verified and what is not.** The SQLite path has been run end to end,
+including a fresh database built only from migrations. The PostgreSQL path has
+been verified *as DDL* and by the migration tests above; it has **not** been run
+against a live PostgreSQL server, because none exists in the environment this was
+built in. `docker-compose.yml` is there for the first machine that has Docker.
+
+## One learner cannot see another
+
+This is the commercially important property, so it gets its own test file
+(`tests/test_isolation.py`) that goes through the public API rather than trusting
+the handlers to look right. Two accounts are created; one is given a filled
+profile, an answer, and a goal; the other then reads everything it can reach and
+must find none of it. The direct-object attempts are covered too: a guessed
+assessment id is a **404** rather than a confirmation that the record exists, a
+guessed thread id is a 404, and a replayed session token fails after sign-out
+because the token lives in the database rather than only in the browser.
+
+Sign-in also does not distinguish "no such account" from "wrong password".
+
+## Named providers, so a key is enough
+
+An operator should not have to transcribe a base URL and recall a model id. Set a
+provider name and a key:
+
+```bash
+TESSERA_TUTOR_PROVIDER=huggingface   TESSERA_TUTOR_API_KEY=hf_...
+TESSERA_TUTOR_PROVIDER=ollama-cloud  TESSERA_TUTOR_API_KEY=...
+TESSERA_TUTOR_PROVIDER=ollama-local  # no key at all
+```
+
+`PROVIDER_PRESETS` (`backend/app/ai/agent.py`) supplies the endpoint and a default
+model, and an explicit `TESSERA_TUTOR_BASE_URL` or `TESSERA_TUTOR_MODEL` still
+overrides it. A misspelt provider name is a **failure that lists the valid names**,
+not a silent fall back to a different backend — tested, because the silent version
+would be invisible until a bill arrived.
+
+A preset proves nothing about the provider. It is a URL and a model string; only a
+completed request proves the connection, and none has been made from this
+environment.
+
+## Motion and imagery
+
+The interface is allowed to be alive; it is not allowed to lie. Depth is CSS only —
+perspective on the container, a small rotation on hover, transform and opacity
+only, so it stays on the compositor. The profile header is a slow drifting field of
+light behind the text, and cards rise in sequence rather than all at once.
+
+The scores are drawn as rings, and the ring is the data: its stroke comes from the
+reported value against that instrument's own scale. A missing score gets a dashed
+empty track and the words *not supplied* — never a zero-length ring, which would
+read as a measured 0%. The rings are `role="img"` with the value in their
+accessible name, so the distinction survives for a screen reader.
+
+`public/hero-tessera.png` was generated for this project (no third-party
+photography, nothing misattributed). It is decorative, `alt=""`, inside an
+`aria-hidden` wrapper.
+
+All of it is switched off under `prefers-reduced-motion: reduce`.
 
 ## Known limitations (read this before trusting anything)
 
@@ -284,6 +373,12 @@ cd frontend && npm test && npm run build   # 43 tests, then typecheck + bundle
   the caveats, the empty state, the baseline load, a rejected write, a blank field
   never becoming a zero, and retiring a row). This environment has no browser, so
   layout, focus order and contrast are reasoned about rather than observed.
+- **Never run against PostgreSQL.** Migrations render Postgres DDL and the schema
+  tests pass, but no live PostgreSQL has been used. Treat the compose file and the
+  deployment instructions as unproven until someone runs them.
+- **The transcribed baseline is off by default.** It belongs to the person who
+  supplied it: `TESSERA_DEMO_BASELINE=1` exposes it for a demonstration, and
+  without it a new account starts with every axis unscored, which is correct.
 - **LIFESYSTEM is one slice deep.** The profile exists; sessions, reference notes,
   retrieval scheduling, competency records, quests and XP do not yet. The stage plan
   and its gates are in `docs/lifesystem/README.md` rather than implied by the screen.
@@ -311,6 +406,8 @@ backend/app/
   learner.py         evidence → learner-model updates
   profile.py         supplied assessments: registry, validation, missing-vs-zero
   profile_baseline.py the diagnostic baseline transcribed from the brief
+  ai/budget.py       the context-window estimate shown in the tutor trace
+alembic/            the migration history (the schema's source of truth)
   routes.py          HTTP API
   models.py          domain model
   seed.py            the demonstration curriculum
@@ -328,5 +425,7 @@ frontend/src/
   tutor.tsx          grounded search and the streamed conversation
   profile.tsx        the ten axes, assessment history and the add-assessment form
   hooks.ts           the shared async-loading hook
+  rings.tsx          score rings and the profile header
+  site.ts            the link to the umbrella site, or none
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

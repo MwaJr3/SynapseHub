@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { Instrument } from './api';
 import { buildScores } from './profile';
-import { formatScore } from './utils';
+import { formatScore, ringShare } from './utils';
 
 const DIMENSIONS: Instrument = {
   id: 'icanstudy-dimensions',
@@ -83,5 +83,28 @@ describe('formatScore', () => {
   it('never renders a missing value as a number', () => {
     // Guard against a future refactor passing 0 for "unknown".
     expect(formatScore(0, 0, 100)).toBe('0 / 100');
+  });
+});
+
+describe('ringShare', () => {
+  it('maps a score onto its own scale', () => {
+    expect(ringShare(43, 0, 100)).toBeCloseTo(0.43);
+    expect(ringShare(4.2, 0, 5)).toBeCloseTo(0.84);
+    expect(ringShare(17, 0, 20)).toBeCloseTo(0.85);
+  });
+
+  it('clamps rather than drawing outside the ring', () => {
+    expect(ringShare(140, 0, 100)).toBe(1);
+    expect(ringShare(-5, 0, 100)).toBe(0);
+  });
+
+  it('refuses to divide by a broken scale', () => {
+    expect(ringShare(50, 100, 100)).toBe(0);
+    expect(ringShare(50, 0, 0)).toBe(0);
+    expect(ringShare(Number.NaN, 0, 100)).toBe(0);
+  });
+
+  it('keeps a supplied zero at the start of the ring, not at a third of it', () => {
+    expect(ringShare(0, 0, 100)).toBe(0);
   });
 });

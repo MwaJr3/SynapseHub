@@ -18,7 +18,7 @@
  */
 import { ASSISTANTS, type AssistantName } from '@/content/assistants';
 import { FLOWS, composeTemperature, maxTokens, retrieveLimit } from '@/content/flows';
-import { runFlow } from './flow';
+import { checkAnswer, runFlow } from './flow';
 import { assistantConfig, providerToken, type AssistantProviderConfig } from './provider';
 import { contextBlock, retrieve } from './retrieve';
 
@@ -158,6 +158,7 @@ export async function* streamAnswer(
   const decoder = new TextDecoder();
   let buffer = '';
   let emitted = false;
+  let answer = '';
 
   for (;;) {
     const { done, value } = await reader.read();
@@ -175,6 +176,7 @@ export async function* streamAnswer(
         const text = chunkText(JSON.parse(data));
         if (text) {
           emitted = true;
+          answer += text;
           yield sse('delta', { text });
         }
       } catch {
@@ -187,5 +189,9 @@ export async function* streamAnswer(
     yield sse('error', { message: 'The model returned nothing. Nothing has been added.', retryable: true });
     return;
   }
-  yield sse('done', { ok: true });
+  // The answer is checked against what the flow said it would produce. A short
+  // or truncated answer is reported as unfinished rather than passed off as a
+  // complete one; `ok: false` tells the interface to say so.
+  const problems = checkAnswer(flow.expects, answer);
+  yield sse('done', { ok: problems.length === 0, problems });
 }

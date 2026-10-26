@@ -10,6 +10,7 @@ const PUBLIC_NAV = [
   { href: '/companies', label: 'Companies' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/products', label: 'Products' },
+  { href: '/ecosystem', label: 'Learning systems' },
   { href: '/support', label: 'IT triage' },
   { href: '/study-plan', label: 'Study planning' },
   { href: '/case-studies', label: 'Case Studies' },
@@ -74,6 +75,7 @@ export function SiteFooter() {
         <div>
           <p className="font-semibold text-[var(--ink)]">Explore</p>
           <ul className="mt-2 space-y-1">
+            <li><Link href="/ecosystem" className="hover:underline">The learning systems</Link></li>
             <li><Link href="/products" className="hover:underline">All products</Link></li>
             <li><Link href="/case-studies" className="hover:underline">Case studies</Link></li>
             <li><Link href="/people" className="hover:underline">People</Link></li>

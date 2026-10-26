@@ -1,0 +1,38 @@
+# Tessera with PostgreSQL — the multi-learner deployment.
+#
+# SQLite is fine for one person on one machine. It is the wrong choice for a
+# product where every learner's progress has to be isolated and durable, so this
+# file stands up the database the app is designed for. It is a development
+# deployment: the password is here because it is local, and must be replaced
+# (through the environment, not this file) anywhere real.
+#
+#   docker compose up -d
+#   cd backend && DATABASE_URL=postgresql://tessera:tessera@127.0.0.1:5432/tessera \
+#     python3 -m alembic upgrade head
+#   DATABASE_URL=... python3 -m app.seed
+#   DATABASE_URL=... python3 -m uvicorn app.main:app --port 8024
+#
+# Verified in this repository: the migration history renders PostgreSQL DDL
+# (`alembic upgrade head --sql`) and the tests that build a schema from it pass.
+# NOT verified: execution against this container, because the sandbox this was
+# written in has no Docker daemon and no PostgreSQL server.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tessera
+      POSTGRES_PASSWORD: tessera
+      POSTGRES_DB: tessera
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - tessera-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tessera -d tessera"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  tessera-pgdata:

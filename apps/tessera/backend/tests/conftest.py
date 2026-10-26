@@ -8,6 +8,13 @@ import tempfile
 
 _TMP = tempfile.mkdtemp(prefix="tessera-test-")
 os.environ["TESSERA_DATA_DIR"] = _TMP
+# The transcribed baseline is a demo affordance, off by default. Most profile
+# tests exercise loading it; the test that checks the disabled state removes it.
+os.environ["TESSERA_DEMO_BASELINE"] = "1"
+# The quizzes the profile links to are configuration; set them so the payload is
+# exercised, and let the tests that care about "unconfigured" remove them.
+os.environ["TESSERA_QUIZ_LEARNER_TYPE_URL"] = "https://quiz.icanstudy.com/learner-type"
+os.environ["TESSERA_QUIZ_DIAGNOSTIC_URL"] = "https://quiz.icanstudy.com/learning-diagnostic"
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 import pytest  # noqa: E402

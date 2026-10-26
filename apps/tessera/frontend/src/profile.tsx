@@ -10,8 +10,9 @@ import {
   type ProfileResponse,
 } from './api';
 import { useAsync } from './hooks';
+import { EmptyRing, HeroPanel, ScoreRing } from './rings';
 import { formatScore } from './utils';
-import { Badge, Card, EmptyState, ErrorNote, Loading, SectionTitle } from './ui';
+import { Badge, Card, EmptyState, ErrorNote, Loading } from './ui';
 
 const muted = 'text-[color:var(--muted)]';
 
@@ -66,9 +67,27 @@ export function ProfilePage() {
 
   return (
     <div className="space-y-6">
-      <SectionTitle hint="What the assessments reported, and what is still missing. Nothing here changes what you have demonstrated.">
-        Learner profile
-      </SectionTitle>
+      <HeroPanel>
+        <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
+          Learner profile
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold">What was reported, and what is still unknown</h1>
+        <p className={`mt-2 max-w-prose text-sm ${muted}`}>
+          Every score here came from an instrument you completed. Nothing on this page changes what you have
+          demonstrated — that comes only from graded answers, separately.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-6">
+          {data.axes.map((axis) => (
+            <ScoreRing
+              key={`hero-${axis.name}`}
+              value={axis.score?.value ?? null}
+              min={axis.score?.scale_min ?? 0}
+              max={axis.score?.scale_max ?? 100}
+              label={axis.label}
+            />
+          ))}
+        </div>
+      </HeroPanel>
 
       <Card>
         <h3 className="text-sm font-semibold">Read this before the numbers</h3>
@@ -89,7 +108,25 @@ export function ProfilePage() {
           )}
         </div>
 
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {data.axes.map((axis) => (
+            <div key={`ring-${axis.name}`} className="rise">
+              {axis.score ? (
+                <ScoreRing
+                  value={axis.score.value}
+                  min={axis.score.scale_min}
+                  max={axis.score.scale_max}
+                  label={axis.label}
+                  caption={axis.score.instrument_label}
+                />
+              ) : (
+                <EmptyRing label={axis.label} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-6 md:grid-cols-2">
           <AxisGroup title="Learning dimensions" axes={dimensions} />
           <AxisGroup title="Learning processes" axes={processes} />
         </div>

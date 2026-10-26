@@ -940,11 +940,22 @@ def post_assessment_archive(
 
 @router.post("/profile/baseline")
 def post_baseline(request: Request, db: Session = Depends(get_db)):
-    """Load the baseline the learner supplied. Skips anything already recorded.
+    """Load the transcribed baseline into *this* account. Skips what is recorded.
 
     Idempotent on (instrument, administered_on) so a double-click cannot create
     duplicate history, and an explicit action so nothing appears without consent.
+
+    Off unless `TESSERA_DEMO_BASELINE` is set: those scores belong to the person
+    who supplied them, and no other learner should inherit them by pressing a
+    button or by signing up. A 403 rather than an empty 200, so a caller cannot
+    mistake "disabled" for "already loaded".
     """
+    if not profile_mod.demo_baseline_enabled():
+        raise HTTPException(
+            403,
+            "The supplied baseline is disabled on this deployment. Record your own results instead; "
+            "TESSERA_DEMO_BASELINE=1 exposes the transcribed data for demonstration.",
+        )
     user = _current(request, db)
     existing = {
         (row.instrument, row.administered_on)

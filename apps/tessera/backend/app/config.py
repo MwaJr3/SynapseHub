@@ -13,7 +13,27 @@ from pathlib import Path
 APP_NAME = "Tessera"
 COMPANY = "Tamuzi Learning"
 DATA_DIR = Path(os.environ.get("TESSERA_DATA_DIR", "data"))
-DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR / 'tessera.db'}")
+
+
+def normalise_database_url(url: str) -> str:
+    """Pin the driver in a bare PostgreSQL URL.
+
+    `requirements.txt` ships `psycopg2-binary`, but SQLAlchemy 2.1 resolves a bare
+    `postgresql://` to psycopg (v3), which is not installed — so the app would die
+    at startup with a driver error that looks like a database problem. Naming the
+    driver makes the URL mean what the requirements say. An explicit driver is
+    always respected.
+    """
+    if url.startswith("postgresql://"):
+        return "postgresql+psycopg2://" + url[len("postgresql://") :]
+    if url.startswith("postgres://"):
+        return "postgresql+psycopg2://" + url[len("postgres://") :]
+    return url
+
+
+DATABASE_URL = normalise_database_url(
+    os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR / 'tessera.db'}")
+)
 
 SESSION_COOKIE = "ts_session"
 SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7

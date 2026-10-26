@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ASSISTANTS } from '@/content/assistants';
 import { FLOWS, composeTemperature, maxTokens, retrieveLimit } from '@/content/flows';
-import { MAX_STEPS, runFlow } from '@/lib/assistant/flow';
+import { checkAnswer, MAX_STEPS, runFlow } from '@/lib/assistant/flow';
 import { requestBody } from '@/lib/assistant/stream';
 
 const CONFIGURED = {
@@ -75,6 +75,7 @@ describe('runFlow', () => {
     const looped = {
       id: 'loop',
       name: 'looped',
+      expects: { minChars: 1, maxChars: 100, mustEndWithOneAction: false },
       nodes: Array.from({ length: MAX_STEPS + 5 }, (_, index) => ({
         id: `n${index}`,
         kind: 'retrieve' as const,
@@ -86,11 +87,63 @@ describe('runFlow', () => {
   });
 
   it('survives an empty flow without pretending it answered', () => {
-    const empty = { id: 'empty', name: 'empty', nodes: [] };
+    const empty = { id: 'empty', name: 'empty', nodes: [], expects: { minChars: 1, maxChars: 100, mustEndWithOneAction: false } };
     const result = runFlow(empty, { question: 'q', passages: [] });
     expect(result.steps).toEqual([]);
     // No guard ran, so nothing refused: the caller must not treat this as success
     // with content. The route never reaches here, because every real flow has one.
     expect(result.proceed).toBe(true);
+  });
+});
+
+/**
+ * Answer expectations — the idea borrowed from CrewAI's task model.
+ *
+ * A task there declares its expected output, and the work is checked before it
+ * is accepted. The same rule is applied to a streamed answer: "the model
+ * returned something" is not success, it is the minimum.
+ */
+describe('checkAnswer', () => {
+  const expects = { minChars: 40, maxChars: 120, mustEndWithOneAction: true };
+
+  it('accepts an answer that meets the flow it ran under', () => {
+    const answer = 'Your laptop is on the domain but the update service cannot reach it. Next: run gpupdate /force.';
+    expect(checkAnswer(expects, answer)).toEqual([]);
+  });
+
+  it('treats a truncated answer as not written, not as short', () => {
+    const problems = checkAnswer(expects, 'Try restarting');
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toMatch(/below the 40/);
+  });
+
+  it('treats whitespace as nothing', () => {
+    expect(checkAnswer(expects, '   \n\n  ')).toContain(
+      'The answer stopped after 0 characters, below the 40 this flow requires.',
+    );
+  });
+
+  it('reports an answer that ran past what was asked for', () => {
+    const problems = checkAnswer(expects, `${'a'.repeat(150)}. Next: nothing.`);
+    expect(problems.some((problem) => problem.includes('past the 120'))).toBe(true);
+  });
+
+  it('catches an answer that hands the work back as a question', () => {
+    const answer = 'The update service cannot reach the domain controller over the VPN. Can you check the VPN?';
+    expect(checkAnswer(expects, answer)).toContain(
+      'The answer ended by asking the visitor a question instead of naming one next action.',
+    );
+  });
+
+  it('uses the last non-empty line, not the last character', () => {
+    const answer = 'The trip is over. Was that it?\n\nNext: check the DHCP scope.';
+    expect(checkAnswer(expects, answer)).toEqual([]);
+  });
+
+  it("keeps every flow\'s declared expectations internally consistent", () => {
+    for (const flow of Object.values(FLOWS)) {
+      expect(flow.expects.minChars).toBeGreaterThan(0);
+      expect(flow.expects.maxChars).toBeGreaterThan(flow.expects.minChars);
+    }
   });
 });

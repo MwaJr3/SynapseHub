@@ -209,3 +209,27 @@ describe('ProfilePage', () => {
     await waitFor(() => expect(api.archiveAssessment).toHaveBeenCalledWith('a1', 'entered twice'));
   });
 });
+
+describe('ProfilePage — the zero-versus-missing distinction, as drawn', () => {
+  it('labels a supplied zero as a score and a gap as unsupplied, in the rings', async () => {
+    await renderProfile(payload({ assessments: [ASSESSMENT] }));
+
+    // The ring is an image with an accessible name, so the distinction is not
+    // carried by colour alone.
+    const reference = screen.getAllByRole('img', { name: /^Reference:/ });
+    expect(reference.some((ring) => ring.getAttribute('aria-label') === 'Reference: 0 / 100')).toBe(true);
+    expect(screen.getAllByRole('img', { name: 'Self-management: not supplied' }).length).toBeGreaterThan(0);
+    // An absent score must never be drawn as a measured zero.
+    expect(screen.queryByRole('img', { name: 'Self-management: 0 / 100' })).toBeNull();
+  });
+
+  it('renders the header image as decoration, not content', async () => {
+    await renderProfile(payload());
+    const images = Array.from(document.querySelectorAll('img'));
+    expect(images.length).toBe(1);
+    // Decorative: an empty alt inside an aria-hidden wrapper, so a screen reader
+    // is not read a picture of a staircase.
+    expect(images[0]!.getAttribute('alt')).toBe('');
+    expect(images[0]!.closest('[aria-hidden="true"]')).not.toBeNull();
+  });
+});

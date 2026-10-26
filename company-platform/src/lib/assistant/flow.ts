@@ -11,7 +11,7 @@
  *    visitor can read, and the trace is bounded by a step budget so a malformed
  *    flow cannot loop.
  */
-import type { AssistantFlow, FlowNode } from '@/content/flows';
+import type { AssistantFlow, AnswerExpectation, FlowNode } from '@/content/flows';
 
 export interface FlowStep {
   id: string;
@@ -108,6 +108,35 @@ export function runFlow(flow: AssistantFlow, context: FlowContext): FlowResult {
   }
 
   return { steps, proceed, refusal };
+}
+
+/**
+ * Check the finished answer against the flow's declared expectations.
+ *
+ * Returns the problems found, not a boolean, so the caller can say what was
+ * wrong. An answer that fails is not "shown with a warning and kept": the route
+ * reports it as unfinished, because a half-answer presented as complete is the
+ * failure this whole product is built to avoid.
+ */
+export function checkAnswer(expects: AnswerExpectation, text: string): string[] {
+  const trimmed = text.trim();
+  const problems: string[] = [];
+
+  if (trimmed.length < expects.minChars) {
+    problems.push(`The answer stopped after ${trimmed.length} characters, below the ${expects.minChars} this flow requires.`);
+  }
+  if (trimmed.length > expects.maxChars) {
+    problems.push(`The answer ran to ${trimmed.length} characters, past the ${expects.maxChars} this flow allows.`);
+  }
+  if (expects.mustEndWithOneAction && trimmed.length > 0) {
+    // A closing question mark means the assistant handed the work back instead
+    // of ending on something the visitor can do.
+    const finalLine = trimmed.split('\n').map((line) => line.trim()).filter(Boolean).pop() ?? '';
+    if (finalLine.endsWith('?')) {
+      problems.push('The answer ended by asking the visitor a question instead of naming one next action.');
+    }
+  }
+  return problems;
 }
 
 /** The trace as it is shown to a visitor: labels only, no internals. */

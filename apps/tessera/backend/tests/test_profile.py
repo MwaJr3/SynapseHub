@@ -250,6 +250,7 @@ def test_instrument_catalogue_matches_what_the_server_accepts(client, learner):
     assert set(by_id) == {
         "icanstudy-dimensions",
         "icanstudy-processes",
+        "icanstudy-learner-type",
         "vark",
         "fastudy",
         "honey-mumford",
@@ -274,3 +275,103 @@ def test_instrument_catalogue_matches_what_the_server_accepts(client, learner):
             json=_assessment(instrument["id"], [_score(axis["axis"], axis["name"], float(top) + 1)]),
         )
         assert too_big.status_code == 422, (instrument["id"], too_big.text)
+
+
+# --------------------------------------------------------------- new accounts
+#
+# The profile is per learner. A new account starts with nothing filled in, and
+# one learner's results never appear in another's profile — including the
+# transcribed baseline, which belongs to the person who supplied it.
+
+
+def test_a_new_learner_starts_with_every_axis_unscored(client, learner):
+    body = client.get("/api/profile").json()
+    assert all(axis["missing"] for axis in body["axes"])
+    assert body["assessments"] == []
+    assert body["context"] == ""
+
+
+def test_one_learners_baseline_is_not_another_learners(client, learner):
+    client.post("/api/profile/baseline")
+    assert len(client.get("/api/profile").json()["assessments"]) == 7
+
+    with client.__class__(client.app) as other:
+        email = f"fresh-{len(learner)}@example.test"
+        assert other.post(
+            "/api/auth/register",
+            json={"email": email, "password": "correct horse battery", "display_name": "Fresh"},
+        ).status_code == 200
+        fresh = other.get("/api/profile").json()
+        assert fresh["assessments"] == []
+        assert all(axis["missing"] for axis in fresh["axes"])
+        # The other account sees the same instruments and offers the same route,
+        # but none of the data.
+        assert {instrument["id"] for instrument in fresh["instruments"]} == {
+            instrument["id"] for instrument in client.get("/api/profile").json()["instruments"]
+        }
+
+
+def test_the_transcribed_baseline_is_off_unless_enabled(client, learner, monkeypatch):
+    monkeypatch.delenv("TESSERA_DEMO_BASELINE", raising=False)
+
+    # The payload says so, so a client can hide the button instead of offering
+    # something that will fail.
+    assert client.get("/api/profile").json()["demo_baseline"] is False
+
+    response = client.post("/api/profile/baseline")
+    assert response.status_code == 403
+    assert "TESSERA_DEMO_BASELINE" in response.json()["detail"]
+    assert client.get("/api/profile").json()["assessments"] == []
+    # Normal entry still works: only the shortcut is off.
+    assert client.post(
+        "/api/profile/assessments",
+        json=_assessment("icanstudy-dimensions", [_score("dimension", "retrieval", 40.0)]),
+    ).status_code == 201
+
+
+def test_the_learner_type_quiz_is_recorded_as_a_label(client, learner):
+    response = client.post(
+        "/api/profile/assessments",
+        json=_assessment(
+            "icanstudy-learner-type",
+            [_score("label", "archetype", label="Spark")],
+            reported_by="provider-report",
+        ),
+    )
+    assert response.status_code == 201, response.text
+    stored = response.json()["scores"][0]
+    assert stored["value"] is None
+    assert stored["value_label"] == "Spark"
+    # A label is not one of the ten core axes, so it cannot move a dimension.
+    assert all(axis["missing"] for axis in client.get("/api/profile").json()["axes"])
+
+
+def test_quiz_links_are_configuration_and_hidden_when_unset(client, learner, monkeypatch):
+    monkeypatch.delenv("TESSERA_QUIZ_LEARNER_TYPE_URL", raising=False)
+    monkeypatch.delenv("TESSERA_QUIZ_DIAGNOSTIC_URL", raising=False)
+    assert client.get("/api/profile").json()["quiz_links"] == []
+
+    monkeypatch.setenv("TESSERA_QUIZ_LEARNER_TYPE_URL", "https://quiz.icanstudy.com/learner-type")
+    monkeypatch.setenv("TESSERA_QUIZ_DIAGNOSTIC_URL", "https://quiz.icanstudy.com/learning-diagnostic")
+    links = client.get("/api/profile").json()["quiz_links"]
+    assert [link["id"] for link in links] == ["learner-type", "diagnostic"]
+    assert links[0]["url"].startswith("https://")
+    assert links[1]["records"].startswith("icanstudy-dimensions")
+
+    # A malformed value is not rendered as a broken anchor.
+    monkeypatch.setenv("TESSERA_QUIZ_LEARNER_TYPE_URL", "quiz.icanstudy.com")
+    assert [link["id"] for link in client.get("/api/profile").json()["quiz_links"]] == ["diagnostic"]
+
+
+def test_quiz_links_do_not_leak_between_accounts(client, learner, monkeypatch):
+    monkeypatch.setenv("TESSERA_QUIZ_DIAGNOSTIC_URL", "https://quiz.icanstudy.com/learning-diagnostic")
+    monkeypatch.delenv("TESSERA_QUIZ_LEARNER_TYPE_URL", raising=False)
+    with client.__class__(client.app) as other:
+        other.post(
+            "/api/auth/register",
+            json={"email": f"links-{len(learner)}@example.test", "password": "correct horse battery"},
+        )
+        # Configuration is deployment-wide, so both see it; what stays private is
+        # the data. Asserting it here keeps the two ideas from being conflated.
+        assert [link["id"] for link in other.get("/api/profile").json()["quiz_links"]] == ["diagnostic"]
+        assert other.get("/api/profile").json()["assessments"] == []

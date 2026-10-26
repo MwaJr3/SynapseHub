@@ -33,6 +33,7 @@ from collections.abc import AsyncIterator
 from typing import Any
 
 from .agent import TutorConfig, build_agent
+from .budget import context_report
 from .store import ChatStore, Citation
 
 logger = logging.getLogger("tessera.tutor")
@@ -139,6 +140,14 @@ async def stream_reply(
                         ok=bool(citations),
                     )
                 )
+                # The window is a budget, not a memory: say what this turn spends
+                # of it, so a learner can see when an answer was working from less
+                # material than they expected.
+                report = context_report(
+                    user_text,
+                    [citation.citation for citation in citations],
+                )
+                steps.append(step("Fitted it into the context window", report.describe()))
                 yield sse("step", {"steps": steps})
                 if citations:
                     yield sse("citations", {"citations": [c.as_dict() for c in citations]})

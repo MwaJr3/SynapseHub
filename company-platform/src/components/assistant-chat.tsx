@@ -28,9 +28,17 @@ interface Turn {
   citations: Citation[];
   steps: TraceStep[];
   pending?: boolean;
+  /** Why the finished answer did not meet what the flow said it would produce. */
+  problems?: string[];
 }
 
 const FIELD = 'rounded-md border border-line bg-transparent p-2 text-sm';
+
+function parseProblems(payload: Record<string, unknown>): string[] {
+  const raw = payload.problems;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((entry): entry is string => typeof entry === 'string');
+}
 
 function parseSteps(payload: Record<string, unknown>): TraceStep[] {
   const raw = payload.steps;
@@ -147,7 +155,8 @@ export function AssistantChat({
               setError(textField(event.data, 'message'));
               patchLast((turn) => ({ ...turn, pending: false }));
             } else if (event.name === 'done') {
-              patchLast((turn) => ({ ...turn, pending: false }));
+              const problems = parseProblems(event.data);
+              patchLast((turn) => ({ ...turn, pending: false, problems }));
             }
           }
         }
@@ -229,6 +238,21 @@ export function AssistantChat({
                   ))}
                 </ol>
               </details>
+            ) : null}
+
+            {turn.problems && turn.problems.length > 0 ? (
+              <div className="mt-2 rounded border p-2 text-xs" style={{ borderColor: 'var(--danger)' }}>
+                <p className="font-semibold text-danger">This answer is incomplete</p>
+                <ul className="mt-1 list-disc pl-4 text-muted">
+                  {turn.problems.map((problem) => (
+                    <li key={problem}>{problem}</li>
+                  ))}
+                </ul>
+                <p className="mt-1 text-muted">
+                  It did not meet the shape this assistant promises, so it is shown as unfinished rather than
+                  presented as a complete answer.
+                </p>
+              </div>
             ) : null}
 
             {turn.citations.length > 0 ? (

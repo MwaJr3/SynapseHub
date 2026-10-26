@@ -38,6 +38,7 @@ before the next major phase.
 | --- | --- | --- | --- |
 | 0 | Repository and environment | Tessera inspected, toolchain and tests green, plan written | **done** |
 | 1 | Software: learner profile foundation | Profile + diagnostic history persisted, validated, tested, on screen | **done** |
+| 1.1 | Software: one profile per learner, on a real database | Migration history, PostgreSQL path, isolation tests, baseline gated | **done** |
 | 2 | Software: knowledge and sessions | Subjects/topics/concepts with typed relations, session log, reference notes + search | next |
 | 3 | Software: retrieval + review scheduling | Retrieval formats, attempt history, explainable due queue, missed-review recovery | |
 | 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps | |
@@ -49,6 +50,42 @@ before the next major phase.
 
 Stages 1–6 are the software. The document's own Phase IV–VI work is largely
 supplied by the prompt, which is what makes building first possible at all.
+
+
+## Stage 1.1 — one profile per learner, on a database that can hold them
+
+Three corrections came out of review, and all three were right:
+
+1. **Each learner has their own profile.** The first cut shipped a "load the
+   baseline I supplied" button that filled *any* account with the project owner's
+   diagnostic scores. That is someone else's data. The baseline is now **off unless
+   `TESSERA_DEMO_BASELINE=1`** is set: a new account starts with all ten axes
+   unscored, entry is by hand from the learner's own results, and the endpoint
+   answers `403` with the reason rather than an empty `200` that could be mistaken
+   for "already loaded".
+2. **The scores only exist once the learner supplies them.** Nothing arrives by
+   default. The two quizzes are linked as *configuration*
+   (`TESSERA_QUIZ_LEARNER_TYPE_URL`, `TESSERA_QUIZ_DIAGNOSTIC_URL`); an unset URL is
+   simply absent from the payload and no anchor is rendered. Nothing is fetched or
+   scraped — the learner takes the quiz and types what it reported. A supplied `0`
+   stays a `0`; an unsupplied score stays missing.
+3. **PostgreSQL, and migrations to get there.** SQLite is one file and one machine;
+   a product with learners needs PostgreSQL. `alembic/` now holds the schema
+   history, `tests/test_migrations.py` proves it builds the models exactly and has
+   not drifted, and `docker-compose.yml` stands up the server. A bare
+   `postgresql://` URL is rewritten to `psycopg2` because SQLAlchemy 2.1 would
+   otherwise look for a driver that is not installed.
+
+The isolation guarantee is tested through the API rather than asserted:
+`tests/test_isolation.py` creates two learners, fills one profile, and checks the
+other can read none of it — including by guessing ids (404, not "empty").
+
+### Still true, and still the reason this order is risky
+
+No ability score is derived from anything. The profile stores what an instrument
+reported, with its name, date and reporter attached, and no composite is computed
+over the ten axes. Learner development (stage 7) can therefore change what the
+product *says* about these numbers without a migration of history.
 
 ## Stage 1 — the learner profile (built)
 
@@ -119,11 +156,26 @@ are none.
 
 ## Exercise for stage 1
 
-Hands-on, using the running instance rather than a questionnaire:
+**It does not need a deployment.** The whole exercise runs locally: two commands,
+two ports on the same machine, no Vercel, no domain, no DNS.
 
-1. Sign in, open **Profile**. Every axis should read *no score*.
-2. Press **Load the baseline I supplied**. Nine axes should now show a score and
-   **Self-management** should still read *no score*.
+```bash
+cd apps/tessera/backend  && python3 -m pip install -r requirements-dev.txt \
+  && python3 -m alembic upgrade head && python3 -m app.seed \
+  && python3 -m uvicorn app.main:app --port 8024
+cd apps/tessera/frontend && npm install && npm run dev     # http://localhost:5197
+```
+
+Register any address and password (12+ characters) — it is a local database.
+To see the transcribed baseline as well, set `TESSERA_DEMO_BASELINE=1` before
+starting the API and restart it; that is the demonstration path, not the default.
+
+1. Sign in, open **Profile**. Every axis should read *no score* — a brand-new
+   learner has nothing, which is the correct starting state.
+2. If you enabled `TESSERA_DEMO_BASELINE=1`, press **Load the baseline I supplied**.
+   Nine axes should show a score and **Self-management** should still read
+   *no score*. Leave it disabled and skip to step 3: entering your own result must
+   work just as well.
 3. Find **Reference** in Learning processes. It must show `0 / 100` — a score —
    while Self-management shows an absence. If those two ever look the same, the
    build is wrong.

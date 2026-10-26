@@ -40,6 +40,84 @@ LOCAL_HOSTS = {"localhost", "127.0.0.1", "0.0.0.0", "::1", "host.docker.internal
 #: Used only when talking to OpenAI itself. Any other endpoint must name its model.
 OPENAI_DEFAULT_MODEL = "gpt-4o-mini"
 
+
+@dataclass(frozen=True)
+class ProviderPreset:
+    """Where a named provider lives, and a model that is known to be offered there.
+
+    Presets exist so an operator can set two variables — a provider name and a
+    key — instead of transcribing a base URL and guessing a model id. They are
+    conveniences, not guarantees: `default_model` is only a starting point, and
+    every one of them can be overridden by `TESSERA_TUTOR_MODEL`. Nothing here
+    means the provider was reached; only a completed request does.
+    """
+
+    id: str
+    label: str
+    base_url: str
+    default_model: str
+    #: False only for an endpoint that runs on the operator's own machine.
+    needs_key: bool = True
+    note: str = ""
+
+
+PROVIDER_PRESETS: dict[str, ProviderPreset] = {
+    "huggingface": ProviderPreset(
+        id="huggingface",
+        label="Hugging Face Inference Providers",
+        base_url="https://router.huggingface.co/v1",
+        default_model="meta-llama/Llama-3.3-70B-Instruct",
+        note="One token reaches many open-weight models. Free monthly credits, then per-token.",
+    ),
+    "ollama-cloud": ProviderPreset(
+        id="ollama-cloud",
+        label="Ollama Cloud",
+        base_url="https://ollama.com/v1",
+        default_model="nemotron-3-nano:30b",
+        note=(
+            "OpenAI-compatible, so the same client works unchanged. Endpoint, model ids and "
+            "account limits are from the provider's own example and have not been verified "
+            "from this repository."
+        ),
+    ),
+    "ollama-local": ProviderPreset(
+        id="ollama-local",
+        label="Ollama on this machine",
+        base_url="http://127.0.0.1:11434/v1",
+        default_model="qwen2.5:3b",
+        needs_key=False,
+        note="No account and no quota; prompts never leave the machine. Needs the RAM.",
+    ),
+    "groq": ProviderPreset(
+        id="groq",
+        label="Groq",
+        base_url="https://api.groq.com/openai/v1",
+        default_model="openai/gpt-oss-20b",
+        note="Free tier, no card. Limits are per organisation.",
+    ),
+    "gemini": ProviderPreset(
+        id="gemini",
+        label="Google Gemini",
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+        default_model="gemini-flash-latest",
+        note="Free tier; prompts may be used for training outside the EU/UK. A privacy decision, not just cost.",
+    ),
+    "openrouter": ProviderPreset(
+        id="openrouter",
+        label="OpenRouter",
+        base_url="https://openrouter.ai/api/v1",
+        default_model="deepseek/deepseek-chat-v3:free",
+        note="Only ids ending in :free cost nothing; small daily cap.",
+    ),
+    "openai": ProviderPreset(
+        id="openai",
+        label="OpenAI",
+        base_url="",
+        default_model=OPENAI_DEFAULT_MODEL,
+        note="No free tier.",
+    ),
+}
+
 INSTRUCTIONS = """You are Tessera's study tutor, part of Tamuzi Learning.
 
 Ground rules:
@@ -79,9 +157,26 @@ def _read(name: str) -> str:
     return (os.environ.get(name) or "").strip()
 
 
+def resolve_provider() -> tuple[ProviderPreset | None, str, str]:
+    """Apply `TESSERA_TUTOR_PROVIDER` (if any) under the explicit settings.
+
+    Returns `(preset, base_url, model)`. An explicit base URL or model always
+    wins over the preset, so a preset is a shorthand rather than a cage. An
+    unknown provider name is not silently ignored: it becomes part of `missing`
+    with the list of valid names, because otherwise the operator would be left
+    wondering why their variable did nothing.
+    """
+    name = _read("TESSERA_TUTOR_PROVIDER").lower()
+    preset = PROVIDER_PRESETS.get(name) if name else None
+    base_url = _read("TESSERA_TUTOR_BASE_URL").rstrip("/") or (preset.base_url if preset else "")
+    model = _read("TESSERA_TUTOR_MODEL") or (preset.default_model if preset else "")
+    return preset, base_url, model
+
+
 def tutor_config() -> TutorConfig:
     """Report real configuration state. Never guesses, never fakes a key."""
-    base_url = _read("TESSERA_TUTOR_BASE_URL").rstrip("/")
+    provider_name = _read("TESSERA_TUTOR_PROVIDER").lower()
+    preset, base_url, preset_model = resolve_provider()
     host = (urlparse(base_url).hostname or "") if base_url else ""
     is_local = host in LOCAL_HOSTS
     provider = "openai" if not base_url else ("local" if is_local else host)
@@ -89,13 +184,31 @@ def tutor_config() -> TutorConfig:
     key_source = next((name for name in KEY_ENV_VARS if _read(name)), None)
     # A model name is required for any non-OpenAI endpoint: guessing one would
     # fail at request time with a provider-specific error instead of here.
-    model = _read("TESSERA_TUTOR_MODEL") or (OPENAI_DEFAULT_MODEL if not base_url else "")
+    model = preset_model or (OPENAI_DEFAULT_MODEL if not base_url else "")
 
     missing: list[str] = []
-    if key_source is None and not is_local:
+    if key_source is None and not is_local and (preset is None or preset.needs_key):
         missing.append("TESSERA_TUTOR_API_KEY")
     if not model:
         missing.append("TESSERA_TUTOR_MODEL")
+    if provider_name and preset is None:
+        missing.append("TESSERA_TUTOR_PROVIDER")
+
+    if "TESSERA_TUTOR_PROVIDER" in missing:
+        known = ", ".join(sorted(PROVIDER_PRESETS))
+        return TutorConfig(
+            configured=False,
+            model=model or "",
+            provider=provider,
+            base_url=base_url,
+            key_source=key_source,
+            missing=tuple(missing),
+            reason=(
+                f"TESSERA_TUTOR_PROVIDER is {provider_name!r}, which is not a known preset "
+                f"({known}). Nothing is called until that is corrected, so a typo cannot "
+                "silently fall back to another provider."
+            ),
+        )
 
     if missing:
         if "TESSERA_TUTOR_MODEL" in missing:

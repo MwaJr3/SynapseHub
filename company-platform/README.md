@@ -72,6 +72,52 @@ The company is resolved from the assistant, so a visitor cannot file into the
 other company's queue. Staff triage these at `/admin/support`, scoped to the
 companies they hold a role in, and each status change is written to the audit log.
 
+## The umbrella page
+
+`/ecosystem` is where the Tamuzi learning systems are explained together: Tessera
+(the learner model), ReachLearn (delivery), OpenLearn Commons (open-licensed
+catalogue) and EduAccess (access). Each card states what that system does that its
+neighbours do not, because the products are only worth keeping separate if the
+difference is real.
+
+Every link there is configuration (`NEXT_PUBLIC_TESSERA_URL` and friends). An
+unconfigured system is still listed and says **"Not deployed yet"** — it is not
+given a `#` and it is not quietly hidden. `src/content/ecosystem.ts` is the only
+place a URL is resolved, and `safeUrl()` refuses anything that is not absolute
+http(s), so a `javascript:` value in an environment variable cannot become a link.
+
+The reverse direction exists too: Tessera's header links back here when
+`VITE_COMPANY_SITE_URL` is set, and otherwise reads "A Tamuzi Learning product"
+with no anchor.
+
+## Answers that must meet a declared shape
+
+Each assistant flow declares what its finished answer should look like
+(`minChars`, `maxChars`, and must end on an action), and the stream checks the
+answer against that declaration. `done` carries `{ ok, problems[] }`; when a check
+fails, the interface says **"This answer is incomplete"** and lists why, instead of
+presenting a truncated answer as a considered one. The idea is CrewAI's task model:
+a task states its expected output and the work is checked before it is accepted.
+
+## Named AI providers
+
+`ASSISTANT_PROVIDER` supplies the endpoint and a default model, so a deployment
+needs a name and a key rather than a URL and a model id:
+
+| `ASSISTANT_PROVIDER` | Endpoint | Default model |
+| --- | --- | --- |
+| `huggingface` | `https://router.huggingface.co/v1` | `meta-llama/Llama-3.3-70B-Instruct` |
+| `ollama-cloud` | `https://ollama.com/v1` | `nemotron-3-nano:30b` |
+| `ollama-local` | `http://127.0.0.1:11434/v1` | `qwen2.5:3b` (no key) |
+| `groq` | `https://api.groq.com/openai/v1` | `openai/gpt-oss-20b` |
+| `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-flash-latest` |
+| `openrouter` | `https://openrouter.ai/api/v1` | `deepseek/deepseek-chat-v3:free` |
+| `openai` | (default) | `gpt-4o-mini` (no free tier) |
+
+Explicit `ASSISTANT_BASE_URL` / `ASSISTANT_MODEL` still override the preset. An
+unknown provider name does not fall back to anything: the assistant reports itself
+unconfigured and names the variable, so a typo is visible rather than billed.
+
 ## Stack
 
 Next.js 15 (App Router) · React 19 · TypeScript (strict) · Drizzle ORM ·
@@ -148,8 +194,10 @@ deployment. Before public launch, complete `docs/LAUNCH_CHECKLIST.md`.
 npm test
 ```
 
-Vitest suite (108 tests): assistant grounding, provider configuration, flows and
-traces, streaming and event framing, the confirmed-only handoff and inbox scoping; catalogue integrity (25/13/12 counts, case-study completeness,
+Vitest suite (122 tests): assistant grounding, provider configuration, flows and
+traces, streaming and event framing, answer expectations (a truncated or
+question-ending answer is reported, not accepted), the confirmed-only handoff and
+inbox scoping, the ecosystem links (configured-only, no placeholders); catalogue integrity (25/13/12 counts, case-study completeness,
 no invented URLs), product search/filter/sort, external-link policy,
 authorization (cross-company isolation, own-profile-only, suspended members,
 platform boundaries, audit), draft privacy (unpublished content and private

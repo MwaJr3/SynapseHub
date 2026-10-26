@@ -30,10 +30,30 @@ export interface FlowNode {
   config: Record<string, string | number | boolean>;
 }
 
+/**
+ * What the finished answer must look like, declared as data.
+ *
+ * Taken from CrewAI's task model: a task states its expected output, and the
+ * work is checked against that before it is accepted. Without it, "the model
+ * returned something" is treated as success — which is how a truncated or empty
+ * answer reaches a visitor looking like a considered one. The checks are
+ * deliberately crude (length, ending) because they are honest: they cannot judge
+ * truth, and they do not pretend to.
+ */
+export interface AnswerExpectation {
+  /** Below this, the answer is treated as not written, not as short. */
+  minChars: number;
+  /** Above this, the answer exceeded the cap that was requested. */
+  maxChars: number;
+  /** The policy this flow enforces, quoted back when the answer breaks it. */
+  mustEndWithOneAction: boolean;
+}
+
 export interface AssistantFlow {
   id: string;
   name: string;
   nodes: FlowNode[];
+  expects: AnswerExpectation;
 }
 
 export const FLOWS: Record<'velaqori-triage' | 'tamuzi-study-plan', AssistantFlow> = {
@@ -67,6 +87,7 @@ export const FLOWS: Record<'velaqori-triage' | 'tamuzi-study-plan', AssistantFlo
         config: { maxTokens: 700 },
       },
     ],
+    expects: { minChars: 40, maxChars: 2400, mustEndWithOneAction: true },
   },
   'tamuzi-study-plan': {
     id: 'flow-tamuzi-study-v1',
@@ -98,6 +119,7 @@ export const FLOWS: Record<'velaqori-triage' | 'tamuzi-study-plan', AssistantFlo
         config: { maxTokens: 600 },
       },
     ],
+    expects: { minChars: 40, maxChars: 2000, mustEndWithOneAction: true },
   },
 };
 

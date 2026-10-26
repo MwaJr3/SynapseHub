@@ -25,6 +25,7 @@ outside its scale is rejected rather than stored — a typo would otherwise beco
 from __future__ import annotations
 
 import math
+import os
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 
@@ -54,6 +55,59 @@ CAVEATS = (
     "Nothing on this page changes what you have demonstrated. Mastery comes only "
     "from graded answers, separately.",
 )
+
+
+#: The two iCanStudy quizzes whose results this profile is built to hold. Their
+#: URLs are configuration, not constants: an unset link is omitted from the
+#: payload and no anchor is rendered, because a link that goes nowhere is worse
+#: than no link. Nothing here fetches or scrapes those pages — the learner takes
+#: the quiz and enters what it reported.
+QUIZ_ENV_VARS = (
+    (
+        "learner-type",
+        "TESSERA_QUIZ_LEARNER_TYPE_URL",
+        "Learner type",
+        "icanstudy-learner-type",
+        "Take the quiz, then record the archetype it names.",
+    ),
+    (
+        "diagnostic",
+        "TESSERA_QUIZ_DIAGNOSTIC_URL",
+        "Learning diagnostic",
+        "icanstudy-dimensions + icanstudy-processes",
+        "Record each dimension and process exactly as scored. Leave anything it did not score blank.",
+    ),
+)
+
+
+def demo_baseline_enabled() -> bool:
+    """Whether the transcribed baseline may be loaded.
+
+    Off unless the operator opts in. The baseline belongs to one person who
+    supplied it; pre-filling every new account with someone else's scores would
+    be both wrong and misleading, and the flag makes that a deliberate decision
+    instead of a default.
+    """
+    return (os.environ.get("TESSERA_DEMO_BASELINE") or "").strip().lower() in {"1", "true", "yes"}
+
+
+def quiz_links() -> list[dict]:
+    """The quizzes worth taking, for whichever URLs are configured."""
+    links: list[dict] = []
+    for key, env_name, label, records, instruction in QUIZ_ENV_VARS:
+        url = (os.environ.get(env_name) or "").strip()
+        if not url.startswith(("https://", "http://")):
+            continue
+        links.append(
+            {
+                "id": key,
+                "label": label,
+                "url": url,
+                "records": records,
+                "instruction": instruction,
+            }
+        )
+    return links
 
 
 @dataclass(frozen=True)
@@ -197,6 +251,19 @@ INSTRUMENTS: dict[str, Instrument] = {
         scale_max=5.0,
         value_kind="number",
         note="Scores from the supplied assessment. Not standardised measures of intelligence.",
+    ),
+    "icanstudy-learner-type": Instrument(
+        id="icanstudy-learner-type",
+        label="iCanStudy learner type",
+        axes=_axes(AXIS_LABEL, (("archetype", "Learner archetype"),)),
+        scale_min=None,
+        scale_max=None,
+        value_kind="label",
+        note=(
+            "The learner-type quiz reports an archetype name, not a score. Record the name; if the "
+            "report also gives numeric dimensions, enter those under the matching instruments rather "
+            "than inventing a scale here."
+        ),
     ),
     "self-described": Instrument(
         id="self-described",
@@ -530,6 +597,10 @@ def profile_payload(db: Session, user: models.User) -> dict:
         ],
         "instruments": instrument_catalogue(),
         "caveats": list(CAVEATS),
+        #: The learner's own results, not anyone else's: a new account starts with
+        #: every axis unscored, and only this learner's entries can fill them.
+        "quiz_links": quiz_links(),
+        "demo_baseline": demo_baseline_enabled(),
     }
 
 

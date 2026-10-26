@@ -89,3 +89,99 @@ body {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+/* ---------------------------------------------------------------- motion
+ *
+ * Depth without a 3D library: layered gradients, perspective on the container
+ * and a small rotate on hover. Everything here is transform/opacity only, so it
+ * stays on the compositor, and the block at the bottom of this file turns the
+ * whole lot off for anyone who asked for less motion.
+ */
+
+.stage {
+  perspective: 900px;
+}
+
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease, border-color 320ms ease;
+  will-change: transform;
+}
+.tilt:hover,
+.tilt:focus-within {
+  transform: rotateX(2.5deg) rotateY(-3deg) translateY(-3px);
+  box-shadow: 0 18px 40px -24px rgb(20 24 31 / 55%);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+/* The profile header: a soft, slowly drifting field of light behind the text. */
+.aurora {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  isolation: isolate;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side at 30% 35%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 70%),
+    radial-gradient(closest-side at 72% 60%, color-mix(in srgb, var(--good) 26%, transparent), transparent 72%),
+    radial-gradient(closest-side at 55% 85%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+  filter: blur(18px);
+  animation: drift 26s ease-in-out infinite alternate;
+}
+.aurora::after {
+  animation-duration: 34s;
+  animation-direction: alternate-reverse;
+  opacity: 0.7;
+}
+
+@keyframes drift {
+  from { transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1); }
+  to   { transform: translate3d(5%, 3%, 0) rotate(12deg) scale(1.08); }
+}
+
+/* Score rings: the stroke is drawn from the value, so the picture is the data. */
+.ring-fill {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cards arrive in sequence rather than all at once. */
+.rise {
+  animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* A quiet shimmer used only on the "not supplied" state, never on a real score. */
+.unsupplied {
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--line) 70%, transparent) 40%, transparent 60%);
+  background-size: 240% 100%;
+  animation: sweep 3.4s linear infinite;
+}
+@keyframes sweep {
+  from { background-position: 180% 0; }
+  to   { background-position: -60% 0; }
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+  filter: saturate(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt:hover,
+  .tilt:focus-within { transform: none; }
+  .aurora::before,
+  .aurora::after { animation: none; }
+  .unsupplied { animation: none; }
+}
