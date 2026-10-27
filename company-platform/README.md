@@ -118,6 +118,32 @@ Explicit `ASSISTANT_BASE_URL` / `ASSISTANT_MODEL` still override the preset. An
 unknown provider name does not fall back to anything: the assistant reports itself
 unconfigured and names the variable, so a typo is visible rather than billed.
 
+## Connecting to Tessera (optional, read-only)
+
+The study planner works without this. When a learner connects a Tessera account, the
+page can show their objectives, what is due, and where the evidence is strong or
+thin — and nothing else.
+
+The connection is a standard delegated-authorization flow, not a shared login:
+
+1. `GET /api/tessera/connect` (signed-in learners only) creates a PKCE verifier and a
+   `state`, stores them in an httpOnly cookie, and sends the browser to Tessera's own
+   consent screen.
+2. Tessera shows the exact scope, purpose and revocation terms; the learner chooses
+   **Connect** or **Not now**.
+3. Tessera redirects back with a single-use code; `/api/tessera/callback` checks the
+   state and exchanges the code server-side. The verifier never appears in a URL.
+4. The access token lives in an httpOnly cookie for one hour and is sent only in an
+   `Authorization` header. `/api/tessera/summary` proxies the read.
+5. `POST /api/tessera/disconnect` revokes the token at Tessera, then clears the cookie.
+
+Failures are values, not pages: unconfigured, not connected, expired, unavailable.
+In every case the planner keeps planning and the panel says which of the four it is.
+There is no cached summary, so "last refreshed" is always true.
+
+Configuration is three variables in `.env.example`; all or none. Contract, consent
+model and acceptance tests: `docs/integration/study-planner-tessera.md`.
+
 ## Stack
 
 Next.js 15 (App Router) · React 19 · TypeScript (strict) · Drizzle ORM ·

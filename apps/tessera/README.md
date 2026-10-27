@@ -504,6 +504,38 @@ because the token lives in the database rather than only in the browser.
 
 Sign-in also does not distinguish "no such account" from "wrong password".
 
+## The study planner connection (consent, not a shared session)
+
+Tessera and the study planner are separate applications with separate accounts. The
+planner is not given a password, a copied session cookie, or a service identity that
+could read everyone. Instead the learner grants **one read-only scope** —
+`learning-summary:read` — on Tessera's own consent screen, and the planner receives a
+one-hour token bound to that grant.
+
+- `GET  /api/v1/oauth/consent` (session) — the exact copy the screen will show.
+- `POST /api/v1/oauth/authorize` (session) — grant or decline, returns a redirect URL.
+- `POST /api/v1/oauth/token` — PKCE (S256) code exchange; single-use, 5-minute codes.
+- `GET  /api/v1/me/learning-summary` (Bearer) — objectives, progress, due work,
+  strengths and gaps, and when the data was last updated.
+- `GET  /api/v1/me/consents` · `DELETE /api/v1/me/consents/{client_id}` (session) —
+  connected apps and disconnection.
+- `POST /api/v1/oauth/revoke` — the planner can revoke its own token.
+
+Four properties are enforced, each with tests rather than assurances:
+
+1. **Identity comes from the token.** There is no learner-id parameter; supplying one
+   changes nothing (`test_the_summary_is_this_learners_and_no_one_elses`).
+2. **Read-only.** There is no write route that accepts these tokens; POST, PUT and
+   DELETE on the summary return 405, and three reads create no learning records.
+3. **Missing stays missing.** A concept that has never been reviewed is absent from
+   `strengths`/`needs_attention`, and `average_mastery` is `null`, not `0`.
+4. **Revocation is immediate.** Disconnecting marks the grant and every token for
+   that client, and the next request fails with 401.
+
+Codes and tokens are stored as SHA-256 digests: a database dump contains no usable
+credential. The full model, contract and acceptance table live in
+`docs/integration/study-planner-tessera.md`.
+
 ## Named providers, so a key is enough
 
 An operator should not have to transcribe a base URL and recall a model id. Set a
@@ -546,6 +578,15 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
 
 ## Known limitations (read this before trusting anything)
 
+- **The study planner connection has not been run across two live deployments.**
+  Both halves are tested against their own contract (21 backend tests, 16 planner
+  tests), and the migration is covered by `alembic check`, but the browser redirect
+  between the two apps has not been walked here. PostgreSQL was also unavailable in
+  this build environment, so the new migration ran on SQLite only; see
+  `docs/integration/study-planner-tessera.md` §10.
+- **A cross-product 3D pass is deferred, deliberately.** An isolated prototype
+  exists (`prototypes/tessera-3d/`) and an evidence-based readiness gate is written
+  down (`docs/design/stage-4-readiness.md`): 0 of 6 conditions are fully met.
 - **Small seeded catalogue.** 10 concepts, 20 questions, 3 chess puzzles, 10
   opening lines, 8 catalogue entries. This is a working engine with a
   demonstration curriculum, not a library of courses.

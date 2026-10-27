@@ -585,3 +585,106 @@ class ReferenceNote(Base):
     source_ref: Mapped[str] = mapped_column(String(300), default="")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+# --------------------------------------------------------------------- integration
+#
+# The study planner is a separate application with its own accounts. It is not
+# allowed to hold a learner's Tessera password, read their session cookie, or act
+# with an administrative identity. What it gets instead is a grant the learner
+# makes explicitly, in Tessera, for one read-only scope, with an expiry and a
+# visible revocation path. These four tables are that grant.
+#
+# Nothing here can write to learning data: `learning-summary:read` is the only
+# scope the server will ever mint a token for.
+
+
+class OAuthClient(Base):
+    """A registered application allowed to ask for a grant.
+
+    `redirect_uris` is an exact-match allowlist. An authorization code is only ever
+    handed to a redirect URI that was registered, which is what stops a tampered
+    `redirect_uri` parameter from receiving somebody else's code.
+    """
+
+    __tablename__ = "oauth_clients"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    redirect_uris: Mapped[list] = mapped_column(JSONList, default=list)
+    allowed_scopes: Mapped[list] = mapped_column(JSONList, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class ConsentGrant(Base):
+    """One learner's decision about one application.
+
+    A row exists for every decision that has been made, including a revoked one:
+    `revoked_at` is set rather than the row being deleted, because "was access ever
+    granted, and to what" has to survive the withdrawal.
+    """
+
+    __tablename__ = "consent_grants"
+    __table_args__ = (
+        UniqueConstraint("user_id", "client_id", name="uq_consent_grants_user_client"),
+        CheckConstraint("purpose <> ''", name="ck_consent_grants_purpose_present"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("oauth_clients.id", ondelete="CASCADE"), index=True)
+    scopes: Mapped[list] = mapped_column(JSONList, default=list)
+    #: The sentence shown on the consent screen, stored as shown. If the wording
+    #: changes, the old grant still says what was agreed to at the time.
+    purpose: Mapped[str] = mapped_column(Text)
+    granted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class AuthorizationCode(Base):
+    """A short-lived, single-use authorization code bound to PKCE.
+
+    Only the SHA-256 of the code is stored. A leaked database therefore cannot be
+    replayed into a token exchange, the same reason session tokens are hashed.
+    """
+
+    __tablename__ = "authorization_codes"
+    __table_args__ = (Index("ix_authorization_codes_hash", "code_hash", unique=True),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    code_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("oauth_clients.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    scopes: Mapped[list] = mapped_column(JSONList, default=list)
+    redirect_uri: Mapped[str] = mapped_column(String(500))
+    #: S256 challenge: BASE64URL(SHA256(verifier)). The plain method is refused.
+    code_challenge: Mapped[str] = mapped_column(String(128))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class AccessToken(Base):
+    """A short-lived bearer token for one learner and one client.
+
+    Read-only is enforced by the scope on the row and checked again by the endpoint;
+    there is no write endpoint that accepts these tokens at all.
+    """
+
+    __tablename__ = "access_tokens"
+    __table_args__ = (
+        Index("ix_access_tokens_hash", "token_hash", unique=True),
+        CheckConstraint("scopes <> '[]'", name="ck_access_tokens_scopes_present"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True)
+    client_id: Mapped[str] = mapped_column(ForeignKey("oauth_clients.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    scopes: Mapped[list] = mapped_column(JSONList, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

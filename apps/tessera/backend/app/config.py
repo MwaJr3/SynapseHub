@@ -53,3 +53,20 @@ ALLOWED_ORIGINS = [
     for value in os.environ.get("ALLOWED_ORIGINS", "").split(",")
     if value.strip()
 ] or ["http://localhost:5197", "http://127.0.0.1:5197"]
+
+
+# --------------------------------------------------------------------- integration
+# The study planner is a separate deployment. These describe the one client this
+# server will issue a grant to. A comma-separated redirect list means a preview
+# deployment can be added without a code change; each entry is matched exactly.
+PLANNER_CLIENT_ID = os.environ.get("TESSERA_PLANNER_CLIENT_ID", "tamuzi-study-planner")
+PLANNER_CLIENT_NAME = os.environ.get("TESSERA_PLANNER_CLIENT_NAME", "Tamuzi Study Planner")
+PLANNER_REDIRECT_URIS = [
+    entry.strip()
+    for entry in os.environ.get(
+        "TESSERA_PLANNER_REDIRECT_URIS",
+        "http://localhost:3000/api/tessera/callback",
+    ).split(",")
+    if entry.strip()
+]
+PLANNER_SCOPES = ["learning-summary:read"]

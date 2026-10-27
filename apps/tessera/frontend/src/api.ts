@@ -860,7 +860,58 @@ export interface ReviewStats {
   note: string;
 }
 
+
+/* ------------------------------------------------------- study planner connection */
+
+export interface ConsentRequestParams {
+  client_id: string;
+  redirect_uri: string;
+  scope: string;
+  state: string;
+  code_challenge: string;
+  code_challenge_method: string;
+}
+
+export interface ConsentPreview {
+  client: { id: string; name: string };
+  redirect_uri: string;
+  scopes: string[];
+  purpose: string;
+  already_granted: boolean;
+  can_write: boolean;
+  revocable: boolean;
+}
+
+export interface Connection {
+  client_id: string;
+  client_name: string;
+  scopes: string[];
+  purpose: string;
+  granted_at: string | null;
+  last_used_at: string | null;
+  expires_at: string | null;
+}
+
 export const api = {
+  consentPreview: (params: ConsentRequestParams) => {
+    const query = new URLSearchParams({
+      client_id: params.client_id,
+      redirect_uri: params.redirect_uri,
+      scope: params.scope,
+    });
+    return request<ConsentPreview>(`/api/v1/oauth/consent?${query.toString()}`);
+  },
+  decideConsent: (body: ConsentRequestParams & { decision: 'grant' | 'deny' }) =>
+    request<{ redirect_url: string }>('/api/v1/oauth/authorize', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  connections: () => request<{ connections: Connection[] }>('/api/v1/me/consents'),
+  disconnect: (clientId: string) =>
+    request<{ client_id: string; revoked_tokens: number }>(
+      `/api/v1/me/consents/${encodeURIComponent(clientId)}`,
+      { method: 'DELETE' },
+    ),
   profile: () => request<ProfileResponse>('/api/profile'),
   saveProfileContext: (context: string) =>
     request<{ context: string; updated_at: string }>('/api/profile', {

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
 import { CompetencyPage } from './competency';
+import { ConnectedApps, ConsentPage, readConsentParams } from './integration';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
 import { ReviewPage } from './review';
@@ -11,6 +12,7 @@ import { TutorPage } from './tutor';
 import { Loading } from './ui';
 
 type Route =
+  | { name: 'connect' }
   | { name: 'today' }
   | { name: 'profile' }
   | { name: 'library' }
@@ -39,7 +41,10 @@ const NAV: { label: string; route: Route }[] = [
 export default function App() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
-  const [route, setRoute] = useState<Route>({ name: 'today' });
+  // A connection request arrives as a top-level navigation; it takes precedence
+  // over the default route so a learner is never dropped on Today with the
+  // consent question unanswered in the address bar.
+  const [route, setRoute] = useState<Route>(() => (readConsentParams() ? { name: 'connect' } : { name: 'today' }));
 
   const checkSession = useCallback(async () => {
     try {
@@ -127,7 +132,13 @@ export default function App() {
         ) : (
           <>
             {route.name === 'today' && <TodayPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
-            {route.name === 'profile' && <ProfilePage />}
+            {route.name === 'profile' && (
+              <>
+                <ProfilePage />
+                <ConnectedApps />
+              </>
+            )}
+            {route.name === 'connect' && <ConsentPage />}
             {route.name === 'library' && (
               <LibraryPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}

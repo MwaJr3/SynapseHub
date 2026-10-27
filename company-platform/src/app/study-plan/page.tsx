@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 
 import { AssistantChat } from '@/components/assistant-chat';
+import { TesseraConnection } from '@/components/tessera-connection';
 import { Badge } from '@/components/ui';
 import { ASSISTANTS } from '@/content/assistants';
 import { FLOWS } from '@/content/flows';
@@ -25,7 +26,10 @@ export default function StudyPlanPage() {
         <h2 className="text-sm font-semibold">What it will and will not tell you</h2>
         <ul className="mt-2 grid gap-1 text-sm text-muted">
           <li>It builds a plan from the study principles published on this site.</li>
-          <li>It does not know your grades, timetable or progress, and will not invent them.</li>
+          <li>
+            It does not know your grades, timetable or progress unless you connect Tessera, and it
+            will not invent what it does not have.
+          </li>
           <li>It cannot enrol you in anything or promise an outcome. You decide what to keep.</li>
         </ul>
       </div>
@@ -46,6 +50,8 @@ export default function StudyPlanPage() {
           ))}
         </ol>
       </section>
+
+      <TesseraConnection />
 
       <AssistantChat
         name={planner.name}

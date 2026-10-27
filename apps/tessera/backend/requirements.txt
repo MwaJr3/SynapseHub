@@ -1,6 +1,10 @@
 fastapi>=0.110
 uvicorn>=0.29
 sqlalchemy>=2.0
+# Schema migrations. PostgreSQL deployments run `alembic upgrade head`; without
+# the package installed the database is created by nothing and the API refuses
+# to enable the integration tables.
+alembic>=1.13
 pydantic>=2.5
 python-chess>=1.10
 psycopg2-binary>=2.9
