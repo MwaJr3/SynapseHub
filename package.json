@@ -15,6 +15,9 @@
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "ux:scan": "vite-node scripts/ux-scan.ts",
+    "e2e": "playwright test",
+    "e2e:update": "playwright test --update-snapshots",
+    "e2e:report": "playwright show-report",
     "og:image": "node scripts/generate-og-image.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,js,json,md}\"",
     "ux:audit": "node northstar-ux-engine/bin/northstar.mjs audit .",
@@ -35,6 +38,8 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.3.3",
     "@testing-library/dom": "^10.4.1",

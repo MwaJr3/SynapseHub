@@ -3,6 +3,11 @@ dist/
 coverage/
 .vite/
 *.local
+
+# Playwright runtime artifacts (screenshot baselines under e2e/ stay tracked)
+/test-results/
+/playwright-report/
+/blob-report/
 .env
 .env.*
 !.env.example
