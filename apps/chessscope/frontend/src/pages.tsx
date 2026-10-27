@@ -60,6 +60,7 @@ export function GamesPage() {
         >
           <textarea
             className="input h-40 font-mono text-xs"
+            aria-label="PGN notation"
             placeholder={'[White "..."]\n[Black "..."]\n\n1. e4 e5 2. Nf3 ...'}
             value={pgn}
             onChange={(e) => setPgn(e.target.value)}

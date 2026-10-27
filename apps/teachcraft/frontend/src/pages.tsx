@@ -60,8 +60,8 @@ export function LessonsPage({ user }: { user: User }) {
           });
           setTitle('');
         }}>
-          <input className="input" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <select className="input" name="template">
+          <input className="input" aria-label="Lesson title" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <select className="input" name="template" aria-label="Template type">
             <option value="lesson_plan">Lesson plan</option>
             <option value="worked_example">Worked example</option>
             <option value="revision_sheet">Revision sheet</option>
@@ -128,7 +128,7 @@ export function LessonsPage({ user }: { user: User }) {
                       e.preventDefault();
                       await act(async () => { await api.addComment(detail.id, comment); setComment(''); });
                     }}>
-                      <input className="input flex-1" placeholder="Add a comment…" value={comment} onChange={(e) => setComment(e.target.value)} />
+                      <input className="input flex-1" aria-label="Add a comment" placeholder="Add a comment…" value={comment} onChange={(e) => setComment(e.target.value)} />
                       <button className="btn-ghost">Add</button>
                     </form>
                   </div>

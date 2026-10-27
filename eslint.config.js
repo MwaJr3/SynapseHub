@@ -50,12 +50,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs', '*.config.js'],
+    files: ['scripts/**/*.mjs', 'scripts/**/*.ts', '*.config.js'],
     languageOptions: {
       globals: { ...globals.node },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      // CLI scripts report scan progress and results as part of their interface.
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
     },
   },
   {

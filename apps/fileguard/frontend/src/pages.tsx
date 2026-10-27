@@ -524,6 +524,7 @@ export function FindingsPage() {
                   ) : null}
                   <input
                     className="input mt-2 max-w-lg"
+                    aria-label="Investigation notes"
                     placeholder="Investigation notes…"
                     defaultValue={f.notes}
                     onBlur={async (e) => {

@@ -389,9 +389,9 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" placeholder="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
-              <input className="input w-20" type="number" min={0} max={100} required placeholder="Score" value={score} onChange={(e) => setScore(e.target.value)} />
-              <select className="input w-28" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <input className="input flex-1" aria-label="Assessment" placeholder="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
+              <input className="input w-20" type="number" min={0} max={100} required aria-label="Score" placeholder="Score" value={score} onChange={(e) => setScore(e.target.value)} />
+              <select className="input w-28" aria-label="Grade status" value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="final">final</option>
                 <option value="draft">draft</option>
               </select>
@@ -424,8 +424,8 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
-              <select className="input w-28" value={attStatus} onChange={(e) => setAttStatus(e.target.value)}>
+              <input className="input flex-1" type="date" required aria-label="Attendance date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <select className="input w-28" aria-label="Attendance status" value={attStatus} onChange={(e) => setAttStatus(e.target.value)}>
                 <option value="present">present</option>
                 <option value="absent">absent</option>
                 <option value="late">late</option>

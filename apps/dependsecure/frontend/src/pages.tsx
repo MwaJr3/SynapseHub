@@ -406,17 +406,18 @@ function RemediationForm({ finding, onSaved }: { finding: Finding; onSaved: () =
         }
       }}
     >
-      <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+      <select className="input" aria-label="Finding status" value={status} onChange={(e) => setStatus(e.target.value)}>
         <option>Open</option>
         <option>Under Review</option>
         <option>Resolved</option>
         <option>Accepted Risk</option>
       </select>
-      <input className="input" placeholder="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-      <input className="input md:col-span-2" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <input className="input" aria-label="Responsible person" placeholder="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+      <input className="input md:col-span-2" aria-label="Notes" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       {status === 'Accepted Risk' ? (
         <input
           className="input md:col-span-3"
+          aria-label="Exception reason"
           placeholder="Exception reason (required for Accepted Risk)"
           value={exceptionReason}
           onChange={(e) => setExceptionReason(e.target.value)}
