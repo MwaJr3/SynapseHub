@@ -67,12 +67,13 @@ the same rule catalog to real repository source so every frontend in the
 monorepo can be audited mechanically.
 
 - `scanner/detectors.ts` — pure, deterministic source detectors (focus
-  removal, 44px targets, label associations, accessible names, z-index
-  escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks,
-  WCAG contrast pairs, hover-only handlers). JSX tags are parsed with a
-  brace-aware walker, so multiline tags, `=>` inside handlers and dynamic
-  `htmlFor`/`id` associations (static, template-literal and variable forms)
-  are understood rather than guessed.
+  removal, 44px targets, label associations, accessible names, image alt
+  text, autoFocus, z-index escalation, spacing tokens, motion vocabulary,
+  reduced-motion fallbacks, WCAG contrast pairs, hover-only handlers). JSX
+  tags are parsed with a brace-aware walker over a comment-masked view of
+  the source, so multiline tags, `=>` inside handlers, markup inside JSDoc
+  and dynamic `htmlFor`/`id` associations (static, template-literal and
+  variable forms) are understood rather than guessed.
 - `scanner/walk.ts` — Node-only filesystem walker and per-root orchestration;
   the tooling directory itself is excluded so detector source literals never
   self-flag.
@@ -89,7 +90,11 @@ characters) are excluded from spacing-token linting, sub-4px optical values
 are treated as hairlines rather than rhythm tokens, and sub-millisecond
 durations are accepted as the standard reduced-motion "instant" override.
 Static analysis cannot replace runtime keyboard, screen-reader or viewport
-testing — the report states this alongside every result.
+testing — the report states this alongside every result, and
+`src/test/axe-a11y.test.tsx` closes part of that gap by running axe-core
+(WCAG 2.x AA + best-practice rules) against the rendered DOM of the key
+routes. The whole gate — typecheck, lint, tests, strict scan, report-drift
+check and build — runs in `.github/workflows/ux-quality.yml`.
 
 ## Tests
 

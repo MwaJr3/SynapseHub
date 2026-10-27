@@ -26,7 +26,7 @@ export function LibraryPage({ user }: { user: User }) {
   const [detail, setDetail] = useState<import('./api').ResourceDetail | null>(null);
   const [picked, setPicked] = useState<number[]>([]);
   const [message, setMessage] = useState('');
-  const [actionError, setActionError] = useState('');
+  const [actionError] = useState('');
 
   return (
     <div className="space-y-4">
@@ -106,7 +106,7 @@ export function LibraryPage({ user }: { user: User }) {
   );
 }
 
-export function StudioPage({ user }: { user: User }) {
+export function StudioPage({ user: _user }: { user: User }) {
   const [title, setTitle] = useState('');
   const [license, setLicense] = useState('Unknown');
   const [creator, setCreator] = useState('');
@@ -158,7 +158,7 @@ export function StudioPage({ user }: { user: User }) {
 export function AdaptWorkspacePage({ user }: { user: User }) {
   const [resources] = useAsync(() => api.resources(), []);
   const [sourceId, setSourceId] = useState<number | null>(null);
-  const [adaptationId, setAdaptationId] = useState<number | null>(null);
+  const [, setAdaptationId] = useState<number | null>(null);
   const [detail, setDetail] = useState<import('./api').AdaptationDetail | null>(null);
   const [targetText, setTargetText] = useState('');
   const [language, setLanguage] = useState('fr');

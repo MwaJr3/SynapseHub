@@ -485,12 +485,12 @@ export function ScansPage() {
 /* ------------------------------ Findings ------------------------------ */
 
 export function FindingsPage() {
-  const [workspaces, wsError, reloadWs, selected, setSelected] = useWorkspaceSelection();
+  const [workspaces, wsError, , selected, setSelected] = useWorkspaceSelection();
   const [findings, error, reload] = useAsync(
     () => (selected ? api.workspaceFindings(selected) : Promise.resolve([])),
     [selected],
   );
-  const [actionError, setActionError] = useState('');
+  const [actionError] = useState('');
 
   return (
     <div className="space-y-4">
@@ -554,7 +554,7 @@ export function FindingsPage() {
 /* ------------------------------- Reports ------------------------------- */
 
 export function ReportsPage() {
-  const [workspaces, wsError, reloadWs, selected, setSelected] = useWorkspaceSelection();
+  const [workspaces, wsError, , selected, setSelected] = useWorkspaceSelection();
   const [scans, error] = useAsync(() => (selected ? api.scans(selected) : Promise.resolve([])), [selected]);
 
   return (

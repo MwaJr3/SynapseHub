@@ -200,6 +200,9 @@ function Categories() {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [moveTo, setMoveTo] = useState('');
   const [busy, setBusy] = useState(false);
+  const renameInputRef = useRef<HTMLInputElement>(null);
+  // Focus the inline rename field when editing starts (user-initiated, equivalent to the old autoFocus).
+  useEffect(() => { if (editing !== null) renameInputRef.current?.focus(); }, [editing]);
   if (!library) return null;
   const cats = library.categories;
 
@@ -230,7 +233,7 @@ function Categories() {
               {editing === c.id ? (
                 <form className="cat-edit" onSubmit={(e) => { e.preventDefault(); const n = draft.trim(); if (!n) return; void run(async () => { await api.renameCategory(c.id, n); setEditing(null); }); }}>
                   <label className="sr-only" htmlFor={`rename-${c.id}`}>Rename {c.name}</label>
-                  <input id={`rename-${c.id}`} className="input input-sm" value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={80} data-autofocus autoFocus />
+                  <input ref={renameInputRef} id={`rename-${c.id}`} className="input input-sm" value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={80} />
                   <button className="btn btn-sm btn-primary" disabled={busy || !draft.trim()}>Save</button>
                   <button type="button" className="btn btn-sm btn-ghost" onClick={() => setEditing(null)}>Cancel</button>
                 </form>

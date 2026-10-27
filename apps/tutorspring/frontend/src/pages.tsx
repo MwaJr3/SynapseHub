@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { AI_DISCLAIMER, modeTone, supportLabel } from './utils';
+import { AI_DISCLAIMER, modeTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -19,7 +19,7 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
   return [data, error, reload];
 }
 
-export function ChatPage({ user }: { user: User }) {
+export function ChatPage({ user: _user }: { user: User }) {
   const [config] = useAsync(() => api.config(), []);
   const [mode, setMode] = useState('Explain');
   const [topic, setTopic] = useState('');

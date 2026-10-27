@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Bookmark, CheckCheck, CircleCheck, Inbox, PanelRight, RefreshCw, Search as SearchIcon, TriangleAlert } from 'lucide-react';
 import { api, type ItemQuery } from '../lib/api';
-import { badge, errorMessage, parseDate, plural, relativeTime } from '../lib/format';
+import { errorMessage, parseDate, plural, relativeTime } from '../lib/format';
 import { dialogOpen, isTypingTarget, useItemList, useMedia } from '../lib/hooks';
 import { getRecent, pushRecent, clearRecent } from '../lib/recent';
 import type { Item, Layout, ReaderPrefs, Scope } from '../types';
@@ -72,7 +72,6 @@ export function Workspace({ scope }: { scope: Scope }) {
         };
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scope, q, filters.unread, filters.sort, filters.feed, filters.cat, filters.from, filters.to]);
   const key = JSON.stringify(query);
   const list = useItemList(query, key);

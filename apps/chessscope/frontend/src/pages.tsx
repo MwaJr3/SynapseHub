@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
-import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
+import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 export function GamesPage() {
   const [games, setGames] = useState<GameRow[] | null>(null);

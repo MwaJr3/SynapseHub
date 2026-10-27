@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Finding, type Project, type User } from './api';
 import { formatTimestamp, remediationTone, scanStatusTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
@@ -304,7 +304,7 @@ export function ManifestsPage() {
 /* -------------------------------- Scans -------------------------------- */
 
 export function ScansPage() {
-  const [projects, wsError, reloadProjects, selected] = useProjectSelection();
+  const [, wsError, reloadProjects, selected] = useProjectSelection();
   const [manifests] = useAsync(() => (selected ? api.manifests(selected) : Promise.resolve([])), [selected]);
   const [scans, error, reload] = useAsync(() => (selected ? api.scans(selected) : Promise.resolve([])), [selected]);
   const [actionError, setActionError] = useState('');

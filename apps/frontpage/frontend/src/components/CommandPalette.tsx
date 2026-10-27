@@ -62,12 +62,13 @@ export function CommandPalette({ onClose, onShortcuts }: { onClose: () => void; 
   let lastGroup = '';
   return (
     <Dialog title="Command palette" onClose={onClose}>
-      <div className="palette" onKeyDown={onKey}>
+      <div className="palette">
         <div className="palette-input">
           <Search size={18} aria-hidden />
           <input
             data-autofocus role="combobox" aria-expanded="true" aria-controls="palette-list" aria-activedescendant={results[active] ? `cmd-${results[active].id}` : undefined}
             aria-label="Type a command, category or feed" placeholder="Type a command, category or feed…" value={query} onChange={(e) => setQuery(e.target.value)} autoComplete="off" spellCheck={false}
+            onKeyDown={onKey}
           />
         </div>
         <ul id="palette-list" role="listbox" aria-label="Commands" ref={listRef} className="palette-list">
@@ -76,7 +77,7 @@ export function CommandPalette({ onClose, onShortcuts }: { onClose: () => void; 
             return (
               <li key={c.id} role="presentation">
                 {header && <div className="palette-group" role="presentation">{header}</div>}
-                <div id={`cmd-${c.id}`} role="option" aria-selected={i === active} className={`palette-item ${i === active ? 'is-active' : ''}`} onMouseMove={() => setActive(i)} onClick={() => run(c)}>
+                <div id={`cmd-${c.id}`} role="option" aria-selected={i === active} tabIndex={-1} className={`palette-item ${i === active ? 'is-active' : ''}`} onMouseMove={() => setActive(i)} onClick={() => run(c)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); run(c); } }}>
                   <span>{c.label}</span>{c.hint && <kbd>{c.hint}</kbd>}
                 </div>
               </li>

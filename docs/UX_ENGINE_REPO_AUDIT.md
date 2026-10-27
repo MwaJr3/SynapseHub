@@ -2,11 +2,12 @@
 
 Generated 2026-10-27 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
 
-Scope: **21 frontends**, **408 source files**, **75 findings**.
+Scope: **21 frontends**, **409 source files**, **75 findings**.
 
 ## Method and limitations
 
-- Static, deterministic analysis of TS/TSX/CSS source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`.
+- Static, deterministic analysis of TS/TSX/CSS source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs and hover-only handlers.
+- Runtime accessibility is enforced separately by axe-core (`src/test/axe-a11y.test.tsx`) against the rendered DOM; this static scan cannot execute the interfaces.
 - Findings carry confidence levels: **high** for mechanical facts (outline removal, missing labels, z-index, contrast math), **medium/low** for structural heuristics that still need a human or runtime check.
 - This scan does not execute the interfaces: runtime keyboard navigation, screen-reader output, rendered hit-box geometry and visual contrast over images remain manual verification steps.
 - Python backends, CLI tools and data notebooks are out of scope because they ship no UI.
@@ -15,7 +16,7 @@ Scope: **21 frontends**, **408 source files**, **75 findings**.
 
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Portfolio website | 99 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Portfolio website | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Company platform (Next.js) | 76 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Vocal separator web app | 10 | 0 | 0 | 75 | 0 | 0 | 75 | 0 |

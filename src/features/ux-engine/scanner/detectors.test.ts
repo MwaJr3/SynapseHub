@@ -294,6 +294,57 @@ describe('static UX scanner', () => {
     expect(ruleIds(uncovered)).toContain('A11Y-FOCUS-01');
   });
 
+  it('requires alt on images while accepting the decorative alt="" form', () => {
+    const missing = scan(`<img src="/chart.png" />`);
+    expect(ruleIds(missing)).toContain('A11Y-NAME-01');
+
+    const decorative = scan(`<img src="/divider.png" alt="" />`);
+    const described = scan(
+      `<img src="/team.png" alt="The founding team in 2019" />`,
+    );
+    expect(ruleIds(decorative)).not.toContain('A11Y-NAME-01');
+    expect(ruleIds(described)).not.toContain('A11Y-NAME-01');
+  });
+
+  it('flags autoFocus as focus-stealing on mount', () => {
+    const stolen = scan(
+      `<input autoFocus aria-label="Search" type="search" />`,
+    );
+    expect(ruleIds(stolen)).toContain('A11Y-KEYBOARD-01');
+
+    const deliberate = scan(
+      `<input ref={fieldRef} aria-label="Search" type="search" />`,
+    );
+    expect(ruleIds(deliberate)).not.toContain('A11Y-KEYBOARD-01');
+  });
+
+  it('never parses JSX mentioned in comments as real tags', () => {
+    const commented = scan(
+      [
+        '/** Attaches the fallback without an <img> tag in JSX. */',
+        '// <img src="/legacy.png" />',
+        'function Image() { return <img src="/real.png" alt="Real" />; }',
+        '{/* <button>commented control</button> */}',
+      ].join('\n'),
+    );
+    expect(ruleIds(commented)).not.toContain('A11Y-NAME-01');
+    expect(commented).toEqual([]);
+  });
+
+  it('keeps line numbers stable when comments sit before real tags', () => {
+    const source = [
+      '/* line one',
+      '   line two <img src="/x.png" /> */',
+      '',
+      '<img src="/y.png" />',
+    ].join('\n');
+    const findings = scan(source);
+    const missingAlt = findings.find(
+      (finding) => finding.ruleId === 'A11Y-NAME-01',
+    );
+    expect(missingAlt?.line).toBe(4);
+  });
+
   it('treats hover-only handlers as low-confidence findings', () => {
     const hoverOnly = scan(`<div onMouseEnter={reveal}>Menu</div>`);
     const finding = hoverOnly.find((item) => item.ruleId === 'RESP-HOVER-01');

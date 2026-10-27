@@ -172,11 +172,68 @@ interface TagSpan {
 
 const VOID_TAGS = new Set(['input', 'br', 'img', 'hr', 'meta', 'link']);
 
+/**
+ * Replace comment contents with spaces (preserving length and newlines) so
+ * JSX mentioned in JSDoc or commented-out markup is never parsed as real tags.
+ */
+function blankComments(source: string): string {
+  let out = '';
+  let quote: '' | "'" | '"' | '`' = '';
+  for (let i = 0; i < source.length; i += 1) {
+    const char = source[i]!;
+    const next = source[i + 1];
+    if (quote) {
+      out += char;
+      if (char === '\\' && next !== undefined) {
+        out += next;
+        i += 1;
+        continue;
+      }
+      if (char === quote) quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      out += char;
+      continue;
+    }
+    if (char === '/' && next === '/') {
+      while (i < source.length && source[i] !== '\n') {
+        out += ' ';
+        i += 1;
+      }
+      if (i < source.length) out += '\n';
+      continue;
+    }
+    if (char === '/' && next === '*') {
+      out += '  ';
+      i += 2;
+      while (
+        i < source.length &&
+        !(source[i] === '*' && source[i + 1] === '/')
+      ) {
+        out += source[i] === '\n' ? '\n' : ' ';
+        i += 1;
+      }
+      if (i < source.length) {
+        // Land on the closing '/'; the for-loop increment moves past it so
+        // the following character (often a newline) is still emitted.
+        out += '  ';
+        i += 1;
+      }
+      continue;
+    }
+    out += char;
+  }
+  return out;
+}
+
 function extractTags(source: string): TagSpan[] {
   const tags: TagSpan[] = [];
+  const view = blankComments(source);
   const opener = /<(\/)?([A-Za-z][\w.-]*)\b/g;
   let match: RegExpExecArray | null;
-  while ((match = opener.exec(source)) !== null) {
+  while ((match = opener.exec(view)) !== null) {
     const isClose = Boolean(match[1]);
     const tag = match[2]!;
     let i = opener.lastIndex;
@@ -184,8 +241,8 @@ function extractTags(source: string): TagSpan[] {
     let quote = '';
     // Walk to the closing '>' while respecting strings and brace
     // expressions, so '=>' inside handlers never terminates a tag.
-    while (i < source.length) {
-      const char = source[i]!;
+    while (i < view.length) {
+      const char = view[i]!;
       if (quote) {
         if (char === quote) quote = '';
       } else if (char === '"' || char === "'" || char === '`') {
@@ -199,10 +256,10 @@ function extractTags(source: string): TagSpan[] {
       }
       i += 1;
     }
-    const text = source.slice(match.index, i + 1);
+    const text = view.slice(match.index, i + 1);
     tags.push({
       tag,
-      line: source.slice(0, match.index).split('\n').length,
+      line: view.slice(0, match.index).split('\n').length,
       text,
       end: i + 1,
       isClose,
@@ -601,12 +658,67 @@ const detectHoverOnly: Detector = ({ filePath, lines }) => {
   return findings;
 };
 
+// ---------------------------------------------------------------------------
+// A11Y-NAME-01 — images without an alt attribute (missing alt entirely;
+// alt="" is the valid decorative form and passes)
+// ---------------------------------------------------------------------------
+
+const detectMissingImageAlt: Detector = ({ filePath, source }) => {
+  const findings: ScanFinding[] = [];
+  for (const tag of extractTags(source).filter(
+    (candidate) => candidate.tag === 'img' && !candidate.isClose,
+  )) {
+    if (/\balt=/.test(tag.text)) continue;
+    findings.push(
+      buildScanFinding({
+        ruleId: 'A11Y-NAME-01',
+        evidence:
+          'Image has no alt attribute; add descriptive alt text or alt="" when the image is purely decorative.',
+        filePath,
+        line: tag.line,
+        snippet: tag.text.replaceAll('\n', ' ').trim().slice(0, 160),
+        severity: 'major',
+      }),
+    );
+  }
+  return findings;
+};
+
+// ---------------------------------------------------------------------------
+// A11Y-KEYBOARD-01 — autoFocus steals focus on mount, disorienting keyboard
+// and screen-reader users; focus should move in response to a user action.
+// ---------------------------------------------------------------------------
+
+const detectAutofocus: Detector = ({ filePath, source }) => {
+  const findings: ScanFinding[] = [];
+  for (const tag of extractTags(source).filter(
+    (candidate) => !candidate.isClose,
+  )) {
+    if (!/\bautoFocus\b/.test(tag.text)) continue;
+    findings.push(
+      buildScanFinding({
+        ruleId: 'A11Y-KEYBOARD-01',
+        evidence:
+          'autoFocus moves focus when the component mounts; move focus deliberately (ref + effect) after a user action instead.',
+        filePath,
+        line: tag.line,
+        snippet: tag.text.replaceAll('\n', ' ').trim().slice(0, 160),
+        severity: 'major',
+        confidence: 'medium',
+      }),
+    );
+  }
+  return findings;
+};
+
 export const DETECTORS: Detector[] = [
   detectFocusRemoval,
   detectSmallTargets,
   detectCssTargets,
   detectUnlabelledInputs,
   detectNamelessInteractive,
+  detectMissingImageAlt,
+  detectAutofocus,
   detectZIndexEscalation,
   detectOffScaleSpacing,
   detectMotionDuration,

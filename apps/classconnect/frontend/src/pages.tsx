@@ -142,7 +142,7 @@ export function RoomPage({ user }: { user: User }) {
   const [messages, error, reload] = useAsync(() => (sessionId ? api.messages(sessionId) : Promise.resolve([])), [sessionId]);
   const [attendance] = useAsync(() => (sessionId ? api.attendance(sessionId) : Promise.resolve({ counts: {} as Record<string, number>, total: 0 })), [sessionId]);
   const [text, setText] = useState('');
-  const [actionError, setActionError] = useState('');
+  const [actionError] = useState('');
 
   return (
     <div className="space-y-4">
@@ -200,7 +200,7 @@ export function RoomPage({ user }: { user: User }) {
 }
 
 function FollowUp({ sessionId }: { sessionId: number }) {
-  const [assignments, error, reload] = useAsync(() => api.assignments(sessionId), [sessionId]);
+  const [assignments, error] = useAsync(() => api.assignments(sessionId), [sessionId]);
   return (
     <div>
       {error ? <ErrorBanner message={error} /> : null}
