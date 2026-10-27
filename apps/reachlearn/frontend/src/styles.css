@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+/* ---------------------------------------------------------------- surfaces
+ *
+ * One dark surface, three levels: the page, the card on it, and the field inside
+ * the card. Everything is a token so the contrast of each pair can be stated
+ * rather than eyeballed:
+ *
+ *   text-slate-100 on slate-950   18.41:1
+ *   text-slate-300 on slate-900   12.02:1
+ *   text-slate-400 on slate-900    6.96:1  (the quietest text allowed)
+ *   slate-400 placeholder on 900   6.96:1  (was slate-500 at 3.75:1)
+ *   white on cyan-700              5.36:1  (the primary button; was cyan-600 at 3.68:1)
+ */
 :root {
   color-scheme: dark;
 }
@@ -12,6 +24,16 @@ body {
   @apply rounded-xl border border-slate-800 bg-slate-900/70 p-4;
 }
 
+/* ------------------------------------------------------------------ controls
+ *
+ * Focus is a visible ring on every control, including the ones that paint their
+ * own border on focus. Removing the outline without a replacement is the most
+ * common keyboard-accessibility defect there is; here it is set once, globally.
+ */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-cyan-400;
+}
+
 .btn,
 .btn-primary,
 .btn-ghost,
@@ -19,15 +41,17 @@ body {
   @apply inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium transition;
 }
 
+/* A disabled control keeps its label readable. Opacity would take the text below
+ * the contrast floor exactly when the user needs to know what is blocked. */
 .btn:disabled,
 .btn-primary:disabled,
 .btn-ghost:disabled,
 .btn-danger:disabled {
-  @apply opacity-50;
+  @apply cursor-not-allowed border border-slate-700 bg-slate-800 text-slate-400;
 }
 
 .btn-primary {
-  @apply bg-cyan-600 text-white hover:bg-cyan-500;
+  @apply bg-cyan-700 text-white hover:bg-cyan-600;
 }
 
 .btn-ghost {
@@ -39,13 +63,34 @@ body {
 }
 
 .input {
-  @apply w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-500 focus:border-cyan-500 focus:outline-none;
+  @apply w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm text-slate-100 placeholder-slate-400 focus:border-cyan-500;
 }
 
 .th {
   @apply px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-400;
 }
 
+/* Numbers line up: a column of scores or counts is compared, so the digits get
+ * the same width and the same right edge. */
 .td {
   @apply px-3 py-2 text-sm text-slate-200;
+}
+
+.td-num {
+  @apply px-3 py-2 text-right text-sm tabular-nums text-slate-200;
+}
+
+/* -------------------------------------------------------------- motion policy
+ *
+ * The only motion here is a colour transition on hover. It is removed entirely
+ * for anyone who asked their system for less motion.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

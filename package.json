@@ -15,7 +15,10 @@
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "og:image": "node scripts/generate-og-image.mjs",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,js,json,md}\""
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,js,json,md}\"",
+    "ux:audit": "node northstar-ux-engine/bin/northstar.mjs audit .",
+    "ux:check": "node northstar-ux-engine/bin/northstar.mjs check . --min P1",
+    "ux:test": "node --test \"northstar-ux-engine/test/*.test.mjs\""
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

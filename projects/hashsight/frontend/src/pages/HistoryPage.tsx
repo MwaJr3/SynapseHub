@@ -20,7 +20,7 @@ export default function HistoryPage() {
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Scan history</h1>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <input className="input" placeholder="search hash or filename" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input aria-label="Search hash or filename" className="input" placeholder="search hash or filename" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ maxWidth: "14rem" }} value={verdict} onChange={(e) => setVerdict(e.target.value)}>
           <option value="">all verdicts</option>
           <option>KNOWN_MALICIOUS</option><option>NO_KNOWN_DETECTION</option>
@@ -31,7 +31,7 @@ export default function HistoryPage() {
       {loaded && rows.length === 0 && <p style={{ color: "var(--muted)" }}>No records yet — analyze a file on the Lookup screen.</p>}
       {rows.length > 0 && (
         <table className="table card">
-          <thead><tr><th>File</th><th>SHA-256</th><th>Verdict</th><th>Disposition</th><th>Analyzed</th></tr></thead>
+          <thead><tr><th scope="col">File</th><th scope="col">SHA-256</th><th scope="col">Verdict</th><th scope="col">Disposition</th><th scope="col">Analyzed</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>

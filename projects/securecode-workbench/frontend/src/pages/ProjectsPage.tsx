@@ -25,21 +25,22 @@ export default function ProjectsPage() {
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Scan a zip archive</h3>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <input className="input" placeholder="project name" value={name} onChange={(e) => setName(e.target.value)} style={{ maxWidth: "16rem" }} />
+          <input aria-label="Project name" className="input" placeholder="project name" value={name} onChange={(e) => setName(e.target.value)} style={{ maxWidth: "16rem" }} />
           <input className="input" type="file" accept=".zip" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-          <button className="btn" disabled={!name.trim() || !file || busy} onClick={async () => {
+          <button aria-describedby="projects-securecode-workbench-1-hint" className="btn" disabled={!name.trim() || !file || busy} onClick={async () => {
             setBusy(true); setError("")
             try { const r = await api.scanArchive(name, file!); setFlash(`Scanned ${r.files_scanned} files — ${r.findings} findings.`); load() }
             catch (e) { setError(String(e)) } finally { setBusy(false) }
           }}>{busy ? "Scanning…" : "Upload & scan"}</button>
+          <span id="projects-securecode-workbench-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Paste source</h3>
-        <input className="input" placeholder="project name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="input" placeholder="file path (e.g. app.py)" value={path} onChange={(e) => setPath(e.target.value)} />
+        <input aria-label="Project name" className="input" placeholder="project name" value={name} onChange={(e) => setName(e.target.value)} />
+        <input aria-label="File path (e.g. app.py)" className="input" placeholder="file path (e.g. app.py)" value={path} onChange={(e) => setPath(e.target.value)} />
         <textarea className="input" rows={6} placeholder="paste source code…" value={content} onChange={(e) => setContent(e.target.value)} />
-        <button className="btn" disabled={!name.trim() || !content.trim() || busy} onClick={async () => {
+        <button aria-describedby="projects-securecode-workbench-2-hint" className="btn" disabled={!name.trim() || !content.trim() || busy} onClick={async () => {
           setBusy(true); setError("")
           try {
             const r = await api.scanPaste(name, [{ path, content }])
@@ -47,12 +48,13 @@ export default function ProjectsPage() {
             setContent(""); load()
           } catch (e) { setError(String(e)) } finally { setBusy(false) }
         }}>{busy ? "Scanning…" : "Scan pasted source"}</button>
+          <span id="projects-securecode-workbench-2-hint" className="hint">Fill in the field above to enable this.</span>
       </div>
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       {projects.length === 0 ? <p style={{ color: "var(--muted)" }}>No projects scanned yet.</p> : (
         <table className="table card">
-          <thead><tr><th>Project</th><th>Source</th><th>Files scanned</th><th>Findings</th><th></th></tr></thead>
+          <thead><tr><th scope="col">Project</th><th scope="col">Source</th><th scope="col">Files scanned</th><th scope="col">Findings</th><th scope="col"></th></tr></thead>
           <tbody>
             {projects.map((p) => (
               <tr key={p.id}>

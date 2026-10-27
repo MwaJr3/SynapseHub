@@ -19,7 +19,7 @@ export default function HistoryPage() {
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Analysis history</h1>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <input className="input" placeholder="search subject or sender" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input aria-label="Search subject or sender" className="input" placeholder="search subject or sender" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ maxWidth: "13rem" }} value={severity} onChange={(e) => setSeverity(e.target.value)}>
           <option value="">all severities</option>
           <option>high</option><option>medium</option><option>low</option><option>informational</option>
@@ -29,7 +29,7 @@ export default function HistoryPage() {
       {loaded && rows.length === 0 && <p style={{ color: "var(--muted)" }}>No analyses yet — paste a message on the Analyze screen.</p>}
       {rows.length > 0 && (
         <table className="table card">
-          <thead><tr><th>Subject</th><th>From</th><th>Severity</th><th>Findings</th><th>Disposition</th><th>Analyzed</th></tr></thead>
+          <thead><tr><th scope="col">Subject</th><th scope="col">From</th><th scope="col">Severity</th><th scope="col">Findings</th><th scope="col">Disposition</th><th scope="col">Analyzed</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>

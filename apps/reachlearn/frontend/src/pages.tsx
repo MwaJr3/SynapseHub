@@ -47,8 +47,8 @@ export function StudioPage() {
             reload();
           } catch (err) { setActionError(err instanceof Error ? err.message : 'Create failed.'); }
         }}>
-          <input className="input" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="input flex-1" placeholder="Short body (text-first)" value={body} onChange={(e) => setBody(e.target.value)} />
+          <input className="input" aria-label="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="input flex-1" aria-label="Short body (text-first)" placeholder="Short body (text-first)" value={body} onChange={(e) => setBody(e.target.value)} />
           <button className="btn-primary">Create</button>
         </form>
       </Card>
@@ -67,7 +67,7 @@ export function StudioPage() {
         <div className="grid gap-3 lg:grid-cols-2">
           {lessons.map((lesson) => (
             <Card key={lesson.id}>
-              <div className="font-medium">{lesson.title} <span className="text-xs text-slate-500">#{lesson.sequence} · {lesson.topic}</span></div>
+              <div className="font-medium">{lesson.title} <span className="text-xs text-slate-400">#{lesson.sequence} · {lesson.topic}</span></div>
               <p className="mt-1 text-sm text-slate-300">{lesson.body}</p>
               <button className="btn-ghost mt-2" onClick={async () => {
                 setPreviewId(lesson.id);
@@ -118,12 +118,12 @@ export function DeliveryPage() {
                 <div className="flex items-center gap-2">
                   <Badge tone={jobTone(job.state)}>{job.state}</Badge>
                   <Badge tone={channelTone(job.channel)}>{job.channel}</Badge>
-                  <span className="text-xs text-slate-500">{job.kind}</span>
+                  <span className="text-xs text-slate-400">{job.kind}</span>
                   {job.simulator ? <Badge tone="bg-amber-950 text-amber-300 border border-amber-800">simulator</Badge> : null}
                 </div>
                 <div className="mt-1 text-sm text-slate-300">{job.body}</div>
               </div>
-              <span className="font-mono text-xs text-slate-500">{job.provider_uid}</span>
+              <span className="font-mono text-xs text-slate-400">{job.provider_uid}</span>
             </div>
           ))}
         </div>

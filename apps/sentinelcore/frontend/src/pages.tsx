@@ -75,7 +75,7 @@ export function DashboardPage({ user }: { user: User }) {
       </div>
       <Card title="Workflow & honesty">
         <p className="text-sm text-slate-300">{dash.workflow_note}</p>
-        <p className="mt-2 text-xs text-slate-500">{HONESTY_NOTICE}</p>
+        <p className="mt-2 text-xs text-slate-400">{HONESTY_NOTICE}</p>
       </Card>
     </div>
   );
@@ -94,7 +94,7 @@ export function EventsPage({ user }: { user: User }) {
       <h1 className="text-xl font-semibold">Security events</h1>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       <div className="flex flex-wrap gap-2">
-        <input className="input max-w-xs" placeholder="Search summaries…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input max-w-xs" aria-label="Search summaries" value={q} onChange={(e) => setQ(e.target.value)} />
         {canWrite ? (
           <button
             className="btn-primary"
@@ -125,11 +125,11 @@ export function EventsPage({ user }: { user: User }) {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Occurred</th>
-                <th className="th">Source</th>
-                <th className="th">Category</th>
-                <th className="th">Summary</th>
-                <th className="th">Severity</th>
+                <th scope="col" className="th">Occurred</th>
+                <th scope="col" className="th">Source</th>
+                <th scope="col" className="th">Category</th>
+                <th scope="col" className="th">Summary</th>
+                <th scope="col" className="th">Severity</th>
               </tr>
             </thead>
             <tbody>
@@ -148,7 +148,7 @@ export function EventsPage({ user }: { user: User }) {
           </table>
         </div>
       )}
-      <p className="text-xs text-slate-500">{HONESTY_NOTICE}</p>
+      <p className="text-xs text-slate-400">{HONESTY_NOTICE}</p>
     </div>
   );
 }
@@ -186,7 +186,7 @@ export function AlertsPage({ user }: { user: User }) {
                     <span className="font-medium">{a.rule_name}</span>
                   </div>
                   <div className="mt-1 text-sm text-slate-300">{a.event.summary}</div>
-                  <div className="mt-1 text-xs text-slate-500">{a.note}</div>
+                  <div className="mt-1 text-xs text-slate-400">{a.note}</div>
                 </div>
                 {canWrite && a.status === 'open' ? (
                   <div className="flex gap-2">
@@ -215,7 +215,7 @@ export function AlertsPage({ user }: { user: User }) {
           ))}
         </div>
       )}
-      <p className="text-xs text-slate-500">{HONESTY_NOTICE}</p>
+      <p className="text-xs text-slate-400">{HONESTY_NOTICE}</p>
     </div>
   );
 }
@@ -259,7 +259,7 @@ export function IncidentsPage({ user }: { user: User }) {
                     <Badge tone={statusTone(inc.status)}>{inc.status}</Badge>
                     <span className="font-medium">{inc.title}</span>
                   </div>
-                  <div className="mt-1 text-xs text-slate-500">
+                  <div className="mt-1 text-xs text-slate-400">
                     assignee: {inc.assignee_name || 'unassigned'}
                     {inc.resolution_note ? ` · resolution: ${inc.resolution_note}` : ''}
                   </div>
@@ -271,7 +271,7 @@ export function IncidentsPage({ user }: { user: User }) {
               {openId === inc.id && detail ? (
                 <div className="mt-4 space-y-3 border-t border-slate-800 pt-3">
                   <p className="text-sm text-slate-300">{detail.description}</p>
-                  <p className="text-xs text-slate-500">{detail.workflow_note}</p>
+                  <p className="text-xs text-slate-400">{detail.workflow_note}</p>
                   {detail.events.length > 0 ? (
                     <div>
                       <h3 className="mb-1 text-sm font-medium text-slate-300">Related events</h3>
@@ -294,14 +294,19 @@ export function IncidentsPage({ user }: { user: User }) {
                           </option>
                         ))}
                       </select>
+                      <p id="alert-action-hint" className="text-xs text-slate-400">
+                        Choose a target status to enable the action.
+                      </p>
                       <input
                         className="input md:col-span-2"
+                        aria-label="Note for this alert"
                         placeholder={target === 'resolved' ? 'Resolution note (required)' : 'Note (optional)'}
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
                       />
                       <button
                         className="btn-primary"
+                        aria-describedby="alert-action-hint"
                         disabled={!target}
                         onClick={async () => {
                           try {
@@ -323,8 +328,12 @@ export function IncidentsPage({ user }: { user: User }) {
                           </option>
                         ))}
                       </select>
+                      <span id="assign-hint" className="text-xs text-slate-400">
+                        {assigneeId ? 'Assign this incident to the selected person.' : 'Choose a person to enable assignment.'}
+                      </span>
                       <button
                         className="btn-ghost"
+                        aria-describedby="assign-hint"
                         disabled={!assigneeId}
                         onClick={async () => {
                           await api.patchIncident(detail.id, { assignee_id: Number(assigneeId) });
@@ -336,7 +345,7 @@ export function IncidentsPage({ user }: { user: User }) {
                       </button>
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500">Your role is read-only for incidents.</p>
+                    <p className="text-xs text-slate-400">Your role is read-only for incidents.</p>
                   )}
                 </div>
               ) : null}
@@ -360,7 +369,7 @@ export function ReportsPage() {
         <a className="btn-ghost" href="/api/reports/incidents.csv">
           Download incidents CSV
         </a>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           Reports record workflow state and related events. {HONESTY_NOTICE}
         </p>
       </Card>
@@ -498,16 +507,16 @@ export function AdminPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Time</th>
-                <th className="th">Action</th>
-                <th className="th">Target</th>
-                <th className="th">Detail</th>
+                <th scope="col" className="th">Time</th>
+                <th scope="col" className="th">Action</th>
+                <th scope="col" className="th">Target</th>
+                <th scope="col" className="th">Detail</th>
               </tr>
             </thead>
             <tbody>
               {(auditRows ?? []).map((row) => (
                 <tr key={row.id} className="border-t border-slate-800">
-                  <td className="td whitespace-nowrap text-slate-400">{row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td>
+                  <td className="td whitespace-nowrap text-right tabular-nums text-slate-400">{row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td>
                   <td className="td font-mono text-xs">{row.action}</td>
                   <td className="td font-mono text-xs">{row.target}</td>
                   <td className="td text-xs text-slate-400">{row.detail}</td>

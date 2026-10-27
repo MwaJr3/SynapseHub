@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.card-a {
+  border-radius: 6px;
+  background: #f7f8fa;
+}
+
+.card-b {
+  border-radius: 9px;
+  background: #f5f6f9;
+}
+
+.card-c {
+  border-radius: 11px;
+  background: #fafbfd;
+}
+
+.card-d {
+  border-radius: 13px;
+  background: #f2f4f8;
+}
+
+.card-e {
+  border-radius: 17px;
+  background: #eef1f7;
+}
+
+.card-f {
+  border-radius: 21px;
+  background: #eaeef6;
+}
+
+.dropdown {
+  z-index: 9999;
+}
+
+.modal {
+  transition: height 300ms ease;
+}

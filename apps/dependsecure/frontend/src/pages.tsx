@@ -114,7 +114,7 @@ export function OverviewPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Findings are scanner output, not proof of exploitability. No findings does not prove a dependency is safe.
       </p>
     </div>
@@ -174,7 +174,7 @@ export function ProjectsPage() {
                 <div>
                   <div className="font-medium">{p.name}</div>
                   <p className="text-sm text-slate-400">{p.description}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     {p.manifest_count} manifests · {p.scan_count} scans · {p.finding_count} findings
                     {p.repository_ref ? ` · ${p.repository_ref}` : ''}
                   </p>
@@ -239,7 +239,7 @@ export function ManifestsPage() {
               Upload
             </button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-400">
             Manifests are read as text only — uploaded projects are never installed and no code is executed.
           </p>
         </Card>
@@ -253,12 +253,12 @@ export function ManifestsPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">File</th>
-                <th className="th">Kind</th>
-                <th className="th">Packages</th>
-                <th className="th">Parse notes</th>
-                <th className="th">Uploaded</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">File</th>
+                <th scope="col" className="th">Kind</th>
+                <th scope="col" className="th">Packages</th>
+                <th scope="col" className="th">Parse notes</th>
+                <th scope="col" className="th">Uploaded</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -269,8 +269,8 @@ export function ManifestsPage() {
                     {m.selected ? <Badge tone="bg-violet-950 text-violet-300 border border-violet-800">selected</Badge> : null}
                   </td>
                   <td className="td">{m.kind}</td>
-                  <td className="td">{m.package_count}</td>
-                  <td className="td text-xs text-slate-400">{m.errors.length} note(s)</td>
+                  <td className="td-num">{m.package_count}</td>
+                  <td className="td text-right tabular-nums text-xs text-slate-400">{m.errors.length} note(s)</td>
                   <td className="td text-slate-400">{formatTimestamp(m.uploaded_at)}</td>
                   <td className="td space-x-2 whitespace-nowrap">
                     <button
@@ -318,8 +318,12 @@ export function ScansPage() {
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
       <Card title="Run an audit scan">
+        <p id="scan-hint" className="mb-2 text-xs text-slate-400">
+          A scan needs at least one uploaded manifest; the button unlocks when one exists.
+        </p>
         <button
           className="btn-primary"
+          aria-describedby="scan-hint"
           disabled={!manifests || manifests.length === 0}
           onClick={async () => {
             const chosen = manifests?.find((m) => m.selected) ?? manifests?.[0];
@@ -340,7 +344,7 @@ export function ScansPage() {
         >
           Run scan (selected manifest)
         </button>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           The auditor runs in a sandboxed subprocess with a hard timeout and --no-deps. A failed scan is reported as a
           failure — never as zero findings.
         </p>
@@ -354,12 +358,12 @@ export function ScansPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Scan</th>
-                <th className="th">Status</th>
-                <th className="th">Tool</th>
-                <th className="th">Findings</th>
-                <th className="th">Started</th>
-                <th className="th">Error</th>
+                <th scope="col" className="th">Scan</th>
+                <th scope="col" className="th">Status</th>
+                <th scope="col" className="th">Tool</th>
+                <th scope="col" className="th">Findings</th>
+                <th scope="col" className="th">Started</th>
+                <th scope="col" className="th">Error</th>
               </tr>
             </thead>
             <tbody>
@@ -370,7 +374,7 @@ export function ScansPage() {
                     <Badge tone={scanStatusTone(s.status)}>{s.status}</Badge>
                   </td>
                   <td className="td">{s.tool}</td>
-                  <td className="td">{s.finding_count}</td>
+                  <td className="td-num">{s.finding_count}</td>
                   <td className="td text-slate-400">{formatTimestamp(s.started_at)}</td>
                   <td className="td max-w-sm truncate text-xs text-rose-300">{s.error || '—'}</td>
                 </tr>
@@ -412,11 +416,12 @@ function RemediationForm({ finding, onSaved }: { finding: Finding; onSaved: () =
         <option>Resolved</option>
         <option>Accepted Risk</option>
       </select>
-      <input className="input" placeholder="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-      <input className="input md:col-span-2" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <input className="input" aria-label="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+      <input className="input md:col-span-2" aria-label="Notes" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       {status === 'Accepted Risk' ? (
         <input
           className="input md:col-span-3"
+          aria-label="Exception reason"
           placeholder="Exception reason (required for Accepted Risk)"
           value={exceptionReason}
           onChange={(e) => setExceptionReason(e.target.value)}
@@ -442,7 +447,7 @@ export function FindingsPage() {
       <div className="w-64">
         {projects ? <ProjectPicker projects={projects} value={selected} onChange={setSelected} /> : <Loading />}
       </div>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         The scanner's original finding (advisory, package, version, description) is immutable. Remediation status,
         assignee, notes and risk-exception reasons are stored separately.
       </p>
@@ -460,7 +465,7 @@ export function FindingsPage() {
                   {f.package}=={f.version}
                 </span>
                 <span className="text-sm text-slate-300">{f.advisory_id}</span>
-                {f.aliases.length > 0 ? <span className="text-xs text-slate-500">({f.aliases.join(', ')})</span> : null}
+                {f.aliases.length > 0 ? <span className="text-xs text-slate-400">({f.aliases.join(', ')})</span> : null}
                 {f.fix_versions.length > 0 ? (
                   <Badge tone="bg-emerald-950 text-emerald-300 border border-emerald-800">
                     fix: {f.fix_versions.join(', ')}

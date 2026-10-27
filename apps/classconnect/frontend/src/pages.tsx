@@ -64,12 +64,12 @@ export function SchedulePage({ user }: { user: User }) {
               }
             } catch (err) { setActionError(err instanceof ApiError ? err.message : 'Create failed.'); }
           }}>
-            <input className="input" placeholder="New class name" value={className} onChange={(e) => setClassName(e.target.value)} />
-            <input className="input" placeholder="Session title" value={sessionTitle} onChange={(e) => setSessionTitle(e.target.value)} />
-            <input className="input" type="datetime-local" value={sessionStart} onChange={(e) => setSessionStart(e.target.value)} />
+            <input className="input" aria-label="New class name" value={className} onChange={(e) => setClassName(e.target.value)} />
+            <input className="input" aria-label="Session title" value={sessionTitle} onChange={(e) => setSessionTitle(e.target.value)} />
+            <input className="input" type="datetime-local" aria-label="Session start" value={sessionStart} onChange={(e) => setSessionStart(e.target.value)} />
             <button className="btn-primary">Create</button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">Times are stored in UTC and displayed in your local timezone. Overlapping sessions are rejected as conflicts.</p>
+          <p className="mt-2 text-xs text-slate-400">Times are stored in UTC and displayed in your local timezone. Overlapping sessions are rejected as conflicts.</p>
         </Card>
       ) : null}
       <div className="grid gap-3 lg:grid-cols-2">
@@ -172,7 +172,7 @@ export function RoomPage({ user }: { user: User }) {
               setText('');
               reload();
             }}>
-              <input className="input flex-1" placeholder="Message or question…" value={text} onChange={(e) => setText(e.target.value)} />
+              <input className="input flex-1" aria-label="Message or question" placeholder="Message or question…" value={text} onChange={(e) => setText(e.target.value)} />
               <button className="btn-primary">Send</button>
             </form>
             <button className="btn-ghost mt-2" onClick={async () => {
@@ -199,6 +199,71 @@ export function RoomPage({ user }: { user: User }) {
   );
 }
 
+/**
+ * One assignment with its answer inline.
+ *
+ * The previous version asked for the answer in `window.prompt` and confirmed it in
+ * `alert`. A prompt cannot be labelled, sized, or cancelled without losing the
+ * typing, and neither of the two can be read by a screen reader in context. The
+ * answer box now sits under the question it answers, and the result is announced
+ * next to the button that produced it.
+ */
+type Assignment = { id: number; title: string; body: string };
+
+function FollowUpItem({ assignment, onSubmitted }: { assignment: Assignment; onSubmitted: () => void }) {
+  const [body, setBody] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const inputId = `answer-${assignment.id}`;
+
+  return (
+    <li className="rounded-lg border border-slate-800 px-3 py-2 text-xs">
+      <strong>{assignment.title}</strong> — {assignment.body}
+      <form
+        className="mt-2 flex flex-wrap items-start gap-2"
+        onSubmit={async (event) => {
+          event.preventDefault();
+          if (!body.trim()) return;
+          setBusy(true);
+          setError('');
+          setMessage('');
+          try {
+            await api.submit(assignment.id, body);
+            setBody('');
+            setMessage('Submitted for review.');
+            onSubmitted();
+          } catch (err) {
+            setError(err instanceof ApiError ? err.message : 'Could not submit your answer.');
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <label htmlFor={inputId} className="sr-only">
+          Your answer to {assignment.title}
+        </label>
+        <textarea
+          id={inputId}
+          className="input min-h-[2.25rem] flex-1"
+          rows={1}
+          value={body}
+          onChange={(event) => setBody(event.target.value)}
+          placeholder="Your answer"
+        />
+        <button className="btn-primary" disabled={busy || !body.trim()} aria-describedby={`${inputId}-hint`}>
+          {busy ? 'Submitting…' : 'Submit'}
+        </button>
+        <span id={`${inputId}-hint`} className="self-center text-slate-400">
+          {body.trim() ? 'Send this to the class owner.' : 'Write an answer to enable Submit.'}
+        </span>
+      </form>
+      {message ? <p className="mt-1 text-emerald-300" role="status">{message}</p> : null}
+      {error ? <p className="mt-1 text-rose-300" role="alert">{error}</p> : null}
+    </li>
+  );
+}
+
 function FollowUp({ sessionId }: { sessionId: number }) {
   const [assignments, error, reload] = useAsync(() => api.assignments(sessionId), [sessionId]);
   return (
@@ -206,15 +271,9 @@ function FollowUp({ sessionId }: { sessionId: number }) {
       {error ? <ErrorBanner message={error} /> : null}
       <ul className="space-y-1">
         {(assignments ?? []).map((a) => (
-          <li key={a.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs">
-            <strong>{a.title}</strong> — {a.body}
-            <button className="btn-ghost ml-2" onClick={async () => {
-              const body = window.prompt('Your submission:');
-              if (body) { await api.submit(a.id, body); alert('Submitted.'); }
-            }}>Submit</button>
-          </li>
+          <FollowUpItem key={a.id} assignment={a} onSubmitted={reload} />
         ))}
-        {(assignments ?? []).length === 0 ? <li className="text-xs text-slate-500">No follow-up assignments yet.</li> : null}
+        {(assignments ?? []).length === 0 ? <li className="text-xs text-slate-400">No follow-up assignments yet.</li> : null}
       </ul>
     </div>
   );

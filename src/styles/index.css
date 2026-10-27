@@ -35,6 +35,15 @@
     --accent-2: 12 118 111;
     --caution: 150 82 12;
     --focus: 35 71 214;
+
+    /* One corner scale for the whole site. Components pick a step; they do not
+       invent a number. `--radius-pill` is a shape (chips, tags), not a corner. */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --radius-pill: 999px;
   }
 
   .dark {

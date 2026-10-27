@@ -1,5 +1,6 @@
 /** Global header and footer — shared design system, per-company tokens. */
 import Link from 'next/link';
+import { CurrentNavLink } from './current-nav-link';
 import type { ReactNode } from 'react';
 
 import { CompanyTokenSync } from '@/components/company-token-sync';
@@ -28,9 +29,9 @@ export function SiteHeader({ actor }: { actor: Actor | null }) {
         </Link>
         <nav aria-label="Primary" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           {PUBLIC_NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-muted hover:underline">
+            <CurrentNavLink key={item.href} href={item.href} className="text-muted hover:underline">
               {item.label}
-            </Link>
+            </CurrentNavLink>
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-3">

@@ -296,7 +296,7 @@ export function ConceptPage({ conceptId, onBack }: { conceptId: string; onBack: 
           <SectionTitle hint={`About ${data.lesson.est_minutes} minutes`}>{data.lesson.title}</SectionTitle>
           <p className="text-sm italic">{data.lesson.hook}</p>
           <p className="mt-3 text-sm">{data.lesson.explanation}</p>
-          <pre className="mt-3 overflow-x-auto rounded-md bg-[#f2f3f6] p-3 text-xs">{data.lesson.example}</pre>
+          <pre className="code-block mt-3 overflow-x-auto p-3 text-xs">{data.lesson.example}</pre>
           <p className="mt-3 text-sm"><strong>Apply it:</strong> {data.lesson.application}</p>
           <p className="mt-3 text-sm"><strong>Takeaway:</strong> {data.lesson.recap}</p>
           {data.provenance ? (

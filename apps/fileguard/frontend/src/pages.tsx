@@ -120,7 +120,7 @@ export function OverviewPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         A hash match proves byte-identity with the baseline only — never that a file is safe. Baselines are trusted only
         when their integrity and origin are protected.
       </p>
@@ -176,7 +176,7 @@ export function WorkspacesPage() {
                 <div>
                   <div className="font-medium">{w.name}</div>
                   <p className="text-sm text-slate-400">{w.description}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     {w.file_count} files · {w.baseline_count} baselines · {w.scan_count} scans · created{' '}
                     {formatTimestamp(w.created_at)}
                   </p>
@@ -246,7 +246,7 @@ export function FilesPage() {
               Upload
             </button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">Never executed. Type and size limits are enforced server-side.</p>
+          <p className="mt-2 text-xs text-slate-400">Never executed. Type and size limits are enforced server-side.</p>
         </Card>
       </div>
       {!files ? (
@@ -258,12 +258,12 @@ export function FilesPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Name</th>
-                <th className="th">Size</th>
-                <th className="th">Type</th>
-                <th className="th">SHA-256</th>
-                <th className="th">Uploaded</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Size</th>
+                <th scope="col" className="th">Type</th>
+                <th scope="col" className="th">SHA-256</th>
+                <th scope="col" className="th">Uploaded</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -335,7 +335,7 @@ export function BaselinesPage() {
             </Field>
             <button className="btn-primary">Create baseline</button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-400">
             A baseline is a versioned hash manifest. Its value depends on protecting its integrity and origin.
           </p>
         </Card>
@@ -349,11 +349,11 @@ export function BaselinesPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Name</th>
-                <th className="th">Version</th>
-                <th className="th">Files</th>
-                <th className="th">Created</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Version</th>
+                <th scope="col" className="th">Files</th>
+                <th scope="col" className="th">Created</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -361,7 +361,7 @@ export function BaselinesPage() {
                 <tr key={b.id} className="border-t border-slate-800">
                   <td className="td font-medium">{b.name}</td>
                   <td className="td">v{b.version}</td>
-                  <td className="td">{b.entry_count}</td>
+                  <td className="td-num">{b.entry_count}</td>
                   <td className="td text-slate-400">{formatTimestamp(b.created_at)}</td>
                   <td className="td space-x-2 whitespace-nowrap">
                     <a className="btn-ghost" href={`/api/baselines/${b.id}/manifest.json`}>
@@ -407,8 +407,12 @@ export function ScansPage() {
         <div className="w-64">
           {workspaces ? <WorkspacePicker workspaces={workspaces} value={selected} onChange={setSelected} /> : <Loading />}
         </div>
+        <p id="baseline-hint" className="text-xs text-slate-400">
+          Scanning compares against a stored baseline; add one to enable this button.
+        </p>
         <button
           className="btn-primary"
+          aria-describedby="baseline-hint"
           disabled={!baselines || baselines.length === 0}
           onClick={async () => {
             if (!baselines || baselines.length === 0 || !selected) return;
@@ -518,13 +522,13 @@ export function FindingsPage() {
                   </div>
                   <p className="mt-1 text-sm text-slate-300">{f.explanation}</p>
                   {f.expected_sha256 ? (
-                    <p className="mt-1 font-mono text-xs text-slate-500">
+                    <p className="mt-1 font-mono text-xs text-slate-400">
                       expected {shortHash(f.expected_sha256)} → observed {shortHash(f.observed_sha256)}
                     </p>
                   ) : null}
                   <input
                     className="input mt-2 max-w-lg"
-                    placeholder="Investigation notes…"
+                    aria-label="Investigation notes"
                     defaultValue={f.notes}
                     onBlur={async (e) => {
                       await api.updateFinding(f.id, f.reviewed, e.target.value, f.severity);
@@ -589,7 +593,7 @@ export function ReportsPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Reports state exactly which comparison produced each finding. A matching hash proves byte-identity with the
         baseline record only — it does not prove a file is safe or free of malware.
       </p>
@@ -607,7 +611,7 @@ export function SettingsPage({ user }: { user: User }) {
         <p className="text-sm text-slate-300">
           {user.display_name} · <span className="text-slate-400">{user.email}</span>
         </p>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           scrypt password hashing, httpOnly cookie sessions, and per-user workspaces enforced server-side.
         </p>
       </Card>

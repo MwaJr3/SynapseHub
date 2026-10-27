@@ -72,7 +72,12 @@ export function OpeningsPanel({ openings }: { openings: OpeningSummary[] }) {
               aria-describedby="opening-line-note"
             />
           </label>
-          <button type="submit" className="btn btn-primary" disabled={pending || parsed.moves.length === 0}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={pending || parsed.moves.length === 0}
+            aria-describedby="opening-line-note"
+          >
             {pending ? 'Checking…' : 'Identify'}
           </button>
         </form>

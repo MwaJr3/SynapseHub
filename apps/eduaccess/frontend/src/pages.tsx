@@ -30,7 +30,7 @@ export function PlansPage({ user }: { user: User }) {
       {message ? (
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
-      <p className="text-xs text-slate-500">{FAIRNESS_RULE}</p>
+      <p className="text-xs text-slate-400">{FAIRNESS_RULE}</p>
       {!courses ? <Loading /> : courses.length === 0 ? (
         <EmptyState title="No courses" hint="Providers can publish courses with access plans." />
       ) : (
@@ -85,10 +85,10 @@ export function ApplicationsPage({ user }: { user: User }) {
                 <div>
                   <div className="flex items-center gap-2">
                     <Badge tone={appStatusTone(app.status)}>{app.status}</Badge>
-                    <span className="text-xs text-slate-500">plan {app.plan_id} · {app.uid.slice(0, 8)}</span>
+                    <span className="text-xs text-slate-400">plan {app.plan_id} · {app.uid.slice(0, 8)}</span>
                   </div>
                   <p className="mt-1 text-sm text-slate-300">{app.statement || '(no statement)'}</p>
-                  {app.decision_reason ? <p className="mt-1 text-xs text-slate-500">Decision reason: {app.decision_reason}</p> : null}
+                  {app.decision_reason ? <p className="mt-1 text-xs text-slate-400">Decision reason: {app.decision_reason}</p> : null}
                 </div>
                 {canDecide ? (
                   <div className="flex flex-wrap gap-2">
@@ -148,7 +148,7 @@ export function FinancePage({ user }: { user: User }) {
                   <span>committed: {pool.seats_committed}</span>
                   <span className="text-emerald-300">available: {pool.seats_available}</span>
                 </div>
-                <div className="mt-1 text-xs text-slate-500">Criteria: {pool.criteria || 'documented in pool; human review decides'}</div>
+                <div className="mt-1 text-xs text-slate-400">Criteria: {pool.criteria || 'documented in pool; human review decides'}</div>
               </li>
             ))}
           </ul>
@@ -162,7 +162,7 @@ export function FinancePage({ user }: { user: User }) {
             <StatCard label="Balance" value={`$${ledger.balance.balance.toFixed(2)}`} tone="text-emerald-300" />
             <StatCard label="Pending (NOT settled)" value={`$${ledger.balance.pending_not_settled.toFixed(2)}`} tone="text-amber-300" />
           </div>
-          <p className="mt-2 text-xs text-slate-500">{LEDGER_RULE}</p>
+          <p className="mt-2 text-xs text-slate-400">{LEDGER_RULE}</p>
           <ul className="mt-2 space-y-1">
             {ledger.transactions.map((t) => (
               <li key={t.id} className="flex items-center justify-between rounded-lg border border-slate-800 px-3 py-1.5 text-xs">

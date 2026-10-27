@@ -508,7 +508,12 @@ function TutorConversation() {
               placeholder="Ask about your curriculum…"
             />
           </label>
-          <button type="submit" className="btn btn-primary" disabled={streaming || draft.trim().length === 0}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={streaming || draft.trim().length === 0}
+            aria-describedby="tutor-send-hint"
+          >
             {streaming ? 'Streaming…' : 'Send'}
           </button>
           {streaming ? (
@@ -517,8 +522,8 @@ function TutorConversation() {
             </button>
           ) : null}
         </form>
-        <p className={`mt-2 text-xs ${muted}`}>
-          The tutor will not invent progress, mastery or exam answers. If the curriculum does not cover a question it
+        <p id="tutor-send-hint" className={`mt-2 text-xs ${muted}`}>
+          Type a question to enable Send; while a reply streams, Stop cancels it. The tutor will not invent progress, mastery or exam answers. If the curriculum does not cover a question it
           is expected to say so.
         </p>
       </Card>

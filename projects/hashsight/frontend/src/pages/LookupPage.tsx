@@ -38,16 +38,17 @@ export default function LookupPage() {
           I understand that, if an external provider is configured, this file's digest will be sent to it (the file itself is never uploaded).
         </label>
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}
-        <button className="btn" disabled={busy || !file}>{busy ? "Hashing…" : "Analyze file"}</button>
+        <button aria-describedby="lookup-hashsight-1-hint" className="btn" disabled={busy || !file}>{busy ? "Hashing…" : "Analyze file"}</button>
+          <span id="lookup-hashsight-1-hint" className="hint">Fill in the field above to enable this.</span>
       </form>
       {result && (
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{result.filename} <span className={`verdict ${result.combined_verdict}`}>{result.combined_verdict}</span></h2>
           <table className="table">
             <tbody>
-              <tr><th>SHA-256</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.sha256}</td></tr>
-              <tr><th>SHA-1</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.sha1}</td></tr>
-              <tr><th>MD5</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.md5}</td></tr>
+              <tr><th scope="col">SHA-256</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.sha256}</td></tr>
+              <tr><th scope="col">SHA-1</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.sha1}</td></tr>
+              <tr><th scope="col">MD5</th><td style={{ fontFamily: "monospace", wordBreak: "break-all" }}>{result.md5}</td></tr>
             </tbody>
           </table>
           <p style={{ fontSize: "0.85rem", color: "var(--muted)" }}>

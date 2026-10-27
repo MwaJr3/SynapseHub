@@ -131,12 +131,12 @@ export function StudentsPage({ user }: { user: User }) {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Enrollment no.</th>
-                <th className="th">Name</th>
-                <th className="th">Email</th>
-                <th className="th">Status</th>
-                <th className="th">Sections</th>
-                {user.role === 'admin' ? <th className="th">Actions</th> : null}
+                <th scope="col" className="th">Enrollment no.</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Email</th>
+                <th scope="col" className="th">Status</th>
+                <th scope="col" className="th">Sections</th>
+                {user.role === 'admin' ? <th scope="col" className="th">Actions</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -146,7 +146,7 @@ export function StudentsPage({ user }: { user: User }) {
                   <td className="td">{s.first_name} {s.last_name}</td>
                   <td className="td text-slate-400">{s.email || '—'}</td>
                   <td className="td">{s.status}</td>
-                  <td className="td">{s.enrolled_sections.length}</td>
+                  <td className="td-num">{s.enrolled_sections.length}</td>
                   {user.role === 'admin' ? (
                     <td className="td">
                       <ConfirmButton
@@ -372,7 +372,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 </Badge>
               </li>
             ))}
-            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-500">No grades recorded.</li> : null}
+            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-400">No grades recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form
@@ -389,8 +389,8 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" placeholder="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
-              <input className="input w-20" type="number" min={0} max={100} required placeholder="Score" value={score} onChange={(e) => setScore(e.target.value)} />
+              <input className="input flex-1" aria-label="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
+              <input className="input w-20" type="number" min={0} max={100} required aria-label="Score" value={score} onChange={(e) => setScore(e.target.value)} />
               <select className="input w-28" value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="final">final</option>
                 <option value="draft">draft</option>
@@ -408,7 +408,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 <Badge tone={attendanceTone(r.status)}>{r.status}</Badge>
               </li>
             ))}
-            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-500">No attendance recorded.</li> : null}
+            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-400">No attendance recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form
@@ -424,7 +424,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
+              <input className="input flex-1" type="date" aria-label="Grade date" required value={date} onChange={(e) => setDate(e.target.value)} />
               <select className="input w-28" value={attStatus} onChange={(e) => setAttStatus(e.target.value)}>
                 <option value="present">present</option>
                 <option value="absent">absent</option>
@@ -481,11 +481,11 @@ export function TranscriptsPage() {
             <table className="min-w-full">
               <thead className="bg-slate-900">
                 <tr>
-                  <th className="th">Course</th>
-                  <th className="th">Term</th>
-                  <th className="th">Credits</th>
-                  <th className="th">Average</th>
-                  <th className="th">Letter</th>
+                  <th scope="col" className="th">Course</th>
+                  <th scope="col" className="th">Term</th>
+                  <th scope="col" className="th">Credits</th>
+                  <th scope="col" className="th">Average</th>
+                  <th scope="col" className="th">Letter</th>
                 </tr>
               </thead>
               <tbody>
@@ -524,10 +524,10 @@ export function AuditPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Time</th>
-                <th className="th">Action</th>
-                <th className="th">Target</th>
-                <th className="th">Detail</th>
+                <th scope="col" className="th">Time</th>
+                <th scope="col" className="th">Action</th>
+                <th scope="col" className="th">Target</th>
+                <th scope="col" className="th">Detail</th>
               </tr>
             </thead>
             <tbody>

@@ -1,0 +1,20 @@
+{
+  "name": "northstar-ux-engine",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A UX engine for Claude Code: four commands, nine skills, and source-level checks that produce evidence instead of opinions.",
+  "type": "module",
+  "bin": {
+    "northstar": "./bin/northstar.mjs"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "audit": "node bin/northstar.mjs audit ..",
+    "check": "node bin/northstar.mjs check .. --min P1",
+    "patterns": "node bin/northstar.mjs patterns"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

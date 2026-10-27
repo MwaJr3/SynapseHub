@@ -3,6 +3,75 @@ import { api, ApiError, type User } from './api';
 import { AI_DISCLAIMER, modeTone, supportLabel } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
+
+/**
+ * Flag a reply, with the reason written where the reply is.
+ *
+ * `window.prompt` for the reason and `alert` for the confirmation meant the
+ * evidence a teacher needs arrived in a box that could not be read after it closed.
+ * The reason is now part of the message, and the acknowledgement stays beside it.
+ */
+function FlagButton({ messageId }: { messageId: number }) {
+  const [open, setOpen] = useState(false);
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState('');
+  const [error, setError] = useState('');
+  const inputId = `flag-reason-${messageId}`;
+
+  if (!open) {
+    return (
+      <button type="button" className="btn-ghost" onClick={() => setOpen(true)} aria-expanded={false}>
+        Flag
+      </button>
+    );
+  }
+
+  return (
+    <form
+      className="flex w-full flex-wrap items-center gap-2"
+      onSubmit={async (event) => {
+        event.preventDefault();
+        if (!reason.trim()) return;
+        setBusy(true);
+        setError('');
+        try {
+          await api.flag(messageId, reason);
+          setDone('Flagged for teacher review. Thank you.');
+          setOpen(false);
+          setReason('');
+        } catch (err) {
+          setError(err instanceof ApiError ? err.message : 'Could not flag this reply.');
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <label htmlFor={inputId} className="sr-only">
+        Why is this explanation confusing or incorrect?
+      </label>
+      <input
+        id={inputId}
+        className="input flex-1"
+        placeholder="Why is this explanation wrong or confusing?"
+        value={reason}
+        onChange={(event) => setReason(event.target.value)}
+      />
+      <button className="btn-primary" disabled={busy || !reason.trim()} aria-describedby={`${inputId}-hint`}>
+        {busy ? 'Sending…' : 'Send flag'}
+      </button>
+      <button type="button" className="btn-ghost" onClick={() => { setOpen(false); setReason(''); }}>
+        Cancel
+      </button>
+      <span id={`${inputId}-hint`} className="text-xs text-slate-400">
+        A reason is required so the teacher can act on it.
+      </span>
+      {done ? <span className="text-xs text-emerald-300" role="status">{done}</span> : null}
+      {error ? <span className="text-xs text-rose-300" role="alert">{error}</span> : null}
+    </form>
+  );
+}
+
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState('');
@@ -69,7 +138,15 @@ export function ChatPage({ user }: { user: User }) {
             <Field label="Your question">
               <textarea className="input h-24" value={question} onChange={(e) => setQuestion(e.target.value)} />
             </Field>
-            <button className="btn-primary w-full justify-center" disabled={!question.trim()} onClick={() => void send()}>Send</button>
+            <button
+              className="btn-primary w-full justify-center"
+              disabled={!question.trim()}
+              aria-describedby="ask-hint"
+              onClick={() => void send()}
+            >
+              Send
+            </button>
+            <p id="ask-hint" className="text-xs text-slate-400">Type a question to enable Send.</p>
             <button className="btn-ghost w-full justify-center" onClick={() => { setThread([]); setConversationId(null); }}>New conversation</button>
           </div>
         </Card>
@@ -81,24 +158,19 @@ export function ChatPage({ user }: { user: User }) {
               {thread.map((m, i) => (
                 <div key={i} className={`rounded-lg border p-3 text-sm ${m.role === 'user' ? 'border-slate-700 bg-slate-900' : 'border-slate-800'}`}>
                   <div className="flex flex-wrap items-center gap-2">
-                    <strong className="text-xs uppercase text-slate-500">{m.role}</strong>
+                    <strong className="text-xs uppercase text-slate-400">{m.role}</strong>
                     {m.role === 'assistant' ? <Badge tone={modeTone(m.demo_response)}>{m.demo_response ? 'demo response' : 'live model'}</Badge> : null}
-                    {m.role === 'assistant' && m.id > 0 ? (
-                      <button className="btn-ghost" onClick={async () => {
-                        const reason = window.prompt('Why is this explanation confusing or incorrect?');
-                        if (reason) { await api.flag(m.id, reason); alert('Flagged for teacher review. Thank you.'); }
-                      }}>Flag</button>
-                    ) : null}
+                    {m.role === 'assistant' && m.id > 0 ? <FlagButton messageId={m.id} /> : null}
                   </div>
                   <p className="mt-1 whitespace-pre-wrap text-slate-300">{m.text}</p>
                   {m.sources.length > 0 ? (
-                    <div className="mt-2 text-xs text-slate-500">
+                    <div className="mt-2 text-xs text-slate-400">
                       Sources: {m.sources.map((s) => `${s.title} (${s.topic})`).join(' · ')}
                     </div>
                   ) : null}
                 </div>
               ))}
-              <p className="text-xs text-slate-500">{AI_DISCLAIMER}</p>
+              <p className="text-xs text-slate-400">{AI_DISCLAIMER}</p>
             </div>
           )}
         </Card>
@@ -160,7 +232,7 @@ export function SourcesPage({ user }: { user: User }) {
         <div className="space-y-2">
           {sources.map((s) => (
             <div key={s.id} className="card">
-              <div className="font-medium">{s.title} <span className="text-xs text-slate-500">· {s.topic} · {s.grade}</span></div>
+              <div className="font-medium">{s.title} <span className="text-xs text-slate-400">· {s.topic} · {s.grade}</span></div>
               <p className="mt-1 text-sm text-slate-300">{s.body_preview}</p>
             </div>
           ))}
@@ -185,7 +257,7 @@ export function ReviewPage() {
         <div className="space-y-2">
           {queue.map((item) => (
             <div key={item.id} className="card">
-              <div className="text-xs text-slate-500">Reason: {item.flag_reason} · status: {item.review_status || 'pending'}</div>
+              <div className="text-xs text-slate-400">Reason: {item.flag_reason} · status: {item.review_status || 'pending'}</div>
               <p className="mt-1 text-sm text-slate-300">{item.text.slice(0, 400)}</p>
               <div className="mt-2 flex gap-2">
                 <button className="btn-primary" onClick={async () => {

@@ -37,11 +37,11 @@ export default async function AdminMediaPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="py-2 pr-4">File</th>
-                <th className="py-2 pr-4">Owner</th>
-                <th className="py-2 pr-4">Size</th>
-                <th className="py-2 pr-4">Downloadable</th>
-                <th className="py-2">Uploaded</th>
+                <th scope="col" className="py-2 pr-4">File</th>
+                <th scope="col" className="py-2 pr-4">Owner</th>
+                <th scope="col" className="py-2 pr-4">Size</th>
+                <th scope="col" className="py-2 pr-4">Downloadable</th>
+                <th scope="col" className="py-2">Uploaded</th>
               </tr>
             </thead>
             <tbody>

@@ -30,10 +30,11 @@ export default function AnalyzePage() {
         opened — the engine only reads the text you paste. Findings are warnings for review, not proof.
       </div>
       <form className="card" onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
-        <input className="input" placeholder="label for this analysis (optional)" value={subject} onChange={(e) => setSubject(e.target.value)} />
+        <input aria-label="Label for this analysis (optional)" className="input" placeholder="label for this analysis (optional)" value={subject} onChange={(e) => setSubject(e.target.value)} />
         <textarea className="input" rows={10} placeholder={"From: someone@example.test\nSubject: ...\n\nMessage body…"} value={raw} onChange={(e) => setRaw(e.target.value)} required />
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}
-        <button className="btn" disabled={busy || !raw.trim()}>{busy ? "Analyzing…" : "Analyze message"}</button>
+        <button aria-describedby="analyze-phishlens-1-hint" className="btn" disabled={busy || !raw.trim()}>{busy ? "Analyzing…" : "Analyze message"}</button>
+          <span id="analyze-phishlens-1-hint" className="hint">Fill in the field above to enable this.</span>
       </form>
       {result && (
         <div className="card">
