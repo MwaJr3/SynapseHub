@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
 import { CompetencyPage } from './competency';
+import { DataControls } from './data';
 import { ConnectedApps, ConsentPage, readConsentParams } from './integration';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
@@ -27,6 +28,23 @@ type Route =
   | { name: 'sources' }
   | { name: 'concept'; id: string };
 
+/** The document title and the hidden h1 both come from here, so they cannot drift. */
+const SECTION: Record<Route['name'], string> = {
+  connect: 'Connecting an app',
+  today: 'Today',
+  profile: 'Profile',
+  quests: 'Quests',
+  library: 'Library',
+  review: 'Review',
+  competency: 'Competency',
+  knowledge: 'Knowledge bank',
+  map: 'Knowledge map',
+  chess: 'Tactics',
+  tutor: 'Tutor',
+  sources: 'Sources',
+  concept: 'Concept',
+};
+
 const NAV: { label: string; route: Route }[] = [
   { label: 'Today', route: { name: 'today' } },
   { label: 'Profile', route: { name: 'profile' } },
@@ -44,10 +62,35 @@ const NAV: { label: string; route: Route }[] = [
 export default function App() {
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [email, setEmail] = useState('');
+  // Shown on the sign-in screen after a deletion, so the learner is not left
+  // wondering whether the click worked.
+  const [notice, setNotice] = useState('');
   // A connection request arrives as a top-level navigation; it takes precedence
   // over the default route so a learner is never dropped on Today with the
   // consent question unanswered in the address bar.
   const [route, setRoute] = useState<Route>(() => (readConsentParams() ? { name: 'connect' } : { name: 'today' }));
+
+  const mainRef = useRef<HTMLElement>(null);
+  /** Skip the focus move on first paint: nothing has been navigated to yet. */
+  const navigated = useRef(false);
+  const section = SECTION[route.name];
+
+  useEffect(() => {
+    // 2.4.2 Page Titled, for a single-page app: the title names the section the
+    // learner moved to, and says nothing has changed when they are signed out.
+    document.title = signedIn ? `${section} — Tessera` : 'Tessera — adaptive learning';
+  }, [section, signedIn]);
+
+  useEffect(() => {
+    if (!navigated.current) {
+      navigated.current = true;
+      return;
+    }
+    // The nav is a set of buttons in a single document, so swapping the content
+    // leaves focus on the button that was pressed and says nothing to a screen
+    // reader. Focusing the main region announces the new section instead.
+    mainRef.current?.focus();
+  }, [route]);
 
   const checkSession = useCallback(async () => {
     try {
@@ -71,6 +114,16 @@ export default function App() {
   const signOut = async () => {
     await api.logout();
     setSignedIn(false);
+    setNotice('');
+    setRoute({ name: 'today' });
+  };
+
+  const accountDeleted = (message: string) => {
+    // The session the delete ran on no longer exists; drop the shell rather than
+    // leave a signed-in frame around an account that is gone.
+    setSignedIn(false);
+    setEmail('');
+    setNotice(message);
     setRoute({ name: 'today' });
   };
 
@@ -129,9 +182,18 @@ export default function App() {
         </div>
       </header>
 
-      <main id="main" className="mx-auto max-w-5xl p-4 md:p-6">
+      <main id="main" ref={mainRef} tabIndex={-1} className="mx-auto max-w-5xl p-4 md:p-6">
+        {/* Every screen's visible title is an h2 inside a card; the document
+            needs one h1, and this is it. Hidden rather than repeated on screen. */}
+        <h1 className="sr-only">{signedIn ? `${section} — Tessera` : 'Sign in — Tessera'}</h1>
         {!signedIn ? (
-          <SignInPage onSignedIn={() => { void checkSession(); }} />
+          <SignInPage
+            onSignedIn={() => {
+              setNotice('');
+              void checkSession();
+            }}
+            notice={notice}
+          />
         ) : (
           <>
             {route.name === 'today' && <TodayPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
@@ -139,6 +201,7 @@ export default function App() {
               <>
                 <ProfilePage />
                 <ConnectedApps />
+                <DataControls onDeleted={accountDeleted} />
               </>
             )}
             {route.name === 'connect' && <ConsentPage />}

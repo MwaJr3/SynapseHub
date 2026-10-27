@@ -92,7 +92,7 @@ export function ConsentPage() {
             learning progress from Tessera, to help organise your study activities.
           </p>
 
-          <div className="rounded-md border p-3 text-sm" style={{ borderColor: 'var(--border)' }}>
+          <div className="rounded-md border p-3 text-sm" style={{ borderColor: 'var(--line)' }}>
             <p className="font-medium">What it will be able to read</p>
             <ul className="mt-1 list-disc pl-5" style={{ color: 'var(--muted)' }}>
               <li>Your learning objectives and how far along each one is.</li>
@@ -119,7 +119,7 @@ export function ConsentPage() {
             {preview.already_granted ? ' · previously granted — approving again renews it.' : ''}
           </p>
 
-          {error && <p role="alert" className="text-sm" style={{ color: 'var(--danger, #b42318)' }}>{error}</p>}
+          {error && <p role="alert" className="text-sm" style={{ color: 'var(--bad)' }}>{error}</p>}
 
           <div className="flex flex-wrap gap-2">
             <button

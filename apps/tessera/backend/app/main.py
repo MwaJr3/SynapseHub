@@ -4,16 +4,19 @@ from __future__ import annotations
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from . import config
+from .account_routes import router as account_router
 from .database import Base, SessionLocal, engine
 from .gamification import ensure_quests
 from .integration import ensure_configured_client
 from .integration_routes import router as integration_router
 from .quest_routes import router as quest_router
 from .routes import router
+from .headers import security_headers
+from .static_site import mount_frontend
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
@@ -34,6 +37,11 @@ async def lifespan(_: FastAPI):
                 "integration tables are missing; run the Alembic migration to enable "
                 "the study planner connection"
             )
+        for problem in config.production_problems():
+            # Not a crash: the app still serves, and refusing to start would turn a
+            # configuration mistake into an outage. But it must be impossible to
+            # miss, and `python3 -m app.preflight` is the blocking version.
+            logging.getLogger("tessera.config").error("production configuration: %s", problem)
         try:
             ensure_quests(db)
         except SQLAlchemyError as error:
@@ -65,10 +73,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.middleware("http")(security_headers)
+
 app.include_router(router)
 app.include_router(integration_router)
 app.include_router(quest_router)
+app.include_router(account_router)
 
+# After every API router, so the catch-all only sees paths the API did not claim.
+if config.FRONTEND_DIR:
+    mount_frontend(app, config.FRONTEND_DIR)
 
 
 @app.get("/health")

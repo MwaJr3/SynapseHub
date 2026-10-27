@@ -1090,6 +1090,14 @@ export const api = {
   xp: () => request<XpSummary>('/api/xp'),
   xpLedger: (limit = 50) => request<{ entries: XpEntry[]; count: number }>(`/api/xp/ledger?limit=${limit}`),
   season: () => request<SeasonSummary>('/api/seasons/current'),
+
+  // ------------------------------------------------------- account and data
+  exportAccount: () => request<AccountExport>('/api/account/export'),
+  deletionPreview: () => request<DeletionPreview>('/api/account/delete-preview'),
+  // POST rather than DELETE-with-a-body: the password travels in a body, and a
+  // proxy that drops it on DELETE would report a success that never happened.
+  deleteAccount: (body: { password: string; confirm_email: string }) =>
+    request<DeletionResult>('/api/account/delete', { method: 'POST', body: JSON.stringify(body) }),
 };
 
 /* ------------------------------------------------------------- quests and XP */
@@ -1166,4 +1174,33 @@ export interface SeasonSummary extends SeasonWindow {
   days_remaining: number;
   xp: number;
   guardrails: Guardrails;
+}
+
+/* ------------------------------------------------------------- account data */
+
+export interface AccountExport {
+  format: string;
+  version: number;
+  generated_at: string;
+  account: { email: string; display_name: string; created_at: string };
+  manifest: Record<string, number>;
+  rows: number;
+  data: Record<string, Record<string, unknown>[]>;
+  excluded: { table: string; columns: string[]; reason: string }[];
+  not_yours: { tables: string[]; reason: string };
+}
+
+export interface DeletionPreview {
+  email: string;
+  tables: Record<string, number>;
+  rows: number;
+  kept: { tables: string[]; reason: string };
+  statement: string;
+}
+
+export interface DeletionResult {
+  deleted: boolean;
+  rows: Record<string, number>;
+  total: number;
+  message: string;
 }

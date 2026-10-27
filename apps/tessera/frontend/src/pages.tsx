@@ -12,7 +12,14 @@ const muted = 'text-[color:var(--muted)]';
 
 /* ------------------------------------------------------------------ sign in */
 
-export function SignInPage({ onSignedIn }: { onSignedIn: () => void }) {
+export function SignInPage({
+  onSignedIn,
+  notice = '',
+}: {
+  onSignedIn: () => void;
+  /** Said after an account was deleted, on the screen the learner lands on. */
+  notice?: string;
+}) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,6 +44,15 @@ export function SignInPage({ onSignedIn }: { onSignedIn: () => void }) {
 
   return (
     <div className="mx-auto max-w-md">
+      {notice ? (
+        <p
+          role="status"
+          className="mb-3 rounded-md border p-3 text-sm"
+          style={{ borderColor: 'var(--good)', color: 'var(--good)' }}
+        >
+          {notice}
+        </p>
+      ) : null}
       <Card>
         <SectionTitle hint="Tessera tracks what you can still recall, not what you clicked.">
           {mode === 'login' ? 'Sign in' : 'Create an account'}
