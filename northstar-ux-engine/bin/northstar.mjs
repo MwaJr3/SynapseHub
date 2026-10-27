@@ -21,10 +21,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { discoverProjects, detectSurface, scanProject, scanRepository } from '../engine.mjs';
+import { discoverProjects, detectSurface, scanProject } from '../engine.mjs';
 import { renderReport } from '../report.mjs';
 import { PATTERNS } from '../patterns.mjs';
-import { REFUSALS, contextFor, fixFile, isFixable, planFix } from '../fixer.mjs';
+import { contextFor, fixFile } from '../fixer.mjs';
 import { applyIgnore, loadConfig } from '../config.mjs';
 
 const SEVERITIES = ['P0', 'P1', 'P2', 'P3'];
@@ -107,7 +107,6 @@ function changedFiles(ref) {
  * are demonstrably gone, not counts of edits attempted.
  */
 async function runFix(options) {
-  const { fixFile: applyFix } = await import('../fixer.mjs');
   const projects =
     path.resolve(options.target) === path.resolve('.')
       ? applyIgnore(discoverProjects(process.cwd()), loadConfig())
@@ -145,7 +144,7 @@ async function runFix(options) {
           continue;
         }
         const raw = fs.readFileSync(absolute, 'utf8');
-        const result = applyFix({
+        const result = fixFile({
           absolute,
           context: contextFor(project, relPath, raw),
           findings: fileFindings,

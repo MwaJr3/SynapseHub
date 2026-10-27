@@ -75,7 +75,7 @@ export function scanProject(project, options = {}) {
             title: `Rule ${rule.id} failed`,
             why: String(error && error.message),
             fix: 'Report this as an engine defect; the rule did not produce a verdict.',
-            file: relPath,
+            file: context.relPath,
             line: 1,
             evidence: '',
           },

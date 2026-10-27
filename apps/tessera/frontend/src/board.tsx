@@ -49,7 +49,9 @@ export function ChessBoard({ fen, legalMoves, disabled = false, onMove, label }:
               type="button"
               role="gridcell"
               aria-label={`${name}${square ? `, ${square.colour} ${square.piece}` : ', empty'}`}
-              aria-pressed={isSelected}
+              // A gridcell announces selection with aria-selected; aria-pressed is not
+              // supported on the role, so assistive tech would drop it.
+              aria-selected={isSelected}
               disabled={disabled}
               onClick={() => handleSquare(name)}
               className={[

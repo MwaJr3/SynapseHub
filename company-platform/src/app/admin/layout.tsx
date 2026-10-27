@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { CurrentNavLink } from '@/components/current-nav-link';
 import type { ReactNode } from 'react';
 

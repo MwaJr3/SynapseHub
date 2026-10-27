@@ -140,7 +140,7 @@ describe('checkAnswer', () => {
     expect(checkAnswer(expects, answer)).toEqual([]);
   });
 
-  it("keeps every flow\'s declared expectations internally consistent", () => {
+  it("keeps every flow's declared expectations internally consistent", () => {
     for (const flow of Object.values(FLOWS)) {
       expect(flow.expects.minChars).toBeGreaterThan(0);
       expect(flow.expects.maxChars).toBeGreaterThan(flow.expects.minChars);

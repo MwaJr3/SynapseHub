@@ -148,16 +148,6 @@ function lineAt(text, lineNumber) {
   return { start, end, text: text.slice(start, end) };
 }
 
-/** Every `{ ... }` block that contains `index`, with its bounds. */
-function blockAround(text, index) {
-  const open = text.lastIndexOf('{', index);
-  if (open === -1) return null;
-  const close = text.indexOf('}', index);
-  if (close === -1) return null;
-  const selectorStart = Math.max(text.lastIndexOf('}', open) + 1, text.lastIndexOf(';', open) + 1);
-  return { start: selectorStart, bodyStart: open + 1, bodyEnd: close, end: close + 1 };
-}
-
 const CLASS_TOKEN = /[^\s"'`{}<>]+/g;
 
 /** Replace one whole class token inside a class list, leaving variants alone. */
@@ -167,12 +157,6 @@ function replaceToken(raw, lineStart, lineText, token, replacement) {
   if (!match) return null;
   const offset = lineStart + match.index + match[1].length;
   return { start: offset, end: offset + token.length, replacement };
-}
-
-function pushEdit(edits, edit, note) {
-  if (!edit) return false;
-  edits.push({ ...edit, note });
-  return true;
 }
 
 /**
