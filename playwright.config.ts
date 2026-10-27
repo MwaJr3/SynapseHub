@@ -27,6 +27,7 @@ export default defineConfig({
       ]
     : 'list',
   use: {
+    baseURL: PORTFOLIO_URL,
     trace: 'on-first-retry',
     video: 'retain-on-failure',
     screenshot: 'only-on-failure',

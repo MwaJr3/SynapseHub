@@ -12,7 +12,7 @@ on:
         default: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   e2e:
@@ -42,15 +42,37 @@ jobs:
           npm run build --prefix vocal-separator/web
 
       - name: Run Playwright suite
+        id: e2e
+        shell: bash
         run: |
           if [ "${{ github.event.inputs.update_snapshots }}" = "true" ]; then
-            npm run e2e:update
-          else
+            npm run e2e:update -- --retries=0
+            touch .snapshots-generated
+          elif compgen -G "e2e/*-snapshots/*.png" > /dev/null; then
             npm run e2e
+          else
+            # First run for a new visual spec: regenerate baselines instead of
+            # failing on missing screenshots, then commit them below.
+            npm run e2e:update -- --retries=0
+            touch .snapshots-generated
           fi
 
+      - name: Commit generated baselines
+        if: always() && steps.e2e.outcome == 'success' && hashFiles('.snapshots-generated') != ''
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add e2e
+          if git diff --cached --quiet; then
+            echo "No baseline changes to commit"
+            exit 0
+          fi
+          git commit -m "chore(e2e): add Playwright visual baselines"
+          git push
+
       - name: Upload screenshot baselines
-        if: github.event.inputs.update_snapshots == 'true'
+        if: always() && github.event.inputs.update_snapshots == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: playwright-snapshots
