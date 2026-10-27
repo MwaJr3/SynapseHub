@@ -207,15 +207,35 @@ test.describe('hit-box geometry', () => {
             style.display !== 'none'
           );
         };
+        const sizeOf = (element: Element) => {
+          const rect = element.getBoundingClientRect();
+          return { width: Math.round(rect.width), height: Math.round(rect.height) };
+        };
+        const meetsMinimum = (box: { width: number; height: number }) =>
+          box.width >= 24 && box.height >= 24;
+        // Anchors are intentionally excluded: axe's wcag22aa target-size rule
+        // already audits them with the normative inline/text-link exceptions,
+        // which a geometry-only check cannot reproduce.
         return Array.from(
           document.querySelectorAll(
-            'button, a[href], input, select, textarea, [role="button"]',
+            'button, input, select, textarea, [role="button"]',
           ),
         )
           .filter(isVisible)
-          // sr-only controls (skip links, visually-hidden file inputs) are
-          // 1px at rest by design and reachable through their visible alternatives.
+          // sr-only controls (visually-hidden file inputs) are 1px at rest by
+          // design and reachable through their visible alternatives.
           .filter((element) => !element.classList.contains('sr-only'))
+          .filter((element) => {
+            if (meetsMinimum(sizeOf(element))) return false;
+            // WCAG 2.5.8 equivalent-target exception: an input associated with
+            // a >=24px label offers the same activation area through that label
+            // (wrapping labels forward clicks, radios/checkboxes included).
+            if (element instanceof HTMLInputElement) {
+              const label = element.closest('label') ?? element.labels?.[0];
+              if (label && meetsMinimum(sizeOf(label))) return false;
+            }
+            return true;
+          })
           .map((element) => {
             const rect = element.getBoundingClientRect();
             return {
@@ -229,8 +249,7 @@ test.describe('hit-box geometry', () => {
               width: Math.round(rect.width),
               height: Math.round(rect.height),
             };
-          })
-          .filter((box) => box.width < 24 || box.height < 24);
+          });
       });
 
       expect(

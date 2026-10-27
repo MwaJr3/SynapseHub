@@ -605,13 +605,43 @@ function collectThemeContexts(source: string): ThemeContext[] {
   return contexts;
 }
 
-/** Base (`:root`) properties with one themed block layered on top. */
+/** Split a selector into compound tokens, dropping combinators. */
+function selectorTokens(selector: string): Set<string> {
+  return new Set(
+    selector
+      .split(/[\s>+~]+/)
+      .map((token) => token.trim())
+      .filter(Boolean),
+  );
+}
+
+/**
+ * Base (`:root`) properties with every ancestor theme block layered in source
+ * order and the context's own declarations last. A block counts as an
+ * ancestor when every compound token it declares also appears in the current
+ * selector — so `.dark` contributes its tokens to
+ * `.dark [data-tone='contrast']` (matching real custom-property inheritance)
+ * but never to the light `[data-tone='contrast']` block.
+ */
 function propertiesForContext(
   contexts: ThemeContext[],
   context: ThemeContext,
 ): Map<string, string> {
   const base = contexts.find((entry) => entry.selector === ':root');
-  return new Map([...(base?.props ?? []), ...context.props]);
+  const merged = new Map<string, string>(base?.props ?? []);
+  if (context === base) return merged;
+  const ownTokens = selectorTokens(context.selector);
+  for (const candidate of contexts) {
+    if (candidate === base || candidate === context) continue;
+    const candidateTokens = selectorTokens(candidate.selector);
+    const isAncestor = [...candidateTokens].every((token) =>
+      ownTokens.has(token),
+    );
+    if (!isAncestor) continue;
+    for (const [name, value] of candidate.props) merged.set(name, value);
+  }
+  for (const [name, value] of context.props) merged.set(name, value);
+  return merged;
 }
 
 function tripletToHex(value: string): string | null {

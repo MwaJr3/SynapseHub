@@ -74,6 +74,7 @@
   [data-tone='contrast'] {
     color-scheme: dark;
     background-color: rgb(var(--surface));
+    color: rgb(var(--text));
 
     --surface: 11 15 25;
     --surface-2: 15 20 32;

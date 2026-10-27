@@ -429,6 +429,22 @@ describe('static UX scanner', () => {
     expect(ruleIds(passing)).not.toContain('A11Y-CONTRAST-01');
   });
 
+  it('inherits custom properties through nested theme scopes', () => {
+    // The nested block only overrides the surface; --text must come from the
+    // ancestor `.dark` scope, not fall back to the dark root value, mirroring
+    // how custom properties actually inherit in the browser.
+    const nested = scan(
+      [
+        ':root { --text: 14 21 35; --surface: 247 249 252; }',
+        '.dark { --text: 233 238 247; --surface: 8 11 18; }',
+        '.dark [data-tone="contrast"] { --surface: 5 7 12; }',
+        '[data-tone="contrast"] { background-color: rgb(var(--surface)); color: rgb(var(--text)); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(nested)).not.toContain('A11Y-CONTRAST-01');
+  });
+
   it('never pairs colours across different theme blocks', () => {
     const crossTheme = scan(
       [
