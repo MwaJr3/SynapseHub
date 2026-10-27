@@ -389,7 +389,7 @@ export default function SystemPage() {
                 <button type="button" className="btn btn-secondary" onClick={() => inputRef.current?.click()}>Restore backup</button>
                 <button type="button" className="btn btn-secondary" onClick={() => encryptedInputRef.current?.click()}>Restore encrypted backup</button>
                 <button type="button" className="btn btn-ghost" onClick={startNewCycle}>New 90-day clock</button>
-                <button type="button" className="btn btn-ghost text-red-600 dark:text-red-300" onClick={() => { if (window.confirm('Reset this browser workspace to the starter system? Export first if you need the current data.')) reset(); }}>Reset workspace</button>
+                <button type="button" className="btn btn-ghost text-red-700 dark:text-red-300" onClick={() => { if (window.confirm('Reset this browser workspace to the starter system? Export first if you need the current data.')) reset(); }}>Reset workspace</button>
                 <input ref={inputRef} type="file" accept="application/json" className="sr-only" tabIndex={-1} aria-label="Restore workspace from a backup JSON file" onChange={importSystem} />
                 <input ref={encryptedInputRef} type="file" accept="application/json" className="sr-only" tabIndex={-1} aria-label="Restore workspace from an encrypted backup file" onChange={importEncryptedSystem} />
               </div>
@@ -729,7 +729,7 @@ function Direction({
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-ink-muted">{goal.outcome || 'Add a concrete outcome.'}</p>
                 <p className="mt-3 border-t border-line pt-3 text-xs leading-relaxed text-ink-muted"><span className="font-semibold text-ink">Proof:</span> {goal.proof || 'Define observable evidence.'}</p>
-                <button type="button" className="mt-3 text-xs font-medium text-red-600 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, goals: previous.goals.filter((item) => item.id !== goal.id) }))}>Remove goal</button>
+                <button type="button" className="mt-3 text-xs font-medium text-red-700 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, goals: previous.goals.filter((item) => item.id !== goal.id) }))}>Remove goal</button>
               </article>
             ))}
           </div>
@@ -830,7 +830,7 @@ function ProjectCard({
         <label className="system-field"><span>Current stage</span><input value={project.currentStage} onChange={(event) => updateProject({ currentStage: event.target.value })} /></label>
         <label className="system-field"><span>Portfolio state</span><select value={project.status} onChange={(event) => updateProject({ status: event.target.value as ProjectStatus })}>{Object.entries(projectStatusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
       </div>
-      <button type="button" className="mt-4 text-xs font-medium text-red-600 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, projects: previous.projects.filter((item) => item.id !== project.id) }))}>Remove project</button>
+      <button type="button" className="mt-4 text-xs font-medium text-red-700 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, projects: previous.projects.filter((item) => item.id !== project.id) }))}>Remove project</button>
     </article>
   );
 }
@@ -957,7 +957,7 @@ function DecisionCard({
         <label className="system-field"><span>Confidence %</span><input type="number" min="0" max="100" value={confidence} onChange={(event) => setConfidence(event.target.value)} /></label>
         <div className="flex items-end"><button type="button" className="btn btn-secondary w-full" onClick={choose}>Record choice</button></div>
       </div>
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-ink-muted">{decision.reviewDate ? `Review on ${decision.reviewDate}` : 'Add a review date for outcome learning.'}</p><button type="button" className="text-xs font-medium text-red-600 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, decisions: previous.decisions.filter((item) => item.id !== decision.id) }))}>Remove decision</button></div>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs text-ink-muted">{decision.reviewDate ? `Review on ${decision.reviewDate}` : 'Add a review date for outcome learning.'}</p><button type="button" className="text-xs font-medium text-red-700 underline underline-offset-4 dark:text-red-300" onClick={() => update((previous) => ({ ...previous, decisions: previous.decisions.filter((item) => item.id !== decision.id) }))}>Remove decision</button></div>
     </article>
   );
 }

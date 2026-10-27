@@ -677,9 +677,10 @@ export default function App() {
             <h2>{authMode === 'register' ? 'Create your account' : 'Welcome back'}</h2>
             <p className="muted">Projects and audio are owner-scoped. Signed URLs expire automatically.</p>
             {alerts}
-            <div className="segmented-control" role="tablist" aria-label="Authentication mode">
+            <div className="segmented-control" role="group" aria-label="Authentication mode">
               <button
                 type="button"
+                aria-pressed={authMode === 'login'}
                 className={authMode === 'login' ? 'active' : ''}
                 onClick={() => setAuthMode('login')}
               >
@@ -687,6 +688,7 @@ export default function App() {
               </button>
               <button
                 type="button"
+                aria-pressed={authMode === 'register'}
                 className={authMode === 'register' ? 'active' : ''}
                 onClick={() => setAuthMode('register')}
               >

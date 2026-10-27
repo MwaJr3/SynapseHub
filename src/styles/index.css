@@ -163,6 +163,14 @@
     font-weight: 600;
   }
 
+  /* The native checkbox/radio glyph may render at 13px, but its wrapping
+     label is the activation area and must carry the design system's 44px
+     touch target (also clears the WCAG 2.2 24px minimum). */
+  label:has(> input[type='checkbox']),
+  label:has(> input[type='radio']) {
+    min-height: 44px;
+  }
+
   p {
     @apply text-pretty;
   }
