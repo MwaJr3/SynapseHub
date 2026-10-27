@@ -2,11 +2,12 @@
 
 Generated 2026-10-27 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
 
-Scope: **22 frontends**, **456 source files**, **75 findings**.
+Scope: **22 frontends**, **476 source files**, **84 findings**.
 
 ## Method and limitations
 
-- Static, deterministic analysis of TS/TSX/CSS source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs and hover-only handlers.
+- Static, deterministic analysis of TS/TSX/CSS/HTML source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, heading order, document language, key handlers on non-interactive elements, keyboard-reachable scroll regions, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs (including `var(--token)` colour resolution) and hover-only handlers.
+- Low-confidence scroll-region cues and medium-confidence structural heuristics need a human or runtime check; the Playwright browser suite (`e2e/`) confirms them against the rendered DOM.
 - Runtime accessibility is enforced separately by axe-core (`src/test/axe-a11y.test.tsx`) against the rendered DOM; this static scan cannot execute the interfaces.
 - Findings carry confidence levels: **high** for mechanical facts (outline removal, missing labels, z-index, contrast math), **medium/low** for structural heuristics that still need a human or runtime check.
 - This scan does not execute the interfaces: runtime keyboard navigation, screen-reader output, rendered hit-box geometry and visual contrast over images remain manual verification steps.
@@ -16,28 +17,28 @@ Scope: **22 frontends**, **456 source files**, **75 findings**.
 
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Portfolio website | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Portfolio website | 101 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Company platform (Next.js) | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Vocal separator web app | 10 | 0 | 0 | 75 | 0 | 0 | 75 | 0 |
-| apps/campusflow | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/chessscope | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/circuitlab-calc | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/classconnect | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/dependsecure | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/eduaccess | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/fileguard | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/frontpage | 33 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/learnbridge | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/learnpulse | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/openlearn-commons | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/pathwise | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/reachlearn | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/sentinelcore | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/sentinellog | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/teachcraft | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/tessera | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/tutorspring | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vocal separator web app | 11 | 0 | 0 | 76 | 0 | 0 | 75 | 1 |
+| apps/campusflow | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/chessscope | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/circuitlab-calc | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/classconnect | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/dependsecure | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/eduaccess | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/fileguard | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/frontpage | 34 | 0 | 0 | 8 | 0 | 0 | 0 | 8 |
+| apps/learnbridge | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/learnpulse | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/openlearn-commons | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/pathwise | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/reachlearn | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/sentinelcore | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/sentinellog | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/teachcraft | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tessera | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tutorspring | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Portfolio website
 
@@ -59,7 +60,7 @@ No findings — every static detector passed.
 
 ## Vocal separator web app
 
-Root: `vocal-separator/web/src` — 75 findings.
+Root: `vocal-separator/web/src` — 76 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
@@ -134,10 +135,11 @@ Root: `vocal-separator/web/src` — 75 findings.
 | 69 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1586` | Rule ".voice-actions" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 70 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1604` | Rule ".raw-json" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 71 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1611` | Rule ".raw-json summary" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 72 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1642` | Rule ".empty-state" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 73 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1652` | Rule ".admin-summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 74 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1703` | Rule ".page" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 75 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1725` | Rule ".panel" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 72 | minor | low | A11Y-SCROLL-01 (P46/P10) | `vocal-separator/web/src/styles.css:1618` | Rule ".raw-json pre" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 73 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1642` | Rule ".empty-state" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 74 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1652` | Rule ".admin-summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 75 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1703` | Rule ".page" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 76 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1725` | Rule ".panel" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 
 ## apps/campusflow
 
@@ -183,9 +185,18 @@ No findings — every static detector passed.
 
 ## apps/frontpage
 
-Root: `apps/frontpage/frontend/src` — 0 findings.
+Root: `apps/frontpage/frontend/src` — 8 findings.
 
-No findings — every static detector passed.
+| # | Severity | Conf. | Rule | Location | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| 1 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:65` | Rule ".segmented" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 2 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:104` | Rule ".dialog" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 3 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:114` | Rule ".palette-list" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 4 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:132` | Rule ".sidebar-scroll" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 5 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:236` | Rule ".reader-scroll" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 6 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:252` | Rule ".prose pre" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 7 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:255` | Rule ".prose table" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
+| 8 | minor | low | A11Y-SCROLL-01 (P46/P10) | `apps/frontpage/frontend/src/styles/app.css:331` | Rule ".table-wrap" creates an auto-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it. |
 
 ## apps/learnbridge
 
@@ -249,8 +260,9 @@ No findings — every static detector passed.
 
 ## Triage decisions and deferred findings
 
-- **Fixed in this pass (all critical and major defects):** removed focus outlines without replacement, sub-44px touch targets, unlabelled controls, z-index escalation past the named layers, off-vocabulary motion durations, and missing reduced-motion fallbacks. Every fix is re-verified by this scan and by the regression gate in `src/features/ux-engine/scanner/repoScan.test.ts`.
-- **Deferred (minor token hygiene only):** the remaining findings are `TOKEN-SPACING-01` on literal spacing inside hand-tuned, non-minified custom stylesheets. They are convention deviations rather than user-facing defects. Normalising them means choosing between the two nearest scale tokens at each site, which changes rendered geometry; without a visual-regression harness for those standalone apps the change needs a design review instead of a blind mechanical edit. Each row below already carries the rule remediation (nearest 4px-scale token) and the exact location.
+- **Fixed in this pass (all critical and major defects):** removed focus outlines without replacement, sub-44px touch targets, unlabelled controls, z-index escalation past the named layers, off-vocabulary motion durations, missing reduced-motion fallbacks, skipped heading levels, key handlers on non-interactive containers and a theme-aware contrast failure in the company platform (white text on light accent fills; replaced with a per-theme `--accent-contrast` foreground token). Every fix is re-verified by this scan and by the regression gate in `src/features/ux-engine/scanner/repoScan.test.ts`.
+- **Deferred `TOKEN-SPACING-01` (minor token hygiene):** 75 findings on literal spacing inside the hand-tuned vocal-separator stylesheet. They are convention deviations rather than user-facing defects. Normalising them means choosing between the two nearest scale tokens at each site, which changes rendered geometry; the Playwright visual-regression suite (`e2e/`) now gates that change with committed screenshot baselines, so the cleanup is tracked separately rather than applied blind.
+- **Review cues `A11Y-SCROLL-01` (low confidence):** 9 CSS rules create `overflow: auto/scroll` regions. CSS cannot see rendered overflow or tab order, so each is a review cue rather than a defect claim; the Playwright axe run (`e2e/`) executes `scrollable-region-focusable` against the rendered DOM to confirm or clear every cue, and the pinned location inventory in `repoScan.test.ts` fails the gate on any new cue.
 
 | Frontend | Location | Off-scale values |
 | --- | --- | --- |
@@ -325,10 +337,19 @@ No findings — every static detector passed.
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1586` | 9px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1604` | 20px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1611` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1618` | px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1642` | 22px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1652` | 18px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1703` | 18px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1725` | 18px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:65` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:104` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:114` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:132` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:236` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:252` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:255` | px |
+| apps/frontpage | `apps/frontpage/frontend/src/styles/app.css:331` | px |
 
 ## Remediation contract
 

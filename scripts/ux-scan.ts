@@ -49,7 +49,17 @@ async function discoverTargets(): Promise<ScanTarget[]> {
       }
     }
   }
-  return targets.filter((target) => existsSync(target.root));
+
+  // Entry documents live one level above each src root; pull them in as
+  // explicit extra files so the document-language detector covers them.
+  return targets
+    .filter((target) => existsSync(target.root))
+    .map((target) => {
+      const entry = join(target.root, '..', 'index.html');
+      return existsSync(entry)
+        ? { ...target, extraFiles: [entry] }
+        : target;
+    });
 }
 
 function renderReport(reports: ScanReport[]): string {
@@ -72,7 +82,8 @@ function renderReport(reports: ScanReport[]): string {
     '',
     '## Method and limitations',
     '',
-    '- Static, deterministic analysis of TS/TSX/CSS source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs and hover-only handlers.',
+    '- Static, deterministic analysis of TS/TSX/CSS/HTML source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, heading order, document language, key handlers on non-interactive elements, keyboard-reachable scroll regions, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs (including `var(--token)` colour resolution) and hover-only handlers.',
+    '- Low-confidence scroll-region cues and medium-confidence structural heuristics need a human or runtime check; the Playwright browser suite (`e2e/`) confirms them against the rendered DOM.',
     '- Runtime accessibility is enforced separately by axe-core (`src/test/axe-a11y.test.tsx`) against the rendered DOM; this static scan cannot execute the interfaces.',
     '- Findings carry confidence levels: **high** for mechanical facts (outline removal, missing labels, z-index, contrast math), **medium/low** for structural heuristics that still need a human or runtime check.',
     '- This scan does not execute the interfaces: runtime keyboard navigation, screen-reader output, rendered hit-box geometry and visual contrast over images remain manual verification steps.',
@@ -125,8 +136,9 @@ function renderReport(reports: ScanReport[]): string {
     '',
     '## Triage decisions and deferred findings',
     '',
-    '- **Fixed in this pass (all critical and major defects):** removed focus outlines without replacement, sub-44px touch targets, unlabelled controls, z-index escalation past the named layers, off-vocabulary motion durations, and missing reduced-motion fallbacks. Every fix is re-verified by this scan and by the regression gate in `src/features/ux-engine/scanner/repoScan.test.ts`.',
-    '- **Deferred (minor token hygiene only):** the remaining findings are `TOKEN-SPACING-01` on literal spacing inside hand-tuned, non-minified custom stylesheets. They are convention deviations rather than user-facing defects. Normalising them means choosing between the two nearest scale tokens at each site, which changes rendered geometry; without a visual-regression harness for those standalone apps the change needs a design review instead of a blind mechanical edit. Each row below already carries the rule remediation (nearest 4px-scale token) and the exact location.',
+    '- **Fixed in this pass (all critical and major defects):** removed focus outlines without replacement, sub-44px touch targets, unlabelled controls, z-index escalation past the named layers, off-vocabulary motion durations, missing reduced-motion fallbacks, skipped heading levels, key handlers on non-interactive containers and a theme-aware contrast failure in the company platform (white text on light accent fills; replaced with a per-theme `--accent-contrast` foreground token). Every fix is re-verified by this scan and by the regression gate in `src/features/ux-engine/scanner/repoScan.test.ts`.',
+    '- **Deferred `TOKEN-SPACING-01` (minor token hygiene):** 75 findings on literal spacing inside the hand-tuned vocal-separator stylesheet. They are convention deviations rather than user-facing defects. Normalising them means choosing between the two nearest scale tokens at each site, which changes rendered geometry; the Playwright visual-regression suite (`e2e/`) now gates that change with committed screenshot baselines, so the cleanup is tracked separately rather than applied blind.',
+    '- **Review cues `A11Y-SCROLL-01` (low confidence):** 9 CSS rules create `overflow: auto/scroll` regions. CSS cannot see rendered overflow or tab order, so each is a review cue rather than a defect claim; the Playwright axe run (`e2e/`) executes `scrollable-region-focusable` against the rendered DOM to confirm or clear every cue, and the pinned location inventory in `repoScan.test.ts` fails the gate on any new cue.',
     '',
   );
 

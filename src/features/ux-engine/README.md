@@ -68,21 +68,29 @@ monorepo can be audited mechanically.
 
 - `scanner/detectors.ts` — pure, deterministic source detectors (focus
   removal, 44px targets, label associations, accessible names, image alt
-  text, autoFocus, z-index escalation, spacing tokens, motion vocabulary,
-  reduced-motion fallbacks, WCAG contrast pairs, hover-only handlers). JSX
-  tags are parsed with a brace-aware walker over a comment-masked view of
-  the source, so multiline tags, `=>` inside handlers, markup inside JSDoc
-  and dynamic `htmlFor`/`id` associations (static, template-literal and
-  variable forms) are understood rather than guessed.
+  text, autoFocus, heading order, document language, key handlers on
+  non-interactive elements, keyboard-reachable scroll regions, z-index
+  escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks,
+  WCAG contrast pairs, hover-only handlers). JSX tags are parsed with a
+  brace-aware walker over a comment-masked view of the source, so multiline
+  tags, `=>` inside handlers, markup inside JSDoc and dynamic
+  `htmlFor`/`id` associations (static, template-literal and variable forms)
+  are understood rather than guessed. Contrast math resolves CSS custom
+  properties per theme block — including `rgb(var(--token))` channel
+  triplets, `var()` fallbacks and nested references — so colours are never
+  paired across themes that cannot co-occur, and alpha/hsl values the math
+  cannot prove are skipped rather than guessed.
 - `scanner/walk.ts` — Node-only filesystem walker and per-root orchestration;
   the tooling directory itself is excluded so detector source literals never
-  self-flag.
+  self-flag. Entry `index.html` documents are attached to each target as
+  explicit extra files for the document-language detector.
 - `scripts/ux-scan.ts` — CLI (`npm run ux:scan`, `--strict` for CI) that
   discovers every frontend root and regenerates
   `docs/UX_ENGINE_REPO_AUDIT.md` with file:line evidence.
 - `scanner/repoScan.test.ts` — regression gate: the portfolio must stay
-  finding-free and no frontend may regain a critical/major/high-confidence
-  finding.
+  finding-free, no frontend may regain a critical/major/high-confidence
+  finding, and the low-confidence scroll-region inventory is pinned by
+  location so a new cue cannot appear without a conscious review.
 
 Confidence is explicit: mechanical facts are high confidence; structural
 heuristics are medium/low and say so. Minified stylesheets (lines over 500
@@ -90,11 +98,15 @@ characters) are excluded from spacing-token linting, sub-4px optical values
 are treated as hairlines rather than rhythm tokens, and sub-millisecond
 durations are accepted as the standard reduced-motion "instant" override.
 Static analysis cannot replace runtime keyboard, screen-reader or viewport
-testing — the report states this alongside every result, and
-`src/test/axe-a11y.test.tsx` closes part of that gap by running axe-core
-(WCAG 2.x AA + best-practice rules) against the rendered DOM of the key
-routes. The whole gate — typecheck, lint, tests, strict scan, report-drift
-check and build — runs in `.github/workflows/ux-quality.yml`.
+testing — the report states this alongside every result. Two runtime layers
+close the gap: `src/test/axe-a11y.test.tsx` runs axe-core (WCAG 2.x AA +
+best-practice rules) against the jsdom-rendered DOM of the key routes, and
+the Playwright suite in `e2e/` runs a real Chromium over every route with
+the full axe rule set (colour contrast, target size and scrollable-region
+focusability included), plus keyboard-trap, reduced-motion, hit-box and
+visual-regression checks. The whole gate — typecheck, lint, tests, strict
+scan, report-drift check and build — runs in `.github/workflows/ux-quality.yml`,
+and the browser suite runs in `.github/workflows/e2e.yml`.
 
 ## Tests
 

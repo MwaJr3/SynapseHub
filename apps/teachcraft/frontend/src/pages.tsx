@@ -104,7 +104,7 @@ export function LessonsPage({ user }: { user: User }) {
                     <button className="btn-ghost" onClick={() => void act(() => api.transition(detail.id, 'archived'))}>Archive</button>
                   </div>
                   <div>
-                    <h3 className="mb-1 text-sm font-medium text-slate-300">Version history</h3>
+                    <h2 className="mb-1 text-sm font-medium text-slate-300">Version history</h2>
                     <ul className="space-y-1">
                       {detail.versions.map((v) => (
                         <li key={v.version} className="flex items-center justify-between rounded-lg border border-slate-800 px-3 py-1.5 text-xs">
@@ -116,7 +116,7 @@ export function LessonsPage({ user }: { user: User }) {
                     <p className="mt-1 text-xs text-slate-400">Restoring creates a new version — history is never rewritten.</p>
                   </div>
                   <div>
-                    <h3 className="mb-1 text-sm font-medium text-slate-300">Reviewer comments</h3>
+                    <h2 className="mb-1 text-sm font-medium text-slate-300">Reviewer comments</h2>
                     <ul className="space-y-1">
                       {detail.comments.map((c) => (
                         <li key={c.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400">

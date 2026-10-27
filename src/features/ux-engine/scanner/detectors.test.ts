@@ -385,4 +385,157 @@ describe('static UX scanner', () => {
       expect(finding.snippet.length).toBeGreaterThan(0);
     }
   });
+
+  it('resolves hex custom properties when measuring contrast', () => {
+    const failing = scan(
+      [
+        ':root { --accent: #f0a566; --on-accent: #ffffff; }',
+        '.btn { background: var(--accent); color: var(--on-accent); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    const contrast = failing.find(
+      (finding) => finding.ruleId === 'A11Y-CONTRAST-01',
+    );
+    expect(contrast?.evidence).toContain('2.04:1');
+
+    const passing = scan(
+      [
+        ':root { --accent: #3b6fd4; --on-accent: #ffffff; }',
+        '.btn { background-color: var(--accent); color: var(--on-accent); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(passing)).not.toContain('A11Y-CONTRAST-01');
+  });
+
+  it('resolves channel-triplet variables through rgb(var(--token))', () => {
+    const failing = scan(
+      [
+        ':root { --muted: 200 200 200; --surface: 255 255 255; }',
+        '.note { color: rgb(var(--muted)); background: rgb(var(--surface)); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(failing)).toContain('A11Y-CONTRAST-01');
+
+    const passing = scan(
+      [
+        ':root { --text: 14 21 35; --surface: 255 255 255; }',
+        '.note { color: rgb(var(--text)); background: rgb(var(--surface)); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(passing)).not.toContain('A11Y-CONTRAST-01');
+  });
+
+  it('never pairs colours across different theme blocks', () => {
+    const crossTheme = scan(
+      [
+        ':root { --bg: #ffffff; --ink: #0b0f16; }',
+        'html.dark { --bg: #0d1119; --ink: #e8edf5; }',
+        '.panel { background: var(--bg); color: var(--ink); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(crossTheme)).not.toContain('A11Y-CONTRAST-01');
+
+    // Only the theme that actually fails is reported, labelled with its block.
+    const themedFailure = scan(
+      [
+        ':root { --accent: #3b6fd4; --contrast: #ffffff; }',
+        'html.dark { --accent: #f0a566; --contrast: #ffffff; }',
+        '.btn { background: var(--accent); color: var(--contrast); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    const contrast = themedFailure.find(
+      (finding) => finding.ruleId === 'A11Y-CONTRAST-01',
+    );
+    expect(contrast?.evidence).toContain('html.dark');
+  });
+
+  it('honours var() fallbacks and refuses to guess alpha colours', () => {
+    const fallback = scan(
+      [':root { --surface: #ffffff; }', '.x { background: var(--surface); color: var(--missing, #cccccc); }'].join(
+        '\n',
+      ),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(fallback)).toContain('A11Y-CONTRAST-01');
+
+    const alpha = scan(
+      [
+        ':root { --tint: 14 21 35; --surface: 255 255 255; }',
+        '.x { color: rgb(var(--tint) / 0.5); background: rgb(var(--surface)); }',
+      ].join('\n'),
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(alpha)).not.toContain('A11Y-CONTRAST-01');
+  });
+
+  it('flags skipped heading levels but allows component-relative starts', () => {
+    const skip = scan(`<><h1>Title</h1><h3>Subsection</h3></>`);
+    const heading = skip.find((finding) => finding.ruleId === 'A11Y-HEADING-01');
+    expect(heading?.line).toBe(1);
+
+    const ordered = scan(`<><h1>Title</h1><h2>Section</h2><h3>Detail</h3></>`);
+    expect(ruleIds(ordered)).not.toContain('A11Y-HEADING-01');
+
+    // A card component starting at h3 is valid; only downward skips count.
+    const componentStart = scan(`<section><h3>Card title</h3><p>Body</p></section>`);
+    expect(ruleIds(componentStart)).not.toContain('A11Y-HEADING-01');
+  });
+
+  it('requires a lang attribute on html entry documents', () => {
+    const missing = scan('<html>\n  <body></body>\n</html>', 'index.html');
+    const lang = missing.find((finding) => finding.ruleId === 'A11Y-LANG-01');
+    expect(lang?.confidence).toBe('high');
+    expect(lang?.severity).toBe('major');
+
+    const labelled = scan(
+      '<html lang="en">\n  <body></body>\n</html>',
+      'index.html',
+    );
+    expect(ruleIds(labelled)).not.toContain('A11Y-LANG-01');
+  });
+
+  it('rejects key handlers on generic containers unless a widget role is present', () => {
+    const generic = scan(`<div onKeyDown={handleKey}>Menu</div>`);
+    expect(ruleIds(generic)).toContain('A11Y-KEYBOARD-02');
+
+    const native = scan(`<button onKeyDown={handleKey}>Go</button>`);
+    const widgetRole = scan(
+      `<div role="button" tabIndex={0} onKeyDown={handleKey}>Go</div>`,
+    );
+    const presentation = scan(
+      `<div className="backdrop" role="presentation" onKeyDown={onKey} />`,
+    );
+    const escapeOnly = scan(
+      `<div onKeyDown={(e) => { if (e.key === 'Escape') close(); }} />`,
+    );
+    for (const clean of [native, widgetRole, presentation, escapeOnly]) {
+      expect(ruleIds(clean)).not.toContain('A11Y-KEYBOARD-02');
+    }
+  });
+
+  it('surfaces scrollable regions as low-confidence review cues', () => {
+    const scrollable = scan(
+      '.reader { max-height: 20rem; overflow-y: auto; }',
+      'src/sample/styles.css',
+    );
+    const cue = scrollable.find(
+      (finding) => finding.ruleId === 'A11Y-SCROLL-01',
+    );
+    expect(cue?.confidence).toBe('low');
+    expect(cue?.severity).toBe('minor');
+
+    const clipped = scan('.frame { overflow: hidden; }', 'src/sample/styles.css');
+    const native = scan(
+      'textarea { overflow: auto; }',
+      'src/sample/styles.css',
+    );
+    expect(ruleIds(clipped)).not.toContain('A11Y-SCROLL-01');
+    expect(ruleIds(native)).not.toContain('A11Y-SCROLL-01');
+  });
 });
