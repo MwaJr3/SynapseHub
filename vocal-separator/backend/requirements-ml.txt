@@ -1,0 +1,8 @@
+# Optional ML engines. The application runs fully without these via the DSP engine;
+# adapters activate automatically when the packages AND model weights are available.
+# GPU strongly recommended for Demucs. See docs/ML_NOTES.md for weight sources + licences.
+torch>=2.1
+torchaudio>=2.1
+demucs>=4.0
+torchcrepe>=0.0.23
+librosa>=0.10

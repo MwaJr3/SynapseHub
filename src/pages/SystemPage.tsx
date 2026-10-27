@@ -390,8 +390,8 @@ export default function SystemPage() {
                 <button type="button" className="btn btn-secondary" onClick={() => encryptedInputRef.current?.click()}>Restore encrypted backup</button>
                 <button type="button" className="btn btn-ghost" onClick={startNewCycle}>New 90-day clock</button>
                 <button type="button" className="btn btn-ghost text-red-600 dark:text-red-300" onClick={() => { if (window.confirm('Reset this browser workspace to the starter system? Export first if you need the current data.')) reset(); }}>Reset workspace</button>
-                <input ref={inputRef} type="file" accept="application/json" className="sr-only" onChange={importSystem} />
-                <input ref={encryptedInputRef} type="file" accept="application/json" className="sr-only" onChange={importEncryptedSystem} />
+                <input ref={inputRef} type="file" accept="application/json" className="sr-only" tabIndex={-1} aria-label="Restore workspace from a backup JSON file" onChange={importSystem} />
+                <input ref={encryptedInputRef} type="file" accept="application/json" className="sr-only" tabIndex={-1} aria-label="Restore workspace from an encrypted backup file" onChange={importEncryptedSystem} />
               </div>
             </div>
             <div className="mt-6 grid gap-4 border-t border-line pt-5 lg:grid-cols-[1fr_1fr_auto]">

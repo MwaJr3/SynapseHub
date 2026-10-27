@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
-import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
+import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 export function GamesPage() {
   const [games, setGames] = useState<GameRow[] | null>(null);
@@ -60,6 +60,7 @@ export function GamesPage() {
         >
           <textarea
             className="input h-40 font-mono text-xs"
+            aria-label="PGN notation"
             placeholder={'[White "..."]\n[Black "..."]\n\n1. e4 e5 2. Nf3 ...'}
             value={pgn}
             onChange={(e) => setPgn(e.target.value)}

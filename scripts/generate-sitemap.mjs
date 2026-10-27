@@ -26,7 +26,7 @@ try {
   process.exit(1);
 }
 
-const paths = ['/', '/about', '/projects', '/apps', '/skills', '/journey', '/contact', ...projectSlugs.flatMap((slug) => [`/projects/${slug}`, `/apps/${slug}`])];
+const paths = ['/', '/about', '/projects', '/apps', '/skills', '/journey', '/operations', '/ux-engine', '/contact', ...projectSlugs.flatMap((slug) => [`/projects/${slug}`, `/apps/${slug}`])];
 const body = paths.map((path) => `  <url>\n    <loc>${new URL(path, `${origin}/`).toString()}</loc>\n  </url>`).join('\n');
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
 writeFileSync(resolve(here, '../public/sitemap.xml'), sitemap, 'utf8');

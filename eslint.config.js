@@ -6,17 +6,20 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default tseslint.config(
   {
-    // workniche/ is a self-contained Next.js app with its own lint setup.
-    // projects/ holds consolidated copies of other repositories' projects,
-    // each self-contained with its own tooling (see projects/README.md).
+    // workniche/ and vocal-separator/ are self-contained apps with their own
+    // tooling. projects/ holds consolidated copies of other repositories'
+    // projects, each self-contained with its own tooling (see
+    // projects/README.md).
     ignores: [
       'dist',
       'node_modules',
       'coverage',
       'public',
       'workniche',
+      'vocal-separator',
       'projects',
       '**/.next/**',
+      '**/.venv/**',
       'company-platform/next-env.d.ts',
     ],
   },
@@ -47,12 +50,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs', '*.config.js'],
+    files: ['scripts/**/*.mjs', 'scripts/**/*.ts', '*.config.js'],
     languageOptions: {
       globals: { ...globals.node },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      // CLI scripts report scan progress and results as part of their interface.
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
     },
   },
   {

@@ -28,8 +28,8 @@ export function DashboardPage() {
       <h1 className="text-xl font-semibold">Learning analytics dashboard</h1>
       {error ? <ErrorBanner message={error} /> : null}
       <div className="flex flex-wrap gap-2">
-        <input className="input" type="date" aria-label="From date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input className="input" type="date" aria-label="To date" value={to} onChange={(e) => setTo(e.target.value)} />
+        <input className="input" type="date" aria-label="Start date" value={from} onChange={(e) => setFrom(e.target.value)} />
+        <input className="input" type="date" aria-label="End date" value={to} onChange={(e) => setTo(e.target.value)} />
         <a className="btn-ghost" href={`/api/reports/export.json?date_from=${from}&date_to=${to}`}>Export report JSON</a>
       </div>
       {!dash ? <Loading /> : (
@@ -57,7 +57,7 @@ export function DashboardPage() {
               </ul>
             )}
           </Card>
-          <p className="text-xs text-slate-400">{dash.note}</p>
+          <p className="text-xs text-slate-500">{dash.note}</p>
         </>
       )}
     </div>
@@ -73,14 +73,13 @@ export function ImportPage() {
       <h1 className="text-xl font-semibold">Data import</h1>
       {error ? <ErrorBanner message={error} /> : null}
       <Card title="Import learning events (CSV)">
-        <p className="mb-2 text-xs text-slate-400">
+        <p className="mb-2 text-xs text-slate-500">
           Required columns: uid, occurred_at, kind, learner_ref. Optional: course, class_name, topic, assessment, value.
           Re-importing the same file is idempotent — duplicate rows are rejected with reasons, not double-counted.
         </p>
-        <textarea className="input h-48 font-mono text-xs" placeholder="uid,occurred_at,kind,learner_ref,…"
+        <textarea className="input h-48 font-mono text-xs" aria-label="Bulk learner CSV data" placeholder="uid,occurred_at,kind,learner_ref,…"
           value={csv} onChange={(e) => setCsv(e.target.value)} />
-        <span id="import-hint" className="text-xs text-slate-400">Paste CSV rows to enable import.</span>
-        <button className="btn-primary mt-2" disabled={!csv.trim()} aria-describedby="import-hint" onClick={async () => {
+        <button className="btn-primary mt-2" disabled={!csv.trim()} onClick={async () => {
           setError('');
           try {
             setResult(await api.importCsv('upload.csv', csv));
@@ -116,7 +115,7 @@ export function FlagsPage() {
         setMessage(`${result.created} new flag(s). ${result.note}`);
         reload();
       }}>Run flag rules</button>
-      <p className="text-xs text-slate-400">{FAIRNESS_NOTE}</p>
+      <p className="text-xs text-slate-500">{FAIRNESS_NOTE}</p>
       {!flags ? <Loading /> : flags.length === 0 ? (
         <EmptyState title="No flags" hint="Run the rules after importing events." />
       ) : (
@@ -128,10 +127,10 @@ export function FlagsPage() {
                   <div className="flex items-center gap-2">
                     <Badge tone={flagTone(f.status)}>{f.status}</Badge>
                     <span className="font-medium">{f.rule_key}</span>
-                    <span className="text-xs text-slate-400">learner: {f.learner_ref}</span>
+                    <span className="text-xs text-slate-500">learner: {f.learner_ref}</span>
                   </div>
                   <p className="mt-1 text-xs text-slate-400">{f.evidence.rule}</p>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-slate-500">
                     Evidence: {f.evidence.count ? `${f.evidence.count} events` : ''} {f.evidence.topic ? `· topic ${f.evidence.topic}` : ''} · ids: {(f.evidence.event_uids ?? []).join(', ')}
                   </p>
                 </div>

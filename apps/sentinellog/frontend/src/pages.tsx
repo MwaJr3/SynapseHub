@@ -8,7 +8,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { api, ApiError, type Dataset, type Finding, type Report, type Rule, type User } from './api';
+import { api, ApiError, type Dataset, type Report, type Rule, type User } from './api';
 import { eventTypeTone, formatBytes, formatTimestamp, severityTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 

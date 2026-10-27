@@ -56,7 +56,7 @@ describe('verified challenge collection', () => {
     const user = userEvent.setup();
     renderWithProviders(<App />, '/apps/tic-tac-toe-game');
     await screen.findByRole('heading', { level: 1, name: 'Tic Tac Toe game' });
-    for (const square of [1, 4, 2, 5, 3]) await user.click(screen.getByRole('gridcell', { name: `Square ${square}, empty` }));
+    for (const square of [1, 4, 2, 5, 3]) await user.click(screen.getByRole('button', { name: `Square ${square}, empty` }));
     expect(await screen.findByRole('heading', { name: /x wins the round/i })).toBeInTheDocument();
   });
 

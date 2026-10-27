@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "ux:scan": "vite-node scripts/ux-scan.ts",
     "og:image": "node scripts/generate-og-image.mjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{ts,js,json,md}\"",
     "ux:audit": "node northstar-ux-engine/bin/northstar.mjs audit .",
@@ -38,6 +39,7 @@
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.2.0",
+    "axe-core": "^4.14.0",
     "eslint": "^9.39.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -49,6 +51,7 @@
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.0",
     "vite": "^7.3.7",
+    "vite-node": "^5.3.0",
     "vitest": "^4.1.12"
   }
 }

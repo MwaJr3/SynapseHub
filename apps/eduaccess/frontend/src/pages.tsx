@@ -19,7 +19,7 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
   return [data, error, reload];
 }
 
-export function PlansPage({ user }: { user: User }) {
+export function PlansPage({ user: _user }: { user: User }) {
   const [courses, error, reload] = useAsync(() => api.courses(), []);
   const [message, setMessage] = useState('');
   const [actionError, setActionError] = useState('');
@@ -126,7 +126,7 @@ export function ApplicationsPage({ user }: { user: User }) {
 }
 
 export function FinancePage({ user }: { user: User }) {
-  const [pools, error, reload] = useAsync(() => api.pools(), []);
+  const [pools, error] = useAsync(() => api.pools(), []);
   const [ledger, ledgerError] = useAsync(
     () => (user.role === 'finance' || user.role === 'admin' ? api.ledger() : Promise.resolve(null)),
     [user.role],

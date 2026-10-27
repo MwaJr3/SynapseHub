@@ -10,3 +10,6 @@ data/
 .env.local
 .pytest_cache/
 .vite/
+
+# Frontpage ships its curated sample feeds (guest mode depends on them)
+!frontpage/data/

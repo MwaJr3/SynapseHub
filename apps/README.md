@@ -28,7 +28,8 @@ never fabricated.
 | [openlearn-commons](openlearn-commons/) | OpenLearn Commons (Tamuzi) | :8013 | :5186 | 9 + 4 | complete |
 | [reachlearn](reachlearn/) | ReachLearn (Tamuzi) | :8014 | :5187 | 11 + 3 | complete |
 | [eduaccess](eduaccess/) | EduAccess (Tamuzi) | :8015 | :5188 | 9 + 3 | complete |
-| [tessera](tessera/) | Tessera (Tamuzi, adaptive engine + LIFESYSTEM) | :8024 | :5197 | 308 + 85 | stage 4 of 6 |
+| [tessera](tessera/) | Tessera (Tamuzi, adaptive engine + LIFESYSTEM) | :8024 | :5197 | 354 + 99 | stage 5 of 6 |
+| [frontpage](frontpage/) | Frontpage (Frontend Mentor challenge) | :8025 | :5189 | 67 + 7 | complete |
 
 Each `README.md` documents setup, demo credentials, test commands, and the
 app's honesty/limitation statements. Backend seeds run with
@@ -51,6 +52,7 @@ app's honesty/limitation statements. Backend seeds run with
 | stockmate | 8022 | 5195 (server-rendered UI on 8022) |
 | secops-dash | 8023 | 5196 (server-rendered UI on 8023) |
 | tessera | 8024 | 5197 |
+| frontpage | 8025 | 5189 |
 
 The 8 apps above are FastAPI + server-rendered HTML + small JS (the catalogue
 permits simpler interfaces where they teach the same concepts); their UIs run
