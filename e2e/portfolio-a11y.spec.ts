@@ -32,15 +32,14 @@ function describeViolations(
         .slice(0, 8)
         .map((node) => {
           const ratio = node.any
-            .flatMap((check) => Object.values(check.data ?? {}))
-            .filter((value) => typeof value === 'object')
-            .map((data) => {
-              const d = data as Record<string, unknown>;
-              return d.contrastRatio
-                ? `${d.fgColor} on ${d.bgColor} = ${d.contrastRatio}:1`
-                : '';
-            })
-            .filter(Boolean)
+            .map((check) => check.data)
+            .filter(
+              (data): data is Record<string, unknown> =>
+                Boolean(data) &&
+                typeof data === 'object' &&
+                'contrastRatio' in data,
+            )
+            .map((d) => `${d.fgColor} on ${d.bgColor} = ${d.contrastRatio}:1`)
             .join(', ');
           return `${node.target.join(' ')}${ratio ? ` [${ratio}]` : ''}`;
         })
@@ -91,19 +90,34 @@ test.describe('keyboard access', () => {
       });
       const steps = Math.min(Math.max(focusableCount, 1), 25);
 
+      // Identity must distinguish same-tag siblings (a row of anchors/buttons):
+      // tag name alone makes legitimate traversal look like a stuck focus.
+      const identity = () =>
+        page.evaluate(() => {
+          const element = document.activeElement;
+          if (!element || element === document.body) return 'body';
+          const className =
+            typeof element.className === 'string'
+              ? element.className.split(' ').slice(0, 2).join('.')
+              : '';
+          return [
+            element.tagName.toLowerCase(),
+            element.id && `#${element.id}`,
+            element.getAttribute('name') &&
+              `[name=${element.getAttribute('name')}]`,
+            element.getAttribute('aria-label') &&
+              `[aria=${element.getAttribute('aria-label')}]`,
+            className && `.${className}`,
+            (element.textContent ?? '').trim().slice(0, 30),
+          ]
+            .filter(Boolean)
+            .join(':');
+        });
+
       await page.keyboard.press('Tab');
       const stops: string[] = [];
       for (let i = 0; i < steps; i += 1) {
-        const descriptor = await page.evaluate(() => {
-          const element = document.activeElement;
-          if (!element || element === document.body) return 'body';
-          const label =
-            element.getAttribute('aria-label') ??
-            element.textContent ??
-            '';
-          return `${element.tagName.toLowerCase()}:${label.trim().slice(0, 40)}`;
-        });
-        stops.push(descriptor);
+        stops.push(await identity());
         await page.keyboard.press('Tab');
       }
 
@@ -124,9 +138,7 @@ test.describe('keyboard access', () => {
       const reverse: string[] = [];
       for (let i = 0; i < 5; i += 1) {
         await page.keyboard.press('Shift+Tab');
-        reverse.push(
-          await page.evaluate(() => document.activeElement?.tagName ?? 'body'),
-        );
+        reverse.push(await identity());
       }
       expect(
         new Set(reverse).size,
