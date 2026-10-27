@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { api, ApiError, type Course, type LessonDetail, type QuizDetail, type User } from './api';
+import { api, ApiError, type LessonDetail, type QuizDetail, type User } from './api';
 import { stateLabel, stateTone, syncTone } from './utils';
-import { Badge, Card, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
+import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
   const [data, setData] = useState<T | null>(null);
@@ -21,7 +21,7 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
 
 /* ----------------------------- Catalogue + reader ------------------------ */
 
-export function CataloguePage({ user }: { user: User }) {
+export function CataloguePage({ user: _user }: { user: User }) {
   const [q, setQ] = useState('');
   const [courses, error, reload] = useAsync(() => api.courses(q), [q]);
   const [openCourse, setOpenCourse] = useState<number | null>(null);

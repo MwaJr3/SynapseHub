@@ -79,7 +79,7 @@ export function Segmented<T extends string>({ label, value, options, onChange }:
     if (target) onChange(target.value);
   };
   return (
-    <div className="segmented" role="radiogroup" aria-label={label} onKeyDown={onKey}>
+    <div className="segmented" role="radiogroup" aria-label={label} tabIndex={-1} onKeyDown={onKey}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -120,8 +120,8 @@ export function Dialog({ title, onClose, children, wide, labelledBy }: { title: 
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
   };
   return (
-    <div className="dialog-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div ref={ref} className={`dialog ${wide ? 'dialog-wide' : ''}`} role="dialog" aria-modal="true" aria-label={labelledBy ? undefined : title} aria-labelledby={labelledBy} onKeyDown={onKey}>
+    <div className="dialog-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} onKeyDown={onKey}>
+      <div ref={ref} className={`dialog ${wide ? 'dialog-wide' : ''}`} role="dialog" aria-modal="true" aria-label={labelledBy ? undefined : title} aria-labelledby={labelledBy}>
         {children}
         <button className="icon-btn dialog-close" aria-label="Close dialog" onClick={onClose}><X size={18} aria-hidden /></button>
       </div>

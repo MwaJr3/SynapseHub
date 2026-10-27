@@ -158,7 +158,7 @@ export function EventsPage({ user }: { user: User }) {
 export function AlertsPage({ user }: { user: User }) {
   const [alerts, error, reload] = useAsync(() => api.alerts(), []);
   const [message, setMessage] = useState('');
-  const [actionError, setActionError] = useState('');
+  const [actionError] = useState('');
   const canWrite = user.role === 'admin' || user.role === 'analyst';
 
   return (
