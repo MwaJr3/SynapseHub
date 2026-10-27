@@ -688,3 +688,139 @@ class AccessToken(Base):
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+# ------------------------------------------------------------------ stage 5: quests
+#
+# The pieces that make effort visible without making it farmable.
+#
+# `XpEntry` is an append-only ledger: an entry is written once, carries the four
+# factors that produced its number, and is never updated or deleted. `idempotency_key`
+# is what makes a retried request harmless; `(user_id, idempotency_key)` is unique in
+# the database, so a double submit that slips past the API is still refused by the
+# schema.
+#
+# Seasons partition the ledger rather than resetting it. Nothing is erased at the end
+# of a season, and an old entry still says which season it belonged to and why it was
+# worth what it was worth.
+
+
+class Season(Base):
+    """A bounded arc that quests and XP belong to."""
+
+    __tablename__ = "seasons"
+    __table_args__ = (
+        CheckConstraint("ends_at > starts_at", name="ck_seasons_bounds"),
+        Index("ix_seasons_window", "starts_at", "ends_at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    name: Mapped[str] = mapped_column(String(120))
+    theme: Mapped[str] = mapped_column(String(200), default="")
+    starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    ends_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class Quest(Base):
+    """A thing worth doing, with a value that has to be earned from real evidence."""
+
+    __tablename__ = "quests"
+    __table_args__ = (
+        CheckConstraint("difficulty >= 1 AND difficulty <= 5", name="ck_quests_difficulty"),
+        CheckConstraint("base_xp > 0 AND base_xp <= 500", name="ck_quests_base_xp"),
+        CheckConstraint("min_evidence >= 1 AND min_evidence <= 20", name="ck_quests_min_evidence"),
+        CheckConstraint(
+            "kind IN ('retrieval', 'practice', 'application', 'reflection')", name="ck_quests_kind"
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(40), primary_key=True, default=new_id)
+    slug: Mapped[str] = mapped_column(String(60), unique=True, index=True)
+    title: Mapped[str] = mapped_column(String(140))
+    summary: Mapped[str] = mapped_column(Text, default="")
+    kind: Mapped[str] = mapped_column(String(16))
+    #: Catalogue concepts this quest draws on. Empty means "any concept the learner
+    #: has in their library", which is what a general review quest is.
+    concept_ids: Mapped[list] = mapped_column(JSONList, default=list)
+    difficulty: Mapped[int] = mapped_column(Integer, default=2)
+    base_xp: Mapped[int] = mapped_column(Integer, default=20)
+    #: Retrieval attempts (or session minutes for reflection) required before a claim
+    #: can be made. Evidence is counted from tables that already exist.
+    min_evidence: Mapped[int] = mapped_column(Integer, default=3)
+    season_id: Mapped[str | None] = mapped_column(
+        ForeignKey("seasons.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class QuestProgress(Base):
+    """One learner's run at one quest in one season."""
+
+    __tablename__ = "quest_progress"
+    __table_args__ = (
+        UniqueConstraint("user_id", "quest_id", "season_id", name="uq_quest_progress_run"),
+        CheckConstraint(
+            "state IN ('accepted', 'completed', 'claimed', 'abandoned')",
+            name="ck_quest_progress_state",
+        ),
+        Index("ix_quest_progress_user", "user_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    quest_id: Mapped[str] = mapped_column(ForeignKey("quests.id", ondelete="CASCADE"), index=True)
+    season_id: Mapped[str] = mapped_column(ForeignKey("seasons.id", ondelete="CASCADE"), index=True)
+    state: Mapped[str] = mapped_column(String(16), default="accepted")
+    accepted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    claimed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class XpEntry(Base):
+    """One award. Append-only; the four factors are stored with the result.
+
+    The number is reproducible: `round(base_xp × difficulty × challenge × strategic ×
+    evidence)`. Storing the factors means a learner can ask "why 37?" and get an
+    answer from the row itself, not from a re-run of a formula that may since have
+    changed.
+    """
+
+    __tablename__ = "xp_entries"
+    __table_args__ = (
+        UniqueConstraint("user_id", "idempotency_key", name="uq_xp_entries_idempotency"),
+        # One award per quest per season, enforced by the schema rather than by the
+        # `state` column. The API checks `state` first, but two requests with two
+        # different keys could both read `completed` and both insert; this is the
+        # row that makes that impossible. Adjustment rows have no quest id, and
+        # NULLs do not collide, so manual credit is unaffected.
+        UniqueConstraint("user_id", "quest_id", "season_id", name="uq_xp_entries_quest_run"),
+        CheckConstraint("xp >= 0", name="ck_xp_entries_non_negative"),
+        CheckConstraint("difficulty_factor > 0", name="ck_xp_entries_difficulty"),
+        CheckConstraint("challenge_factor > 0", name="ck_xp_entries_challenge"),
+        CheckConstraint("strategic_factor > 0", name="ck_xp_entries_strategic"),
+        CheckConstraint("evidence_factor > 0", name="ck_xp_entries_evidence"),
+        Index("ix_xp_entries_user_created", "user_id", "created_at"),
+        Index("ix_xp_entries_user_season", "user_id", "season_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    season_id: Mapped[str] = mapped_column(ForeignKey("seasons.id", ondelete="CASCADE"), index=True)
+    quest_id: Mapped[str | None] = mapped_column(
+        ForeignKey("quests.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    #: Any string the caller chooses, but only honoured once. A UUID per submission is
+    #: the intended use; a constant is allowed and simply means "award at most once".
+    idempotency_key: Mapped[str] = mapped_column(String(120))
+    kind: Mapped[str] = mapped_column(String(20), default="quest")
+    base_xp: Mapped[int] = mapped_column(Integer)
+    difficulty_factor: Mapped[float] = mapped_column(Float, default=1.0)
+    challenge_factor: Mapped[float] = mapped_column(Float, default=1.0)
+    strategic_factor: Mapped[float] = mapped_column(Float, default=1.0)
+    evidence_factor: Mapped[float] = mapped_column(Float, default=1.0)
+    xp: Mapped[int] = mapped_column(Integer)
+    #: Why this number: the factors, the cap if one applied, and the concept if the
+    #: award came from repeated practice (which is where diminishing returns live).
+    reason: Mapped[str] = mapped_column(Text, default="")
+    concept_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)

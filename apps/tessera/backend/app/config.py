@@ -70,3 +70,18 @@ PLANNER_REDIRECT_URIS = [
     if entry.strip()
 ]
 PLANNER_SCOPES = ["learning-summary:read"]
+
+
+# ------------------------------------------------------------------- stage 5: quests
+# The caps are product policy, not code, so they live here and are quoted back to the
+# learner in the UI ("120 minutes today"). Changing them changes behaviour only.
+XP_DAILY_CAP = int(os.environ.get("TESSERA_XP_DAILY_CAP", "400"))
+MAX_DAILY_MINUTES = int(os.environ.get("TESSERA_MAX_DAILY_MINUTES", "120"))
+#: Same concept practised again in one day is worth 100%, 60%, 30%, then nothing.
+#: The fourth repeat is not punished — it simply earns no XP, and the ledger says so.
+DIMINISHING_XP = (1.0, 0.6, 0.3, 0.0)
+#: Seasons are 12 weeks. The window is derived from a fixed anchor so that the id of a
+#: season is a function of the date: two servers computing it agree, and creating it
+#: twice is a no-op rather than a duplicate.
+SEASON_WEEKS = int(os.environ.get("TESSERA_SEASON_WEEKS", "12"))
+SEASON_ANCHOR = "2026-01-05T00:00:00+00:00"

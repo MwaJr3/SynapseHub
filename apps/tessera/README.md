@@ -31,6 +31,7 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | Content catalogue | MIT OCW and OpenStax material is **catalogued and linked, never copied**, because their licences (and terms) do not permit redistribution here. |
 | AI tutor | Grounded retrieval works with no model at all. The streamed conversation appears only when a model is configured, and says so honestly when it is not. |
 | Provenance | Every piece of material records source, author, licence, attribution and retrieval date; a licence gate decides full use / reference only / refuse. |
+| Quests and XP | Seven quests whose evidence is real recorded work; an append-only ledger that stores the factors behind each award; seasons derived from the clock; diminishing returns, a daily cap and a rest pause instead of a streak. |
 
 ## The learner profile (Project LIFESYSTEM)
 
@@ -243,8 +244,8 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 308 tests, 7 skipped (the live-PostgreSQL file)
-cd frontend && npm test && npm run build   # 85 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 354 tests, 7 skipped (the live-PostgreSQL file)
+cd frontend && npm test && npm run build   # 99 tests, then typecheck + bundle
 ```
 
 ## Retrieval practice, and a scheduler you can check
@@ -381,7 +382,7 @@ building their own. Four things live there:
 | **Concepts** | Ideas they name, with a subject and a 1–5 difficulty | Appear in the knowledge bank, the map, the daily plan and the tutor's retrieval — for them only |
 | **Relations** | Eight typed links between two concepts | Only `prerequisite` gates recommendations; the rest describe their thinking |
 | **Notes** | Material worth looking up again, with an optional source | Nothing. A note is not evidence and never touches mastery |
-| **Sessions** | An objective, a stopping condition, what happened, one line of reflection | Nothing but the record — XP waits for stage 5 |
+| **Sessions** | An objective, a stopping condition, what happened, one line of reflection | A finished sitting is the evidence for the reflection quest and counts toward the day's minute limit; the sitting itself still awards nothing |
 
 Three rules are enforced by the API rather than left to the interface:
 
@@ -399,6 +400,94 @@ see them on the map, and cannot retrieve the first learner's notes as tutor
 evidence. The visibility rule lives in exactly one place
 (`app.library.visible_concepts`) because a leak here would surface one person's
 private notes inside another person's answer.
+
+## Quests, XP and seasons
+
+A quest is a thing worth doing. XP is paid for evidence that it happened — never for
+opening a page, signing in, or spending time.
+
+Seven quests ship in the catalogue, each naming the concepts whose attempts count as
+its evidence: `first-recall`, `exception-drill`, `files-by-hand`, `hash-basics`,
+`threat-model-sketch`, `chess-vision`, and `sit-and-reflect` (the only one that is
+answered by finishing a sitting rather than by answering a prompt). The seeder inserts
+what is missing and never overwrites an existing row, so an operator can retune a value
+without a code change and without the next restart undoing it.
+
+| | |
+| --- | --- |
+| **The award** | `floor(base_xp × difficulty × challenge × strategic × evidence + 0.5)`, then diminishing returns, then whatever is left of the daily cap |
+| **Why this number** | Every factor, the diminishing step and the cap are stored in the ledger row's `reason`. `GET /api/xp/ledger` returns them, so "why 37?" is answered by the row and not by re-running a formula that may since have changed |
+| **Evidence** | Attempts recorded **since the quest was accepted**, counted from the tables that already existed. There is no "I did it" flag to set |
+
+The four factors are all derived from state the system already keeps:
+
+- **difficulty** — from the quest (`1 + 0.15 × (level − 1)`);
+- **challenge** — `1 + 0.5 × (1 − mastery)`, so the same quest is worth more to a
+  learner who has not learned the concept yet;
+- **strategic value** — `1.2` when a goal the learner stated covers one of the quest's
+  concepts, otherwise `1.0`;
+- **evidence** — the mean `evidence_weight` of the attempts behind the claim, clamped
+  to `[0.5, 1.0]`, so a server-graded answer is worth more than a self-graded one. This
+  is the same weight the scheduler uses; the two cannot drift.
+
+### Four rules that stop the ledger being a slot machine
+
+1. **An idempotency key.** `POST /api/quests/{slug}/claim` requires an
+   `Idempotency-Key` header. `uq_xp_entries_idempotency` is unique on
+   `(user_id, idempotency_key)`, so a retried request returns the entry that already
+   exists (`created: false`) instead of a second award — even if the retry arrives
+   twice at once. The browser keeps one key per claim attempt, so "try again" after a
+   timeout reuses it.
+2. **One claim per quest per season.** `uq_xp_entries_quest_run` is unique on
+   `(user_id, quest_id, season_id)`. The API checks the progress state first, but this
+   is the row that makes two concurrent claims with two different keys fail instead of
+   paying twice.
+3. **Diminishing returns.** The same concept practised again in one day is worth 100%,
+   then 60%, then 30%, then nothing. The factor is in the ledger row, so a learner can
+   see that they earned less and why.
+4. **A daily cap.** `TESSERA_XP_DAILY_CAP` (400) is the most XP a day can pay. Work
+   past it still records an entry with `xp = 0` and the reason "daily cap reached;
+   N XP not awarded" — the practice is not erased from the ledger, it just stops
+   earning.
+
+### Two rules that stop it being a compulsion
+
+- **The day has a limit.** `TESSERA_MAX_DAILY_MINUTES` (120) is computed from recorded
+  session minutes, including the elapsed part of a sitting still open. Past it, a claim
+  answers **429** with a message that says nothing was lost and nothing was taken
+  away — and the screen shows the pause before the learner hits it, not after.
+- **There is no streak, and nothing is negative.** No table counts consecutive days;
+  `ck_xp_entries_non_negative` refuses a negative row at the database; and every
+  guardrails payload carries `absence_penalty: false` so no screen has to infer it.
+
+### Seasons
+
+Twelve weeks from a fixed anchor (`2026-01-05T00:00:00Z`). The season id is a pure
+function of the clock — `s001`, `s002`, … — so two processes computing the same instant
+agree, and creating the season twice is a no-op rather than a duplicate. Progress is
+partitioned by season; **the ledger is never reset**, and an old entry still says which
+season it belonged to and what it was worth at the time.
+
+### What is pinned by tests
+
+`tests/test_quests.py` (25 tests) covers: the replay returning the same entry and the
+totals not moving; the database refusing a duplicate key *and* a second award for the
+same quest; a claim before completion and a second claim in a season both answering
+409 with an actionable sentence; a hand-edited `state` paying nothing because `claim`
+re-counts the attempts; the evidence gate naming how many are missing; diminishing
+returns at 0.6 and 0.3; the cap paying what fits and recording the rest as zero; the
+time cap answering 429 with no penalty; one learner's ledger invisible to another; the
+ledger having no update or delete route; and the season window being a pure function of
+the clock. Frontend coverage is `src/quests.ui.test.tsx` (14 tests), including a
+deliberately failing claim whose retry must reuse the same key.
+
+### What this stage deliberately does not do
+
+**No levels, badges, leaderboards, notifications or streak counters.** The level curve
+in the design document is not applied anywhere, and nothing awards XP for a login or for
+time spent — only quests, and only against evidence. Those features are listed as
+missing rather than half-built, because a progress bar showing "level 4" would be a
+claim that no code computes.
 
 ## Storage: SQLite for one, PostgreSQL for a product
 
@@ -446,7 +535,7 @@ been run against it:
 
 That last point is the one that matters: the tests use `create_all`, so the tables
 come from the models, not from the migration history. Both paths now produce a
-schema the same 308 tests accept.
+schema the same 354 tests accept.
 
 ```bash
 export TESSERA_POSTGRES_URL='postgresql+psycopg2://postgres:@/scratch?host=/tmp/pgdata'
@@ -645,10 +734,15 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
 - **Self-graded attempts are self-reported.** The half weight makes them weaker
   evidence, not honest evidence; a learner who over-ticks grows their own
   intervals.
-- **No XP, levels or streaks yet.** Stage 2 records sessions; it does not reward
-  them. Reward mechanics need the idempotent XP ledger and anti-farming rules
-  described in the brief, and inventing them early would mean inventing those
-  rules early too.
+- **XP exists for quests; levels do not.** The ledger, seasons, the four factors,
+  diminishing returns, the daily cap and the rest pause are built and tested. Levels,
+  badges and leaderboards are not built, and the level curve in the brief is not
+  applied anywhere yet — a progress bar that says "level 4" would be a claim nothing
+  computes.
+- **The XP formula is a product rule, not a measurement.** `T(L) = 100·L·(L−1)/2`
+  and the factors come from the design document, not from data about what motivates
+  anyone. They are implemented exactly as specified and stored with every award, so
+  if they are revised, the old rows still say what was applied at the time.
 - **Sessions do not feed mastery.** Answering a question moves mastery; running a
   session does not. That is deliberate — self-reported activity is not evidence —
   but it does mean the session log is currently a diary rather than an input.
@@ -663,10 +757,11 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
 - **The transcribed baseline is off by default.** It belongs to the person who
   supplied it: `TESSERA_DEMO_BASELINE=1` exposes it for a demonstration, and
   without it a new account starts with every axis unscored, which is correct.
-- **LIFESYSTEM is four slices deep.** Profile, knowledge and sessions, retrieval
-  scheduling, and competency/analytics exist. Quests, the XP ledger, seasons and the
-  hardening pass do not. The stage plan and its gates are in
-  `docs/lifesystem/README.md` rather than implied by the screen.
+- **LIFESYSTEM is five slices deep.** Profile, knowledge and sessions, retrieval
+  scheduling, competency/analytics, and quests with the XP ledger and seasons exist.
+  The hardening pass (export, delete, a full accessibility audit) does not. The stage
+  plan and its gates are in `docs/lifesystem/README.md` rather than implied by the
+  screen.
 - **No instructor or platform analytics** in this build; the schema supports
   attempts, but the dashboards are not implemented.
 - **No offline mode, no audio, no notifications.** Audio and offline were in the
@@ -692,6 +787,8 @@ backend/app/
   profile.py         supplied assessments: registry, validation, missing-vs-zero
   profile_baseline.py the diagnostic baseline transcribed from the brief
   library.py         concepts, relations, notes and sessions (one visibility rule)
+  gamification.py    quests, the XP formula, seasons, caps and diminishing returns
+  quest_routes.py    the quest and ledger endpoints
   practice.py        retrieval prompts, grading, evidence weights
   review.py          the due queue, recovery plan, predictions
   evals/recall_eval.py  simulated comparison against fixed intervals and a control
@@ -717,6 +814,7 @@ frontend/src/
   rings.tsx          score rings and the profile header
   library.tsx        the Library screen: own concepts, relations, notes, sessions
   review.tsx         the Review screen: queue, prompts, grading, progress
+  quests.tsx         the Quests screen: evidence gates, claim, guardrails, ledger
   site.ts            the link to the umbrella site, or none
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

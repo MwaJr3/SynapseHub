@@ -6,6 +6,7 @@ import { CompetencyPage } from './competency';
 import { ConnectedApps, ConsentPage, readConsentParams } from './integration';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
+import { QuestsPage } from './quests';
 import { ReviewPage } from './review';
 import { parentLabel, parentLink } from './site';
 import { TutorPage } from './tutor';
@@ -15,6 +16,7 @@ type Route =
   | { name: 'connect' }
   | { name: 'today' }
   | { name: 'profile' }
+  | { name: 'quests' }
   | { name: 'library' }
   | { name: 'review' }
   | { name: 'competency' }
@@ -30,6 +32,7 @@ const NAV: { label: string; route: Route }[] = [
   { label: 'Profile', route: { name: 'profile' } },
   { label: 'Library', route: { name: 'library' } },
   { label: 'Review', route: { name: 'review' } },
+  { label: 'Quests', route: { name: 'quests' } },
   { label: 'Competency', route: { name: 'competency' } },
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
@@ -145,6 +148,7 @@ export default function App() {
             {route.name === 'review' && (
               <ReviewPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}
+            {route.name === 'quests' && <QuestsPage />}
             {route.name === 'competency' && (
               <CompetencyPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}

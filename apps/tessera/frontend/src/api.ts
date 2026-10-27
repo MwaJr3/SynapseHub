@@ -1068,4 +1068,102 @@ export const api = {
   competencyDetail: (conceptId: string) =>
     request<CompetencyDetail>(`/api/competency/${encodeURIComponent(conceptId)}`),
   reviewStats: () => request<ReviewStats>('/api/review/stats'),
+
+  // ------------------------------------------------------------ quests and XP
+  quests: () => request<QuestList>('/api/quests'),
+  acceptQuest: (slug: string) =>
+    request<{ slug: string; state: QuestState }>(`/api/quests/${encodeURIComponent(slug)}/accept`, {
+      method: 'POST',
+    }),
+  completeQuest: (slug: string) =>
+    request<{ slug: string; state: QuestState; evidence: QuestEvidence }>(
+      `/api/quests/${encodeURIComponent(slug)}/complete`,
+      { method: 'POST' },
+    ),
+  // The key is the caller's promise that this click is one award. Sending it again
+  // after a timeout returns the entry that already exists instead of a second one.
+  claimQuest: (slug: string, idempotencyKey: string) =>
+    request<{ entry: XpEntry; created: boolean; guardrails: Guardrails }>(
+      `/api/quests/${encodeURIComponent(slug)}/claim`,
+      { method: 'POST', headers: { 'Idempotency-Key': idempotencyKey } },
+    ),
+  xp: () => request<XpSummary>('/api/xp'),
+  xpLedger: (limit = 50) => request<{ entries: XpEntry[]; count: number }>(`/api/xp/ledger?limit=${limit}`),
+  season: () => request<SeasonSummary>('/api/seasons/current'),
 };
+
+/* ------------------------------------------------------------- quests and XP */
+
+export type QuestState = 'available' | 'accepted' | 'completed' | 'claimed' | 'abandoned';
+
+export interface QuestEvidence {
+  have: number;
+  need: number;
+}
+
+export interface Quest {
+  slug: string;
+  title: string;
+  summary: string;
+  kind: string;
+  difficulty: number;
+  base_xp: number;
+  state: QuestState;
+  evidence: QuestEvidence;
+  concept_ids: string[];
+  season_id: string;
+  completed_at: string | null;
+  claimed_at: string | null;
+}
+
+export interface Guardrails {
+  minutes_today: number;
+  minutes_limit: number;
+  xp_today: number;
+  xp_cap: number;
+  paused: boolean;
+  capped: boolean;
+  message: string;
+  //: Always false. Present so the screen can state the rule instead of implying it.
+  absence_penalty: boolean;
+}
+
+export interface SeasonWindow {
+  id: string;
+  name: string;
+  theme: string;
+  starts_at: string;
+  ends_at: string;
+}
+
+export interface QuestList {
+  season: SeasonWindow;
+  quests: Quest[];
+  guardrails: Guardrails;
+}
+
+export interface XpEntry {
+  id: string;
+  season_id: string;
+  quest_id: string | null;
+  xp: number;
+  kind: string;
+  base_xp: number;
+  factors: { difficulty: number; challenge: number; strategic: number; evidence: number };
+  reason: string;
+  created_at: string | null;
+}
+
+export interface XpSummary {
+  total: number;
+  season_xp: number;
+  season_id: string;
+  today: Guardrails;
+  recent: XpEntry[];
+}
+
+export interface SeasonSummary extends SeasonWindow {
+  days_remaining: number;
+  xp: number;
+  guardrails: Guardrails;
+}

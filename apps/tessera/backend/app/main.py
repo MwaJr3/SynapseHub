@@ -9,8 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import config
 from .database import Base, SessionLocal, engine
+from .gamification import ensure_quests
 from .integration import ensure_configured_client
 from .integration_routes import router as integration_router
+from .quest_routes import router as quest_router
 from .routes import router
 
 @asynccontextmanager
@@ -31,6 +33,16 @@ async def lifespan(_: FastAPI):
             logging.getLogger("tessera.integration").warning(
                 "integration tables are missing; run the Alembic migration to enable "
                 "the study planner connection"
+            )
+        try:
+            ensure_quests(db)
+        except SQLAlchemyError as error:
+            # Say what actually failed. The common cause is a missing migration, but a
+            # warning that only says so hides every other reason the seed could fail.
+            logging.getLogger("tessera.quests").warning(
+                "quests are unavailable (%s); run the Alembic migration if the quest "
+                "tables do not exist yet",
+                error,
             )
     yield
 
@@ -55,6 +67,7 @@ app.add_middleware(
 
 app.include_router(router)
 app.include_router(integration_router)
+app.include_router(quest_router)
 
 
 

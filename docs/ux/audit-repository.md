@@ -36,10 +36,10 @@ No source-detectable defects. Rendering-level checks still apply — see the man
 | [apps/shopdeck](apps/shopdeck/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
 | [apps/stockmate](apps/stockmate/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
 | [apps/teachcraft](apps/teachcraft/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/tessera](apps/tessera/) | react-spa | 18 | 0 | 0 | 0 | 0 | 0 |
+| [apps/tessera](apps/tessera/) | react-spa | 21 | 0 | 0 | 0 | 0 | 0 |
 | [apps/tutorspring](apps/tutorspring/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [.](./) | react-spa | 56 | 0 | 0 | 0 | 0 | 0 |
-| [company-platform](company-platform/) | next-app | 52 | 0 | 0 | 0 | 0 | 0 |
+| [.](./) | react-spa | 57 | 0 | 0 | 0 | 0 | 0 |
+| [company-platform](company-platform/) | next-app | 53 | 0 | 0 | 0 | 0 | 0 |
 | [workniche](workniche/) | next-app | 49 | 0 | 0 | 0 | 0 | 0 |
 | [projects/assetwatch](projects/assetwatch/) | react-spa | 11 | 0 | 0 | 0 | 0 | 0 |
 | [projects/cyberaware-lab](projects/cyberaware-lab/) | react-spa | 9 | 0 | 0 | 0 | 0 | 0 |
@@ -71,3 +71,4 @@ None found from source.
 
 | Pattern | Defects |
 | --- | --- |
+

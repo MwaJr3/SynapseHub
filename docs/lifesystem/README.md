@@ -42,7 +42,7 @@ before the next major phase.
 | 2 | Software: knowledge and sessions | Learner-authored concepts, typed relations, session log, notes + search | **done** |
 | 3 | Software: retrieval + review scheduling | Four retrieval formats, append-only attempt history, explainable queue, recovery plan, measured scheduler | **done** |
 | 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps, PostgreSQL invariants executed | **done** |
-| 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | next |
+| 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | **done** |
 | 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | |
 | 7 | Learner development (the document's Phase I) | Learner model, dimensions, processes, technique groups A–I, personal protocol | after software |
 | 8 | Learning-system design (the document's Phase II) | Lifecycle, priority heuristic, competence model, experiment protocol | |
@@ -51,6 +51,89 @@ before the next major phase.
 Stages 1–6 are the software. The document's own Phase IV–VI work is largely
 supplied by the prompt, which is what makes building first possible at all.
 
+
+## Stage 5 — quests, an idempotent XP ledger, seasons
+
+Stage 4 made the evidence inspectable. Stage 5 is the first thing in the product that
+gives a learner a number for it — and the first place where a badly built reward system
+would do real harm, because a reward that can be farmed, or that punishes absence,
+changes behaviour rather than describing it.
+
+The document specifies the formula, the level curve and the invariants. Stage 5
+implements the formula and the invariants and **stops there**: no levels, no badges, no
+leaderboard, no streak.
+
+### What was built
+
+Seven quests, each naming the concepts whose recorded attempts are its evidence. A quest
+has to be accepted, then its evidence has to arrive, then it can be completed, then it
+can be claimed — and each of those steps is refused with a sentence that says which one
+is missing:
+
+```
+POST /api/quests/{slug}/accept        take it on
+POST /api/quests/{slug}/complete      409 until the evidence exists
+POST /api/quests/{slug}/claim         Idempotency-Key header; awards once
+GET  /api/quests                      state, evidence have/need, guardrails
+GET  /api/xp                          totals, today's limits, the last five awards
+GET  /api/xp/ledger                   append-only, with every factor
+GET  /api/seasons/current             the derived window and what it has paid
+```
+
+### Two decisions the stage turns on
+
+**Evidence is counted, not declared.** A claim re-counts the attempts recorded since the
+quest was accepted, in the tables stage 3 already wrote. There is no `completed = true`
+column a client can post. This costs a little performance on a claim and buys the one
+property that matters: the ledger cannot say that practice happened when it did not.
+
+**The anti-farming rule lives in the schema, not only in the handler.** A unique
+constraint on `(user_id, quest_id, season_id)` and another on
+`(user_id, idempotency_key)` mean that two concurrent claims — the case a state column
+cannot cover, because both requests read the same state before either writes — fail at
+the database. The API catches the violation and answers 409 instead of a 500.
+
+### The design cost this stage paid
+
+- **A cap can pay zero for real work.** Past `TESSERA_XP_DAILY_CAP` an entry is written
+  with `xp = 0` and a reason. That is honest and auditable, and it is also a strange
+  thing to see; the alternative — silently dropping the claim — would make the ledger
+  disagree with the learner's memory of the day.
+- **The formula is a product rule, not a measurement.** The factors come from the
+  design document, not from data about what motivates anyone. Every award stores the
+  factors that produced it, so a revision can be reasoned about against history instead
+  of retroactively rewriting it.
+- **Seasons partition, they do not reset.** An id derived from the clock means no
+  scheduled job has to run at midnight, and a season that was never created on time
+  still comes out right. The cost is that the anchor is a constant in the code rather
+  than a table an operator edits.
+
+### Exercise — stage 5
+
+With the two servers running and an account that has done at least one review:
+
+1. Open **Quests** and accept `exception-drill`. The claim button does not exist yet;
+   "Mark complete" is disabled and says how many of the three pieces of evidence are
+   missing.
+2. Answer three prompts on `py.exceptions` from the **Review** screen, then press "Mark
+   complete" — it succeeds now. Claim it, and read the "Why:" line: base, difficulty,
+   challenge, strategic value and evidence, with the arithmetic.
+3. Claim it again with the browser's network panel (resend the request). The response
+   says `created: false` and the total does not move.
+4. Claim a *second* quest that uses the same concept and check the reason says
+   `diminishing return ×0.6`.
+5. Run a session of more than 120 recorded minutes (or set
+   `TESSERA_MAX_DAILY_MINUTES` low in the environment) and try to claim: 429, with a
+   message that says nothing was lost.
+
+**How it is assessed:** pass means a claim cannot precede its evidence, a retry cannot
+duplicate an award, a second claim in the same season is refused by name, the ledger
+explains every number it contains, and no route exists that can move a learner's XP
+backwards or erase an entry. Report anything that looked wrong — a total that moves
+when the reason says it should not is a defect, not a rounding difference.
+
+**Next milestone (on your acknowledgement):** stage 6 — hardening: export and delete,
+the accessibility pass, and the production build.
 
 ## Stage 4 — competency, and a database that enforces what it says
 
