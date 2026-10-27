@@ -542,7 +542,7 @@ sentence a person can act on; and a retired assessment leaves the history intact
 and the previous score in force. Report anything that looked wrong — a UI claim the
 API does not back is a defect, not a nitpick.
 
-**Next milestone (on your acknowledgement):** stage 2 — subjects, topics and
+**Next milestone at the time (now built):** stage 2 — subjects, topics and
 concepts with typed relationships, a session log with an objective and a stopping
 condition, and reference notes with search. That is where the learner stops being a
 profile and starts producing evidence.
