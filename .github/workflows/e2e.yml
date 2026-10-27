@@ -19,7 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      # On pull requests the default checkout is a detached merge ref, which cannot
+      # receive the baseline commit. Check out the PR head SHA so the generated
+      # baselines can be pushed back to the pull-request branch fast-forward.
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -69,7 +74,12 @@ jobs:
             exit 0
           fi
           git commit -m "chore(e2e): add Playwright visual baselines"
-          git push
+          # head_ref is set on pull_request events; fall back to the pushed ref.
+          TARGET_BRANCH="${{ github.head_ref }}"
+          if [ -z "$TARGET_BRANCH" ]; then
+            TARGET_BRANCH="${GITHUB_REF##*/}"
+          fi
+          git push origin "HEAD:$TARGET_BRANCH"
 
       - name: Upload screenshot baselines
         if: always() && github.event.inputs.update_snapshots == 'true'
