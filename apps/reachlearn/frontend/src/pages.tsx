@@ -47,13 +47,13 @@ export function StudioPage() {
             reload();
           } catch (err) { setActionError(err instanceof Error ? err.message : 'Create failed.'); }
         }}>
-          <input className="input" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <input className="input flex-1" placeholder="Short body (text-first)" value={body} onChange={(e) => setBody(e.target.value)} />
+          <input className="input" aria-label="Lesson title" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input className="input flex-1" aria-label="Short body" placeholder="Short body (text-first)" value={body} onChange={(e) => setBody(e.target.value)} />
           <button className="btn-primary">Create</button>
         </form>
       </Card>
       <div className="flex gap-2">
-        <select className="input max-w-xs" value={channel} onChange={(e) => setChannel(e.target.value)}>
+        <select className="input max-w-xs" aria-label="Preview channel" value={channel} onChange={(e) => setChannel(e.target.value)}>
           <option value="sms">SMS preview</option>
           <option value="ussd">USSD menu preview</option>
           <option value="ivr">IVR script preview</option>

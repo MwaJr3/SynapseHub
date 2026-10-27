@@ -114,7 +114,7 @@ export function AssessmentsPage() {
               <div key={question.id} className="rounded-lg border border-slate-800 p-3">
                 <div className="text-sm">{question.prompt}</div>
                 {question.kind === 'short' ? (
-                  <input className="input mt-2" onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })} />
+                  <input className="input mt-2" aria-label={question.prompt} onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })} />
                 ) : question.kind === 'tf' ? (
                   <div className="mt-2 flex gap-2">
                     {[true, false].map((v) => (
@@ -141,7 +141,7 @@ export function AssessmentsPage() {
                     ))}
                   </div>
                 ) : (
-                  <input className="input mt-2" type="number" step="any" onChange={(e) => setAnswers({ ...answers, [question.id]: Number(e.target.value) })} />
+                  <input className="input mt-2" type="number" step="any" aria-label={question.prompt} onChange={(e) => setAnswers({ ...answers, [question.id]: Number(e.target.value) })} />
                 )}
               </div>
             ))}

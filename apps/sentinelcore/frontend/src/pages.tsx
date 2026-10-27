@@ -94,7 +94,7 @@ export function EventsPage({ user }: { user: User }) {
       <h1 className="text-xl font-semibold">Security events</h1>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       <div className="flex flex-wrap gap-2">
-        <input className="input max-w-xs" placeholder="Search summaries…" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input max-w-xs" aria-label="Search summaries" placeholder="Search summaries…" value={q} onChange={(e) => setQ(e.target.value)} />
         {canWrite ? (
           <button
             className="btn-primary"
@@ -286,7 +286,7 @@ export function IncidentsPage({ user }: { user: User }) {
                   ) : null}
                   {canWrite ? (
                     <div className="grid gap-2 md:grid-cols-4">
-                      <select className="input" value={target} onChange={(e) => setTarget(e.target.value)}>
+                      <select className="input" aria-label="Transition status" value={target} onChange={(e) => setTarget(e.target.value)}>
                         <option value="">Transition to…</option>
                         {detail.allowed_transitions.map((s) => (
                           <option key={s} value={s}>
@@ -296,6 +296,7 @@ export function IncidentsPage({ user }: { user: User }) {
                       </select>
                       <input
                         className="input md:col-span-2"
+                        aria-label="Note"
                         placeholder={target === 'resolved' ? 'Resolution note (required)' : 'Note (optional)'}
                         value={note}
                         onChange={(e) => setNote(e.target.value)}
@@ -315,7 +316,7 @@ export function IncidentsPage({ user }: { user: User }) {
                       >
                         Apply
                       </button>
-                      <select className="input md:col-span-2" value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+                      <select className="input md:col-span-2" aria-label="Assignee" value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
                         <option value="">Assign to…</option>
                         {(users ?? []).map((u) => (
                           <option key={u.id} value={u.id}>
@@ -479,6 +480,7 @@ export function AdminPage() {
               </span>
               <select
                 className="input w-32"
+                aria-label="User role"
                 value={u.role}
                 onChange={async (e) => {
                   await api.setRole(u.id, e.target.value);

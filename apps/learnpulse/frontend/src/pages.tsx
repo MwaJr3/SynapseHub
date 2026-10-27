@@ -28,8 +28,8 @@ export function DashboardPage() {
       <h1 className="text-xl font-semibold">Learning analytics dashboard</h1>
       {error ? <ErrorBanner message={error} /> : null}
       <div className="flex flex-wrap gap-2">
-        <input className="input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-        <input className="input" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+        <input className="input" type="date" aria-label="Start date" value={from} onChange={(e) => setFrom(e.target.value)} />
+        <input className="input" type="date" aria-label="End date" value={to} onChange={(e) => setTo(e.target.value)} />
         <a className="btn-ghost" href={`/api/reports/export.json?date_from=${from}&date_to=${to}`}>Export report JSON</a>
       </div>
       {!dash ? <Loading /> : (
@@ -77,7 +77,7 @@ export function ImportPage() {
           Required columns: uid, occurred_at, kind, learner_ref. Optional: course, class_name, topic, assessment, value.
           Re-importing the same file is idempotent — duplicate rows are rejected with reasons, not double-counted.
         </p>
-        <textarea className="input h-48 font-mono text-xs" placeholder="uid,occurred_at,kind,learner_ref,…"
+        <textarea className="input h-48 font-mono text-xs" aria-label="Bulk learner CSV data" placeholder="uid,occurred_at,kind,learner_ref,…"
           value={csv} onChange={(e) => setCsv(e.target.value)} />
         <button className="btn-primary mt-2" disabled={!csv.trim()} onClick={async () => {
           setError('');

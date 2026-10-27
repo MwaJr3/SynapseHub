@@ -64,9 +64,9 @@ export function SchedulePage({ user }: { user: User }) {
               }
             } catch (err) { setActionError(err instanceof ApiError ? err.message : 'Create failed.'); }
           }}>
-            <input className="input" placeholder="New class name" value={className} onChange={(e) => setClassName(e.target.value)} />
-            <input className="input" placeholder="Session title" value={sessionTitle} onChange={(e) => setSessionTitle(e.target.value)} />
-            <input className="input" type="datetime-local" value={sessionStart} onChange={(e) => setSessionStart(e.target.value)} />
+            <input className="input" aria-label="New class name" placeholder="New class name" value={className} onChange={(e) => setClassName(e.target.value)} />
+            <input className="input" aria-label="Session title" placeholder="Session title" value={sessionTitle} onChange={(e) => setSessionTitle(e.target.value)} />
+            <input className="input" type="datetime-local" aria-label="Session start date and time" value={sessionStart} onChange={(e) => setSessionStart(e.target.value)} />
             <button className="btn-primary">Create</button>
           </form>
           <p className="mt-2 text-xs text-slate-500">Times are stored in UTC and displayed in your local timezone. Overlapping sessions are rejected as conflicts.</p>
@@ -148,7 +148,7 @@ export function RoomPage({ user }: { user: User }) {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Session room (async & chat)</h1>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
-      <select className="input max-w-md" value={sessionId ?? ''} onChange={(e) => setSessionId(Number(e.target.value))}>
+      <select className="input max-w-md" aria-label="Session" value={sessionId ?? ''} onChange={(e) => setSessionId(Number(e.target.value))}>
         <option value="">Select a session…</option>
         {(sessions ?? []).map((s) => <option key={s.id} value={s.id}>{s.title} ({s.status})</option>)}
       </select>
@@ -172,7 +172,7 @@ export function RoomPage({ user }: { user: User }) {
               setText('');
               reload();
             }}>
-              <input className="input flex-1" placeholder="Message or question…" value={text} onChange={(e) => setText(e.target.value)} />
+              <input className="input flex-1" aria-label="Message or question" placeholder="Message or question…" value={text} onChange={(e) => setText(e.target.value)} />
               <button className="btn-primary">Send</button>
             </form>
             <button className="btn-ghost mt-2" onClick={async () => {

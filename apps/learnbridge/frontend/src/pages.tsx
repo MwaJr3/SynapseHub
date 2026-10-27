@@ -40,7 +40,7 @@ export function CataloguePage({ user }: { user: User }) {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Course catalogue</h1>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
-      <input className="input max-w-md" placeholder="Search courses…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="input max-w-md" aria-label="Search courses" placeholder="Search courses…" value={q} onChange={(e) => setQ(e.target.value)} />
       {!courses ? <Loading /> : courses.length === 0 ? (
         <EmptyState title="No courses found" hint="Try a different search term." />
       ) : (
@@ -144,7 +144,7 @@ function NoteForm({ lessonId, onSaved }: { lessonId: number; onSaved: () => void
       setBody('');
       onSaved();
     }}>
-      <input className="input flex-1" placeholder="Add a note…" value={body} onChange={(e) => setBody(e.target.value)} />
+      <input className="input flex-1" aria-label="Add a note" placeholder="Add a note…" value={body} onChange={(e) => setBody(e.target.value)} />
       <button className="btn-primary" disabled={!body.trim()}>Save</button>
     </form>
   );
@@ -172,7 +172,7 @@ function QuizSection({ lessonId, onDone }: { lessonId: number; onDone: () => voi
             <div key={question.id} className="rounded-lg border border-slate-800 p-3">
               <div className="text-sm">{question.prompt}</div>
               {question.kind === 'short' ? (
-                <input className="input mt-2" placeholder="Your answer"
+                <input className="input mt-2" aria-label="Your answer" placeholder="Your answer"
                   onChange={(e) => setAnswers({ ...answers, [question.id]: e.target.value })} />
               ) : question.kind === 'tf' ? (
                 <div className="mt-2 flex gap-2">

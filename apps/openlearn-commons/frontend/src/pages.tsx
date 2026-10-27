@@ -35,7 +35,7 @@ export function LibraryPage({ user }: { user: User }) {
       {message ? (
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
-      <input className="input max-w-md" placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} />
+      <input className="input max-w-md" aria-label="Search titles" placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} />
       <p className="text-xs text-slate-500">{LICENSE_CAUTION}</p>
       {!resources ? <Loading /> : resources.length === 0 ? (
         <EmptyState title="No resources found" hint="Try a different search or contribute one in the studio." />
@@ -173,7 +173,7 @@ export function AdaptWorkspacePage({ user }: { user: User }) {
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
       <div className="flex flex-wrap gap-2">
-        <select className="input max-w-md" value={sourceId ?? ''} onChange={(e) => setSourceId(Number(e.target.value))}>
+        <select className="input max-w-md" aria-label="Source resource" value={sourceId ?? ''} onChange={(e) => setSourceId(Number(e.target.value))}>
           <option value="">Select a source resource…</option>
           {(resources ?? []).map((r) => <option key={r.id} value={r.id}>{r.title} ({r.license})</option>)}
         </select>
@@ -227,8 +227,8 @@ export function AdaptWorkspacePage({ user }: { user: User }) {
               setDetail(await api.adaptation(detail.id));
             } catch (err) { setActionError(err instanceof ApiError ? err.message : 'Save failed.'); }
           }}>
-            <input className="input w-20" value={language} onChange={(e) => setLanguage(e.target.value)} />
-            <input className="input flex-1" placeholder="Target-language text (saved as machine draft)" value={targetText} onChange={(e) => setTargetText(e.target.value)} />
+            <input className="input w-20" aria-label="Language code" value={language} onChange={(e) => setLanguage(e.target.value)} />
+            <input className="input flex-1" aria-label="Target-language text" placeholder="Target-language text (saved as machine draft)" value={targetText} onChange={(e) => setTargetText(e.target.value)} />
             <button className="btn-ghost">Add translation draft</button>
           </form>
           <p className="mt-2 text-xs text-slate-500">Machine drafts stay labelled and hidden until a reviewer approves them.</p>
