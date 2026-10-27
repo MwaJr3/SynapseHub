@@ -242,9 +242,57 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 233 tests
-cd frontend && npm test && npm run build   # 60 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 266 tests
+cd frontend && npm test && npm run build   # 70 tests, then typecheck + bundle
 ```
+
+## Retrieval practice, and a scheduler you can check
+
+The **Review** screen is where the product does the one thing the diagnosis says
+is missing. Four formats, in order of how strong the evidence is:
+
+| format | what the learner does | graded by | weight |
+| --- | --- | --- | --- |
+| Recognise it | picks an option | the server | 1.0 |
+| Fill the blank | one word missing from a sentence in their material | the server | 1.0 |
+| Answer from a cue | writes, then ticks the source lines produced | themselves | 0.5 |
+| Write it all out | everything they remember, then ticks what they produced | themselves | 0.5 |
+
+A **prompt is rebuilt from `(concept, format, seed)`**, never stored, so the answer
+key does not exist in the response until the learner has answered. Free recall
+hides its criteria until the learner says they have finished writing — otherwise
+the exercise is copying with extra steps.
+
+Self-graded attempts are weaker evidence and the scheduler says so: `evidence_weight`
+halves how much a success grows stability, while a failure still costs. The
+attempts table is append-only; there is no route that edits or deletes one.
+
+The **queue explains itself**: every item carries predicted recall, stability, days
+overdue, lapse count, and a sentence per number. After a gap, recovery mode caps
+today at six reviews and leaves the rest on their real due dates — it changes the
+plan, never the schedule. See `docs/lifesystem/README.md` for the measured results.
+
+### The schedule is evaluated, not asserted
+
+```bash
+cd backend && python3 -m app.evals.recall_eval
+```
+
+200 simulated learners' worth of items, 90 days, the same review allowance for
+every strategy, and a ground-truth memory model deliberately different from the
+scheduler's own. Measured here:
+
+```text
+strategy    recall  reviews  per item
+tessera      0.756     2200      11.0
+fixed_7      0.430     2200      11.0
+broken       0.073      200       1.0
+```
+
+At equal cost, placement is worth roughly 1.76x the retention of a fixed weekly
+interval. `broken` is the control and must fail the threshold the real scheduler
+passes. The absolute number is **not** the 90% the scheduler targets — the two
+memory models disagree, and pretending otherwise would be the dishonest part.
 
 ## Your material: concepts, relations, notes, sessions
 
@@ -402,6 +450,11 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
   the caveats, the empty state, the baseline load, a rejected write, a blank field
   never becoming a zero, and retiring a row). This environment has no browser, so
   layout, focus order and contrast are reasoned about rather than observed.
+- **The evaluation is a simulation.** It compares two memory models; it is not a
+  measurement of human memory, and no real learner's recall has been tracked yet.
+- **Self-graded attempts are self-reported.** The half weight makes them weaker
+  evidence, not honest evidence; a learner who over-ticks grows their own
+  intervals.
 - **No XP, levels or streaks yet.** Stage 2 records sessions; it does not reward
   them. Reward mechanics need the idempotent XP ledger and anti-farming rules
   described in the brief, and inventing them early would mean inventing those
@@ -443,6 +496,9 @@ backend/app/
   profile.py         supplied assessments: registry, validation, missing-vs-zero
   profile_baseline.py the diagnostic baseline transcribed from the brief
   library.py         concepts, relations, notes and sessions (one visibility rule)
+  practice.py        retrieval prompts, grading, evidence weights
+  review.py          the due queue, recovery plan, predictions
+  evals/recall_eval.py  simulated comparison against fixed intervals and a control
   ai/budget.py       the context-window estimate shown in the tutor trace
 alembic/            the migration history (the schema's source of truth)
   routes.py          HTTP API
@@ -464,6 +520,7 @@ frontend/src/
   hooks.ts           the shared async-loading hook
   rings.tsx          score rings and the profile header
   library.tsx        the Library screen: own concepts, relations, notes, sessions
+  review.tsx         the Review screen: queue, prompts, grading, progress
   site.ts            the link to the umbrella site, or none
   utils.ts           FEN parsing, move lookup, UCI line parsing (unit-tested)
 ```

@@ -4,6 +4,7 @@ import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
+import { ReviewPage } from './review';
 import { parentLabel, parentLink } from './site';
 import { TutorPage } from './tutor';
 import { Loading } from './ui';
@@ -12,6 +13,7 @@ type Route =
   | { name: 'today' }
   | { name: 'profile' }
   | { name: 'library' }
+  | { name: 'review' }
   | { name: 'knowledge' }
   | { name: 'map' }
   | { name: 'chess' }
@@ -23,6 +25,7 @@ const NAV: { label: string; route: Route }[] = [
   { label: 'Today', route: { name: 'today' } },
   { label: 'Profile', route: { name: 'profile' } },
   { label: 'Library', route: { name: 'library' } },
+  { label: 'Review', route: { name: 'review' } },
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
   { label: 'Chess', route: { name: 'chess' } },
@@ -124,6 +127,9 @@ export default function App() {
             {route.name === 'profile' && <ProfilePage />}
             {route.name === 'library' && (
               <LibraryPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
+            )}
+            {route.name === 'review' && (
+              <ReviewPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}
             {route.name === 'knowledge' && <KnowledgePage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'map' && <MapPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}

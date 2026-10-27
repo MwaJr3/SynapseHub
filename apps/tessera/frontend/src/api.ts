@@ -539,6 +539,121 @@ export interface SessionsResponse {
   stats: LibraryStats;
 }
 
+
+/* ------------------------------------------------------- retrieval practice */
+
+export interface ReviewItem {
+  concept_id: string;
+  title: string;
+  subject: string;
+  mastery: number;
+  tier: string;
+  retained: number;
+  predicted_recall: number;
+  stability_days: number;
+  difficulty: number;
+  reps: number;
+  lapses: number;
+  last_reviewed_at: string;
+  next_review_at: string;
+  overdue_days: number;
+  reasons: string[];
+  available_formats: PracticeFormat[];
+  suggested_format: PracticeFormat | null;
+}
+
+export interface RecoveryPlan {
+  active: boolean;
+  reason: string;
+  today_target: number;
+  remaining_after_today: number;
+  spread_days: number;
+  capped_by_learner?: boolean;
+}
+
+export interface ReviewQueue {
+  due: ReviewItem[];
+  today: ReviewItem[];
+  overdue_count: number;
+  recovery: RecoveryPlan;
+  upcoming: { concept_id: string; title: string; next_review_at: string | null; in_hours: number | null }[];
+  target_retention: number;
+  empty_state: string | null;
+  policy: string;
+}
+
+export type PracticeFormat = 'multiple_choice' | 'cloze' | 'cued_recall' | 'free_recall';
+
+export interface PracticePrompt {
+  prompt_id: string;
+  concept_id: string;
+  concept_title: string;
+  format: PracticeFormat;
+  prompt: string;
+  choices: string[];
+  graded_by: 'auto' | 'self';
+  evidence_weight: number;
+  instructions: string;
+  criteria: string[];
+  criteria_hidden: boolean;
+  available_formats: PracticeFormat[];
+  attempts_on_concept: number;
+  suggested_format: PracticeFormat | null;
+}
+
+export interface PracticeAttempt {
+  id: string;
+  concept_id: string;
+  concept_title: string;
+  format: PracticeFormat;
+  prompt: string;
+  answer: string;
+  expected: string;
+  score: number;
+  correct: boolean;
+  graded_by: 'auto' | 'self';
+  evidence_weight: number;
+  latency_ms: number;
+  session_id: string | null;
+  created_at: string;
+}
+
+export interface PracticeResult {
+  attempt: PracticeAttempt;
+  explanation: string;
+  model: {
+    concept_id: string;
+    correct: boolean;
+    evidence_weight: number;
+    mastery: number;
+    mastery_delta: number;
+    tier: string;
+    stability_days: number;
+    interval_days: number;
+    retrievability_before: number;
+    next_review_at: string;
+    reps: number;
+    lapses: number;
+  };
+  next: { next_review_at: string; interval_days: number; reasons: string[] };
+}
+
+export interface ReviewStats {
+  summary: {
+    total: number;
+    by_format: {
+      format: string;
+      attempts: number;
+      mean_score: number;
+      auto_graded: number;
+      self_graded: number;
+    }[];
+    note: string;
+  };
+  prediction: { concept_id: string; predicted_recall: number; elapsed_days: number; stability_days: number }[];
+  note: string;
+}
+
 export const api = {
   profile: () => request<ProfileResponse>('/api/profile'),
   saveProfileContext: (context: string) =>
@@ -668,4 +783,20 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(body),
     }),
+  // ------------------------------------------------------------ review
+  reviewQueue: () => request<ReviewQueue>('/api/review'),
+  reviewPrompt: (conceptId: string, format: PracticeFormat, seed = 0, reveal = false) =>
+    request<PracticePrompt>(
+      `/api/review/${encodeURIComponent(conceptId)}/prompt?format=${format}&seed=${seed}&reveal=${reveal ? 'true' : 'false'}`,
+    ),
+  submitPractice: (body: {
+    prompt_id: string;
+    answer?: string;
+    choice_index?: number;
+    checked?: number[];
+    latency_ms?: number;
+    session_id?: string;
+  }) => request<PracticeResult>('/api/review/attempts', { method: 'POST', body: JSON.stringify(body) }),
+  reviewHistory: () => request<{ attempts: PracticeAttempt[] }>('/api/review/attempts'),
+  reviewStats: () => request<ReviewStats>('/api/review/stats'),
 };

@@ -207,6 +207,10 @@ describe('ProfilePage', () => {
     await userEvent.click(screen.getByRole('button', { name: /Retire this assessment/ }));
 
     await waitFor(() => expect(api.archiveAssessment).toHaveBeenCalledWith('a1', 'entered twice'));
+    // The contract is not only "a request went out": the learner is told the row
+    // was kept rather than deleted, which is the promise the append-only rule
+    // makes. Without this assertion the test would pass on a silent no-op UI.
+    expect(await screen.findByText(/The row is kept in the history/)).toBeTruthy();
   });
 });
 

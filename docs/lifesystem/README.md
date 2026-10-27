@@ -40,8 +40,8 @@ before the next major phase.
 | 1 | Software: learner profile foundation | Profile + diagnostic history persisted, validated, tested, on screen | **done** |
 | 1.1 | Software: one profile per learner, on a real database | Migration history, PostgreSQL path, isolation tests, baseline gated | **done** |
 | 2 | Software: knowledge and sessions | Learner-authored concepts, typed relations, session log, notes + search | **done** |
-| 3 | Software: retrieval + review scheduling | Retrieval formats, attempt history, explainable due queue, missed-review recovery | next |
-| 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps | |
+| 3 | Software: retrieval + review scheduling | Four retrieval formats, append-only attempt history, explainable queue, recovery plan, measured scheduler | **done** |
+| 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps | next |
 | 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | |
 | 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | |
 | 7 | Learner development (the document's Phase I) | Learner model, dimensions, processes, technique groups A–I, personal protocol | after software |
@@ -86,6 +86,116 @@ No ability score is derived from anything. The profile stores what an instrument
 reported, with its name, date and reporter attached, and no composite is computed
 over the ten axes. Learner development (stage 7) can therefore change what the
 product *says* about these numbers without a migration of history.
+
+## Stage 3 — retrieval practice and a schedule a learner can argue with
+
+The diagnostic this product is built around puts retrieval at 43/100 and
+reference — keeping notes to look things up later — at **0%**. Stage 2 built the
+notes. This stage builds the thing the report says is missing, and the evidence to
+go with it.
+
+### Four ways to find out what someone can produce
+
+| format | what the learner does | graded by | evidence weight |
+| --- | --- | --- | --- |
+| `multiple_choice` | picks an option | the server | 1.0 |
+| `cloze` | fills one blank from a sentence in their material | the server | 1.0 |
+| `cued_recall` | writes an answer to a cue, then ticks the source lines they produced | themselves | 0.5 |
+| `free_recall` | writes everything they remember, then ticks what they produced | themselves | 0.5 |
+
+Free recall is the format the diagnostic is actually about, and it is also the one
+that cannot be graded automatically without a model — which would mean a model
+deciding whether the learner was right. So the learner judges themselves **against
+lines quoted from the source**, never against generated criteria, and that attempt
+counts half. They can cheat their own schedule; they cannot make the system claim
+they were tested.
+
+Self-grading is not decoration: `srs.schedule` takes an `evidence_weight`, so a
+self-graded success grows stability by **half** of what a server-graded success
+would, and a self-graded failure still costs. The property is tested both
+directions.
+
+### The prompt is rebuilt, not stored
+
+`prompt_id` encodes the concept, the format and a seed. The GET returns the
+prompt; the POST rebuilds it from the same three values and grades against the
+source. Nothing is held between the two requests, so a restart, a second worker or
+a tab left open overnight all behave identically — and because the answer key is
+never sent before the answer, the exercise cannot be done by reading it off the
+screen.
+
+### The queue explains itself
+
+Every due item carries the numbers the ordering used — predicted recall, stability,
+days overdue, lapses — and a sentence for each. `tests/test_practice.py` asserts
+those sentences exist rather than trusting the UI to be nice.
+
+Recovery after a gap is a **throughput policy, not a punishment**: past eight
+overdue reviews, today's plan is six of them, most-forgotten first, and the rest
+keep their real due dates and come back over the following days. Nothing is reset,
+no mastery is taken, nothing is hidden — the full backlog stays in the response.
+Measured live: 10 overdue → `today 6`, `remaining 4`, `spread 1`, with that
+sentence attached.
+
+### Is the schedule better than "review weekly"?
+
+Not on faith. `python -m app.evals.recall_eval` simulates learners whose memory
+follows a **different** model from the scheduler's (exponential decay with
+per-item half-lives and noisy outcomes), gives every strategy the same review
+allowance, and measures retention at probes:
+
+```
+strategy    recall  reviews  per item
+tessera      0.756     2200      11.0
+fixed_7      0.430     2200      11.0
+fixed_30     0.121      600       3.0
+never        0.073        0       0.0
+broken       0.073      200       1.0
+```
+
+At equal cost, placement of reviews is worth about **1.76×** the retention of a
+fixed weekly interval. `broken` (schedule ninety days regardless) is the control
+and must stay below the threshold the real scheduler passes, at two different
+seeds.
+
+**The honest headline is not 0.9.** The scheduler targets 90% retention and reaches
+76% under this simulated learner, because the two models disagree — which is the
+point of using a different one. The number to trust is the comparison, not the
+absolute; a real calibration needs real learners, and this product does not have
+any yet.
+
+### The design cost this stage paid
+
+Storing attempts meant touching the learner model's one update path. Rather than
+letting quiz answers and retrieval practice drift apart, `learner.record_attempt`
+was split: the quiz path writes its row and calls `apply_evidence`; practice writes
+a `RetrievalAttempt` and calls the same function. Two paths would have produced two
+memories of the same concept, and the divergence would have been invisible until
+someone noticed their interval growing at the wrong rate.
+
+Sessions now report `evidence_summary` — how many attempts were made inside them,
+and how they were graded — while still awarding nothing themselves. The container
+and the evidence stay separate.
+
+### Exercise — stage 3
+
+With the servers from stage 1 running:
+
+1. Open **Review** as an account that has answered at least one question.
+2. Answer a cloze with a wrong word. Note that the expected term appears **after**
+   you answer, and that the next review is six hours away, not tomorrow.
+3. Answer the same prompt correctly. Note the interval, and the sentence in the
+   answer saying it was server-graded.
+4. Switch to **Write it all out**. The source lines are hidden until you say you
+   have finished. Tick two of five. Note that the attempt is marked "you graded
+   this" and that the interval grew less than the server-graded one did.
+5. Compare two attempts on the same day: one server-graded success, one
+   self-graded success. The reasons line in each response states the weight.
+
+**Assessed on:** whether the answer key was genuinely absent before submitting,
+whether a self-graded success produced a shorter interval than a server-graded one
+from the same state, and whether an empty tick list was accepted as a real zero
+instead of being blocked by the form.
 
 ## Stage 2 — what the learner adds themselves
 

@@ -184,6 +184,61 @@ class Attempt(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
 
 
+class RetrievalAttempt(Base):
+    """One answer to one retrieval prompt. Append-only, like an assessment.
+
+    This is the table stage 3 exists for: until now the only evidence the system
+    accepted was a multiple-choice answer. Retrieval practice is the weakest
+    diagnosed process (43/100), and it produces evidence in shapes a quiz cannot:
+    a blank filled from memory, a paragraph written from memory and then checked
+    against the source, a definition produced from a cue.
+
+    Two fields carry the honesty of the record:
+
+    * `graded_by` — "auto" when the server compared the answer with the source
+      text, "self" when the learner judged their own recall against the criteria
+      shown to them. Self-graded evidence is real but weaker, and
+      `evidence_weight` says how much it moves the schedule.
+    * `score` — partial credit in [0, 1]. A half-remembered answer is not the
+      same as a blank page, and collapsing both to "wrong" loses the very signal
+      the reviewer needs.
+
+    Nothing here is ever updated: a mis-graded attempt is followed by another
+    attempt, not edited into a different history.
+    """
+
+    __tablename__ = "retrieval_attempts"
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    concept_id: Mapped[str] = mapped_column(ForeignKey("concepts.id", ondelete="CASCADE"), index=True)
+    #: cloze | cued_recall | free_recall | multiple_choice
+    format: Mapped[str] = mapped_column(String(24), index=True)
+    #: Rebuilds the prompt deterministically; encodes concept, format and seed.
+    prompt_id: Mapped[str] = mapped_column(String(120))
+    #: Exactly what the learner was shown, so history is readable later even if
+    #: the underlying lesson is edited.
+    prompt_text: Mapped[str] = mapped_column(Text, default="")
+    #: What the learner wrote. For multiple choice this is the chosen text.
+    answer_text: Mapped[str] = mapped_column(Text, default="")
+    #: What the source says it should have been — the term, or the criteria.
+    expected: Mapped[str] = mapped_column(Text, default="")
+    score: Mapped[float] = mapped_column(Float, default=0.0)
+    #: "auto" or "self".
+    graded_by: Mapped[str] = mapped_column(String(8), default="auto")
+    #: How much this counts as evidence: 1.0 for a server-graded answer, 0.5 for
+    #: one the learner judged themselves.
+    evidence_weight: Mapped[float] = mapped_column(Float, default=1.0)
+    correct: Mapped[bool] = mapped_column(Boolean, default=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0)
+    #: Set when the attempt was made inside a learning session, so a session can
+    #: report the evidence it produced without the session itself being evidence.
+    session_id: Mapped[str | None] = mapped_column(
+        ForeignKey("learning_sessions.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
 class ConceptState(Base):
     """The learner model for one concept."""
 

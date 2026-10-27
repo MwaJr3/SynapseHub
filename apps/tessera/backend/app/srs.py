@@ -113,8 +113,18 @@ def schedule(
     elapsed_days: float,
     now: datetime,
     target_retention: float = DEFAULT_TARGET_RETENTION,
+    evidence_weight: float = 1.0,
 ) -> ScheduleResult:
-    """Advance the memory state by one review and compute the next due date."""
+    """Advance the memory state by one review and compute the next due date.
+
+    `evidence_weight` scales how much the review is allowed to change the model:
+    1.0 for an answer the server graded itself, less for one the learner judged
+    against criteria they were shown. A self-assessed "I knew that" is weaker
+    evidence than a blank the server filled in correctly, and pretending
+    otherwise would let a learner grow their own intervals by ticking boxes.
+    """
+    if not 0.0 < evidence_weight <= 1.0:
+        raise ValueError("evidence_weight must be in (0, 1]")
     observed = retrievability(state.stability_days, elapsed_days)
 
     if correct:
@@ -125,7 +135,10 @@ def schedule(
             DIFFICULTY_GROWTH_BASE - DIFFICULTY_GROWTH_STEP * state.difficulty, 0.5, 1.5
         )
         growth = 1.0 + GROWTH_PER_FORGOTTEN * forgotten * difficulty_factor
-        stability = _clamp(state.stability_days * growth, MIN_STABILITY_DAYS, MAX_STABILITY_DAYS)
+        # Weak evidence gets part of the way there, not all of it: interpolate
+        # the growth rather than skipping the review entirely.
+        effective_growth = 1.0 + (growth - 1.0) * evidence_weight
+        stability = _clamp(state.stability_days * effective_growth, MIN_STABILITY_DAYS, MAX_STABILITY_DAYS)
         new_state = MemoryState(
             stability_days=stability,
             difficulty=_clamp(state.difficulty - DIFFICULTY_DECREASE_ON_SUCCESS, MIN_DIFFICULTY, MAX_DIFFICULTY),
@@ -135,7 +148,10 @@ def schedule(
         interval = interval_for(stability, target_retention)
         due = now + timedelta(days=interval)
     else:
-        stability = _clamp(state.stability_days * FAILURE_CONTRACTION, MIN_STABILITY_DAYS, MAX_STABILITY_DAYS)
+        # The same asymmetry applies to failure, but never to zero: a failure
+        # always costs something, however weakly it was judged.
+        contraction = 1.0 - (1.0 - FAILURE_CONTRACTION) * evidence_weight
+        stability = _clamp(state.stability_days * contraction, MIN_STABILITY_DAYS, MAX_STABILITY_DAYS)
         new_state = MemoryState(
             stability_days=stability,
             difficulty=_clamp(state.difficulty + DIFFICULTY_INCREASE_ON_FAILURE, MIN_DIFFICULTY, MAX_DIFFICULTY),

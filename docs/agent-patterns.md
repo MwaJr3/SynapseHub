@@ -177,3 +177,101 @@ supposed to justify the answer.
 - **Training or fine-tuning anything.** "From scratch" material is a teaching aid
   here, not a plan: the weights are somebody else's, served over an
   OpenAI-compatible endpoint, and that is stated rather than dressed up.
+
+
+## Third batch: the agent-skill repositories
+
+Four repositories forked on the day this was written were read for *method*, not
+for code: `paperclip` (`.agents/skills`), `hyperframes` (`.agents/skills`),
+`claude-plugins-official` and `awesome-agent-skills`. Nothing is vendored and no
+licence is relied on beyond reading; what follows is what changed as a result,
+with the evidence, because "we adopted a skill" without a diff is a claim.
+
+### `fix-slow-queries` → the daily plan no longer costs a query per concept
+
+The skill's rule: *"A list of suspicious SQL or an unverified rewrite is an
+intermediate result."* Baseline first, then treatment, then proof that behaviour
+did not move.
+
+Measured on this machine, one learner, 200 concepts:
+
+| | queries | time |
+| --- | --- | --- |
+| `all_signals`, before (one loop over 200 concepts) | **1200** | **299 ms** |
+| `all_signals`, after (`signals_bulk`) | **4** | **14 ms** |
+
+`tests/test_signals_bulk.py` pins two things the skill insists on: the bulk path
+returns *equal* `ConceptSignal` objects to the per-concept path (behaviour proof),
+and the query count does not move when twenty more concepts are added (budget
+proof). A rewrite that only had the first would grow back; one that only had the
+second could be fast and wrong.
+
+The same discipline applied before it was written: the new review queue was built
+bulk-first and measured at 4 queries for 50 due items, rather than optimised after
+it shipped slow.
+
+### `test-audit` → two of my own new tests were asserting through the database
+
+The skill's decision gate asks which observable contract a test covers and whether
+it reaches the code responsible. Applying it to the stage-3 tests found:
+
+- a cloze test that rebuilt the expected answer by querying the database and
+  calling a private helper, duplicating the grading logic it was meant to check.
+  Rewritten to answer once through the API, read the revealed term from the
+  response, and answer again — the production path end to end;
+- an assertion that only checked a mock had been called, with nothing about what
+  the learner sees. Strengthened to assert the confirmation text ("the row is kept
+  in the history"), which is the promise the append-only rule makes;
+- a test whose premise was wrong: it asserted that a self-graded attempt grows
+  stability less, using `elapsed_days=0` — where *no* attempt grows stability,
+  because no forgetting was observed. The test passed or failed for a reason
+  unrelated to the claim. Fixed to compare at a point where forgetting exists, and
+  the underlying property now has its own test.
+
+Retained after review, as the skill allows: the profile test that asserts the
+request arguments of "retire an assessment" covers a real regression (a missing or
+wrong id, an untrimmed reason) that the rendering tests cannot see.
+
+### `add-product-e2e-eval` → the scheduler is graded against a control that fails
+
+The skill's rule: *"Calibrate new grading assertions with a valid outcome and a
+plausible wrong outcome; missing evidence must not produce a pass."*
+
+`app/evals/recall_eval.py` simulates learners with a **different** forgetting model
+from the one the scheduler uses (exponential decay with per-item half-lives and
+noisy outcomes, versus the scheduler's power curve), gives every strategy the same
+review allowance, and reports retention:
+
+```
+strategy    recall  reviews  per item
+tessera      0.756     2200      11.0
+fixed_7      0.430     2200      11.0
+broken       0.073      200       1.0
+```
+
+`broken` schedules ninety days regardless of outcome and **must fail** the
+threshold the real scheduler passes — a metric that cannot fail is a screenshot.
+The ordering is required at two different seeds so one lucky draw cannot carry the
+claim, and a strategy with no probes scores zero rather than passing by default.
+
+### `hyperframes/motion-doctrine` → the working screens stopped moving for no reason
+
+The doctrine's rule that transfers from video to UI: *motion must perform, not
+breathe* — no idle wobble. Applied to the new screens:
+
+- the review screen's only animation is a progress bar whose width changes when an
+  answer is recorded, and which is a `progressbar` with `aria-valuenow` so the
+  information is not carried by the movement alone;
+- the library and review screens have no ambient motion at all;
+- the profile header keeps its slow drift, deliberately, because that screen is a
+  brand surface and the brief asked for it — an exception that is written down
+  here rather than left implicit;
+- everything remains off under `prefers-reduced-motion`.
+
+### `maintain-verification-skill` → the repository now carries its own verification
+
+`.agents/skills/verify-tessera/SKILL.md` states the commands that reproduce every
+claim in the Tessera README, what each should print, and — the part that matters —
+what it does **not** verify (no live PostgreSQL, no provider ever reached, a
+simulator is not a learner). The numbers in it are the ones this session actually
+produced.

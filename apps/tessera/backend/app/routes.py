@@ -15,6 +15,8 @@ from . import (
     chess_modality,
     config,
     library,
+    practice,
+    review,
     learner,
     mastery as mastery_mod,
     openings as openings_mod,
@@ -37,6 +39,7 @@ from .models import (
     LearnerProfile,
     OpeningRow,
     Question,
+    RetrievalAttempt,
     SourceRow,
     User,
 )
@@ -1262,7 +1265,10 @@ def get_session(session_id: str, request: Request, db: Session = Depends(get_db)
     user = _current(request, db)
     session = _library_call(lambda: library.get_session(db, user, session_id))
     title = db.get(Concept, session.concept_id)
-    return library.session_payload(session, title.title if title else "")
+    return {
+        **library.session_payload(session, title.title if title else ""),
+        "evidence_summary": practice.session_evidence(db, user, session.id),
+    }
 
 
 @router.patch("/sessions/{session_id}")
@@ -1290,4 +1296,136 @@ def finish_session(session_id: str, body: SessionFinish, request: Request, db: S
         )
     )
     title = db.get(Concept, session.concept_id)
-    return library.session_payload(session, title.title if title else "")
+    # What the sitting actually produced. The sitting is the container; the
+    # retrieval attempts inside it are the evidence, and keeping those two things
+    # apart is the whole reason stage 2 refused to award anything for a session.
+    return {
+        **library.session_payload(session, title.title if title else ""),
+        "evidence_summary": practice.session_evidence(db, user, session.id),
+    }
+
+
+# ------------------------------------------------------------------- retrieval
+#
+# Stage 3. A prompt is rebuilt from (concept, format, seed) rather than stored, so
+# the answer key never leaves the server and a half-finished tab still grades.
+
+
+class PracticeBody(BaseModel):
+    prompt_id: str = Field(min_length=5, max_length=120)
+    answer: str = Field(default="", max_length=6000)
+    choice_index: int | None = Field(default=None, ge=0, le=20)
+    #: Indices of the source criteria the learner produced. Required for the
+    #: self-graded formats; an empty list is a valid, meaningful answer.
+    checked: list[int] | None = Field(default=None, max_length=20)
+    latency_ms: int = Field(default=0, ge=0, le=3_600_000)
+    session_id: str | None = Field(default=None, max_length=32)
+
+
+def _practice_call(action):
+    try:
+        return action()
+    except library.NotFound as error:
+        raise HTTPException(404, str(error)) from error
+    except practice.PracticeError as error:
+        raise HTTPException(error.status, str(error)) from error
+    except library.LibraryError as error:
+        raise HTTPException(error.status, str(error)) from error
+
+
+@router.get("/review")
+def review_queue(request: Request, db: Session = Depends(get_db), body_limit: int | None = None):
+    """What is due, why, and how to get back on track after a gap."""
+    user = _current(request, db)
+    return review.review_overview(db, user, today_target=body_limit)
+
+
+@router.get("/review/stats")
+def review_stats(request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    return {
+        "summary": practice.summary(db, user),
+        "prediction": review.prediction(db, user),
+        "note": (
+            "Predicted recall is the scheduler's own estimate for each studied concept. "
+            "It is shown so it can be checked, not because it is a measurement."
+        ),
+    }
+
+
+@router.get("/review/attempts")
+def review_history(
+    request: Request,
+    db: Session = Depends(get_db),
+    concept: str | None = None,
+    limit: int = 50,
+):
+    user = _current(request, db)
+    rows = _practice_call(
+        lambda: practice.history(db, user, concept_id=concept, limit=max(1, min(200, limit)))
+    )
+    return {"attempts": rows}
+
+
+@router.get("/review/{concept_id}/prompt")
+def review_prompt(
+    concept_id: str,
+    request: Request,
+    db: Session = Depends(get_db),
+    format: str = "free_recall",
+    seed: int = 0,
+    reveal: bool = False,
+):
+    """Build a prompt. The expected answer is never in this response."""
+    user = _current(request, db)
+    prompt = _practice_call(
+        lambda: practice.build_prompt(db, user, concept_id, format, seed, revealed=reveal)
+    )
+    concept = _practice_call(lambda: library.get_concept(db, user, concept_id))
+    attempts = (
+        db.query(RetrievalAttempt)
+        .filter(RetrievalAttempt.user_id == user.id, RetrievalAttempt.concept_id == concept.id)
+        .count()
+    )
+    formats = practice.available_formats(db, concept)
+    return {
+        **prompt.payload(revealed=reveal),
+        "available_formats": formats,
+        "attempts_on_concept": attempts,
+        # Rotate formats between attempts so recognition is not the only thing
+        # practised; the material decides what is possible.
+        "suggested_format": review.next_format(db, user, concept.id, attempts_for_concept=attempts),
+    }
+
+
+@router.post("/review/attempts", status_code=201)
+def submit_practice(body: PracticeBody, request: Request, db: Session = Depends(get_db)):
+    """Grade an answer, store it, and move the schedule. Nothing is ever overwritten."""
+    user = _current(request, db)
+    graded = _practice_call(
+        lambda: practice.record(
+            db,
+            user,
+            prompt_id=body.prompt_id,
+            answer=body.answer,
+            choice_index=body.choice_index,
+            checked=body.checked,
+            latency_ms=body.latency_ms,
+            session_id=body.session_id,
+        )
+    )
+    concept = db.get(Concept, graded.attempt.concept_id)
+    return {
+        "attempt": practice.attempt_payload(graded.attempt, concept.title if concept else ""),
+        "explanation": graded.explanation,
+        "model": graded.model,
+        "next": {
+            "next_review_at": graded.model["next_review_at"],
+            "interval_days": graded.model["interval_days"],
+            "reasons": [
+                f"Score {graded.attempt.score:.2f} with weight {graded.attempt.evidence_weight:.1f} "
+                f"({'server-graded' if graded.attempt.graded_by == 'auto' else 'self-graded'}).",
+                f"Stability is now {graded.model['stability_days']:.2f} days.",
+            ],
+        },
+    }
