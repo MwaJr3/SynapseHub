@@ -68,9 +68,12 @@
     --focus: 126 162 255;
   }
 
-  /* Intentional dark panels — the hybrid identity. */
+  /* Intentional dark panels — the hybrid identity. The surface colour is
+     applied here so any contrast-toned section gets the dark backdrop its
+     light text tokens assume, even without an explicit background class. */
   [data-tone='contrast'] {
     color-scheme: dark;
+    background-color: rgb(var(--surface));
 
     --surface: 11 15 25;
     --surface-2: 15 20 32;

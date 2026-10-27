@@ -49,7 +49,7 @@ const tabs: { id: SystemTab; label: string; description: string }[] = [
 const signalClasses: Record<SystemSignal, string> = {
   stable: 'border-signal/40 bg-signal/10 text-signal',
   attention: 'border-caution/40 bg-caution/10 text-caution',
-  intervene: 'border-red-500/40 bg-red-500/10 text-red-600 dark:text-red-300',
+  intervene: 'border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-300',
   unknown: 'border-line-strong bg-panel-strong text-ink-muted',
 };
 
@@ -347,7 +347,7 @@ export default function SystemPage() {
                 onClick={() => setActiveTab(tab.id)}
               >
                 <span className="block text-sm font-semibold">{tab.label}</span>
-                <span className="mt-0.5 block font-mono text-2xs uppercase tracking-[0.08em] opacity-75">
+                <span className="mt-0.5 block font-mono text-2xs uppercase tracking-[0.08em]">
                   {tab.description}
                 </span>
               </button>

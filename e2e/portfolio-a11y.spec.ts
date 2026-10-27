@@ -90,17 +90,29 @@ test.describe('keyboard access', () => {
       });
       const steps = Math.min(Math.max(focusableCount, 1), 25);
 
-      // Identity must distinguish same-tag siblings (a row of anchors/buttons):
-      // tag name alone makes legitimate traversal look like a stuck focus.
+      // Identity must distinguish same-tag siblings (a row of anchors/buttons
+      // or bare inputs): the focusable index makes every stop unique even when
+      // id/name/aria-label/class are all absent.
       const identity = () =>
         page.evaluate(() => {
+          const selector =
+            'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+          const focusables = Array.from(
+            document.querySelectorAll(selector),
+          );
           const element = document.activeElement;
           if (!element || element === document.body) return 'body';
+          const index = focusables.indexOf(element);
           const className =
             typeof element.className === 'string'
               ? element.className.split(' ').slice(0, 2).join('.')
               : '';
+          const labelText =
+            element instanceof HTMLInputElement && element.labels?.length
+              ? element.labels[0]?.textContent?.trim().slice(0, 30)
+              : '';
           return [
+            `[${index}]`,
             element.tagName.toLowerCase(),
             element.id && `#${element.id}`,
             element.getAttribute('name') &&
@@ -108,6 +120,7 @@ test.describe('keyboard access', () => {
             element.getAttribute('aria-label') &&
               `[aria=${element.getAttribute('aria-label')}]`,
             className && `.${className}`,
+            labelText,
             (element.textContent ?? '').trim().slice(0, 30),
           ]
             .filter(Boolean)
@@ -200,6 +213,9 @@ test.describe('hit-box geometry', () => {
           ),
         )
           .filter(isVisible)
+          // sr-only controls (skip links, visually-hidden file inputs) are
+          // 1px at rest by design and reachable through their visible alternatives.
+          .filter((element) => !element.classList.contains('sr-only'))
           .map((element) => {
             const rect = element.getBoundingClientRect();
             return {
