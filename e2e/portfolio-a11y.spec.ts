@@ -24,13 +24,28 @@ function axe(page: import('@playwright/test').Page): Promise<{
 function describeViolations(
   violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'],
 ): string {
+  // Keep the message compact: full violation objects overflow CI annotations
+  // and truncate the nodes we actually need to read.
   return violations
     .map((violation) => {
-      const targets = violation.nodes
-        .slice(0, 5)
-        .map((node) => node.target.join(' '))
-        .join('; ');
-      return `${violation.id} (${violation.help}) -> ${targets}`;
+      const nodes = violation.nodes
+        .slice(0, 8)
+        .map((node) => {
+          const ratio = node.any
+            .flatMap((check) => Object.values(check.data ?? {}))
+            .filter((value) => typeof value === 'object')
+            .map((data) => {
+              const d = data as Record<string, unknown>;
+              return d.contrastRatio
+                ? `${d.fgColor} on ${d.bgColor} = ${d.contrastRatio}:1`
+                : '';
+            })
+            .filter(Boolean)
+            .join(', ');
+          return `${node.target.join(' ')}${ratio ? ` [${ratio}]` : ''}`;
+        })
+        .join(' | ');
+      return `${violation.id} (${violation.nodes.length} nodes): ${nodes}`;
     })
     .join('\n');
 }
@@ -56,9 +71,29 @@ test.describe('keyboard access', () => {
       await page.goto(route);
       await page.locator('h1').first().waitFor();
 
+      // Only walk the page's own focusables — never tab past the document into
+      // browser chrome, which would make reverse-direction results meaningless.
+      const focusableCount = await page.evaluate(() => {
+        const selector =
+          'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        return Array.from(document.querySelectorAll(selector)).filter(
+          (element) => {
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return (
+              rect.width > 0 &&
+              rect.height > 0 &&
+              style.visibility !== 'hidden' &&
+              style.display !== 'none'
+            );
+          },
+        ).length;
+      });
+      const steps = Math.min(Math.max(focusableCount, 1), 25);
+
       await page.keyboard.press('Tab');
       const stops: string[] = [];
-      for (let i = 0; i < 30; i += 1) {
+      for (let i = 0; i < steps; i += 1) {
         const descriptor = await page.evaluate(() => {
           const element = document.activeElement;
           if (!element || element === document.body) return 'body';
@@ -72,10 +107,11 @@ test.describe('keyboard access', () => {
         await page.keyboard.press('Tab');
       }
 
-      // Tabbing past the last control hands focus to browser chrome (reported
-      // as body), so the trap analysis ignores body stops.
       const focusableStops = stops.filter((stop) => stop !== 'body');
-      expect(new Set(focusableStops).size).toBeGreaterThanOrEqual(8);
+      expect(
+        new Set(focusableStops).size,
+        `only ${new Set(focusableStops).size} distinct stops: ${focusableStops.join(' -> ')}`,
+      ).toBeGreaterThanOrEqual(8);
       for (let i = 2; i < focusableStops.length; i += 1) {
         const trapped =
           focusableStops[i] === focusableStops[i - 1] &&
@@ -83,7 +119,8 @@ test.describe('keyboard access', () => {
         expect(trapped, `focus stuck on ${focusableStops[i]}`).toBe(false);
       }
 
-      // Reverse direction must move focus as well, not pin it.
+      // Reverse direction must move focus as well, not pin it. We are still
+      // inside the document because steps never exceeded the focusable count.
       const reverse: string[] = [];
       for (let i = 0; i < 5; i += 1) {
         await page.keyboard.press('Shift+Tab');
@@ -91,7 +128,10 @@ test.describe('keyboard access', () => {
           await page.evaluate(() => document.activeElement?.tagName ?? 'body'),
         );
       }
-      expect(new Set(reverse).size).toBeGreaterThan(1);
+      expect(
+        new Set(reverse).size,
+        `reverse traversal stuck: ${reverse.join(' -> ')}`,
+      ).toBeGreaterThan(1);
     });
   }
 });
