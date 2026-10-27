@@ -26,7 +26,7 @@ export function MapPage({ user }: { user: User }) {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Skill map & recommended next steps</h1>
       {error || recsError ? <ErrorBanner message={error || recsError} /> : null}
-      <p className="text-xs text-slate-500">{MODEL_NOTE}</p>
+      <p className="text-xs text-slate-400">{MODEL_NOTE}</p>
       <div className="grid gap-3 lg:grid-cols-2">
         <Card title="Concepts">
           {!map ? <Loading /> : (
@@ -62,7 +62,7 @@ export function MapPage({ user }: { user: User }) {
                       }}>Override</button>
                     ) : null}
                   </div>
-                  <div className="mt-1 text-xs text-slate-500">Evidence: {JSON.stringify(rec.evidence)}</div>
+                  <div className="mt-1 text-xs text-slate-400">Evidence: {JSON.stringify(rec.evidence)}</div>
                 </li>
               ))}
             </ul>
@@ -99,7 +99,7 @@ export function AssessmentsPage() {
           {list.map((a) => (
             <div key={a.id} className="card flex items-center justify-between">
               <div>
-                <div className="font-medium">{a.title} <span className="text-xs text-slate-500">v{a.version}</span></div>
+                <div className="font-medium">{a.title} <span className="text-xs text-slate-400">v{a.version}</span></div>
                 <div className="text-xs text-slate-400">{a.kind} · {a.question_count} questions</div>
               </div>
               <button className="btn-ghost" onClick={() => void open(a.id)}>{openId === a.id ? 'Hide' : 'Open'}</button>
@@ -155,7 +155,7 @@ export function AssessmentsPage() {
             {result ? (
               <div className="rounded-lg border border-slate-700 p-3 text-sm">
                 <div>Score: <strong>{result.score}%</strong></div>
-                <p className="mt-1 text-xs text-slate-500">{result.note}</p>
+                <p className="mt-1 text-xs text-slate-400">{result.note}</p>
                 <ul className="mt-2 space-y-1">
                   {result.per_question.map((row) => (
                     <li key={row.question_id} className={row.credit >= 1 ? 'text-emerald-300' : row.credit > 0 ? 'text-amber-300' : 'text-rose-300'}>
@@ -212,7 +212,7 @@ export function ReportPage({ user }: { user: User }) {
                 </tbody>
               </table>
             )}
-            <p className="mt-2 text-xs text-slate-500">{report.note}</p>
+            <p className="mt-2 text-xs text-slate-400">{report.note}</p>
           </Card>
         </>
       )}

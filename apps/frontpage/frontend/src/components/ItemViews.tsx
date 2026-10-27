@@ -62,7 +62,7 @@ function Thumb({ item }: { item: Item }) {
   return <img ref={hideBrokenImage} className="thumb" src={item.image_url} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />;
 }
 
-export const ItemRow = memo(forwardRef<HTMLElement, RowProps>(function ItemRow(props, ref) {
+export const ItemRow = memo(forwardRef<HTMLDivElement, RowProps>(function ItemRow(props, ref) {
   const { item, selected, active, query, layout, onOpen, hero } = props;
   const cls = ['item', `item-${layout}`, item.is_read ? 'is-read' : 'is-unread', selected ? 'is-selected' : '', active ? 'is-active' : '', hero ? 'item-hero' : ''].filter(Boolean).join(' ');
   const handleKey = (e: React.KeyboardEvent) => {

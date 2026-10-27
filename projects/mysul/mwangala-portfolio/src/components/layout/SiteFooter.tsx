@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { primaryNav } from '@/config/nav';
 import { profile, configuredLinks, hasContactEmail } from '@/config/profile';
 import { site } from '@/config/site';
@@ -41,12 +41,20 @@ export function SiteFooter() {
             <ul className="space-y-2">
               {primaryNav.map((item) => (
                 <li key={item.to}>
-                  <Link
+                  {/* NavLink writes aria-current="page" on the matching route, and the
+                      active style adds weight and an underline so the state is not
+                      carried by colour alone. */}
+                  <NavLink
                     to={item.to}
-                    className="text-sm text-fg-muted transition-colors hover:text-accent"
+                    end={item.match === 'exact'}
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-4'
+                        : 'text-sm text-fg-muted transition-colors hover:text-accent'
+                    }
                   >
                     {item.label}
-                  </Link>
+                  </NavLink>
                 </li>
               ))}
             </ul>

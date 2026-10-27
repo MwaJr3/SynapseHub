@@ -11,7 +11,10 @@
     "test": "node --test \"test/*.test.mjs\"",
     "audit": "node bin/northstar.mjs audit ..",
     "check": "node bin/northstar.mjs check .. --min P1",
-    "patterns": "node bin/northstar.mjs patterns"
+    "patterns": "node bin/northstar.mjs patterns",
+    "fix": "node bin/northstar.mjs fix ..",
+    "watch": "node bin/northstar.mjs watch .. --fix",
+    "hooks": "node bin/northstar.mjs hooks"
   },
   "engines": {
     "node": ">=20"

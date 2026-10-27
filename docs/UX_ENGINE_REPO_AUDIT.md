@@ -2,7 +2,7 @@
 
 Generated 2026-10-27 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
 
-Scope: **21 frontends**, **409 source files**, **75 findings**.
+Scope: **22 frontends**, **456 source files**, **75 findings**.
 
 ## Method and limitations
 
@@ -17,7 +17,7 @@ Scope: **21 frontends**, **409 source files**, **75 findings**.
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Portfolio website | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Company platform (Next.js) | 76 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Company platform (Next.js) | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Vocal separator web app | 10 | 0 | 0 | 75 | 0 | 0 | 75 | 0 |
 | apps/campusflow | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -36,6 +36,7 @@ Scope: **21 frontends**, **409 source files**, **75 findings**.
 | apps/sentinelcore | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/sentinellog | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/teachcraft | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tessera | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/tutorspring | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Portfolio website
@@ -70,73 +71,73 @@ Root: `vocal-separator/web/src` — 75 findings.
 | 6 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:202` | Rule ".panel-heading" uses literal spacing 18, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 7 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:253` | Rule ".button" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 8 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:309` | Rule ".button.large" uses literal spacing 13, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 9 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:329` | Rule ".alert" uses literal spacing 18, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 10 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:350` | Rule ".alert.inline" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 11 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:369` | Rule ".auth-layout" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 12 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:404` | Rule ".capability-grid" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 13 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:411` | Rule ".capability-grid article" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 14 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:426` | Rule ".capability-grid h2" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 15 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:443` | Rule ".honesty-panel h2" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 16 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:449` | Rule ".honesty-list" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 17 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:471` | Rule ".segmented-control" uses literal spacing 6, 22, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 18 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:520` | Rule ".inline-form select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 19 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:536` | Rule ".compact-field select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 20 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:559` | Rule ".auth-health" uses literal spacing 26, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 21 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:565` | Rule ".auth-health h3" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 22 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:575` | Rule ".system-list > div" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 23 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:604` | Rule ".compact-system" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 24 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:615` | Rule ".content-column" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 25 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:627` | Rule ".stem-list" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 26 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:635` | Rule ".project-list" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 27 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:668` | Rule ".project-card" uses literal spacing 5, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 28 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:715` | Rule ".selected-job-chip" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 29 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:735` | Rule ".file-row" uses literal spacing 18, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 30 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:763` | Rule ".dropzone" uses literal spacing 18, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 31 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:825` | Rule ".selected-file" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 32 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:849` | Rule ".options-grid" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 33 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:871` | Rule ".radio-card" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 34 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:894` | Rule ".radio-card span" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 35 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:909` | Rule ".check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 36 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:940` | Rule ".large-check" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 37 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:947` | Rule ".practice-banner" uses literal spacing 13, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 38 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:958` | Rule ".job-row" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 39 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1010` | Rule ".section-actions" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 40 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1039` | Rule ".stages-list" uses literal spacing 9, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 41 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1047` | Rule ".stage-row" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 42 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1098` | Rule ".warning-list" uses literal spacing 18, 14, 34px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 43 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1108` | Rule ".warning-list.compact" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 44 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1115` | Rule ".summary-grid" uses literal spacing 14, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 45 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1122` | Rule ".summary-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 46 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1150` | Rule ".export-bar" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 47 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1175` | Rule ".transport" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 48 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1207` | Rule ".transport-grid .check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 49 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1229` | Rule ".download-link" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 50 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1263` | Rule ".pitch-section" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 51 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1281` | Rule ".subsection-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 52 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1305` | Rule ".pitch-legend" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 53 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1314` | Rule ".pitch-legend span" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 54 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1331` | Rule ".stem-row" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 55 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1347` | Rule ".stem-identity" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 56 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1354` | Rule ".stem-title-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 57 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1383` | Rule ".stem-wave" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 58 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1400` | Rule ".stem-controls" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 59 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1420` | Rule ".stem-details" uses literal spacing 15, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 60 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1433` | Rule ".metric-grid > div" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 61 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1441` | Rule ".inline-form" uses literal spacing 10, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 62 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1453` | Rule ".download-row" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 63 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1498` | Rule ".model-card" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 64 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1521` | Rule ".model-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 65 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1556` | Rule ".voice-metrics" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 66 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1560` | Rule ".prediction-list" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 67 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1567` | Rule ".prediction-list span" uses literal spacing 6, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 68 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1577` | Rule ".withheld-box" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 69 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1582` | Rule ".voice-actions" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 70 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1600` | Rule ".raw-json" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 71 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1607` | Rule ".raw-json summary" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 72 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1638` | Rule ".empty-state" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 73 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1648` | Rule ".admin-summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 74 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1699` | Rule ".page" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 75 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1721` | Rule ".panel" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 9 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:333` | Rule ".alert" uses literal spacing 18, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 10 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:354` | Rule ".alert.inline" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 11 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:373` | Rule ".auth-layout" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 12 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:408` | Rule ".capability-grid" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 13 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:415` | Rule ".capability-grid article" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 14 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:430` | Rule ".capability-grid h2" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 15 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:447` | Rule ".honesty-panel h2" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 16 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:453` | Rule ".honesty-list" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 17 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:475` | Rule ".segmented-control" uses literal spacing 6, 22, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 18 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:524` | Rule ".inline-form select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 19 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:540` | Rule ".compact-field select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 20 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:563` | Rule ".auth-health" uses literal spacing 26, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 21 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:569` | Rule ".auth-health h3" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 22 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:579` | Rule ".system-list > div" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 23 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:608` | Rule ".compact-system" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 24 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:619` | Rule ".content-column" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 25 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:631` | Rule ".stem-list" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 26 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:639` | Rule ".project-list" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 27 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:672` | Rule ".project-card" uses literal spacing 5, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 28 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:719` | Rule ".selected-job-chip" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 29 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:739` | Rule ".file-row" uses literal spacing 18, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 30 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:767` | Rule ".dropzone" uses literal spacing 18, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 31 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:829` | Rule ".selected-file" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 32 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:853` | Rule ".options-grid" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 33 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:875` | Rule ".radio-card" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 34 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:898` | Rule ".radio-card span" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 35 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:913` | Rule ".check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 36 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:944` | Rule ".large-check" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 37 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:951` | Rule ".practice-banner" uses literal spacing 13, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 38 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:962` | Rule ".job-row" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 39 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1014` | Rule ".section-actions" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 40 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1043` | Rule ".stages-list" uses literal spacing 9, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 41 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1051` | Rule ".stage-row" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 42 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1102` | Rule ".warning-list" uses literal spacing 18, 14, 34px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 43 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1112` | Rule ".warning-list.compact" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 44 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1119` | Rule ".summary-grid" uses literal spacing 14, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 45 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1126` | Rule ".summary-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 46 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1154` | Rule ".export-bar" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 47 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1179` | Rule ".transport" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 48 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1211` | Rule ".transport-grid .check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 49 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1233` | Rule ".download-link" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 50 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1267` | Rule ".pitch-section" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 51 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1285` | Rule ".subsection-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 52 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1309` | Rule ".pitch-legend" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 53 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1318` | Rule ".pitch-legend span" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 54 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1335` | Rule ".stem-row" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 55 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1351` | Rule ".stem-identity" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 56 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1358` | Rule ".stem-title-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 57 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1387` | Rule ".stem-wave" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 58 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1404` | Rule ".stem-controls" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 59 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1424` | Rule ".stem-details" uses literal spacing 15, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 60 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1437` | Rule ".metric-grid > div" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 61 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1445` | Rule ".inline-form" uses literal spacing 10, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 62 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1457` | Rule ".download-row" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 63 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1502` | Rule ".model-card" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 64 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1525` | Rule ".model-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 65 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1560` | Rule ".voice-metrics" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 66 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1564` | Rule ".prediction-list" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 67 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1571` | Rule ".prediction-list span" uses literal spacing 6, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 68 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1581` | Rule ".withheld-box" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 69 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1586` | Rule ".voice-actions" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 70 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1604` | Rule ".raw-json" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 71 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1611` | Rule ".raw-json summary" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 72 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1642` | Rule ".empty-state" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 73 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1652` | Rule ".admin-summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 74 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1703` | Rule ".page" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 75 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1725` | Rule ".panel" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 
 ## apps/campusflow
 
@@ -234,6 +235,12 @@ Root: `apps/teachcraft/frontend/src` — 0 findings.
 
 No findings — every static detector passed.
 
+## apps/tessera
+
+Root: `apps/tessera/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
 ## apps/tutorspring
 
 Root: `apps/tutorspring/frontend/src` — 0 findings.
@@ -255,73 +262,73 @@ No findings — every static detector passed.
 | Vocal separator web app | `vocal-separator/web/src/styles.css:202` | 18, 20px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:253` | 10px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:309` | 13, 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:329` | 18, 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:350` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:369` | 26px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:404` | 30px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:411` | 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:426` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:443` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:449` | 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:471` | 6, 22, 5px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:520` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:536` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:559` | 26, 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:565` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:575` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:604` | 9px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:615` | 22px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:627` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:635` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:668` | 5, 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:715` | 13, 15px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:735` | 18, 15px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:763` | 18, 28px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:825` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:849` | 22px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:871` | 13, 15px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:894` | 5px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:909` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:940` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:947` | 13, 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:958` | 15px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1010` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1039` | 9, 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1047` | 11px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1098` | 18, 14, 34px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1108` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1115` | 14, 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1122` | 17px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1150` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1175` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1207` | 10px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1229` | 7px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1263` | 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1281` | 5px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1305` | 11px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1314` | 7px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1331` | 17px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1347` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1354` | 9px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1383` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1400` | 15px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1420` | 15, 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1433` | 11px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1441` | 10, 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1453` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1498` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1521` | 5px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1556` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:333` | 18, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:354` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:373` | 26px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:408` | 30px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:415` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:430` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:447` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:453` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:475` | 6, 22, 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:524` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:540` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:563` | 26, 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:569` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:579` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:608` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:619` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:631` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:639` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:672` | 5, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:719` | 13, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:739` | 18, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:767` | 18, 28px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:829` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:853` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:875` | 13, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:898` | 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:913` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:944` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:951` | 13, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:962` | 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1014` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1043` | 9, 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1051` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1102` | 18, 14, 34px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1112` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1119` | 14, 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1126` | 17px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1154` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1179` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1211` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1233` | 7px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1267` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1285` | 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1309` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1318` | 7px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1335` | 17px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1351` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1358` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1387` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1404` | 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1424` | 15, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1437` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1445` | 10, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1457` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1502` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1525` | 5px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1560` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1567` | 6, 9px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1577` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1582` | 9px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1600` | 20px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1607` | 14px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1638` | 22px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1648` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1699` | 18px |
-| Vocal separator web app | `vocal-separator/web/src/styles.css:1721` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1564` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1571` | 6, 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1581` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1586` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1604` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1611` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1642` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1652` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1703` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1725` | 18px |
 
 ## Remediation contract
 

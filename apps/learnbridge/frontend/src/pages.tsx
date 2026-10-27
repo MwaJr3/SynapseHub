@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type LessonDetail, type QuizDetail, type User } from './api';
 import { stateLabel, stateTone, syncTone } from './utils';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
@@ -49,11 +49,11 @@ export function CataloguePage({ user: _user }: { user: User }) {
             <Card key={c.id}>
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <div className="font-medium">{c.title} <span className="text-xs text-slate-500">v{c.version}</span></div>
+                  <div className="font-medium">{c.title} <span className="text-xs text-slate-400">v{c.version}</span></div>
                   <div className="mt-1 text-xs text-slate-400">{c.subject} · {c.level} · {c.language} · ~{c.est_minutes} min · {c.lesson_count} lessons</div>
                   <p className="mt-2 text-sm text-slate-300">{c.description}</p>
-                  <div className="mt-2 text-xs text-slate-500">License: {c.license || 'not stated'} · {c.attribution}</div>
-                  <div className="mt-1 text-xs text-slate-500">Accessibility: {c.accessibility || 'not stated'}</div>
+                  <div className="mt-2 text-xs text-slate-400">License: {c.license || 'not stated'} · {c.attribution}</div>
+                  <div className="mt-1 text-xs text-slate-400">Accessibility: {c.accessibility || 'not stated'}</div>
                 </div>
                 <div className="flex flex-col gap-2">
                   {c.enrolled ? <Badge tone="bg-emerald-950 text-emerald-300 border border-emerald-800">enrolled</Badge> : (
@@ -79,7 +79,7 @@ export function CataloguePage({ user: _user }: { user: User }) {
         <Card title={openLesson.title}>
           <div className="flex flex-wrap items-center gap-2">
             <Badge tone={stateTone(openLesson.state)}>{stateLabel(openLesson.state)}</Badge>
-            <span className="text-xs text-slate-500">v{openLesson.version} · ~{openLesson.est_minutes} min</span>
+            <span className="text-xs text-slate-400">v{openLesson.version} · ~{openLesson.est_minutes} min</span>
             <button className="btn-ghost" onClick={async () => { await api.putProgress(openLesson.id, 'open'); setOpenLesson(await api.lesson(openLesson.id)); }}>Mark started</button>
             <button className="btn-ghost" onClick={async () => { await api.putProgress(openLesson.id, 'submit_work'); setOpenLesson(await api.lesson(openLesson.id)); }}>Submit for completion</button>
             <button className="btn-ghost" onClick={async () => { await api.toggleBookmark(openLesson.id); setOpenLesson(await api.lesson(openLesson.id)); }}>
@@ -89,13 +89,13 @@ export function CataloguePage({ user: _user }: { user: User }) {
           <div className="mt-3 space-y-2">
             {openLesson.content.map((block, i) => (
               <div key={i} className="rounded-lg border border-slate-800 p-3 text-sm text-slate-300">
-                <div className="text-xs uppercase text-slate-500">{block.kind}</div>
+                <div className="text-xs uppercase text-slate-400">{block.kind}</div>
                 {block.body ? <p className="mt-1">{block.body}</p> : null}
                 {block.url ? <p className="mt-1 font-mono text-xs text-slate-400">{block.url} {block.note ? `(${block.note})` : ''}</p> : null}
               </div>
             ))}
           </div>
-          <p className="mt-2 text-xs text-slate-500">{openLesson.offline.note}</p>
+          <p className="mt-2 text-xs text-slate-400">{openLesson.offline.note}</p>
           {Object.keys(openLesson.requirements).length > 0 ? (
             <p className="mt-1 text-xs text-amber-300">Completion requires quiz score ≥ {openLesson.requirements.min_quiz_score}%.</p>
           ) : null}
@@ -126,7 +126,7 @@ function LessonList({ courseId, onOpen }: { courseId: number; onOpen: (courseId:
           {m.lessons.map((l) => (
             <button key={l.id} className="mt-1 block w-full rounded-lg border border-slate-800 px-3 py-1.5 text-left text-sm hover:bg-slate-800"
               onClick={() => onOpen(courseId, l.id)}>
-              {l.title} <span className="text-xs text-slate-500">· v{l.version} · ~{l.est_minutes} min</span>
+              {l.title} <span className="text-xs text-slate-400">· v{l.version} · ~{l.est_minutes} min</span>
             </button>
           ))}
         </div>
@@ -137,15 +137,27 @@ function LessonList({ courseId, onOpen }: { courseId: number; onOpen: (courseId:
 
 function NoteForm({ lessonId, onSaved }: { lessonId: number; onSaved: () => void }) {
   const [body, setBody] = useState('');
+  const [blocked, setBlocked] = useState('');
+  const field = useRef<HTMLInputElement>(null);
   return (
-    <form className="mt-2 flex gap-2" onSubmit={async (e) => {
+    <form className="mt-2 flex flex-wrap gap-2" onSubmit={async (e) => {
       e.preventDefault();
+      if (!body.trim()) {
+        // A disabled Save button takes itself out of the tab order and says nothing;
+        // pressing it and being told what is missing is the clearer path.
+        setBlocked('Write the note before saving it.');
+        field.current?.focus();
+        return;
+      }
+      setBlocked('');
       await api.addNote(lessonId, body);
       setBody('');
       onSaved();
     }}>
-      <input className="input flex-1" aria-label="Add a note" placeholder="Add a note…" value={body} onChange={(e) => setBody(e.target.value)} />
-      <button className="btn-primary" disabled={!body.trim()}>Save</button>
+      <input ref={field} className="input flex-1" aria-label="Add a note" placeholder="Add a note…" value={body}
+        onChange={(e) => { setBody(e.target.value); setBlocked(''); }} />
+      <button className="btn-primary">Save</button>
+      {blocked ? <p role="status" className="w-full text-xs text-amber-300">{blocked}</p> : null}
     </form>
   );
 }
@@ -163,7 +175,7 @@ function QuizSection({ lessonId, onDone }: { lessonId: number; onDone: () => voi
     }).catch(() => undefined);
   }, [lessonId]);
 
-  if (!quiz) return <p className="text-xs text-slate-500">No quiz attached to this lesson.</p>;
+  if (!quiz) return <p className="text-xs text-slate-400">No quiz attached to this lesson.</p>;
   return (
     <div>
       <h3 className="mb-2 text-sm font-medium text-slate-300">Lesson quiz</h3>
@@ -265,7 +277,7 @@ export function MyLearningPage() {
               <span>Pending conflicts: <strong>{sync.pending_conflicts}</strong></span>
               <span>Last successful sync: <strong>{sync.last_sync ? new Date(sync.last_sync).toLocaleString() : '—'}</strong></span>
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-slate-400">
               Conflicted offline changes are preserved — choose which version to keep. Nothing is discarded silently.
             </p>
             <ul className="mt-2 space-y-1">

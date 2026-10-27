@@ -5,6 +5,7 @@ import { contactEmails } from '@/config/profile';
 import { Container } from '@/components/ui/Layout';
 import { LinkButton } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
+import { useScrollSpy } from '@/hooks/useScrollSpy';
 import { ThemeControl } from './ThemeControl';
 
 /**
@@ -17,11 +18,18 @@ import { ThemeControl } from './ThemeControl';
  */
 
 const companyNav = [
-  { label: 'What we build', href: '#capabilities' },
-  { label: 'How we work', href: '#principles' },
+  { label: 'What we build', id: 'capabilities' },
+  { label: 'How we work', id: 'principles' },
 ];
 
+const companyNavIds = companyNav.map((item) => item.id);
+
 export function CompanyHeader() {
+  // The header is part of the layout, so it also renders on the company 404. On that
+  // page none of the sections exist, the spy reports nothing, and the links still
+  // resolve — they point at the home page rather than at an anchor that is not here.
+  const activeSection = useScrollSpy(companyNavIds);
+
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-canvas/85 backdrop-blur-md supports-[backdrop-filter]:bg-canvas/70">
       <div className="container-page">
@@ -35,15 +43,23 @@ export function CompanyHeader() {
           </a>
 
           <nav aria-label="Company" className="hidden items-center gap-1 md:flex">
-            {companyNav.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-fg-muted transition-colors hover:text-fg"
-              >
-                {item.label}
-              </a>
-            ))}
+            {companyNav.map((item) => {
+              const current = activeSection === item.id;
+              return (
+                <a
+                  key={item.label}
+                  href={`/#${item.id}`}
+                  aria-current={current ? 'location' : undefined}
+                  className={
+                    current
+                      ? 'rounded-md px-3 py-2 text-sm font-semibold text-fg underline decoration-accent decoration-2 underline-offset-8'
+                      : 'rounded-md px-3 py-2 text-sm font-medium text-fg-muted transition-colors hover:text-fg'
+                  }
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-1.5">

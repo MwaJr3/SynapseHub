@@ -94,6 +94,47 @@ function insideQuotedString(raw, index) {
   return false;
 }
 
+/**
+ * Where does the JSX/HTML tag that starts at `index` end?
+ *
+ * A naive `/<input[^>]*>/` stops at the first `>` — and inside
+ * `onChange={(event) => setValue(event.target.value)}` the first `>` is the arrow
+ * function, not the end of the tag. The truncated fragment then has no
+ * `aria-label` in it, so an accessible input is reported as an unlabelled one.
+ * That is a false positive, and a false positive in an accessibility audit costs
+ * more than a miss: it teaches the reader to disbelieve the tool.
+ *
+ * Returns the index of the closing `>`, or -1.
+ */
+function tagEnd(text, index) {
+  let quote = null;
+  let depth = 0;
+  for (let i = index; i < text.length; i += 1) {
+    const character = text[i];
+    if (quote) {
+      if (character === '\\') { i += 1; continue; }
+      if (character === quote) quote = null;
+      continue;
+    }
+    if (character === '"' || character === "'" || character === '`') { quote = character; continue; }
+    if (character === '{') { depth += 1; continue; }
+    if (character === '}') { depth = Math.max(0, depth - 1); continue; }
+    if (character === '>' && depth === 0 && text[i - 1] !== '=') return i;
+  }
+  return -1;
+}
+
+/** Every opening tag named `name`, with its real extent. */
+function tags(text, name) {
+  const out = [];
+  for (const match of text.matchAll(new RegExp(`<${name}\\b`, 'g'))) {
+    const end = tagEnd(text, match.index);
+    if (end === -1) continue;
+    out.push({ index: match.index, element: text.slice(match.index, end + 1) });
+  }
+  return out;
+}
+
 /** Rule 1 — a removed focus ring with no visible replacement. */
 const focusRingRemoved = {
   id: 'focus-ring-removed',
@@ -169,8 +210,8 @@ const disabledWithoutReason = {
   check(file, text) {
     if (!is(file, 'jsx')) return [];
     const out = [];
-    for (const match of text.matchAll(/<button\b[\s\S]{0,400}?>/g)) {
-      const element = match[0];
+    for (const match of tags(text, 'button')) {
+      const element = match.element;
       const disabled = /disabled=\{([^}]+)\}/.exec(element);
       if (!disabled) continue;
       const expression = disabled[1].trim();
@@ -360,8 +401,8 @@ const unlabelledInput = {
   check(file, text) {
     if (!is(file, 'jsx', 'html')) return [];
     const out = [];
-    for (const match of text.matchAll(/<input\b[^>]*>/g)) {
-      const element = match[0];
+    for (const match of tags(text, 'input')) {
+      const element = match.element;
       if (/type=\{?["']?(hidden|submit|checkbox|radio|file)["']?/.test(element)) continue;
       if (/aria-label|aria-labelledby/.test(element)) continue;
       if (/id=/.test(element) && /<label\b[^>]*htmlFor|<label\b[^>]*for=/.test(text)) continue;
@@ -575,7 +616,14 @@ const paginationNotInUrl = {
   check(file, text) {
     if (!is(file, 'jsx')) return [];
     if (!/useState[^\n]*\bpage\b|setPage\b/.test(text)) return [];
-    if (/useSearchParams|URLSearchParams|location\.hash|location\.search/.test(text)) return [];
+    // The page number has to come from the address bar somehow. Either the file
+    // reads the URL itself (search params, a hash router), or it calls the
+    // repository's `usePageParam` hook, whose job is exactly that — the hook reads
+    // `useSearchParams` and writes `?page=`. Anything else means the number is
+    // living in component state and will be lost on reload.
+    if (/useSearchParams|URLSearchParams|location\.hash|location\.search|\busePageParam\b/.test(text)) {
+      return [];
+    }
     const index = text.search(/useState[^\n]*\bpage\b|setPage\b/);
     return [finding(paginationNotInUrl, file, text, index)];
   },
@@ -598,9 +646,23 @@ const hoverOnlyAction = {
       out.push(finding(hoverOnlyAction, file, text, match.index));
     }
     if (is(file, 'css')) {
-      for (const match of text.matchAll(/opacity\s*:\s*0\s*;/g)) {
-        const block = text.slice(Math.max(0, match.index - 200), match.index + 200);
-        if (!/:hover/.test(block)) continue;
+      // "Hover-*only*" is the claim, so the rule has to look for the escapes before
+      // it reports: an element hidden at rest is fine when it is also revealed by
+      // keyboard (`:focus-within`) and pinned visible where there is no hover
+      // (`@media (hover: none)`). A window of neighbouring characters cannot tell
+      // those apart, so the selector is read and the escapes are searched for.
+      for (const match of text.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+        const selector = match[1].trim();
+        if (!/opacity\s*:\s*0\s*;/.test(match[2])) continue;
+        const className = /\.([a-z0-9-]+)/i.exec(selector)?.[1];
+        if (!className) continue;
+        const escaped = (character) => character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const name = escaped(className);
+        const revealedByHover = new RegExp(`:hover[^{}]*\\.${name}|\\.${name}[^{}]*:hover`).test(text);
+        const revealedByFocus = new RegExp(`:focus(-within)?[^{}]*\\.${name}|\\.${name}[^{}]*:focus`).test(text);
+        const pinnedOnTouch = new RegExp(`@media\\s*\\(hover:\\s*none\\)[\\s\\S]{0,300}\\.${name}`).test(text);
+        if (!revealedByHover && !/:hover/.test(selector)) continue;
+        if (revealedByFocus && pinnedOnTouch) continue;
         out.push(finding(hoverOnlyAction, file, text, match.index));
       }
     }
@@ -756,6 +818,10 @@ const swallowedError = {
       out.push(finding(swallowedError, file, text, match.index));
     }
     for (const match of text.matchAll(/\.catch\(\s*\(?\s*\)?\s*=>\s*\{\s*\}\s*\)/g)) {
+      // Same escape as an empty `catch {}`: a failure that is genuinely ignorable is
+      // allowed to say so in a comment. The comment is the review artefact.
+      const original = raw.slice(match.index, match.index + 240);
+      if (/\/\/[^\n]*\}|\/\*[\s\S]{0,200}?\*\//.test(original)) continue;
       out.push(finding(swallowedError, file, text, match.index));
     }
     return out;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type User } from './api';
 import { HONESTY_NOTICE, severityTone, statusTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
@@ -75,7 +75,7 @@ export function DashboardPage({ user }: { user: User }) {
       </div>
       <Card title="Workflow & honesty">
         <p className="text-sm text-slate-300">{dash.workflow_note}</p>
-        <p className="mt-2 text-xs text-slate-500">{HONESTY_NOTICE}</p>
+        <p className="mt-2 text-xs text-slate-400">{HONESTY_NOTICE}</p>
       </Card>
     </div>
   );
@@ -148,7 +148,7 @@ export function EventsPage({ user }: { user: User }) {
           </table>
         </div>
       )}
-      <p className="text-xs text-slate-500">{HONESTY_NOTICE}</p>
+      <p className="text-xs text-slate-400">{HONESTY_NOTICE}</p>
     </div>
   );
 }
@@ -186,7 +186,7 @@ export function AlertsPage({ user }: { user: User }) {
                     <span className="font-medium">{a.rule_name}</span>
                   </div>
                   <div className="mt-1 text-sm text-slate-300">{a.event.summary}</div>
-                  <div className="mt-1 text-xs text-slate-500">{a.note}</div>
+                  <div className="mt-1 text-xs text-slate-400">{a.note}</div>
                 </div>
                 {canWrite && a.status === 'open' ? (
                   <div className="flex gap-2">
@@ -215,7 +215,7 @@ export function AlertsPage({ user }: { user: User }) {
           ))}
         </div>
       )}
-      <p className="text-xs text-slate-500">{HONESTY_NOTICE}</p>
+      <p className="text-xs text-slate-400">{HONESTY_NOTICE}</p>
     </div>
   );
 }
@@ -231,6 +231,9 @@ export function IncidentsPage({ user }: { user: User }) {
   const [assigneeId, setAssigneeId] = useState('');
   const [users] = useAsync(() => api.users(), []);
   const [actionError, setActionError] = useState('');
+  const [blocked, setBlocked] = useState('');
+  const targetSelect = useRef<HTMLSelectElement>(null);
+  const assigneeSelect = useRef<HTMLSelectElement>(null);
   const canWrite = user.role === 'admin' || user.role === 'analyst';
 
   const open = async (id: number) => {
@@ -259,7 +262,7 @@ export function IncidentsPage({ user }: { user: User }) {
                     <Badge tone={statusTone(inc.status)}>{inc.status}</Badge>
                     <span className="font-medium">{inc.title}</span>
                   </div>
-                  <div className="mt-1 text-xs text-slate-500">
+                  <div className="mt-1 text-xs text-slate-400">
                     assignee: {inc.assignee_name || 'unassigned'}
                     {inc.resolution_note ? ` · resolution: ${inc.resolution_note}` : ''}
                   </div>
@@ -271,7 +274,7 @@ export function IncidentsPage({ user }: { user: User }) {
               {openId === inc.id && detail ? (
                 <div className="mt-4 space-y-3 border-t border-slate-800 pt-3">
                   <p className="text-sm text-slate-300">{detail.description}</p>
-                  <p className="text-xs text-slate-500">{detail.workflow_note}</p>
+                  <p className="text-xs text-slate-400">{detail.workflow_note}</p>
                   {detail.events.length > 0 ? (
                     <div>
                       <h3 className="mb-1 text-sm font-medium text-slate-300">Related events</h3>
@@ -286,7 +289,7 @@ export function IncidentsPage({ user }: { user: User }) {
                   ) : null}
                   {canWrite ? (
                     <div className="grid gap-2 md:grid-cols-4">
-                      <select className="input" aria-label="Transition status" value={target} onChange={(e) => setTarget(e.target.value)}>
+                      <select ref={targetSelect} className="input" aria-label="Transition status" value={target} onChange={(e) => { setTarget(e.target.value); setBlocked(''); }}>
                         <option value="">Transition to…</option>
                         {detail.allowed_transitions.map((s) => (
                           <option key={s} value={s}>
@@ -303,8 +306,13 @@ export function IncidentsPage({ user }: { user: User }) {
                       />
                       <button
                         className="btn-primary"
-                        disabled={!target}
                         onClick={async () => {
+                          if (!target) {
+                            setBlocked('Choose the status to transition to before applying.');
+                            targetSelect.current?.focus();
+                            return;
+                          }
+                          setBlocked('');
                           try {
                             await api.transition(detail.id, target, note);
                             await open(detail.id);
@@ -316,7 +324,7 @@ export function IncidentsPage({ user }: { user: User }) {
                       >
                         Apply
                       </button>
-                      <select className="input md:col-span-2" aria-label="Assignee" value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
+                      <select ref={assigneeSelect} className="input md:col-span-2" aria-label="Assignee" value={assigneeId} onChange={(e) => { setAssigneeId(e.target.value); setBlocked(''); }}>
                         <option value="">Assign to…</option>
                         {(users ?? []).map((u) => (
                           <option key={u.id} value={u.id}>
@@ -326,8 +334,13 @@ export function IncidentsPage({ user }: { user: User }) {
                       </select>
                       <button
                         className="btn-ghost"
-                        disabled={!assigneeId}
                         onClick={async () => {
+                          if (!assigneeId) {
+                            setBlocked('Choose who to assign this incident to before assigning it.');
+                            assigneeSelect.current?.focus();
+                            return;
+                          }
+                          setBlocked('');
                           await api.patchIncident(detail.id, { assignee_id: Number(assigneeId) });
                           await open(detail.id);
                           reload();
@@ -335,9 +348,14 @@ export function IncidentsPage({ user }: { user: User }) {
                       >
                         Assign
                       </button>
+                      {blocked ? (
+                        <p role="alert" className="text-xs text-amber-300 md:col-span-4">
+                          {blocked}
+                        </p>
+                      ) : null}
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-500">Your role is read-only for incidents.</p>
+                    <p className="text-xs text-slate-400">Your role is read-only for incidents.</p>
                   )}
                 </div>
               ) : null}
@@ -361,7 +379,7 @@ export function ReportsPage() {
         <a className="btn-ghost" href="/api/reports/incidents.csv">
           Download incidents CSV
         </a>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           Reports record workflow state and related events. {HONESTY_NOTICE}
         </p>
       </Card>

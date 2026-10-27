@@ -165,6 +165,17 @@ function PromptCard({
     );
   }
 
+  // The button is blocked on content, so the sentence saying what is missing lives
+  // next to it and is announced with it — a disabled control drops out of the tab
+  // order, and its reason has to survive that.
+  const blockedReason = busy
+    ? 'Waiting for the last answer to finish.'
+    : prompt.format === 'multiple_choice' && choice === null
+      ? 'Choose one of the options above to check it.'
+      : prompt.graded_by === 'self' && !revealed && prompt.criteria.length === 0
+        ? 'Write your answer, then ask to see the source lines.'
+        : '';
+
   return (
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -267,9 +278,15 @@ function PromptCard({
           className="btn btn-primary"
           onClick={() => void submit()}
           disabled={busy || (prompt.format === 'multiple_choice' && choice === null) || (prompt.graded_by === 'self' && !revealed && prompt.criteria.length === 0)}
+          aria-describedby={blockedReason ? 'review-blocked-reason' : undefined}
         >
           {busy ? 'Checking…' : 'Check my answer'}
         </button>
+        {blockedReason ? (
+          <p id="review-blocked-reason" className="mt-2 text-xs text-[color:var(--muted)]">
+            {blockedReason}
+          </p>
+        ) : null}
       </div>
     </div>
   );

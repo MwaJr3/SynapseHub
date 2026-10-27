@@ -249,13 +249,16 @@ export function Workspace({ scope }: { scope: Scope }) {
   useEffect(() => { setNewCount(0); }, [list.loadedAt]);
   useEffect(() => {
     if (!watchNew || list.status !== 'ready') return;
-    const check = () => { if (document.visibilityState === 'visible') api.newCount(list.loadedAt).then((r) => setNewCount(r.count)).catch(() => {}); };
+    // An empty catch, deliberately: this is a background count refresh, and a failed
+    // poll leaves the previous number on screen rather than replacing the page with
+    // an error the reader did not ask for. The list itself reports its own failures.
+    const check = () => { if (document.visibilityState === 'visible') api.newCount(list.loadedAt).then((r) => setNewCount(r.count)).catch(() => { /* see above */ }); };
     const id = window.setInterval(check, 60_000);
     return () => window.clearInterval(id);
   }, [watchNew, list.status, list.loadedAt]);
   useEffect(() => {
     if (!watchNew || list.status !== 'ready' || refresher.tick === 0) return;
-    api.newCount(list.loadedAt).then((r) => setNewCount(r.count)).catch(() => {});
+    api.newCount(list.loadedAt).then((r) => setNewCount(r.count)).catch(() => { /* background count; see above */ });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresher.tick]);
 

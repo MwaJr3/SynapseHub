@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 export function Badge({ tone, children }: { tone: string; children: ReactNode }) {
   return <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${tone}`}>{children}</span>;
@@ -93,6 +93,14 @@ export function ConfirmButton({
 }) {
   const [armed, setArmed] = useState(false);
   const [busy, setBusy] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  // The safe option takes focus once the confirmation is on screen. The popover only
+  // mounts after a click, so this is user-initiated; an effect is used instead of
+  // autoFocus so focus lands after layout, when the popover can actually be measured.
+  useEffect(() => {
+    if (armed) cancelRef.current?.focus();
+  }, [armed]);
 
   if (!armed) {
     return (
@@ -121,8 +129,7 @@ export function ConfirmButton({
       >
         {busy ? 'Working…' : label}
       </button>
-      {/* eslint-disable-next-line jsx-a11y/no-autofocus -- the safe option takes focus by design */}
-      <button type="button" className="btn-ghost" autoFocus onClick={() => setArmed(false)}>
+      <button ref={cancelRef} type="button" className="btn-ghost" onClick={() => setArmed(false)}>
         Cancel
       </button>
     </span>

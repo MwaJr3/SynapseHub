@@ -372,7 +372,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 </Badge>
               </li>
             ))}
-            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-500">No grades recorded.</li> : null}
+            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-400">No grades recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form
@@ -408,7 +408,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 <Badge tone={attendanceTone(r.status)}>{r.status}</Badge>
               </li>
             ))}
-            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-500">No attendance recorded.</li> : null}
+            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-400">No attendance recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form

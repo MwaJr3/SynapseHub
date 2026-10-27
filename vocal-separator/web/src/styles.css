@@ -319,12 +319,16 @@ a {
   margin-top: 16px;
 }
 
+/* A disabled control still has to be readable: opacity fades the label below 4.5:1,
+   which hides the reason a person is blocked. Muted tokens instead. */
 .button:disabled,
 .chip-button:disabled,
 .project-card:disabled,
 .file-row:disabled,
 .job-row:disabled {
-  opacity: 0.48;
+  background: var(--panel-2);
+  border-color: var(--line);
+  color: var(--muted);
   cursor: not-allowed;
 }
 

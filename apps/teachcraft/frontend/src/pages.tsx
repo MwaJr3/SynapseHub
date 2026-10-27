@@ -82,7 +82,7 @@ export function LessonsPage({ user }: { user: User }) {
                 <div>
                   <span className="font-medium">{l.title}</span>{' '}
                   <Badge tone={workflowTone(l.status)}>{l.status}</Badge>{' '}
-                  <span className="text-xs text-slate-500">v{l.version}</span>
+                  <span className="text-xs text-slate-400">v{l.version}</span>
                   <div className="text-xs text-slate-400">{l.objective}</div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -113,7 +113,7 @@ export function LessonsPage({ user }: { user: User }) {
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-1 text-xs text-slate-500">Restoring creates a new version — history is never rewritten.</p>
+                    <p className="mt-1 text-xs text-slate-400">Restoring creates a new version — history is never rewritten.</p>
                   </div>
                   <div>
                     <h3 className="mb-1 text-sm font-medium text-slate-300">Reviewer comments</h3>
@@ -132,7 +132,7 @@ export function LessonsPage({ user }: { user: User }) {
                       <button className="btn-ghost">Add</button>
                     </form>
                   </div>
-                  <p className="text-xs text-slate-500">{EXPORT_NOTE}</p>
+                  <p className="text-xs text-slate-400">{EXPORT_NOTE}</p>
                 </div>
               ) : null}
             </div>

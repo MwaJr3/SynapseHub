@@ -110,7 +110,16 @@ test('nothing in the plugin reads credentials or environment secrets', () => {
     return found;
   };
   const variables = new Set(walk(root));
-  assert.deepEqual([...variables], ['NORTHSTAR_ALLOW_GIT'], 'the only environment variable read is the documented override');
+  // Both are documented escape hatches, and both are opt-in flags rather than
+  // configuration: `NORTHSTAR_ALLOW_GIT=1` lets the guard permit a git command, and
+  // `NORTHSTAR_SKIP=1` lets one commit past the pre-commit gate. Neither reads a
+  // value the engine could leak, and nothing here reads a token, a key or a path to
+  // one. A new variable has to be justified by editing this list.
+  assert.deepEqual(
+    [...variables].sort(),
+    ['NORTHSTAR_ALLOW_GIT', 'NORTHSTAR_SKIP'],
+    'the only environment variables read are the documented overrides',
+  );
 });
 
 test('the engine never writes outside the paths it is asked to write', () => {

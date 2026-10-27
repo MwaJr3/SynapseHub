@@ -189,7 +189,109 @@ export function discoverProjects(repoRoot) {
     }
   }
 
+  // 6. Everything else that renders, discovered by shape rather than by name.
+  // `frontend/` and `web/` are containers, not products: naming the parent makes
+  // the report read `vocal-separator`, which is what a person calls it.
+  const known = projects.map((project) => project.root);
+  for (const candidate of genericUiRoots(repoRoot, { covered: known })) {
+    // A server-rendered product is registered by its `app/` directory, which the
+    // generic pass would otherwise meet again as a directory in its own right.
+    if (known.some((root) => path.resolve(root) === path.resolve(candidate.directory))) continue;
+    const relative = path.relative(repoRoot, candidate.directory).split(path.sep).join('/');
+    if (!relative) continue;
+    const parent = path.posix.dirname(relative);
+    const base = path.posix.basename(relative);
+    const name = (base === 'frontend' || base === 'web') && parent !== '.' ? parent : relative;
+    if (projects.some((project) => project.name === name)) continue;
+    projects.push({
+      name,
+      root: candidate.directory,
+      kind: candidate.kind,
+      exclude: [],
+      surface: surfaceFor(candidate.directory),
+    });
+  }
+
+  // The root project owns everything that is not another project. Once the generic
+  // pass has added a directory that used to be inside it, that directory must leave
+  // the root's walk — otherwise `vocal-separator` is audited twice and its two
+  // findings become four in the totals.
+  const rootProject = projects.find((project) => project.name === '.');
+  if (rootProject) {
+    const topLevel = projects
+      .filter((project) => project !== rootProject)
+      .map((project) => path.relative(repoRoot, project.root).split(path.sep)[0])
+      .filter((segment) => segment && segment !== '..');
+    rootProject.exclude = [...new Set([...(rootProject.exclude ?? []), ...topLevel])];
+  }
+
   return projects;
+}
+
+/**
+ * UI roots the named rules did not anticipate.
+ *
+ * The list above knows the shapes this repository had when it was written. A UX
+ * engine that only audits the projects someone remembered to register is worse
+ * than none, because the gap is invisible: the report says "0 defects" and means
+ * "0 defects in the 38 projects I looked at". This pass walks the tree and finds
+ * anything that renders — a Vite app with `src/App.tsx`, a Next app-router tree,
+ * a `web/` or `frontend/` directory beside a backend — so a new product is
+ * covered on the day it is added rather than on the day someone notices.
+ *
+ * Roots already known by name are passed in as `covered` and skipped, so nothing
+ * is reported twice and the established project names stay stable.
+ *
+ * @param {string} repoRoot
+ * @param {{ maxDepth?: number, covered?: string[] }} [options]
+ */
+export function genericUiRoots(repoRoot, options = {}) {
+  const { maxDepth = 5, covered = [] } = options;
+  const root = path.resolve(repoRoot);
+  const coveredRoots = new Set(covered.map((entry) => path.resolve(entry)));
+  const found = [];
+  const stack = [{ directory: root, depth: 0 }];
+  const skip = new Set([...SKIP_DIRS, 'fixtures', 'northstar-ux-engine', '.github', 'docs']);
+
+  while (stack.length) {
+    const { directory, depth } = stack.pop();
+    const resolved = path.resolve(directory);
+    if (depth > 0 && coveredRoots.has(resolved)) continue;
+    if (depth >= maxDepth) continue;
+
+    let entries;
+    try {
+      entries = fs.readdirSync(directory, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+
+    if (depth > 0) {
+      const has = (relative) => fs.existsSync(path.join(directory, relative));
+      if (has('src/App.tsx') || has('src/main.tsx') || has('src/App.jsx') || has('src/main.jsx')) {
+        found.push({ directory, kind: 'react-spa' });
+        continue;
+      }
+      if (has('src/app/page.tsx') || has('src/app/layout.tsx')) {
+        found.push({ directory, kind: 'next-app' });
+        continue;
+      }
+      if (has('app/main.py')) {
+        const main = path.join(directory, 'app/main.py');
+        if (/<(html|body|div|form|table|h1|p)\b/i.test(fs.readFileSync(main, 'utf8'))) {
+          found.push({ directory: path.join(directory, 'app'), kind: 'server-rendered' });
+          continue;
+        }
+      }
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (skip.has(entry.name) || entry.name.startsWith('.')) continue;
+      stack.push({ directory: path.join(directory, entry.name), depth: depth + 1 });
+    }
+  }
+  return found;
 }
 
 /**

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Northstar UX engine configuration",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "gate": {
+      "description": "Lowest severity that fails `northstar check`. P1 fails on anything at P1 or above.",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "default": "P1"
+    },
+    "ignore": {
+      "description": "Project names (or name prefixes) the engine should not audit. There is deliberately no way to disable an individual rule: a repository must not be able to go green by editing JSON.",
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "report": {
+      "description": "Where `northstar audit --out` writes the generated report when CI checks it is up to date.",
+      "type": "string",
+      "default": "docs/ux/audit-repository.md"
+    }
+  }
+}

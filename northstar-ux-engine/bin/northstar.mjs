@@ -2,12 +2,17 @@
 /**
  * `northstar` — the engine's command line.
  *
- * Four verbs, matching the four slash commands:
+ * Seven verbs. The first four match the slash commands; the last three are what
+ * make the engine a background fixer rather than a report someone has to remember
+ * to read:
  *
- *   audit  [path]   scan one project or the whole repository, write a report
- *   review [path]   scan only the files changed against a git ref (read-only)
- *   check  [path]   exit non-zero if any defect at or above a severity exists
+ *   audit   [path]  scan one project or the whole repository, write a report
+ *   review  [path]  scan only the files changed against a git ref (read-only)
+ *   check   [path]  exit non-zero if any defect at or above a severity exists
  *   patterns        print the pattern index the skills reference
+ *   fix     [path]  apply the mechanical fixes, verify each one, refuse the rest
+ *   watch   [path]  re-audit on save; with --fix, re-fix too
+ *   hooks           install the pre-commit gate that runs `fix` then `check`
  *
  * No dependency outside Node's standard library, so the plugin works in a fresh
  * clone with no install step and no network.
@@ -19,12 +24,17 @@ import { execFileSync } from 'node:child_process';
 import { discoverProjects, detectSurface, scanProject, scanRepository } from '../engine.mjs';
 import { renderReport } from '../report.mjs';
 import { PATTERNS } from '../patterns.mjs';
+import { REFUSALS, contextFor, fixFile, isFixable, planFix } from '../fixer.mjs';
+import { applyIgnore, loadConfig } from '../config.mjs';
 
 const SEVERITIES = ['P0', 'P1', 'P2', 'P3'];
 
 function parseArguments(argv) {
   const [verb = 'audit', ...rest] = argv;
-  const options = { verb, target: '.', out: null, json: null, minSeverity: 'P3', ref: 'HEAD', quiet: false };
+  const options = {
+    verb, target: '.', out: null, json: null, minSeverity: 'P3', ref: 'HEAD', quiet: false,
+    dryRun: false, only: null, maxRounds: 3, fix: false,
+  };
   for (let index = 0; index < rest.length; index += 1) {
     const argument = rest[index];
     if (argument === '--out') options.out = rest[++index];
@@ -32,6 +42,10 @@ function parseArguments(argv) {
     else if (argument === '--min') options.minSeverity = rest[++index];
     else if (argument === '--ref') options.ref = rest[++index];
     else if (argument === '--quiet') options.quiet = true;
+    else if (argument === '--dry-run') options.dryRun = true;
+    else if (argument === '--fix') options.fix = true;
+    else if (argument === '--only') options.only = rest[++index];
+    else if (argument === '--max-rounds') options.maxRounds = Number(rest[++index]) || 3;
     else options.target = argument;
   }
   if (!SEVERITIES.includes(options.minSeverity)) {
@@ -50,7 +64,8 @@ function parseArguments(argv) {
 function projectsFor(target) {
   const root = path.resolve(target);
   if (!fs.existsSync(root)) throw new Error(`No such path: ${target}`);
-  const discovered = discoverProjects(process.cwd());
+  const config = loadConfig();
+  const discovered = applyIgnore(discoverProjects(process.cwd()), config);
   const exact = discovered.find((project) => path.resolve(project.root) === root);
   if (exact) return [exact];
   const inside = discovered.filter((project) => {
@@ -83,13 +98,124 @@ function changedFiles(ref) {
     .map((file) => path.resolve(file));
 }
 
+/**
+ * `fix` — apply what can be applied safely, and say plainly what could not be.
+ *
+ * The loop matters: a fix can reveal another (a new text colour makes a pair fail
+ * elsewhere), so the scan is repeated until a round changes nothing. Every edit is
+ * verified inside `fixFile`, so the numbers printed here are counts of findings that
+ * are demonstrably gone, not counts of edits attempted.
+ */
+async function runFix(options) {
+  const { fixFile: applyFix } = await import('../fixer.mjs');
+  const projects =
+    path.resolve(options.target) === path.resolve('.')
+      ? applyIgnore(discoverProjects(process.cwd()), loadConfig())
+      : projectsFor(options.target);
+  const threshold = SEVERITIES.indexOf(options.minSeverity);
+  const fixed = [];
+  const refused = new Map();
+  const touched = new Set();
+
+  for (const project of projects) {
+    let remaining = null;
+    const rounds = options.dryRun ? 1 : options.maxRounds;
+    for (let round = 0; round < rounds; round += 1) {
+      const scanned = scanProject(project);
+      const findings = scanned.findings.filter(
+        (finding) =>
+          SEVERITIES.indexOf(finding.severity) <= threshold && (!options.only || finding.id === options.only),
+      );
+      if (!findings.length) {
+        remaining = scanned.findings;
+        break;
+      }
+      let changedThisRound = 0;
+      const byFile = new Map();
+      for (const finding of findings) {
+        if (!byFile.has(finding.file)) byFile.set(finding.file, []);
+        byFile.get(finding.file).push(finding);
+      }
+      for (const [relPath, fileFindings] of byFile) {
+        const absolute = path.join(project.root, relPath);
+        if (!fs.existsSync(absolute)) {
+          for (const finding of fileFindings) {
+            refused.set(finding.id, (refused.get(finding.id) ?? 0) + 1);
+          }
+          continue;
+        }
+        const raw = fs.readFileSync(absolute, 'utf8');
+        const result = applyFix({
+          absolute,
+          context: contextFor(project, relPath, raw),
+          findings: fileFindings,
+          dryRun: options.dryRun,
+          kind: project.kind,
+        });
+        for (const entry of result.applied) {
+          changedThisRound += 1;
+          touched.add(path.relative(process.cwd(), absolute));
+          fixed.push({ project: project.name, ...entry });
+        }
+        for (const entry of result.refused) {
+          refused.set(entry.finding.id, (refused.get(entry.finding.id) ?? 0) + 1);
+          if (!refused.has(`${entry.finding.id}\u0000${entry.reason}`)) {
+            refused.set(`${entry.finding.id}\u0000${entry.reason}`, entry.reason);
+          }
+        }
+      }
+      if (!changedThisRound) {
+        remaining = scanned.findings;
+        break;
+      }
+    }
+    if (remaining === null) remaining = scanProject(project).findings;
+    project.remaining = remaining;
+  }
+
+  const after = projects.reduce(
+    (total, project) => total + (project.remaining ?? []).filter((finding) => SEVERITIES.indexOf(finding.severity) <= threshold).length,
+    0,
+  );
+  const lines = [];
+  lines.push(`# UX fixer ${options.dryRun ? '(dry run) ' : ''}· ${projects.length} projects`);
+  lines.push('');
+  lines.push(`${fixed.length} finding(s) ${options.dryRun ? 'would be fixed' : 'fixed'}, ${after} remain at ${options.minSeverity} or above.`);
+  if (touched.size) {
+    lines.push('');
+    lines.push('## Files changed');
+    for (const file of [...touched].sort()) lines.push(`- ${file}`);
+  }
+  if (fixed.length) {
+    lines.push('');
+    lines.push('## What changed');
+    const byRule = new Map();
+    for (const entry of fixed) byRule.set(entry.finding.id, (byRule.get(entry.finding.id) ?? 0) + 1);
+    for (const [rule, count] of [...byRule].sort((a, b) => b[1] - a[1])) lines.push(`- ${count} × ${rule}`);
+  }
+  const reasons = [...refused.entries()].filter(([, value]) => typeof value === 'string');
+  if (reasons.length) {
+    lines.push('');
+    lines.push('## Left for a person');
+    for (const [key, reason] of reasons) {
+      const rule = key.split('\u0000')[0];
+      const count = refused.get(rule) ?? 0;
+      lines.push(`- **${rule}** (${count}): ${reason}`);
+    }
+  }
+  const text = `${lines.join('\n')}\n`;
+  writeIfRequested(options.out, text);
+  if (!options.quiet) process.stdout.write(text);
+  return 0;
+}
+
 function writeIfRequested(file, contents) {
   if (!file) return;
   fs.mkdirSync(path.dirname(path.resolve(file)), { recursive: true });
   fs.writeFileSync(file, contents, 'utf8');
 }
 
-function main(argv) {
+async function main(argv) {
   const options = parseArguments(argv);
 
   if (options.verb === 'patterns') {
@@ -113,9 +239,28 @@ function main(argv) {
     return 0;
   }
 
+  if (options.verb === 'hooks') {
+    const { installHooks } = await import('../hooks/install.mjs');
+    return installHooks(process.cwd(), options.target);
+  }
+
+  if (options.verb === 'fix') {
+    return runFix(options);
+  }
+
+  if (options.verb === 'watch') {
+    const { watch } = await import('../hooks/watch.mjs');
+    return watch(projectsFor(options.target), options);
+  }
+
   if (options.verb === 'check') {
-    const report = scanRepository(process.cwd());
-    const threshold = SEVERITIES.indexOf(options.minSeverity);
+    const config = loadConfig();
+    // A gate set in the repository's config is the repository's decision; an explicit
+    // `--min` on the command line still wins, so CI can be stricter than the default.
+    const effective = options.minSeverity === 'P3' ? config.gate : options.minSeverity;
+    const threshold = SEVERITIES.indexOf(effective);
+    const report = { projects: applyIgnore(discoverProjects(process.cwd()), config).map((project) => scanProject(project)) };
+    report.projectCount = report.projects.length;
     const failing = report.projects
       .flatMap((project) => project.findings.map((finding) => ({ ...finding, project: project.name })))
       .filter((finding) => SEVERITIES.indexOf(finding.severity) <= threshold);
@@ -123,7 +268,7 @@ function main(argv) {
       process.stderr.write(`${finding.severity} ${finding.project} ${finding.file}:${finding.line} ${finding.title}\n`);
     }
     process.stdout.write(
-      `${failing.length} defect(s) at ${options.minSeverity} or above across ${report.projectCount} projects\n`,
+      `${failing.length} defect(s) at ${effective} or above across ${report.projectCount} projects\n`,
     );
     return failing.length ? 1 : 0;
   }
@@ -131,7 +276,9 @@ function main(argv) {
   // `audit`: one target, a tree of projects, or the whole repository.
   const isRoot = path.resolve(options.target) === path.resolve('.');
   const targets = isRoot ? null : projectsFor(options.target);
-  const projects = targets ? targets.map((project) => scanProject(project)) : scanRepository(process.cwd()).projects;
+  const projects = targets
+    ? targets.map((project) => scanProject(project))
+    : applyIgnore(discoverProjects(process.cwd()), loadConfig()).map((project) => scanProject(project));
   const report = { projectCount: projects.length, projects };
   const label = isRoot ? 'repository' : targets.length === 1 ? targets[0].name : `${options.target} (${targets.length} projects)`;
   const text = renderReport(report, { title: `UX audit · ${label}` });
@@ -142,7 +289,7 @@ function main(argv) {
 }
 
 try {
-  process.exitCode = main(process.argv.slice(2));
+  process.exitCode = await main(process.argv.slice(2));
 } catch (error) {
   process.stderr.write(`northstar: ${error.message}\n`);
   process.exitCode = 2;

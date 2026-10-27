@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type User } from './api';
 import { FAIRNESS_NOTE, flagTone } from './utils';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
@@ -57,7 +57,7 @@ export function DashboardPage() {
               </ul>
             )}
           </Card>
-          <p className="text-xs text-slate-500">{dash.note}</p>
+          <p className="text-xs text-slate-400">{dash.note}</p>
         </>
       )}
     </div>
@@ -68,23 +68,34 @@ export function ImportPage() {
   const [csv, setCsv] = useState('');
   const [result, setResult] = useState<{ rows_ok: number; rows_rejected: number; rejected: { line: number; reason: string }[] } | null>(null);
   const [error, setError] = useState('');
+  const [blocked, setBlocked] = useState('');
+  const csvField = useRef<HTMLTextAreaElement>(null);
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Data import</h1>
       {error ? <ErrorBanner message={error} /> : null}
       <Card title="Import learning events (CSV)">
-        <p className="mb-2 text-xs text-slate-500">
+        <p className="mb-2 text-xs text-slate-400">
           Required columns: uid, occurred_at, kind, learner_ref. Optional: course, class_name, topic, assessment, value.
           Re-importing the same file is idempotent — duplicate rows are rejected with reasons, not double-counted.
         </p>
-        <textarea className="input h-48 font-mono text-xs" aria-label="Bulk learner CSV data" placeholder="uid,occurred_at,kind,learner_ref,…"
-          value={csv} onChange={(e) => setCsv(e.target.value)} />
-        <button className="btn-primary mt-2" disabled={!csv.trim()} onClick={async () => {
+        <textarea ref={csvField} className="input h-48 font-mono text-xs" aria-label="Bulk learner CSV data" placeholder="uid,occurred_at,kind,learner_ref,…"
+          value={csv} onChange={(e) => { setCsv(e.target.value); setBlocked(''); }} />
+        <button className="btn-primary mt-2" onClick={async () => {
+          if (!csv.trim()) {
+            // The import runs on what is in the box; an empty box is a missing input,
+            // so say which one instead of disabling the button and saying nothing.
+            setBlocked('Paste the CSV rows to import, then press Import.');
+            csvField.current?.focus();
+            return;
+          }
+          setBlocked('');
           setError('');
           try {
             setResult(await api.importCsv('upload.csv', csv));
           } catch (err) { setError(err instanceof ApiError ? err.message : 'Import failed.'); }
         }}>Import</button>
+        {blocked ? <p role="status" className="mt-2 text-xs text-amber-300">{blocked}</p> : null}
         {result ? (
           <div className="mt-3 rounded-lg border border-slate-700 p-3 text-sm">
             <div>Accepted: <strong>{result.rows_ok}</strong> · Rejected: <strong>{result.rows_rejected}</strong></div>
@@ -115,7 +126,7 @@ export function FlagsPage() {
         setMessage(`${result.created} new flag(s). ${result.note}`);
         reload();
       }}>Run flag rules</button>
-      <p className="text-xs text-slate-500">{FAIRNESS_NOTE}</p>
+      <p className="text-xs text-slate-400">{FAIRNESS_NOTE}</p>
       {!flags ? <Loading /> : flags.length === 0 ? (
         <EmptyState title="No flags" hint="Run the rules after importing events." />
       ) : (
@@ -127,10 +138,10 @@ export function FlagsPage() {
                   <div className="flex items-center gap-2">
                     <Badge tone={flagTone(f.status)}>{f.status}</Badge>
                     <span className="font-medium">{f.rule_key}</span>
-                    <span className="text-xs text-slate-500">learner: {f.learner_ref}</span>
+                    <span className="text-xs text-slate-400">learner: {f.learner_ref}</span>
                   </div>
                   <p className="mt-1 text-xs text-slate-400">{f.evidence.rule}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     Evidence: {f.evidence.count ? `${f.evidence.count} events` : ''} {f.evidence.topic ? `· topic ${f.evidence.topic}` : ''} · ids: {(f.evidence.event_uids ?? []).join(', ')}
                   </p>
                 </div>
