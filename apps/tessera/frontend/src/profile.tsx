@@ -4,6 +4,8 @@ import {
   api,
   ApiError,
   type Assessment,
+  type AssessmentDiffRow,
+  type AssessmentDiffSummary,
   type AssessmentScore,
   type CoreAxis,
   type Instrument,
@@ -55,6 +57,14 @@ export function buildScores(
 export function ProfilePage() {
   const { data, error, loading, reload } = useAsync<ProfileResponse>(() => api.profile());
   const [notice, setNotice] = useState<string | null>(null);
+  //: Kept on the page rather than in the row: the row that was reassessed becomes
+  //: a retired one after the reload, and a diff that disappears is not a record.
+  const [reassessment, setReassessment] = useState<{
+    priorLabel: string;
+    assessmentId: string;
+    diff: AssessmentDiffRow[];
+    summary: AssessmentDiffSummary;
+  } | null>(null);
 
   if (loading) return <Loading label="Reading your profile" />;
   if (error) return <ErrorNote message={error} onRetry={reload} />;
@@ -161,7 +171,14 @@ export function ProfilePage() {
           <h3 className="text-sm font-semibold">Assessments on record ({live.length})</h3>
           <ul className="mt-3 space-y-4">
             {live.map((assessment) => (
-              <AssessmentRow key={assessment.id} assessment={assessment} onChanged={reload} onNotice={setNotice} />
+              <AssessmentRow
+                key={assessment.id}
+                assessment={assessment}
+                instrument={data.instruments.find((candidate) => candidate.id === assessment.instrument) ?? null}
+                onChanged={reload}
+                onReassessed={setReassessment}
+                onNotice={setNotice}
+              />
             ))}
           </ul>
           <BaselineButton
@@ -178,6 +195,21 @@ export function ProfilePage() {
         </Card>
       )}
 
+      {reassessment ? (
+        <Card>
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 className="text-sm font-semibold">Reassessment of “{reassessment.priorLabel}”</h3>
+            <button type="button" className="text-xs underline" onClick={() => setReassessment(null)}>
+              Dismiss
+            </button>
+          </div>
+          <DiffTable rows={reassessment.diff} summary={reassessment.summary} />
+          <p className={`mt-2 text-xs ${muted}`}>
+            The earlier submission is in the history above, marked as reassessed rather than deleted.
+          </p>
+        </Card>
+      ) : null}
+
       {retired.length > 0 ? (
         <Card>
           <h3 className="text-sm font-semibold">Retired ({retired.length})</h3>
@@ -189,7 +221,7 @@ export function ProfilePage() {
               <li key={assessment.id} className="rounded-md border p-3 text-sm" style={{ borderColor: 'var(--line)' }}>
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <span className="font-medium">{assessment.label}</span>
-                  <Badge>retired</Badge>
+                  <Badge>{assessment.replaced_by ? 'reassessed' : 'retired'}</Badge>
                 </div>
                 <p className={`mt-1 ${muted}`}>
                   {assessment.archive_reason || 'No reason recorded.'} · entered {assessment.created_at.slice(0, 10)}
@@ -253,16 +285,104 @@ function AxisGroup({ title, axes }: { title: string; axes: CoreAxis[] }) {
   );
 }
 
+function initialNumbers(assessment: Assessment): Record<string, string> {
+  const numbers: Record<string, string> = {};
+  for (const score of assessment.scores) {
+    if (score.value !== null) numbers[`${score.axis}/${score.name}`] = String(score.value);
+  }
+  return numbers;
+}
+
+function initialLabels(assessment: Assessment): Record<string, string> {
+  const labels: Record<string, string> = {};
+  for (const score of assessment.scores) {
+    if (score.value_label) labels[`${score.axis}/${score.name}`] = score.value_label;
+  }
+  return labels;
+}
+
+const DIRECTION_TEXT: Record<AssessmentDiffRow['direction'], string> = {
+  up: 'higher',
+  down: 'lower',
+  same: 'unchanged',
+  new: 'newly supplied',
+  missing: 'still not supplied',
+  not_supplied: 'withdrawn',
+};
+
+function DiffTable({ rows, summary }: { rows: AssessmentDiffRow[]; summary: AssessmentDiffSummary }) {
+  return (
+    <div className="mt-3">
+      <p className="text-xs font-medium">
+        {summary.moved} of {summary.axes} axes changed
+        {summary.mean_delta === null ? '' : ` · mean change ${summary.mean_delta > 0 ? '+' : ''}${summary.mean_delta}`}
+      </p>
+      <table className="mt-2 w-full text-left text-xs">
+        <caption className="sr-only">What changed between the two submissions</caption>
+        <thead className="text-[color:var(--muted)]">
+          <tr>
+            <th scope="col" className="py-1">
+              Axis
+            </th>
+            <th scope="col" className="py-1">
+              Before
+            </th>
+            <th scope="col" className="py-1">
+              Now
+            </th>
+            <th scope="col" className="py-1">
+              Change
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={`${row.axis}/${row.name}`} className="border-t" style={{ borderColor: 'var(--line)' }}>
+              <th scope="row" className="py-1 font-normal">
+                {row.name.replace(/_/g, ' ')}
+              </th>
+              <td className="py-1 tabular-nums">
+                {row.previous === null ? (row.previous_label || 'not supplied') : row.previous}
+              </td>
+              <td className="py-1 tabular-nums">
+                {row.value === null ? (row.new_label || 'not supplied') : row.value}
+              </td>
+              <td className="py-1">
+                {DIRECTION_TEXT[row.direction]}
+                {row.delta === null ? '' : ` (${row.delta > 0 ? '+' : ''}${row.delta})`}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className={`mt-2 text-xs ${muted}`}>{summary.note}</p>
+    </div>
+  );
+}
+
 function AssessmentRow({
   assessment,
+  instrument,
   onChanged,
+  onReassessed,
   onNotice,
 }: {
   assessment: Assessment;
+  instrument: Instrument | null;
   onChanged: () => void;
+  onReassessed: (result: {
+    priorLabel: string;
+    assessmentId: string;
+    diff: AssessmentDiffRow[];
+    summary: AssessmentDiffSummary;
+  }) => void;
   onNotice: (message: string) => void;
 }) {
   const [retiring, setRetiring] = useState(false);
+  const [reassessing, setReassessing] = useState(false);
+  const [numbers, setNumbers] = useState<Record<string, string>>(() => initialNumbers(assessment));
+  const [labels, setLabels] = useState<Record<string, string>>(() => initialLabels(assessment));
+  const [administeredOn, setAdministeredOn] = useState(assessment.administered_on);
   const [reason, setReason] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -282,6 +402,40 @@ function AssessmentRow({
     }
   };
 
+  const submitReassessment = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    if (!instrument) {
+      setError('The instrument definition is missing, so the axes cannot be shown. Reload the profile.');
+      return;
+    }
+    const { scores, error: invalid } = buildScores(instrument, numbers, labels);
+    if (invalid) {
+      setError(invalid);
+      return;
+    }
+    setPending(true);
+    try {
+      const result = await api.reassessAssessment(assessment.id, {
+        administered_on: administeredOn,
+        scores,
+      });
+      onReassessed({
+        priorLabel: assessment.label,
+        assessmentId: result.assessment.id,
+        diff: result.diff,
+        summary: result.summary,
+      });
+      setReassessing(false);
+      onNotice('Reassessment recorded. The earlier submission is kept as superseded, not deleted.');
+      onChanged();
+    } catch (cause) {
+      setError(cause instanceof ApiError ? cause.message : 'The request failed.');
+    } finally {
+      setPending(false);
+    }
+  };
+
   return (
     <li className="rounded-md border p-3" style={{ borderColor: 'var(--line)' }}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -291,6 +445,10 @@ function AssessmentRow({
           {assessment.administered_on ? ` · ${assessment.administered_on}` : ' · date not recorded'}
         </span>
       </div>
+
+      {assessment.supersedes_id ? (
+        <p className={`mt-1 text-xs ${muted}`}>A reassessment of an earlier submission. Both are kept.</p>
+      ) : null}
 
       <div className="mt-2 flex flex-wrap gap-1">
         {assessment.scores.map((score) => (
@@ -320,7 +478,7 @@ function AssessmentRow({
         </p>
       ) : null}
 
-      {error ? <p className="mt-2 text-xs" style={{ color: 'var(--bad)' }}>{error}</p> : null}
+      {error ? <p className="mt-2 text-xs" style={{ color: 'var(--bad)' }} role="alert">{error}</p> : null}
 
       {retiring ? (
         <div className="mt-3 space-y-2">
@@ -345,11 +503,89 @@ function AssessmentRow({
             </button>
           </div>
         </div>
-      ) : (
-        <button type="button" className="mt-3 text-xs underline" onClick={() => setRetiring(true)}>
-          Retire this assessment
-        </button>
-      )}
+      ) : null}
+
+      {reassessing ? (
+        <form
+          className="mt-3 space-y-3 rounded border p-3"
+          style={{ borderColor: 'var(--line)' }}
+          aria-label={`Reassess ${assessment.label}`}
+          onSubmit={(event) => void submitReassessment(event)}
+        >
+          <p className="text-xs">
+            Record a newer result for the same instrument. The earlier submission is archived as superseded and
+            stays readable; nothing is overwritten.
+          </p>
+          {instrument ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {instrument.axes.map((axis) => {
+                const key = `${axis.axis}/${axis.name}`;
+                return (
+                  <label key={key} className="flex items-center justify-between gap-3 text-xs">
+                    <span>{axis.label}</span>
+                    <input
+                      aria-label={axis.label}
+                      className="w-24 rounded border p-1 text-right text-sm tabular-nums"
+                      style={{ borderColor: 'var(--line)' }}
+                      type={instrument.value_kind === 'label' ? 'text' : 'number'}
+                      step={instrument.value_kind === 'label' ? undefined : 'any'}
+                      min={instrument.value_kind === 'label' ? undefined : (instrument.scale_min ?? 0)}
+                      max={instrument.value_kind === 'label' ? undefined : (instrument.scale_max ?? 100)}
+                      value={instrument.value_kind === 'label' ? (labels[key] ?? '') : (numbers[key] ?? '')}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        if (instrument.value_kind === 'label') {
+                          setLabels((current) => ({ ...current, [key]: value }));
+                        } else {
+                          setNumbers((current) => ({ ...current, [key]: value }));
+                        }
+                      }}
+                    />
+                  </label>
+                );
+              })}
+            </div>
+          ) : null}
+          <div>
+            <label className="block text-xs" htmlFor={`reassess-date-${assessment.id}`}>
+              Date taken (optional)
+            </label>
+            <input
+              id={`reassess-date-${assessment.id}`}
+              type="date"
+              className="mt-1 w-full rounded border p-2 text-sm sm:w-56"
+              style={{ borderColor: 'var(--line)' }}
+              value={administeredOn}
+              onChange={(event) => setAdministeredOn(event.target.value)}
+            />
+          </div>
+          <p className={`text-xs ${muted}`}>
+            A blank field is recorded as “not supplied”, never as zero. Pre-filled values are the ones already on
+            record.
+          </p>
+          <div className="flex gap-2">
+            <button type="submit" className="btn" disabled={pending}>
+              {pending ? 'Recording…' : 'Record the reassessment'}
+            </button>
+            <button type="button" className="btn" onClick={() => setReassessing(false)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+      ) : null}
+
+      <div className="mt-3 flex flex-wrap gap-3 text-xs">
+        {!reassessing ? (
+          <button type="button" className="underline" onClick={() => setReassessing(true)}>
+            Reassess this
+          </button>
+        ) : null}
+        {!retiring ? (
+          <button type="button" className="underline" onClick={() => setRetiring(true)}>
+            Retire this assessment
+          </button>
+        ) : null}
+      </div>
     </li>
   );
 }

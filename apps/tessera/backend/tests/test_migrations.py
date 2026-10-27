@@ -7,9 +7,11 @@ healthy. These tests run the real Alembic history against an empty database and
 compare the result with the models.
 
 They also check the PostgreSQL path without a PostgreSQL server: `--sql` renders
-the DDL, which proves the history is executable on that dialect. It does *not*
-prove the app has ever run against a live PostgreSQL — that claim would need a
-server, and there is none in this environment.
+the DDL, which proves the history is executable on that dialect. Rendering is not
+running, so the live-server checks live in `tests/test_postgres.py`, which creates
+a scratch database on the server named by `TESSERA_POSTGRES_URL`, migrates it,
+inspects the result and drops it. That file skips when no server is configured and
+says so, rather than letting "the DDL rendered" stand in for "the schema works".
 """
 
 from __future__ import annotations

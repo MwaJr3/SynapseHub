@@ -13,9 +13,11 @@ from sqlalchemy.orm import Session
 
 from . import (
     chess_modality,
+    competency,
     config,
     library,
     practice,
+    reassessment as reassessment_mod,
     review,
     learner,
     mastery as mastery_mod,
@@ -889,7 +891,8 @@ class ArchiveBody(BaseModel):
 
 def _assessment_detail(db: Session, row: Assessment) -> dict:
     scores = db.query(AssessmentScore).filter(AssessmentScore.assessment_id == row.id).all()
-    return profile_mod.serialize_assessment(row, scores)
+    successor = reassessment_mod.replacement_of(db, row.id)
+    return profile_mod.serialize_assessment(row, scores, successor.id if successor else None)
 
 
 def _store(db: Session, user: User, body: dict) -> Assessment:
@@ -988,6 +991,164 @@ def post_baseline(request: Request, db: Session = Depends(get_db)):
         existing.add(key)
         created.append(_assessment_detail(db, row))
     return {"created": created, "skipped": skipped}
+
+
+# ------------------------------------------------------------ reassessment
+#
+# Reassessing is adding a successor, not editing a row. The diff is computed from
+# the two stored submissions, so it can be reproduced later from the rows alone.
+
+
+class ReassessBody(BaseModel):
+    #: Optional, and must match the submission being replaced when given. The
+    #: instrument is owned by the prior row, not by the request.
+    instrument: str = Field(default="", max_length=40)
+    label: str = Field(default="", max_length=120)
+    reported_by: str = Field(default="learner", max_length=20)
+    source_url: str = Field(default="", max_length=600)
+    source_note: str = Field(default="", max_length=2000)
+    administered_on: str = Field(default="", max_length=10)
+    scale_min: float | None = None
+    scale_max: float | None = None
+    scores: list[ScoreBody] = Field(default_factory=list, max_length=40)
+
+
+def _score_payloads(db: Session, assessment_ids: list[str]) -> dict[str, list[dict]]:
+    """Scores per assessment, in the shape the diff engine compares."""
+    payloads: dict[str, list[dict]] = {
+        assessment_id: [] for assessment_id in assessment_ids
+    }
+    for assessment_id, scores in reassessment_mod.scores_of(db, assessment_ids).items():
+        payloads[assessment_id] = [
+            {
+                "axis": score.axis,
+                "name": score.name,
+                "value": score.value,
+                "value_label": score.value_label,
+            }
+            for score in scores
+        ]
+    return payloads
+
+
+@router.post("/profile/assessments/{assessment_id}/reassess", status_code=201)
+def post_assessment_reassess(
+    assessment_id: str, body: ReassessBody, request: Request, db: Session = Depends(get_db)
+):
+    """Record a newer result for the same instrument and show what changed."""
+    user = _current(request, db)
+    prior = _owned_assessment(db, user, assessment_id)
+
+    if body.instrument and body.instrument != prior.instrument:
+        raise HTTPException(
+            422,
+            f"this submission is a {prior.instrument}; a reassessment must use the same instrument",
+        )
+
+    payload = body.model_dump()
+    # Only the fields the validator owns. `validate_assessment` deliberately has
+    # no opinion about the label or the provenance text.
+    try:
+        profile_mod.validate_assessment(
+            instrument=prior.instrument,
+            reported_by=body.reported_by,
+            administered_on=body.administered_on,
+            scale_min=body.scale_min,
+            scale_max=body.scale_max,
+            scores=[score.model_dump() for score in body.scores],
+        )
+    except profile_mod.InvalidAssessment as error:
+        raise HTTPException(422, str(error)) from error
+
+    try:
+        row = reassessment_mod.create_reassessment(
+            db,
+            user_id=user.id,
+            previous=prior,
+            label=body.label,
+            reported_by=body.reported_by,
+            source_url=body.source_url,
+            source_note=body.source_note,
+            administered_on=body.administered_on,
+            scale_min=body.scale_min,
+            scale_max=body.scale_max,
+            scores=[score.model_dump() for score in body.scores],
+        )
+    except reassessment_mod.ReassessmentError as error:
+        detail = {"message": str(error)}
+        if error.current_id:
+            detail["current_id"] = error.current_id
+        raise HTTPException(409, detail) from error
+
+    scores = _score_payloads(db, [prior.id, row.id])
+    diff = reassessment_mod.diff_scores(scores.get(prior.id, []), scores.get(row.id, []))
+    return {
+        "assessment": _assessment_detail(db, row),
+        "previous": _assessment_detail(db, prior),
+        "diff": diff,
+        "summary": reassessment_mod.summarise_changes(diff),
+    }
+
+
+@router.get("/profile/assessments/{assessment_id}/history")
+def get_assessment_history(assessment_id: str, request: Request, db: Session = Depends(get_db)):
+    """The whole chain of submissions for one instrument, oldest first."""
+    user = _current(request, db)
+    prior = _owned_assessment(db, user, assessment_id)
+    chain = reassessment_mod.chain_for(db, prior.id)
+    if not chain:  # pragma: no cover - prior exists, so the chain contains it
+        raise HTTPException(404, "assessment not found")
+    for row in chain:
+        if row.user_id != user.id:
+            # A link that crosses accounts is a corrupt row, not a readable one.
+            raise HTTPException(404, "assessment not found")
+
+    scores = _score_payloads(db, [row.id for row in chain])
+    steps = []
+    for index, row in enumerate(chain):
+        previous = chain[index - 1] if index else None
+        diff = (
+            reassessment_mod.diff_scores(scores.get(previous.id, []), scores.get(row.id, []))
+            if previous is not None
+            else []
+        )
+        steps.append(
+            {
+                "assessment": _assessment_detail(db, row),
+                "diff": diff,
+                "summary": reassessment_mod.summarise_changes(diff) if diff else None,
+            }
+        )
+    return {
+        "instrument": prior.instrument,
+        "current_id": chain[-1].id,
+        "submissions": steps,
+        "note": (
+            "Every submission is kept. The newest live row is the one the profile uses; "
+            "the earlier ones are archived because they were superseded, not because they were wrong."
+        ),
+    }
+
+
+# ---------------------------------------------------------------- competency
+#
+# Read-only analytics. Nothing here writes to the learner model: a verdict is
+# derived from the append-only evidence every time it is asked for.
+
+
+@router.get("/competency")
+def get_competency(request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    return competency.overview(db, user)
+
+
+@router.get("/competency/{concept_id}")
+def get_competency_detail(concept_id: str, request: Request, db: Session = Depends(get_db)):
+    user = _current(request, db)
+    try:
+        return competency.detail(db, user, concept_id)
+    except library.NotFound as error:
+        raise HTTPException(404, str(error)) from error
 
 
 # ------------------------------------------------- concepts, relations, notes

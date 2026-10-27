@@ -23,6 +23,7 @@ vi.mock('./api', async (importOriginal) => {
       loadBaseline: vi.fn(),
       addAssessment: vi.fn(),
       archiveAssessment: vi.fn(),
+      reassessAssessment: vi.fn(),
       saveProfileContext: vi.fn(),
     },
   };
@@ -38,6 +39,19 @@ const DIMENSIONS: Instrument = {
   axes: [
     { axis: 'dimension', name: 'retrieval', label: 'Retrieval' },
     { axis: 'dimension', name: 'self_management', label: 'Self-management' },
+  ],
+};
+
+const PROCESSES: Instrument = {
+  id: 'icanstudy-processes',
+  label: 'iCanStudy learning processes',
+  value_kind: 'number',
+  scale_min: 0,
+  scale_max: 100,
+  note: 'Five processes the diagnostic scores separately.',
+  axes: [
+    { axis: 'process', name: 'reference', label: 'Reference' },
+    { axis: 'process', name: 'retrieval', label: 'Retrieval practice' },
   ],
 };
 
@@ -68,7 +82,7 @@ function payload(overrides: Partial<ProfileResponse> = {}): ProfileResponse {
     ],
     missing: ['Retrieval', 'Self-management'],
     assessments: [],
-    instruments: [DIMENSIONS],
+    instruments: [DIMENSIONS, PROCESSES],
     caveats: ['A score that was never supplied stays missing. It is never treated as zero.'],
     ...overrides,
   };
@@ -87,6 +101,8 @@ const ASSESSMENT: Assessment = {
   scale_max: 100,
   archived: false,
   archive_reason: '',
+  supersedes_id: null,
+  replaced_by: null,
   created_at: '2026-10-25T09:00:00+00:00',
   scores: [{ axis: 'process', name: 'reference', value: 0, value_label: '', note: '' }],
 };
@@ -211,6 +227,137 @@ describe('ProfilePage', () => {
     // was kept rather than deleted, which is the promise the append-only rule
     // makes. Without this assertion the test would pass on a silent no-op UI.
     expect(await screen.findByText(/The row is kept in the history/)).toBeTruthy();
+  });
+});
+
+describe('ProfilePage — reassessing a supplied assessment', () => {
+  const SUMMARY = {
+    axes: 2,
+    moved: 1,
+    up: 1,
+    down: 0,
+    unchanged: 0,
+    newly_supplied: 0,
+    withdrawn: 0,
+    missing: 1,
+    comparable: 1,
+    mean_delta: 12,
+    note: 'A delta is only computed where both submissions supplied a number.',
+  };
+
+  const RESULT = {
+    assessment: {
+      ...ASSESSMENT,
+      id: 'a2',
+      label: 'Second submission',
+      supersedes_id: 'a1',
+      scores: [{ axis: 'process', name: 'reference', value: 12, value_label: '', note: '' }],
+    },
+    previous: {
+      ...ASSESSMENT,
+      archived: true,
+      archive_reason: 'Superseded by reassessment a2 on 2026-10-27.',
+      replaced_by: 'a2',
+    },
+    diff: [
+      {
+        axis: 'process',
+        name: 'reference',
+        previous: 0,
+        value: 12,
+        delta: 12,
+        previous_label: '',
+        new_label: '',
+        direction: 'up' as const,
+      },
+      {
+        axis: 'dimension',
+        name: 'self_management',
+        previous: null,
+        value: null,
+        delta: null,
+        previous_label: '',
+        new_label: '',
+        direction: 'missing' as const,
+      },
+    ],
+    summary: SUMMARY,
+  };
+
+  it('opens prefilled with what is on record, and records the new numbers', async () => {
+    vi.mocked(api.reassessAssessment).mockResolvedValue(RESULT);
+    await renderProfile(payload({ assessments: [ASSESSMENT] }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Reassess this/ }));
+    const form = screen.getByRole('form', { name: /Reassess/ });
+    const field = within(form).getByLabelText('Reference') as HTMLInputElement;
+    // A supplied zero is a value to keep, not an empty box to fill in.
+    expect(field.value).toBe('0');
+
+    await userEvent.clear(field);
+    await userEvent.type(field, '12');
+    await userEvent.click(within(form).getByRole('button', { name: 'Record the reassessment' }));
+
+    await waitFor(() => expect(api.reassessAssessment).toHaveBeenCalledTimes(1));
+    expect(vi.mocked(api.reassessAssessment).mock.calls[0]).toEqual([
+      'a1',
+      {
+        administered_on: '2026-10-15',
+        scores: [{ axis: 'process', name: 'reference', value: 12, value_label: '', note: '' }],
+      },
+    ]);
+    // The reload is part of the contract: the new row is the live one.
+    await waitFor(() => expect(api.profile).toHaveBeenCalledTimes(2));
+  });
+
+  it('shows the change, and says the earlier submission was kept', async () => {
+    vi.mocked(api.reassessAssessment).mockResolvedValue(RESULT);
+    await renderProfile(payload({ assessments: [ASSESSMENT] }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Reassess this/ }));
+    const form = screen.getByRole('form', { name: /Reassess/ });
+    await userEvent.click(within(form).getByRole('button', { name: 'Record the reassessment' }));
+
+    const card = await screen.findByText(/Reassessment of “iCanStudy learning processes — supplied baseline”/);
+    expect(card).toBeTruthy();
+    const panel = card.parentElement!.parentElement!;
+    expect(within(panel).getByText(/higher \(\+12\)/)).toBeTruthy();
+    // Missing on both sides is not a change of zero; it is still missing.
+    expect(within(panel).getByText(/still not supplied/)).toBeTruthy();
+    expect(within(panel).getByText(/marked as reassessed rather than deleted/)).toBeTruthy();
+  });
+
+  it('refuses an empty reassessment instead of sending a page of blanks', async () => {
+    await renderProfile(payload({ assessments: [ASSESSMENT] }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Reassess this/ }));
+    const form = screen.getByRole('form', { name: /Reassess/ });
+    for (const label of ['Reference', 'Retrieval practice']) {
+      await userEvent.clear(within(form).getByLabelText(label));
+    }
+    await userEvent.click(within(form).getByRole('button', { name: 'Record the reassessment' }));
+
+    expect(screen.getByRole('alert').textContent).toContain('at least one score');
+    expect(api.reassessAssessment).not.toHaveBeenCalled();
+  });
+
+  it('surfaces a server refusal without pretending the reassessment happened', async () => {
+    const { ApiError } = await import('./api');
+    vi.mocked(api.reassessAssessment).mockRejectedValue(
+      new ApiError('This submission has already been reassessed; reassess the newer row instead.', 409, {
+        message: 'This submission has already been reassessed; reassess the newer row instead.',
+        current_id: 'a2',
+      }),
+    );
+    await renderProfile(payload({ assessments: [ASSESSMENT] }));
+
+    await userEvent.click(screen.getByRole('button', { name: /Reassess this/ }));
+    const form = screen.getByRole('form', { name: /Reassess/ });
+    await userEvent.click(within(form).getByRole('button', { name: 'Record the reassessment' }));
+
+    expect((await screen.findByRole('alert')).textContent).toContain('already been reassessed');
+    expect(screen.queryByText(/marked as reassessed rather than deleted/)).toBeNull();
+    expect(api.profile).toHaveBeenCalledTimes(1);
   });
 });
 

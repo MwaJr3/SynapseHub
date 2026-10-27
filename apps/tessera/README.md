@@ -16,7 +16,8 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | Area | Behaviour |
 | --- | --- |
 | Accounts | Register / sign in / sign out. scrypt password hashing, DB-backed cookie sessions with expiry, per-learner data isolation (tested). |
-| Learner profile | Diagnostic results are stored as reported, with instrument, reporter and date. A score that was never supplied stays missing and is never shown as zero; a supplied 0 stays a 0. Assessments are append-only and can be retired with a reason. Nothing here touches mastery. |
+| Learner profile | Diagnostic results are stored as reported, with instrument, reporter and date. A score that was never supplied stays missing and is never shown as zero; a supplied 0 stays a 0. Assessments are append-only, can be retired with a reason, and can be **reassessed**: the new submission becomes a successor row, the old one is archived, and the difference between them is shown with the provenance of both. Nothing here touches mastery. |
+| Competency | Per concept, the evidence (graded attempts, faded by age) and the scheduler's mastery are computed and shown **side by side, never merged**. A concept with no attempt is `no_evidence` with a `null` score — not zero. Every gap states its reason, its numbers and the action that closes it. |
 | Knowledge graph | 10 concepts across Python, Chess and Security, with typed `prerequisite` edges. Two endpoints expose it: a flat map and a per-concept view. |
 | Learner model | Per-concept mastery, memory stability, difficulty, review count and lapse count, updated only on graded evidence. |
 | Scheduling | A stability-based memory model (see below), not "correct → tomorrow". |
@@ -242,8 +243,8 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 266 tests
-cd frontend && npm test && npm run build   # 70 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 308 tests, 7 skipped (the live-PostgreSQL file)
+cd frontend && npm test && npm run build   # 85 tests, then typecheck + bundle
 ```
 
 ## Retrieval practice, and a scheduler you can check
@@ -293,6 +294,82 @@ At equal cost, placement is worth roughly 1.76x the retention of a fixed weekly
 interval. `broken` is the control and must fail the threshold the real scheduler
 passes. The absolute number is **not** the 90% the scheduler targets — the two
 memory models disagree, and pretending otherwise would be the dishonest part.
+
+## Competency: evidence you can inspect, kept apart from mastery
+
+The **Competency** screen answers two questions that are easy to conflate and
+expensive to conflate wrongly:
+
+| | What it is | Where it comes from |
+| --- | --- | --- |
+| **Evidence** | how many graded answers there are, how good they were, how recent | computed on read from `retrieval_attempts` and `attempts` |
+| **Mastery** | the scheduler's stored estimate of what will be recalled | `concept_states`, which only moves on graded evidence |
+
+They are reported next to each other and never averaged. A single "competency
+score" would hide both facts a learner needs: that an unmeasured concept is
+*unknown* rather than weak, and that stored mastery is a prediction rather than a
+result.
+
+The rules are explicit, exported as constants and tested:
+
+- **no evidence → `None`, never `0.0`.** An unmeasured concept is not scored, is
+  not averaged into anything, and is drawn as an em dash with the words "not
+  measured". Nine unmeasured concepts do not drag one measured concept down.
+- **Evidence fades.** Each observation is weighted by `evidence_weight` (1.0
+  server-graded, 0.5 self-graded) and by a 30-day half-life. A correct answer from
+  four months ago says less about now than yesterday's does.
+- **`secure` needs quantity, quality and a checked answer**: 3.0 recency-weighted
+  observations at 0.80 or better, including at least one the server graded. Four
+  perfect self-graded recollections reach `developing` and stop there.
+- **Disagreement is reported, not smoothed.** When the stored mastery is more than
+  0.25 away from the weighted score of the answers, the row says so, with the
+  direction and the size. A learner who has not practised for months can hold a
+  high mastery and little evidence; the screen says that instead of averaging it away.
+
+**Gaps are computed from the evidence, not from a target.** Each one carries the
+kind, a severity, the numbers it was derived from, the reason, and the action that
+would close it — `no_evidence`, `thin_evidence`, `weak`, `self_graded_only`,
+`stale`, `optimistic_mastery`, plus two about the *reported* baseline
+(`unmeasured_axes`, `stale_report`). A missing axis is a missing input, never a
+competence of zero, and a baseline older than 120 days is "dated, not wrong".
+
+**Calibration** compares the confidence a learner recorded before answering
+(1–5) with what actually happened, and reports the signed gap and the per-level
+buckets. It is computed only from multiple-choice answers, because retrieval
+attempts carry no confidence — said in the response rather than left as an
+empty chart.
+
+```bash
+curl -s -b cookies.txt http://127.0.0.1:8024/api/competency | python3 -m json.tool | head -40
+curl -s -b cookies.txt http://127.0.0.1:8024/api/competency/py.variables   # the observation log
+```
+
+### Reassessment: a successor row, not an edit
+
+`POST /api/profile/assessments/{id}/reassess` records the same instrument again.
+The new row points back with `supersedes_id`, the prior row is archived with the
+reason, and the response carries a diff of the two submissions:
+
+```json
+{"axis": "dimension", "name": "retrieval", "previous": 43.0, "value": 61.0,
+ "delta": 18.0, "direction": "up"}
+```
+
+Three properties are enforced rather than intended:
+
+- **missing stays missing.** A delta is only computed where both sides supplied a
+  number; an axis missing from both is `direction: "missing"` with `delta: null`,
+  and a newly supplied axis is `new`, not a gain. "0 → 43" would be a fabricated
+  43-point improvement.
+- **the chain is linear.** `assessments.supersedes_id` is `UNIQUE`, so a
+  submission is superseded once; a second attempt returns **409** naming the
+  current row, while reassessing the successor is allowed.
+- **the instrument belongs to the prior row.** A reassessment cannot quietly
+  change what is being measured; a different instrument is a 422.
+
+`GET /api/profile/assessments/{id}/history` returns the whole chain, oldest first,
+with the diff between each pair, and the note that earlier rows are archived
+because they were superseded rather than because they were wrong.
 
 ## Your material: concepts, relations, notes, sessions
 
@@ -352,11 +429,67 @@ A bare `postgresql://` URL is rewritten to `postgresql+psycopg2://` in
 while SQLAlchemy 2.1 resolves an unqualified URL to **psycopg 3**, which is not
 installed — the failure looks like the database is down.
 
-**What is verified and what is not.** The SQLite path has been run end to end,
-including a fresh database built only from migrations. The PostgreSQL path has
-been verified *as DDL* and by the migration tests above; it has **not** been run
-against a live PostgreSQL server, because none exists in the environment this was
-built in. `docker-compose.yml` is there for the first machine that has Docker.
+### The PostgreSQL path has now been run
+
+Up to stage 3 the PostgreSQL path was only *rendered*: `--sql` proved the history
+would execute, which is not the same as executing it. Stage 4 installed a real
+server (PostgreSQL **16.2**, via the `pgserver` wheel), and the whole path has now
+been run against it:
+
+- all four revisions applied to an empty database, in order;
+- `alembic check` — **no new upgrade operations detected** — on both PostgreSQL
+  and SQLite, which is what makes drift a test failure rather than a surprise;
+- `downgrade -1` and `upgrade head` round-tripped on both dialects;
+- the seeder ran unchanged (10 concepts, 20 questions, 9 sources, 3 puzzles,
+  10 openings);
+- the **entire backend suite passed on PostgreSQL** as well as SQLite.
+
+That last point is the one that matters: the tests use `create_all`, so the tables
+come from the models, not from the migration history. Both paths now produce a
+schema the same 308 tests accept.
+
+```bash
+export TESSERA_POSTGRES_URL='postgresql+psycopg2://postgres:@/scratch?host=/tmp/pgdata'
+python3 -m pytest tests/test_postgres.py -q     # 7 tests: creates and drops its own database
+```
+
+`tests/test_postgres.py` **skips** (with a message saying what is not proved) when
+that variable is unset, so a checkout without a server still runs green — it just
+stops claiming more than it ran. When it is set, it creates a uniquely named
+database, migrates it, inspects the result, refuses a bad write, round-trips the
+last revision, and drops the database.
+
+### What the database enforces, not just the API
+
+Two revisions exist because inspecting the schema on that server found real gaps:
+
+1. **`json` was not `jsonb`.** Every list column had been declared `JSON`, which
+   PostgreSQL stores as text that is re-parsed on every read and cannot be indexed
+   with containment operators. Five columns (`questions.choices`, `goals.concept_ids`,
+   `chess_puzzles.solution_uci`, `chess_attempts.moves_uci`, `learning_sessions.activities`)
+   are now `jsonb`; the model declares `JSON().with_variant(JSONB(), "postgresql")`,
+   and the migration converts existing rows with `USING …::jsonb`.
+2. **There were zero CHECK constraints.** Writing 0.0–1.0 ranges and vocabularies
+   in Python is documentation; a constraint is a rule that holds against a seeder,
+   a migration, a `psql` session, or a route that forgets to validate. There are now
+   **21 named checks** across concepts, edges, questions, attempts, retrieval
+   attempts, concept states, sessions and assessments — score ranges, the
+   eight-relation vocabulary, the session-status vocabulary, the grading source,
+   `reported_by`, scale order, and the self-supersede guard.
+
+Five composite indexes were added for the queries the product actually runs —
+`(user_id, next_review_at)` for the due queue, `(user_id, created_at)` for history
+and competency rollups, `(user_id, started_at)` for sessions,
+`(user_id, updated_at)` for notes. The existing single-column indexes stay: they
+still serve foreign-key lookups.
+
+`tests/test_schema_integrity.py` attacks the schema directly rather than trusting
+the model declarations: it writes a mastery of 1.5, a self-graded score of 1.4, a
+zero evidence weight, an unknown relation, an unknown grader, a reversed scale, a
+self-superseding assessment and a two-successor fork, and requires the database to
+refuse every one of them — on SQLite **and** on PostgreSQL. It also proves that
+deleting a concept takes its `concept_states` with it, which only works because
+`PRAGMA foreign_keys=ON` is set per connection on SQLite.
 
 ## One learner cannot see another
 
@@ -445,11 +578,27 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
   the Ruy Lopez, the Queen's Gambit, the Indian and English openings. A line
   outside it returns an explicit "not in the reference" message rather than a
   wrong best guess. A full ECO table would come from an operator-supplied file.
-- **The Profile screen has been rendered and asserted in jsdom, not seen.** It is
-  driven by `src/profile.ui.test.tsx` (10 tests: the missing-vs-zero distinction,
-  the caveats, the empty state, the baseline load, a rejected write, a blank field
-  never becoming a zero, and retiring a row). This environment has no browser, so
-  layout, focus order and contrast are reasoned about rather than observed.
+- **The Profile and Competency screens have been rendered and asserted in jsdom,
+  not seen.** They are driven by `src/profile.ui.test.tsx` (16 tests: the
+  missing-vs-zero distinction, the caveats, the empty state, the baseline load, a
+  rejected write, a blank field never becoming a zero, retiring a row, and four
+  reassessment cases including a 409 and a missing-stays-missing diff) and
+  `src/competency.ui.test.tsx` (11 tests: unmeasured is not zero, the two numbers
+  stay separate, disagreement is shown, the observation log opens on request, the
+  gaps carry reasons, calibration, an error state and an empty state). This
+  environment has no browser, so layout, focus order and contrast are reasoned
+  about rather than observed.
+- **The competency thresholds are design choices, not validated ones.** 3.0
+  weighted observations at 0.80 for `secure`, a 30-day half-life, and a 0.25
+  disagreement band were chosen to be defensible and are exported as constants
+  (`app/competency.py`), but no real learner's evidence has been used to calibrate
+  them. They are a stated policy the screen shows, not a measured model.
+- **Calibration rests on a 1–5 confidence the learner chose**, and only on
+  multiple-choice answers. It says how well stated confidence matched accuracy; it
+  is not a psychological measure.
+- **A reassessment is still a self-report.** Successor rows, provenance and diffs
+  make the history auditable; they do not make the numbers measured. Both sides of
+  a diff say who supplied them, and neither is presented as a test result.
 - **The evaluation is a simulation.** It compares two memory models; it is not a
   measurement of human memory, and no real learner's recall has been tracked yet.
 - **Self-graded attempts are self-reported.** The half weight makes them weaker
@@ -462,15 +611,21 @@ All of it is switched off under `prefers-reduced-motion: reduce`.
 - **Sessions do not feed mastery.** Answering a question moves mastery; running a
   session does not. That is deliberate — self-reported activity is not evidence —
   but it does mean the session log is currently a diary rather than an input.
-- **Never run against PostgreSQL.** Migrations render Postgres DDL and the schema
-  tests pass, but no live PostgreSQL has been used. Treat the compose file and the
-  deployment instructions as unproven until someone runs them.
+- **PostgreSQL is verified on one local server, not on a deployment.** The history,
+  the seeder, `alembic check`, a downgrade round-trip and the full backend suite
+  have run against PostgreSQL 16.2 started from the `pgserver` wheel on a unix
+  socket. What has *not* been exercised: a network-reachable server, TLS, connection
+  pooling under load, backups, or `docker-compose.yml` itself (no Docker here).
+- **The PostgreSQL tests skip by default.** `tests/test_postgres.py` needs
+  `TESSERA_POSTGRES_URL`. A green run without it proves the SQLite path only, and
+  the skip message says so rather than being counted as a pass.
 - **The transcribed baseline is off by default.** It belongs to the person who
   supplied it: `TESSERA_DEMO_BASELINE=1` exposes it for a demonstration, and
   without it a new account starts with every axis unscored, which is correct.
-- **LIFESYSTEM is one slice deep.** The profile exists; sessions, reference notes,
-  retrieval scheduling, competency records, quests and XP do not yet. The stage plan
-  and its gates are in `docs/lifesystem/README.md` rather than implied by the screen.
+- **LIFESYSTEM is four slices deep.** Profile, knowledge and sessions, retrieval
+  scheduling, and competency/analytics exist. Quests, the XP ledger, seasons and the
+  hardening pass do not. The stage plan and its gates are in
+  `docs/lifesystem/README.md` rather than implied by the screen.
 - **No instructor or platform analytics** in this build; the schema supports
   attempts, but the dashboards are not implemented.
 - **No offline mode, no audio, no notifications.** Audio and offline were in the

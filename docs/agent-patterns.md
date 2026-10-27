@@ -275,3 +275,67 @@ claim in the Tessera README, what each should print, and — the part that matte
 what it does **not** verify (no live PostgreSQL, no provider ever reached, a
 simulator is not a learner). The numbers in it are the ones this session actually
 produced.
+
+## Fourth batch: the skills applied to stage 4 (competency and the database)
+
+Stage 4 was asked for with two constraints that are really one: use the skills, and
+take the database rules seriously. The second one turned out to be a test-audit
+problem before it was a schema problem.
+
+### `test-audit` → a constraint that is only declared has not been tested
+
+`test-audit`'s rule is that a test must reach the observable contract, not a
+plausible stand-in for it. The obvious way to test a CHECK constraint is to read it
+back out of the model or out of `sqlite_master` — and that only proves the string
+was written down. The same constraint would still be absent from a live PostgreSQL
+server, which is exactly what had happened: five `json` columns and **zero**
+constraints survived three stages because every test used `create_all` and every
+deployment claim rested on rendered DDL.
+
+So the tests attack the contract the way a bug would: `tests/test_schema_integrity.py`
+writes a mastery of 1.5, a self-graded score of 1.4, an evidence weight of zero, an
+unknown relation, an unknown grader, a reversed scale, a self-superseding
+assessment and a two-successor fork — and requires the database to refuse each one,
+on SQLite **and** on PostgreSQL. `tests/test_postgres.py` then refuses a bad write
+on a real server with raw SQL, so the constraint is proved where it ships.
+
+The same rule produced a negative test that looks odd until you read it: nine
+unmeasured concepts must not move one measured concept's score, and the payload
+must contain `null` rather than `0.0`. A 0.0 is the failure mode that looks fine.
+
+### `add-product-e2e-eval` → calibrate the verdict against a plausible wrong answer
+
+The skill's calibration rule — "a valid outcome and a plausible wrong outcome;
+missing evidence must not produce a pass" — maps directly onto a competency
+verdict. The plausible wrong outcome is not "no answer". It is **four perfect
+self-graded recollections**, which look like mastery and are the easiest thing to
+produce. The test requires them to stop at `developing`, and requires three
+server-graded answers to reach `secure`. Without that pair of assertions the
+threshold logic would pass any test that only fed it good data.
+
+### `fix-slow-queries` → the whole screen is six queries
+
+Competency reads every visible concept, both evidence tables, every concept state,
+the calibration attempts and the reported baseline. Written per concept that is
+four queries per row — fine at ten, unusable at two hundred. It is loaded in bulk
+and grouped in Python: **6 queries and 18.6 ms for 200 concepts**, measured on an
+in-memory database. The count is asserted not to move when the catalogue grows from
+twenty concepts to sixty (`tests/test_competency.py`), because a budget that is not
+tested is a budget that grows back. The module is pure where it can be
+(`summarise`, `verdict`, `disagreement`), so the arithmetic is testable without a
+database.
+
+### `motion-doctrine` → the analytics page does not animate while it thinks
+
+The only motion on the competency screen is the panel that opens when a learner
+presses **Why?** — a state change they asked for. Nothing fades in on load, nothing
+pulses while the detail request is in flight, and `prefers-reduced-motion` still
+turns even that off.
+
+### `security-guidance` → 404, not 403, on every new object route
+
+Both new endpoints that take an id (`/api/competency/{concept_id}` and
+`/api/profile/assessments/{id}/reassess`) answer **404** for another learner's
+object, never 403. A 403 confirms the id exists; a 404 confirms nothing. The
+isolation test adds the two new routes to the set that is checked through HTTP
+rather than through the handler.

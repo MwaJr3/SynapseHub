@@ -48,6 +48,10 @@ export interface Assessment {
   scale_max: number;
   archived: boolean;
   archive_reason: string;
+  //: The submission this one replaces, and the one that replaced it. Null when
+  //: there is no such row; never inferred on the client.
+  supersedes_id: string | null;
+  replaced_by: string | null;
   created_at: string;
   scores: AssessmentScore[];
 }
@@ -87,6 +91,192 @@ export interface AssessmentInput {
   source_note?: string;
   administered_on?: string;
   scores: AssessmentScore[];
+}
+
+/* ------------------------------------------------------------- competency */
+
+export type CompetencyVerdict = 'no_evidence' | 'emerging' | 'developing' | 'secure';
+
+export interface CompetencyEvidence {
+  observations: number;
+  auto: number;
+  self: number;
+  effective: number;
+  //: Null, never 0, when nothing has been observed. The distinction is the point.
+  score: number | null;
+  confidence: number;
+  recent_score: number | null;
+  last_observed_at: string | null;
+  first_observed_at: string | null;
+  formats: Record<string, { attempts: number; mean_score: number }>;
+}
+
+export interface CompetencyMastery {
+  value: number;
+  retained: number;
+  scale_min: number;
+  scale_max: number;
+  tier: string;
+  reps: number;
+  lapses: number;
+  stability_days: number;
+  last_reviewed_at: string | null;
+  next_review_at: string | null;
+  source: string;
+}
+
+export interface CompetencyDisagreement {
+  contested: boolean;
+  gap: number;
+  direction: 'optimistic' | 'conservative';
+  reason: string;
+}
+
+export interface CompetencyAxisGap {
+  axis: string;
+  name: string;
+  label: string;
+  instrument: string | null;
+}
+
+export interface CompetencyGap {
+  kind: string;
+  severity: number;
+  reason: string;
+  action: string;
+  type: 'concept' | 'axis' | 'axes';
+  concept_id?: string | null;
+  label?: string;
+  axis?: string;
+  name?: string;
+  instrument?: string | null;
+  assessment_id?: string | null;
+  axes?: CompetencyAxisGap[];
+}
+
+export interface CompetencyRow {
+  concept_id: string;
+  title: string;
+  subject: string;
+  verdict: CompetencyVerdict;
+  verdict_reason: string;
+  evidence: CompetencyEvidence;
+  mastery: CompetencyMastery | null;
+  disagreement: CompetencyDisagreement | null;
+  gaps: CompetencyGap[];
+  primary_gap: CompetencyGap | null;
+}
+
+export interface CompetencyCalibration {
+  answered: number;
+  accuracy: number | null;
+  mean_confidence: number | null;
+  overconfidence: number | null;
+  buckets: { confidence: number; answered: number; accuracy: number }[];
+  reason: string;
+}
+
+export interface CompetencyOverview {
+  as_of: string;
+  policy: string;
+  thresholds: {
+    half_life_days: number;
+    secure_min_effective: number;
+    secure_min_score: number;
+    developing_min_effective: number;
+    developing_min_score: number;
+    disagreement_gap: number;
+  };
+  counts: {
+    concepts: number;
+    with_evidence: number;
+    without_evidence: number;
+    observations: number;
+    server_graded: number;
+    self_graded: number;
+  };
+  verdicts: Record<CompetencyVerdict, number>;
+  coverage_note: string;
+  calibration: CompetencyCalibration;
+  gaps: CompetencyGap[];
+  gaps_total: number;
+  concepts: CompetencyRow[];
+}
+
+export interface CompetencyObservation {
+  id: string;
+  source: 'quiz' | 'retrieval';
+  format: string;
+  score: number;
+  weight: number;
+  graded_by: 'auto' | 'self';
+  at: string;
+  recency: number;
+}
+
+export interface CompetencyDetail extends CompetencyRow {
+  observation_log: CompetencyObservation[];
+  what_would_change_it: string[];
+  next_interval_days: number | null;
+}
+
+/* ----------------------------------------------------------- reassessment */
+
+export interface ReassessInput {
+  label?: string;
+  reported_by?: string;
+  source_url?: string;
+  source_note?: string;
+  administered_on?: string;
+  scale_min?: number;
+  scale_max?: number;
+  scores: AssessmentScore[];
+}
+
+export type DiffDirection = 'up' | 'down' | 'same' | 'new' | 'missing' | 'not_supplied';
+
+export interface AssessmentDiffRow {
+  axis: string;
+  name: string;
+  previous: number | null;
+  value: number | null;
+  //: Null whenever either side did not supply a number.
+  delta: number | null;
+  previous_label: string;
+  new_label: string;
+  direction: DiffDirection;
+}
+
+export interface AssessmentDiffSummary {
+  axes: number;
+  moved: number;
+  up: number;
+  down: number;
+  unchanged: number;
+  newly_supplied: number;
+  withdrawn: number;
+  missing: number;
+  comparable: number;
+  mean_delta: number | null;
+  note: string;
+}
+
+export interface ReassessmentResult {
+  assessment: Assessment;
+  previous: Assessment;
+  diff: AssessmentDiffRow[];
+  summary: AssessmentDiffSummary;
+}
+
+export interface AssessmentHistory {
+  instrument: string;
+  current_id: string;
+  submissions: {
+    assessment: Assessment;
+    diff: AssessmentDiffRow[];
+    summary: AssessmentDiffSummary | null;
+  }[];
+  note: string;
 }
 
 export interface Recommendation {
@@ -328,6 +518,12 @@ export class ApiError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    /**
+     * The parsed `detail` field, when the server sent a structured one. A few
+     * endpoints return `{message, current_id}` so the client can offer the next
+     * step instead of only saying "conflict".
+     */
+    readonly detail?: unknown,
   ) {
     super(message);
     this.name = 'ApiError';
@@ -426,13 +622,23 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
+    let detail: unknown;
     try {
       const body = (await response.json()) as { detail?: unknown };
-      if (typeof body.detail === 'string') message = body.detail;
+      detail = body.detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (
+        detail &&
+        typeof detail === 'object' &&
+        typeof (detail as { message?: unknown }).message === 'string'
+      ) {
+        message = (detail as { message: string }).message;
+      }
     } catch {
       // Non-JSON error body: the status is all we know.
     }
-    throw new ApiError(message, response.status);
+    throw new ApiError(message, response.status, detail);
   }
   return (await response.json()) as T;
 }
@@ -671,6 +877,13 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ reason }),
     }),
+  reassessAssessment: (id: string, body: ReassessInput) =>
+    request<ReassessmentResult>(`/api/profile/assessments/${encodeURIComponent(id)}/reassess`, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  assessmentHistory: (id: string) =>
+    request<AssessmentHistory>(`/api/profile/assessments/${encodeURIComponent(id)}/history`),
   loadBaseline: () =>
     request<{ created: Assessment[]; skipped: string[] }>('/api/profile/baseline', { method: 'POST' }),
   me: () => request<{ email: string; display_name: string }>('/api/auth/me'),
@@ -798,5 +1011,10 @@ export const api = {
     session_id?: string;
   }) => request<PracticeResult>('/api/review/attempts', { method: 'POST', body: JSON.stringify(body) }),
   reviewHistory: () => request<{ attempts: PracticeAttempt[] }>('/api/review/attempts'),
+
+  // --------------------------------------------------------- competency
+  competency: () => request<CompetencyOverview>('/api/competency'),
+  competencyDetail: (conceptId: string) =>
+    request<CompetencyDetail>(`/api/competency/${encodeURIComponent(conceptId)}`),
   reviewStats: () => request<ReviewStats>('/api/review/stats'),
 };

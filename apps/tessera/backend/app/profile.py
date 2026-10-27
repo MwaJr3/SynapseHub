@@ -535,7 +535,11 @@ def core_evidence(db: Session, user_id: str) -> tuple[list[dict], list[str]]:
     return axes, missing
 
 
-def serialize_assessment(row: models.Assessment, scores: list[models.AssessmentScore]) -> dict:
+def serialize_assessment(
+    row: models.Assessment,
+    scores: list[models.AssessmentScore],
+    replaced_by: str | None = None,
+) -> dict:
     return {
         "id": row.id,
         "instrument": row.instrument,
@@ -551,6 +555,10 @@ def serialize_assessment(row: models.Assessment, scores: list[models.AssessmentS
         "scale_max": row.scale_max,
         "archived": row.archived_at is not None,
         "archive_reason": row.archive_reason,
+        #: The submission this one replaces, and the one that replaced it. Both are
+        #: ids the client can follow; neither is inferred.
+        "supersedes_id": row.supersedes_id,
+        "replaced_by": replaced_by,
         "created_at": row.created_at.isoformat(),
         "scores": [
             {
@@ -585,6 +593,7 @@ def profile_payload(db: Session, user: models.User) -> dict:
             scores_by_assessment.setdefault(score.assessment_id, []).append(score)
 
     axes, missing = core_evidence(db, user.id)
+    replaced_by = {row.supersedes_id: row.id for row in assessments if row.supersedes_id}
 
     return {
         "learner": {"email": user.email, "display_name": user.display_name},
@@ -593,7 +602,8 @@ def profile_payload(db: Session, user: models.User) -> dict:
         "axes": axes,
         "missing": missing,
         "assessments": [
-            serialize_assessment(row, scores_by_assessment.get(row.id, [])) for row in assessments
+            serialize_assessment(row, scores_by_assessment.get(row.id, []), replaced_by.get(row.id))
+            for row in assessments
         ],
         "instruments": instrument_catalogue(),
         "caveats": list(CAVEATS),

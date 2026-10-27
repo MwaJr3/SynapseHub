@@ -47,7 +47,12 @@ def owner(client):
 
     goal = client.post("/api/goals", json={"title": "Owner's exam in May", "concept_ids": [concept["concept_id"]]})
     assert goal.status_code == 200, goal.text
-    return {"concept_id": concept["concept_id"], "goal_id": goal.json()["id"]}
+    assessment_id = client.get("/api/profile").json()["assessments"][0]["id"]
+    return {
+        "concept_id": concept["concept_id"],
+        "goal_id": goal.json()["id"],
+        "assessment_id": assessment_id,
+    }
 
 
 @pytest.fixture()
@@ -93,6 +98,41 @@ def test_review_queue_is_empty_for_a_learner_who_has_reviewed_nothing(client, ow
     today = client.get("/api/today?available_minutes=30").json()
     review_items = [item for item in today["items"] if item["kind"] == "review"]
     assert review_items == []
+
+
+def test_competency_is_computed_from_one_learners_evidence(client, owner, stranger):
+    """The stranger must not inherit the owner's verdict, its numbers or its gaps.
+
+    A shared competency screen is the most tempting place to leak this: one global
+    aggregate is easy to compute and would tell every learner that somebody else's
+    answers are theirs.
+    """
+    stranger_payload = client.get("/api/competency").json()
+    assert stranger_payload["counts"]["observations"] == 0
+    assert stranger_payload["counts"]["with_evidence"] == 0
+    assert stranger_payload["verdicts"]["secure"] == 0
+    # Unmeasured is `null`, not a borrowed 0.0 or the owner's score.
+    assert all(row["evidence"]["score"] is None for row in stranger_payload["concepts"])
+
+    # The concept detail is readable (it is catalogue material) but empty.
+    detail = client.get(f"/api/competency/{owner['concept_id']}").json()
+    assert detail["evidence"]["observations"] == 0
+    assert detail["observation_log"] == []
+
+
+def test_a_stranger_cannot_reassess_another_learners_submission(client, owner, stranger):
+    blocked = client.post(
+        f"/api/profile/assessments/{owner['assessment_id']}/reassess",
+        json={"scores": [{"axis": "dimension", "name": "mindset", "value": 50.0}]},
+    )
+    assert blocked.status_code == 404
+    assert blocked.json()["detail"] == "assessment not found"
+
+    history = client.get(f"/api/profile/assessments/{owner['assessment_id']}/history")
+    assert history.status_code == 404
+
+    # And nothing was written into the stranger's own account by the attempt.
+    assert client.get("/api/profile").json()["assessments"] == []
 
 
 def test_tutor_threads_are_owner_scoped(client, owner, stranger):

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
+import { CompetencyPage } from './competency';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
 import { ReviewPage } from './review';
@@ -14,6 +15,7 @@ type Route =
   | { name: 'profile' }
   | { name: 'library' }
   | { name: 'review' }
+  | { name: 'competency' }
   | { name: 'knowledge' }
   | { name: 'map' }
   | { name: 'chess' }
@@ -26,6 +28,7 @@ const NAV: { label: string; route: Route }[] = [
   { label: 'Profile', route: { name: 'profile' } },
   { label: 'Library', route: { name: 'library' } },
   { label: 'Review', route: { name: 'review' } },
+  { label: 'Competency', route: { name: 'competency' } },
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
   { label: 'Chess', route: { name: 'chess' } },
@@ -130,6 +133,9 @@ export default function App() {
             )}
             {route.name === 'review' && (
               <ReviewPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
+            )}
+            {route.name === 'competency' && (
+              <CompetencyPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}
             {route.name === 'knowledge' && <KnowledgePage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
             {route.name === 'map' && <MapPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />}
