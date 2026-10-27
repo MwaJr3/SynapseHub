@@ -18,21 +18,24 @@ export default function InstructorPage() {
   const [progress, setProgress] = useState<ProgressRow[]>([])
   const [note, setNote] = useState("")
   const load = () => {
-    api.groups().then((r) => setGroups(r.groups)).catch(() => {})
-    api.templates().then((r) => setTemplates(r.templates)).catch(() => {})
-    api.progress().then((r) => setProgress(r.report)).catch(() => {})
+    // Failures are reported, not dropped. An empty console with no message reads
+    // as "there is nothing here", which is a different and wrong statement.
+    const fail = (error: unknown) => setError(error instanceof Error ? error.message : String(error))
+    api.groups().then((r) => setGroups(r.groups)).catch(fail)
+    api.templates().then((r) => setTemplates(r.templates)).catch(fail)
+    api.progress().then((r) => setProgress(r.report)).catch(fail)
   }
   useEffect(() => { load() }, [])
 
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Instructor console</h1>
-      <div className="notice">{BANNER_HINT}</div>
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
+      <div className="notice">{BANNER_HINT}</div>
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Scenario-safe content editor</h3>
-        <input className="input" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        <input aria-label="Title" className="input" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <select className="input" value={kind} onChange={(e) => setKind(e.target.value)}>
           <option value="phishing_email">Phishing email simulation</option>
           <option value="incident_briefing">Incident briefing</option>
@@ -42,7 +45,7 @@ export default function InstructorPage() {
           value={content} onChange={(e) => setContent(e.target.value)} />
         <textarea className="input" rows={2} placeholder='quiz JSON, e.g. [{"prompt":"Real?","choices":["Yes","No"],"correct":1}]'
           value={quizJson} onChange={(e) => setQuizJson(e.target.value)} />
-        <button className="btn" disabled={!title.trim() || !content.trim()} onClick={async () => {
+        <button aria-describedby="instructor-cyberaware-lab-1-hint" className="btn" disabled={!title.trim() || !content.trim()} onClick={async () => {
           setError(""); setFlash("")
           try {
             const r = await api.createTemplate(title, kind, content, quizJson)
@@ -50,34 +53,37 @@ export default function InstructorPage() {
             setTitle(""); setContent(""); load()
           } catch (e) { setError(String(e)) }
         }}>Save template</button>
+          <span id="instructor-cyberaware-lab-1-hint" className="hint">Fill in the field above to enable this.</span>
       </div>
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Groups &amp; assignments</h3>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <input className="input" placeholder="new group name" id="gname" style={{ maxWidth: "16rem" }} />
+          <input aria-label="New group name" className="input" placeholder="new group name" id="gname" style={{ maxWidth: "16rem" }} />
           <button className="btn secondary" onClick={async () => {
             const el = document.getElementById("gname") as HTMLInputElement
             if (el?.value) { await api.createGroup(el.value); el.value = ""; load() }
           }}>Create group</button>
-          <input className="input" placeholder="member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} style={{ maxWidth: "16rem" }} />
+          <input aria-label="Member email" className="input" placeholder="member email" value={memberEmail} onChange={(e) => setMemberEmail(e.target.value)} style={{ maxWidth: "16rem" }} />
           <select className="input" style={{ maxWidth: "12rem" }} value={groupId} onChange={(e) => setGroupId(e.target.value)}>
             <option value="">group…</option>
             {groups.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
           </select>
-          <button className="btn secondary" disabled={!memberEmail || !groupId} onClick={async () => {
+          <button aria-describedby="instructor-cyberaware-lab-2-hint" className="btn secondary" disabled={!memberEmail || !groupId} onClick={async () => {
             try { await api.addMember(Number(groupId), memberEmail); setMemberEmail(""); setFlash("Member added.") }
             catch (e) { setError(String(e)) }
           }}>Add member</button>
+          <span id="instructor-cyberaware-lab-2-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <select className="input" style={{ maxWidth: "16rem" }} value={templateId} onChange={(e) => setTemplateId(e.target.value)}>
             <option value="">template…</option>
             {templates.map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
           </select>
-          <button className="btn" disabled={!templateId || !groupId} onClick={async () => {
+          <button aria-describedby="instructor-cyberaware-lab-3-hint" className="btn" disabled={!templateId || !groupId} onClick={async () => {
             try { await api.createAssignment(Number(groupId), Number(templateId)); setFlash("Assigned."); load() }
             catch (e) { setError(String(e)) }
           }}>Assign to group</button>
+          <span id="instructor-cyberaware-lab-3-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
       <div className="card">
@@ -86,18 +92,19 @@ export default function InstructorPage() {
           Completion is not proof of lasting awareness — these figures describe recorded activity in this lab.
         </p>
         <table className="table">
-          <thead><tr><th>Group</th><th>Exercise</th><th>Participation</th><th>Avg. checkpoint score</th><th>After-action note</th></tr></thead>
+          <thead><tr><th scope="col">Group</th><th scope="col">Exercise</th><th scope="col">Participation</th><th scope="col">Avg. checkpoint score</th><th scope="col">After-action note</th></tr></thead>
           <tbody>
             {progress.map((p) => (
               <tr key={p.assignment_id}>
                 <td>{p.group}</td><td>{p.title}</td><td>{p.participation}</td>
                 <td>{p.average_score ?? "—"}</td>
                 <td>
-                  <input className="input" placeholder="note" value={note} onChange={(e) => setNote(e.target.value)} style={{ maxWidth: "12rem", display: "inline-block" }} />
-                  <button className="btn secondary" style={{ marginLeft: "0.4rem" }} disabled={!note}
+                  <input aria-label="Note" className="input" placeholder="note" value={note} onChange={(e) => setNote(e.target.value)} style={{ maxWidth: "12rem", display: "inline-block" }} />
+                  <button aria-describedby="instructor-cyberaware-lab-4-hint" className="btn secondary" style={{ marginLeft: "0.4rem" }} disabled={!note}
                     onClick={async () => { await api.addNote(p.assignment_id, note); setNote(""); setFlash("Note saved.") }}>
                     Save
                   </button>
+          <span id="instructor-cyberaware-lab-4-hint" className="hint">Fill in the field above to enable this.</span>
                 </td>
               </tr>
             ))}

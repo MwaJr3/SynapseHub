@@ -65,9 +65,12 @@ export function GamesPage() {
             value={pgn}
             onChange={(e) => setPgn(e.target.value)}
           />
-          <button className="btn-primary" disabled={!pgn.trim()}>
+          <button className="btn-primary" disabled={!pgn.trim()} aria-describedby="import-game-hint">
             Import game
           </button>
+          <p id="import-game-hint" className="text-xs text-slate-400">
+            Paste a PGN to enable import. Analysis is local and nothing is uploaded.
+          </p>
         </form>
       </Card>
       {!games ? (
@@ -147,13 +150,13 @@ function AnalysisView({ analysis }: { analysis: Analysis }) {
         <table className="min-w-full">
           <thead className="bg-slate-900">
             <tr>
-              <th className="th">#</th>
-              <th className="th">Move</th>
-              <th className="th">Side</th>
-              <th className="th">Material after</th>
-              <th className="th">Eval</th>
-              <th className="th">Class</th>
-              <th className="th">Flags</th>
+              <th scope="col" className="th">#</th>
+              <th scope="col" className="th">Move</th>
+              <th scope="col" className="th">Side</th>
+              <th scope="col" className="th">Material after</th>
+              <th scope="col" className="th">Eval</th>
+              <th scope="col" className="th">Class</th>
+              <th scope="col" className="th">Flags</th>
             </tr>
           </thead>
           <tbody>
@@ -176,7 +179,7 @@ function AnalysisView({ analysis }: { analysis: Analysis }) {
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-slate-500">{analysis.disclaimer}</p>
+      <p className="text-xs text-slate-400">{analysis.disclaimer}</p>
     </div>
   );
 }
@@ -221,7 +224,7 @@ export function InsightsPage() {
             ? 'A local UCI engine is available for this deployment.'
             : 'No local UCI engine is available — heuristic analysis only. Evaluations are not invented.'}
         </p>
-        <p className="mt-2 text-xs text-slate-500">{data.disclaimer}</p>
+        <p className="mt-2 text-xs text-slate-400">{data.disclaimer}</p>
       </Card>
     </div>
   );
@@ -292,7 +295,7 @@ export function TrainingPage() {
                   <div key={f.category} className="rounded-lg border border-slate-800 p-3">
                     <div className="flex items-center justify-between gap-2">
                       <div className="font-medium text-slate-100">{f.title}</div>
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-slate-400">
                         {f.count} recorded · {f.phases.join(', ')}
                       </div>
                     </div>
@@ -301,7 +304,7 @@ export function TrainingPage() {
                 ))}
               </div>
             )}
-            <p className="mt-3 text-xs text-slate-500">{plan.note}</p>
+            <p className="mt-3 text-xs text-slate-400">{plan.note}</p>
           </div>
           <div className="card">
             <h2 className="mb-2 font-medium text-emerald-300">Recorded pattern summary</h2>
@@ -318,12 +321,12 @@ export function TrainingPage() {
               ))}
             </div>
             {typeof progress.direction === 'string' ? (
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-slate-400">
                 Blunders in earlier vs later analysed games: {String(progress.early_blunders)} →{' '}
                 {String(progress.recent_blunders)} ({progress.direction}). {String(progress.note ?? '')}
               </p>
             ) : (
-              <p className="mt-2 text-xs text-slate-500">{String(progress.note ?? '')}</p>
+              <p className="mt-2 text-xs text-slate-400">{String(progress.note ?? '')}</p>
             )}
           </div>
         </>
@@ -336,20 +339,20 @@ export function TrainingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-800 text-xs text-slate-500">
-                  <th className="py-2 pr-3">Game</th>
-                  <th className="pr-3">Ply</th>
-                  <th className="pr-3">Move</th>
-                  <th className="pr-3">Classification</th>
-                  <th className="pr-3">Eval drop</th>
-                  <th className="pr-3">Phase</th>
-                  <th className="pr-3">Theme</th>
+                <tr className="border-b border-slate-800 text-xs text-slate-400">
+                  <th scope="col" className="py-2 pr-3">Game</th>
+                  <th scope="col" className="pr-3">Ply</th>
+                  <th scope="col" className="pr-3">Move</th>
+                  <th scope="col" className="pr-3">Classification</th>
+                  <th scope="col" className="pr-3">Eval drop</th>
+                  <th scope="col" className="pr-3">Phase</th>
+                  <th scope="col" className="pr-3">Theme</th>
                 </tr>
               </thead>
               <tbody>
                 {mistakes.map((m) => (
                   <tr key={m.id} className="border-b border-slate-800/60 text-slate-300">
-                    <td className="py-2 pr-3 text-xs text-slate-500 max-w-xs truncate" title={m.pgnText}>
+                    <td className="py-2 pr-3 text-xs text-slate-400 max-w-xs truncate" title={m.pgnText}>
                       #{m.gameId}
                     </td>
                     <td className="pr-3">{m.ply}</td>

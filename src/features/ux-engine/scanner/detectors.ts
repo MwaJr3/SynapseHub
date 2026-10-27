@@ -106,12 +106,27 @@ interface CssRule {
   headerLine: number;
 }
 
+/**
+ * Blank out comments without moving a single character.
+ *
+ * Comments are prose, but the rule parser reads whatever sits before `{` as a
+ * selector, so a sentence like "the bar reports what the learner did" can match the
+ * bare `a` tag and hand a progress bar to the touch-target check. Replacing every
+ * non-newline character keeps the file's line numbers intact for reporting.
+ */
+function withoutCssComments(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, (comment) =>
+    comment.replace(/[^\n]/g, ' '),
+  );
+}
+
 function parseCssRules(source: string): CssRule[] {
   const rules: CssRule[] = [];
+  const text = withoutCssComments(source);
   const regex = /([^{}]+)\{([^{}]*)\}/g;
   let match: RegExpExecArray | null;
-  while ((match = regex.exec(source)) !== null) {
-    const before = source.slice(0, match.index);
+  while ((match = regex.exec(text)) !== null) {
+    const before = text.slice(0, match.index);
     const headerLine = before.split('\n').length;
     rules.push({ selector: match[1]!.trim(), body: match[2]!, headerLine });
   }

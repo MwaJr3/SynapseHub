@@ -22,13 +22,14 @@ export default function ScansPage() {
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Run scan (simulated demo adapter)</h3>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="allowlisted target" value={target} onChange={(e) => setTarget(e.target.value)} />
-          <button className="btn" disabled={!target.trim()} onClick={async () => {
+          <input aria-label="Allowlisted target" className="input" placeholder="allowlisted target" value={target} onChange={(e) => setTarget(e.target.value)} />
+          <button aria-describedby="scans-assetwatch-1-hint" className="btn" disabled={!target.trim()} onClick={async () => {
             try {
               const r = await api.runScan([target], "simulated")
               if (r.error) setError(r.error); else { setTarget(""); load() }
             } catch (e) { setError(String(e)) }
           }}>Scan</button>
+          <span id="scans-assetwatch-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}
       </div>
@@ -43,10 +44,11 @@ export default function ScansPage() {
             <option value="">older run</option>
             {runs.map((r) => <option key={r.id} value={r.id}>#{r.id} {r.target} ({r.adapter})</option>)}
           </select>
-          <button className="btn secondary" disabled={!baseId || !compareId} onClick={async () => {
+          <button aria-describedby="scans-assetwatch-2-hint" className="btn secondary" disabled={!baseId || !compareId} onClick={async () => {
             try { setDiff(await api.diff(Number(baseId), Number(compareId))) }
             catch (e) { setError(String(e)) }
           }}>Compare</button>
+          <span id="scans-assetwatch-2-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         {diff && (
           <div>
@@ -67,7 +69,7 @@ export default function ScansPage() {
         )}
       </div>
       <table className="table card">
-        <thead><tr><th>#</th><th>Target</th><th>Adapter</th><th>Status</th><th>Started</th><th>Limitations</th></tr></thead>
+        <thead><tr><th scope="col">#</th><th scope="col">Target</th><th scope="col">Adapter</th><th scope="col">Status</th><th scope="col">Started</th><th scope="col">Limitations</th></tr></thead>
         <tbody>
           {runs.map((r) => (
             <tr key={r.id}>

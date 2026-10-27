@@ -13,12 +13,15 @@ app = FastAPI(title="PrepWise", docs_url=None, redoc_url=None)
 store = Store("prepwise.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · PrepWise</title>
-<style>body{{font-family:Georgia,serif;max-width:46rem;margin:2rem auto;padding:0 1rem;color:#2b2d42}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:Georgia,serif;max-width:46rem;margin:2rem auto;padding:0 1rem;color:#2b2d42}}
 a{{color:#7b5ea7}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #ddd;padding:.45rem;text-align:left}}
 button,input,select,textarea{{padding:.5rem;border:1px solid #cbb8e8;border-radius:6px}}button{{background:#7b5ea7;color:#fff;border:0;cursor:pointer}}
 .timer{{font-variant-numeric:tabular-nums;font-size:2rem}}.card{{border:1px solid #e4dcf4;border-radius:8px;padding:1rem;margin:.6rem 0}}</style>
 </head><body><header><strong><a href="/" style="color:#2b2d42;text-decoration:none">PrepWise</a></strong> · interview preparation (demo content)</header>
-<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#8d8a9e">Demo content is simulated. Self-scores are learner
+<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#5c6473">Demo content is simulated. Self-scores are learner
 estimates, not verified performance. Spaced review uses Leitner-style boxes — an educational heuristic.</footer></body></html>"""
 
 
@@ -41,8 +44,8 @@ async def index(request: Request):
                    for q in qs) or "<p>No questions match those filters.</p>"
     return page("home", f"<h1>Question bank</h1>"
                 f"<form method='get' action='/'>"
-                f"<input name='company' placeholder='company' value='{company}'>"
-                f"<input name='role' placeholder='role' value='{role}'>"
+                f"<label>Company<input name='company' placeholder='company' value='{company}'></label>"
+                f"<label>Role<input name='role' placeholder='role' value='{role}'></label>"
                 f"<select name='difficulty'><option value=''>any</option>" +
                 "".join(f"<option {'selected' if difficulty == d else ''}>{d}</option>" for d in ("easy", "medium", "hard")) +
                 f"</select><button>Filter</button></form>"
@@ -57,7 +60,7 @@ async def mock_form():
                 "<select name='company'><option>any</option><option>Acme</option><option>Globex</option></select>"
                 "<select name='role'><option>any</option><option>SWE</option><option>Data</option></select>"
                 "<select name='difficulty'><option value=''>any</option><option>easy</option><option>medium</option><option>hard</option></select>"
-                "<input name='minutes' type='number' value='30' min='5' max='180'>"
+                "<label>Minutes to study<input name='minutes' type='number' value='30' min='5' max='180'></label>"
                 "<button>Start</button></form>")
 
 
@@ -117,7 +120,7 @@ async def review_due():
                    f"<td><form method='post' action='/review/{d['question_id']}?remembered=1'><button>remembered</button></form></td>"
                    f"<td><form method='post' action='/review/{d['question_id']}?remembered=0'><button style='background:#9d6b6b'>needs work</button></form></td></tr>"
                    for d in due) or "<tr><td colspan=5>Nothing due — nothing overdue is hidden.</td></tr>"
-    return page("due", f"<h1>Spaced review — due now</h1><table><tr><th>Q</th><th>box</th><th>due</th><th colspan=2>mark</th></tr>{rows}</table>")
+    return page("due", f"<h1>Spaced review — due now</h1><table><tr><th scope='col'>Q</th><th scope='col'>box</th><th scope='col'>due</th><th scope='col' colspan=2>mark</th></tr>{rows}</table>")
 
 
 @app.get("/api/health")

@@ -1,0 +1,6 @@
+{
+  "$schema": "./northstar-ux-engine/schema.json",
+  "gate": "P1",
+  "ignore": [],
+  "report": "docs/ux/audit-repository.md"
+}

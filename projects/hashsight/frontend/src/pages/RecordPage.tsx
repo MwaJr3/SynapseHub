@@ -16,7 +16,7 @@ export default function RecordPage() {
   useEffect(() => { load() }, [id])
 
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!rec) return <p>Loading…</p>
+  if (!rec) return <p className="loading" role="status" aria-live="polite">Loading Record…</p>
 
   async function exportReport() {
     const report = await api.report(rec!.id)
@@ -41,7 +41,7 @@ export default function RecordPage() {
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Provider results</h3>
         <table className="table">
-          <thead><tr><th>Provider</th><th>Verdict</th><th>Detections</th><th>Looked up</th><th>Summary</th></tr></thead>
+          <thead><tr><th scope="col">Provider</th><th scope="col">Verdict</th><th scope="col">Detections</th><th scope="col">Looked up</th><th scope="col">Summary</th></tr></thead>
           <tbody>
             {rec.lookups.map((l, i) => (
               <tr key={i}>
@@ -65,18 +65,20 @@ export default function RecordPage() {
           </select>
         </label>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="investigation note" value={note} onChange={(e) => setNote(e.target.value)} />
-          <button className="btn secondary" onClick={async () => {
+          <input aria-label="Investigation note" className="input" placeholder="investigation note" value={note} onChange={(e) => setNote(e.target.value)} />
+          <button aria-describedby="record-hashsight-1-hint" className="btn secondary" onClick={async () => {
             const c = await api.createCase(`Notes for ${rec!.filename}`, rec!.id)
             await api.addNote(c.id, note)
             setNote(""); setFlash("Note saved to a new case.")
           }} disabled={!note.trim()}>Save note to case</button>
+          <span id="record-hashsight-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="new case title" value={caseTitle} onChange={(e) => setCaseTitle(e.target.value)} />
-          <button className="btn secondary" onClick={async () => {
+          <input aria-label="New case title" className="input" placeholder="new case title" value={caseTitle} onChange={(e) => setCaseTitle(e.target.value)} />
+          <button aria-describedby="record-hashsight-2-hint" className="btn secondary" onClick={async () => {
             await api.createCase(caseTitle, rec!.id); setCaseTitle(""); setFlash("Case created.")
           }} disabled={!caseTitle.trim()}>Create case</button>
+          <span id="record-hashsight-2-hint" className="hint">Fill in the field above to enable this.</span>
           <button className="btn" onClick={exportReport}>Export report</button>
         </div>
         {flash && <p role="status" style={{ color: "#1b5e34", margin: 0 }}>{flash}</p>}

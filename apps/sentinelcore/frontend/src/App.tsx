@@ -78,7 +78,7 @@ function AuthScreen({ onSignedIn }: { onSignedIn: (user: User) => void }) {
         <button className="btn-primary w-full justify-center" disabled={busy}>
           {busy ? 'Working…' : mode === 'login' ? 'Sign in' : 'Create account'}
         </button>
-        <p className="text-xs text-slate-500">New accounts start as viewers; an admin can assign analyst or admin roles.</p>
+        <p className="text-xs text-slate-400">New accounts start as viewers; an admin can assign analyst or admin roles.</p>
         <button type="button" className="btn-ghost w-full justify-center" onClick={() => setMode(mode === 'login' ? 'register' : 'login')}>
           {mode === 'login' ? 'Need an account? Register' : 'Have an account? Sign in'}
         </button>
@@ -116,13 +116,14 @@ export default function App() {
       <aside className="border-b border-slate-800 bg-slate-900/60 p-4 md:w-56 md:border-b-0 md:border-r">
         <div className="mb-4 px-2">
           <div className="text-lg font-semibold text-sky-300">SentinelCore</div>
-          <div className="text-xs text-slate-500">Security operations</div>
+          <div className="text-xs text-slate-400">Security operations</div>
         </div>
         <nav className="flex gap-1 overflow-x-auto md:flex-col">
           {visibleNav.map((item) => (
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
+              aria-current={route === item.id ? 'page' : undefined}
               className={`rounded-lg px-3 py-2 text-left text-sm whitespace-nowrap ${
                 route === item.id ? 'bg-sky-950 text-sky-200' : 'text-slate-300 hover:bg-slate-800'
               }`}

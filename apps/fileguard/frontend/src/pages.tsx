@@ -120,7 +120,7 @@ export function OverviewPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         A hash match proves byte-identity with the baseline only — never that a file is safe. Baselines are trusted only
         when their integrity and origin are protected.
       </p>
@@ -176,7 +176,7 @@ export function WorkspacesPage() {
                 <div>
                   <div className="font-medium">{w.name}</div>
                   <p className="text-sm text-slate-400">{w.description}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     {w.file_count} files · {w.baseline_count} baselines · {w.scan_count} scans · created{' '}
                     {formatTimestamp(w.created_at)}
                   </p>
@@ -246,7 +246,7 @@ export function FilesPage() {
               Upload
             </button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">Never executed. Type and size limits are enforced server-side.</p>
+          <p className="mt-2 text-xs text-slate-400">Never executed. Type and size limits are enforced server-side.</p>
         </Card>
       </div>
       {!files ? (
@@ -335,7 +335,7 @@ export function BaselinesPage() {
             </Field>
             <button className="btn-primary">Create baseline</button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-400">
             A baseline is a versioned hash manifest. Its value depends on protecting its integrity and origin.
           </p>
         </Card>
@@ -398,6 +398,7 @@ export function ScansPage() {
     [openScan],
   );
   const [actionError, setActionError] = useState('');
+  const [blocked, setBlocked] = useState('');
 
   return (
     <div className="space-y-4">
@@ -409,9 +410,18 @@ export function ScansPage() {
         </div>
         <button
           className="btn-primary"
-          disabled={!baselines || baselines.length === 0}
           onClick={async () => {
-            if (!baselines || baselines.length === 0 || !selected) return;
+            if (!selected) {
+              setBlocked('Choose a workspace first — a scan is scoped to one workspace.');
+              return;
+            }
+            if (!baselines || baselines.length === 0) {
+              // Explain instead of disabling: a disabled button is skipped by the
+              // keyboard and by screen readers, so the blocker would be invisible.
+              setBlocked('This workspace has no baseline yet. Record a baseline before scanning for changes.');
+              return;
+            }
+            setBlocked('');
             try {
               const latest = baselines[baselines.length - 1];
               if (!latest) return;
@@ -425,6 +435,11 @@ export function ScansPage() {
         >
           Run scan vs latest baseline
         </button>
+        {blocked ? (
+          <p role="status" className="text-xs text-amber-300">
+            {blocked}
+          </p>
+        ) : null}
       </div>
       {!scans ? (
         <Loading />
@@ -518,7 +533,7 @@ export function FindingsPage() {
                   </div>
                   <p className="mt-1 text-sm text-slate-300">{f.explanation}</p>
                   {f.expected_sha256 ? (
-                    <p className="mt-1 font-mono text-xs text-slate-500">
+                    <p className="mt-1 font-mono text-xs text-slate-400">
                       expected {shortHash(f.expected_sha256)} → observed {shortHash(f.observed_sha256)}
                     </p>
                   ) : null}
@@ -590,7 +605,7 @@ export function ReportsPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Reports state exactly which comparison produced each finding. A matching hash proves byte-identity with the
         baseline record only — it does not prove a file is safe or free of malware.
       </p>
@@ -608,7 +623,7 @@ export function SettingsPage({ user }: { user: User }) {
         <p className="text-sm text-slate-300">
           {user.display_name} · <span className="text-slate-400">{user.email}</span>
         </p>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           scrypt password hashing, httpOnly cookie sessions, and per-user workspaces enforced server-side.
         </p>
       </Card>

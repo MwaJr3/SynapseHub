@@ -10,6 +10,7 @@
   --accent: #3b6fd4;
   --accent-strong: #2f5ab0;
   --accent-soft: #eef4ff;
+  --danger: #b42318;
 }
 
 html.dark {
@@ -21,6 +22,7 @@ html.dark {
   --accent: #7ea6f0;
   --accent-strong: #9dbaf5;
   --accent-soft: #1b2740;
+  --danger: #f0887d;
 }
 
 html[data-company='velaqori-systems'] {
@@ -60,6 +62,9 @@ body {
   }
   .text-muted {
     color: var(--ink-muted);
+  }
+  .text-danger {
+    color: var(--danger);
   }
   .border-line {
     border-color: var(--line);

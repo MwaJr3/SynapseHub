@@ -16,7 +16,8 @@ const NAV: { id: Route; label: string }[] = [
 
 function useHashRoute(): [Route, (route: Route) => void] {
   const read = (): Route => {
-    const hash = window.location.hash.replace('#/', '') as Route;
+    // The hash carries the route and, after it, a query for view state (page).
+    const hash = window.location.hash.replace('#/', '').split('?')[0] as Route;
     return NAV.some((n) => n.id === hash) ? hash : 'overview';
   };
   const [route, setRoute] = useState<Route>(read);
@@ -128,13 +129,14 @@ export default function App() {
       <aside className="border-b border-slate-800 bg-slate-900/60 p-4 md:w-56 md:border-b-0 md:border-r">
         <div className="mb-4 px-2">
           <div className="text-lg font-semibold text-cyan-300">SentinelLog</div>
-          <div className="text-xs text-slate-500">Security Log Analyzer</div>
+          <div className="text-xs text-slate-400">Security Log Analyzer</div>
         </div>
         <nav className="flex gap-1 overflow-x-auto md:flex-col">
           {NAV.map((item) => (
             <button
               key={item.id}
               onClick={() => navigate(item.id)}
+              aria-current={route === item.id ? 'page' : undefined}
               className={`rounded-lg px-3 py-2 text-left text-sm whitespace-nowrap ${
                 route === item.id ? 'bg-cyan-950 text-cyan-200' : 'text-slate-300 hover:bg-slate-800'
               }`}

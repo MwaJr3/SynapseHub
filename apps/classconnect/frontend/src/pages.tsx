@@ -69,7 +69,7 @@ export function SchedulePage({ user }: { user: User }) {
             <input className="input" type="datetime-local" aria-label="Session start date and time" value={sessionStart} onChange={(e) => setSessionStart(e.target.value)} />
             <button className="btn-primary">Create</button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">Times are stored in UTC and displayed in your local timezone. Overlapping sessions are rejected as conflicts.</p>
+          <p className="mt-2 text-xs text-slate-400">Times are stored in UTC and displayed in your local timezone. Overlapping sessions are rejected as conflicts.</p>
         </Card>
       ) : null}
       <div className="grid gap-3 lg:grid-cols-2">
@@ -201,6 +201,10 @@ export function RoomPage({ user }: { user: User }) {
 
 function FollowUp({ sessionId }: { sessionId: number }) {
   const [assignments, error] = useAsync(() => api.assignments(sessionId), [sessionId]);
+  // The result of a submission is announced inline, next to the button that caused
+  // it. `alert()` blocked the page and told a screen reader nothing about which
+  // assignment it referred to.
+  const [status, setStatus] = useState<{ id: number; message: string } | null>(null);
   return (
     <div>
       {error ? <ErrorBanner message={error} /> : null}
@@ -210,11 +214,17 @@ function FollowUp({ sessionId }: { sessionId: number }) {
             <strong>{a.title}</strong> — {a.body}
             <button className="btn-ghost ml-2" onClick={async () => {
               const body = window.prompt('Your submission:');
-              if (body) { await api.submit(a.id, body); alert('Submitted.'); }
+              if (body) {
+                await api.submit(a.id, body);
+                setStatus({ id: a.id, message: 'Submitted.' });
+              }
             }}>Submit</button>
+            {status?.id === a.id ? (
+              <p role="status" className="mt-1 text-slate-400">{status.message}</p>
+            ) : null}
           </li>
         ))}
-        {(assignments ?? []).length === 0 ? <li className="text-xs text-slate-500">No follow-up assignments yet.</li> : null}
+        {(assignments ?? []).length === 0 ? <li className="text-xs text-slate-400">No follow-up assignments yet.</li> : null}
       </ul>
     </div>
   );

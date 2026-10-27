@@ -12,12 +12,15 @@ app = FastAPI(title="DocSage", docs_url=None, redoc_url=None)
 store = Store("docsage.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · DocSage</title>
-<style>body{{font-family:Georgia,serif;max-width:48rem;margin:2rem auto;padding:0 1rem;color:#322f3d}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:Georgia,serif;max-width:48rem;margin:2rem auto;padding:0 1rem;color:#322f3d}}
 a{{color:#7d5ba6}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #e2dcee;padding:.45rem;text-align:left}}
 button,input,textarea,select{{padding:.5rem;border:1px solid #c4b8de;border-radius:6px}}button{{background:#7d5ba6;color:#fff;border:0;cursor:pointer}}
 .badge{{background:#f0ebf7;padding:.15rem .5rem;border-radius:99px;font-size:.8rem}}.cite{{background:#f7f5fb;border-left:3px solid #7d5ba6;padding:.5rem;margin:.35rem 0;font-size:.9rem}}</style>
 </head><body><header><strong><a href="/" style="color:#322f3d;text-decoration:none">DocSage</a></strong> · team knowledge base (demo workspace)</header>
-<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#7c748c">Internal knowledge base. Sources/citations are recorded with
+<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#5c6473">Internal knowledge base. Sources/citations are recorded with
 each page; URLs must be on the configured allowlist. Search is offline keyword ranking (not semantic embeddings). Demo workspace with simulated content.</footer></body></html>"""
 
 
@@ -34,13 +37,13 @@ async def index(request: Request):
         rows = "".join(f"<tr><td><a href='/page/{r['id']}'>{r['title']}</a></td><td>{r['status']}</td>"
                        f"<td>{r['visibility']}</td><td>{r['score']}</td><td>{r['snippet']}</td></tr>"
                        for r in results) or "<tr><td colspan=5>no results</td></tr>"
-        body = f"<h1>Search: {q}</h1><table><tr><th>title</th><th>status</th><th>visibility</th><th>score</th><th>snippet</th></tr>{rows}</table>"
+        body = f"<h1>Search: {q}</h1><table><tr><th scope='col'>title</th><th scope='col'>status</th><th scope='col'>visibility</th><th scope='col'>score</th><th scope='col'>snippet</th></tr>{rows}</table>"
     else:
         pages = store.conn.execute("SELECT * FROM pages ORDER BY id").fetchall()
         rows = "".join(f"<tr><td><a href='/page/{p['id']}'>{p['title']}</a></td><td>{p['status']}</td>"
                        f"<td>{p['visibility']}</td><td>{p['owner']}</td></tr>" for p in pages) or "<tr><td colspan=4>no pages</td></tr>"
-        body = f"<h1>Pages</h1><table><tr><th>title</th><th>status</th><th>visibility</th><th>owner</th></tr>{rows}</table>"
-    body += ("<form method='get' action='/'><input name='q' placeholder='search (keyword ranking)' value='" + q + "'>"
+        body = f"<h1>Pages</h1><table><tr><th scope='col'>title</th><th scope='col'>status</th><th scope='col'>visibility</th><th scope='col'>owner</th></tr>{rows}</table>"
+    body += ("<form method='get' action='/'><label>Search<input name='q' placeholder='search (keyword ranking)' value='" + q + "'></label>"
              "<select name='role'><option value='member'>member</option><option value='admin'>admin</option></select>"
              "<button>Search</button></form>")
     body += "<p><a href='/page/new'>New page</a> · <a href='/export'>Export JSON</a> · <a href='/import'>Import JSON</a></p>"
@@ -50,7 +53,7 @@ async def index(request: Request):
 @app.get("/page/new", response_class=HTMLResponse)
 async def new_form():
     return page("new", "<h1>New page</h1><form method='post' action='/page/new'>"
-                "<input name='owner' placeholder='owner' required><input name='title' placeholder='title' required>"
+                "<label>Owner<input name='owner' placeholder='owner' required></label><label>Title<input name='title' placeholder='title' required></label>"
                 "<textarea name='body' rows='8' placeholder='body' required></textarea>"
                 "<select name='visibility'><option>team</option><option>restricted</option></select>"
                 "<button>Create</button></form>")
@@ -78,13 +81,13 @@ async def page_view(page_id: int):
             f"<span class='badge'>{row['visibility']}</span> · owner {row['owner']}</p>"
             f"<p>{row['body']}</p><h2>Sources / citations</h2>{cite_html}"
             "<form method='post' action='/page/" + str(page_id) + "/source'>"
-            "<input name='label' placeholder='label' required><input name='locator' placeholder='locator / URL' required>"
+            "<label>Label<input name='label' placeholder='label' required></label><label>Locator or URL<input name='locator' placeholder='locator / URL' required></label>"
             "<select name='kind'><option>internal</option><option>configured-url</option></select>"
             "<button>Add source</button></form>")
     body += "<h2>Review status</h2><p>"
     for st in ("draft", "in_review", "published"):
         body += (f"<form style='display:inline' method='post' action='/page/{page_id}/status'>"
-                 f"<input type='hidden' name='status' value='{st}'><input name='actor' value='reviewer' style='width:6rem'>"
+                 f"<input type='hidden' name='status' value='{st}'><label>Actor<input name='actor' value='reviewer' style='width:6rem'></label>"
                  f"<button>{st}</button></form> ")
     body += "</p><h2>Version history</h2><ol>" + "".join(
         f"<li>{d['saved_at']} — title changed: {d['title_changed']}, body Δ {d['body_delta_chars']:+d} chars</li>" for d in diffs) + "</ol>"

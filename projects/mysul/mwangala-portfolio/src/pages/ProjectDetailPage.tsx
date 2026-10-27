@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getAdjacentProjects, getProject, projects } from '@/data/projects';
 import type { Project } from '@/types/project';
 import { skillsByProject } from '@/data/skills';
 import { usePageMeta } from '@/lib/seo';
+import { useScrollSpy } from '@/hooks/useScrollSpy';
 import { isUsableLink } from '@/lib/links';
 import { cn } from '@/lib/cn';
 import { Container, Section } from '@/components/ui/Layout';
@@ -603,48 +604,3 @@ function AdjacentLink({
   );
 }
 
-/* ------------------------------------------------------------- scroll spy -- */
-
-function useScrollSpy(ids: readonly string[]) {
-  const [active, setActive] = useState<string>(ids[0] ?? '');
-  const frame = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (typeof IntersectionObserver !== 'function') return;
-
-    const elements = ids
-      .map((id) => document.getElementById(id))
-      .filter((element): element is HTMLElement => element !== null);
-    if (elements.length === 0) return;
-
-    const visible = new Map<string, number>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          visible.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
-        }
-        if (frame.current !== null) cancelAnimationFrame(frame.current);
-        frame.current = requestAnimationFrame(() => {
-          let best = '';
-          let bestRatio = 0;
-          for (const [id, ratio] of visible) {
-            if (ratio > bestRatio) {
-              bestRatio = ratio;
-              best = id;
-            }
-          }
-          if (best) setActive(best);
-        });
-      },
-      { rootMargin: '-96px 0px -55% 0px', threshold: [0, 0.15, 0.4, 0.75, 1] },
-    );
-
-    elements.forEach((element) => observer.observe(element));
-    return () => {
-      observer.disconnect();
-      if (frame.current !== null) cancelAnimationFrame(frame.current);
-    };
-  }, [ids]);
-
-  return active;
-}

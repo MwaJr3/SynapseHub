@@ -22,7 +22,7 @@ export default function IndicatorsPage() {
         review — it is not proof that an indicator is malicious. Triage is a human judgment.
       </div>
       <div style={{ display: "flex", gap: "0.75rem" }}>
-        <input className="input" placeholder="search value" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input aria-label="Search value" className="input" placeholder="search value" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ maxWidth: "14rem" }} value={triage} onChange={(e) => setTriage(e.target.value)}>
           <option value="">all triage states</option>
           <option>unreviewed</option><option>suspicious</option><option>confirmed-malicious</option>
@@ -33,7 +33,7 @@ export default function IndicatorsPage() {
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>No indicators yet — ingest feed data on the Feeds screen.</p> : (
         <table className="table card">
-          <thead><tr><th>Value</th><th>Kind</th><th>Sources</th><th>Triage</th><th>Case</th><th>Last seen</th></tr></thead>
+          <thead><tr><th scope="col">Value</th><th scope="col">Kind</th><th scope="col">Sources</th><th scope="col">Triage</th><th scope="col">Case</th><th scope="col">Last seen</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} style={{ cursor: "pointer" }} onClick={async () => {
@@ -67,8 +67,8 @@ export default function IndicatorsPage() {
             </select>
           </label>
           <div style={{ display: "flex", gap: "0.75rem" }}>
-            <input className="input" placeholder="case reference" value={caseRef} onChange={(e) => setCaseRef(e.target.value)} style={{ maxWidth: "12rem" }} />
-            <input className="input" placeholder="analyst notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <input aria-label="Case reference" className="input" placeholder="case reference" value={caseRef} onChange={(e) => setCaseRef(e.target.value)} style={{ maxWidth: "12rem" }} />
+            <input aria-label="Analyst notes" className="input" placeholder="analyst notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
             <button className="btn secondary" onClick={async () => {
               await api.patch(open.id, open.triage, caseRef, notes); setFlash("Saved.")
             }}>Save</button>

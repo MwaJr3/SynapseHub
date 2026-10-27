@@ -13,7 +13,10 @@ app = FastAPI(title="CreateDesk", docs_url=None, redoc_url=None)
 store = Store("creadesk.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · CreateDesk</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:48rem;margin:2rem auto;padding:0 1rem;color:#22333b}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:system-ui,sans-serif;max-width:48rem;margin:2rem auto;padding:0 1rem;color:#22333b}}
 a{{color:#0a6c74}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #d6e2e4;padding:.45rem;text-align:left}}
 button,input,textarea,select{{padding:.5rem;border:1px solid #9fbfc3;border-radius:6px}}button{{background:#0a6c74;color:#fff;border:0;cursor:pointer}}
 .badge{{background:#e7f0f1;padding:.15rem .5rem;border-radius:99px;font-size:.8rem}}.warn{{background:#fff3cd;padding:.55rem;border-radius:6px;margin:.4rem 0}}</style>
@@ -33,15 +36,15 @@ async def index():
     rows = "".join(f"<tr><td><a href='/post/{p['id']}'>{p['title']}</a></td><td>{p['author']}</td>"
                    f"<td><span class='badge'>{p['state']}</span></td><td>{p['scheduled_at'] or '—'}</td></tr>"
                    for p in posts) or "<tr><td colspan=4>no posts</td></tr>"
-    return page("home", f"<h1>Posts</h1><table><tr><th>title</th><th>author</th><th>state</th><th>scheduled</th></tr>{rows}</table>"
+    return page("home", f"<h1>Posts</h1><table><tr><th scope='col'>title</th><th scope='col'>author</th><th scope='col'>state</th><th scope='col'>scheduled</th></tr>{rows}</table>"
                 "<p><a href='/post/new'>New post</a> · <a href='/calendar'>Calendar</a></p>")
 
 
 @app.get("/post/new", response_class=HTMLResponse)
 async def new_form():
     return page("new", "<h1>New post</h1><form method='post' action='/post/new'>"
-                "<input name='author' placeholder='author' required>"
-                "<input name='title' placeholder='title' required>"
+                "<label>Author<input name='author' placeholder='author' required></label>"
+                "<label>Title<input name='title' placeholder='title' required></label>"
                 "<textarea name='body' placeholder='body (>= 40 chars)' rows='8' required></textarea>"
                 "<button>Create draft</button></form>")
 
@@ -72,10 +75,10 @@ async def post_page(post_id: int):
                          ("published", "editor"), ("archived", "editor")):
         body += (f"<form style='display:inline' method='post' action='/post/{post_id}/move'>"
                  f"<input type='hidden' name='target' value='{target}'><input type='hidden' name='role' value='{role}'>"
-                 f"<input name='actor' placeholder='actor' value='{role}' style='width:6rem'>"
+                 f"<label>Actor<input name='actor' placeholder='actor' value='{role}' style='width:6rem'></label>"
                  f"<button>{target} ({role})</button></form> ")
     body += "</p><h2>Schedule</h2><form method='post' action='/post/{post_id}/schedule'>" \
-            "<input name='when' placeholder='YYYY-MM-DDTHH:MM'><button>Set schedule</button></form>"
+            "<label>When (YYYY-MM-DDTHH:MM)<input name='when' placeholder='YYYY-MM-DDTHH:MM'></label><button>Set schedule</button></form>"
     body += "<h2>Version history</h2><ol>" + "".join(
         f"<li>{d['saved_at']} — {d['note']}: title changed: {d['title_changed']}, body {d['body_chars_before']}→{d['body_chars_after']} chars ({d['added']:+d})</li>"
         for d in diffs) + "</ol>"
@@ -113,7 +116,7 @@ async def history(post_id: int):
 async def calendar():
     rows = "".join(f"<tr><td>{c['scheduled_at']}</td><td>{c['title']}</td><td>{c['state']}</td></tr>"
                    for c in store.calendar()) or "<tr><td colspan=3>nothing scheduled</td></tr>"
-    return page("calendar", f"<h1>Editorial calendar</h1><table><tr><th>when</th><th>title</th><th>state</th></tr>{rows}</table>")
+    return page("calendar", f"<h1>Editorial calendar</h1><table><tr><th scope='col'>when</th><th scope='col'>title</th><th scope='col'>state</th></tr>{rows}</table>")
 
 
 @app.get("/api/health")

@@ -1,0 +1,17 @@
+{
+  "description": "Blocks the commands the engine's contract forbids before the user has authorised them: commits, pushes, deploys and recursive deletes. Pure string matching on the Bash payload; no state, no network.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard-writes.mjs\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

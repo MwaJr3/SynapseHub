@@ -16,7 +16,7 @@ export default function LearnerHomePage() {
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>No assignments yet — your instructor will add them.</p> : (
         <table className="table card">
-          <thead><tr><th>Exercise</th><th>Type</th><th>Due</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th scope="col">Exercise</th><th scope="col">Type</th><th scope="col">Due</th><th scope="col">Status</th><th scope="col"></th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>

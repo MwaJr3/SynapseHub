@@ -148,7 +148,7 @@ export function OverviewPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Detections are suspicious patterns produced by configurable rules — not proof of an attack.{' '}
         <button className="underline" onClick={reload}>
           Refresh
@@ -234,13 +234,13 @@ export function DatasetsPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Name</th>
-                <th className="th">File</th>
-                <th className="th">Format</th>
-                <th className="th">Events</th>
-                <th className="th">Parse errors</th>
-                <th className="th">Uploaded</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">File</th>
+                <th scope="col" className="th">Format</th>
+                <th scope="col" className="th">Events</th>
+                <th scope="col" className="th">Parse errors</th>
+                <th scope="col" className="th">Uploaded</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -251,8 +251,8 @@ export function DatasetsPage() {
                     {d.original_filename} · {formatBytes(d.size_bytes)}
                   </td>
                   <td className="td">{d.file_format}</td>
-                  <td className="td">{d.record_count}</td>
-                  <td className="td">
+                  <td className="td-num">{d.record_count}</td>
+                  <td className="td-num">
                     {d.error_count > 0 ? (
                       <Badge tone="bg-amber-950 text-amber-300 border border-amber-800">{d.error_count}</Badge>
                     ) : (
@@ -285,13 +285,42 @@ export function DatasetsPage() {
 
 /* ------------------------------- Events ------------------------------- */
 
+/**
+ * The event log's page number, kept in the hash so the view can be refreshed,
+ * shared or reached with the back button.
+ *
+ * This app routes with `window.location.hash` rather than a router, so the query
+ * lives after the route: `#/events?page=3`. The hash is the single source of truth;
+ * the state below only mirrors it so a change re-renders.
+ */
+function useHashPage(): [number, (next: number) => void] {
+  const read = () => {
+    const match = /[?&]page=(\d+)/.exec(window.location.hash);
+    const value = Number(match?.[1] ?? '1');
+    return Number.isFinite(value) && value > 0 ? value : 1;
+  };
+  const [page, setPageState] = useState(read);
+  useEffect(() => {
+    const onHash = () => setPageState(read());
+    window.addEventListener('hashchange', onHash);
+    return () => window.removeEventListener('hashchange', onHash);
+  }, []);
+  const setPage = useCallback((next: number) => {
+    const target = Math.max(next, 1);
+    const base = window.location.hash.replace(/\?.*$/, '') || '#/events';
+    window.location.hash = `${base}?page=${target}`;
+    setPageState(target);
+  }, []);
+  return [page, setPage];
+}
+
 export function EventsPage() {
   const [datasets, datasetsError] = useAsync(() => api.datasets(), []);
   const [datasetId, setDatasetId] = useState<number | null>(null);
   const selected = datasetId ?? datasets?.[0]?.id ?? null;
   const [query, setQuery] = useState('');
   const [eventType, setEventType] = useState('');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useHashPage();
   const [expanded, setExpanded] = useState<number | null>(null);
   const [result, error, reload] = useAsync(
     () =>
@@ -357,11 +386,11 @@ export function EventsPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Time</th>
-                <th className="th">Type</th>
-                <th className="th">User</th>
-                <th className="th">Source IP</th>
-                <th className="th">Message</th>
+                <th scope="col" className="th">Time</th>
+                <th scope="col" className="th">Type</th>
+                <th scope="col" className="th">User</th>
+                <th scope="col" className="th">Source IP</th>
+                <th scope="col" className="th">Message</th>
               </tr>
             </thead>
             <tbody>
@@ -573,7 +602,7 @@ export function RulesPage() {
                     <Badge tone="bg-slate-800 text-slate-300 border border-slate-700">{rule.rule_type}</Badge>
                   </div>
                   <p className="mt-1 text-sm text-slate-300">{rule.description}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     Threshold {rule.threshold} within {rule.window_minutes} minutes
                   </p>
                   {rule.runbook ? <p className="mt-2 text-xs text-slate-400">Investigation: {rule.runbook}</p> : null}
@@ -643,8 +672,12 @@ export function ReportsPage() {
               <p className="text-sm text-slate-400">Import a dataset first.</p>
             )}
           </div>
+          <p id="report-hint" className="text-xs text-slate-400">
+            A report needs at least one dataset; upload one to enable this button.
+          </p>
           <button
             className="btn-primary"
+            aria-describedby="report-hint"
             disabled={!datasets || datasets.length === 0}
             onClick={async () => {
               try {
@@ -681,7 +714,7 @@ export function ReportsPage() {
                     <span className="text-rose-300">Failures: {report.summary.counts.failed_logins}</span>
                     <span className="text-amber-300">Patterns: {report.summary.counts.suspicious_patterns}</span>
                   </div>
-                  <p className="mt-2 max-w-2xl text-xs text-slate-500">{report.summary.disclaimer}</p>
+                  <p className="mt-2 max-w-2xl text-xs text-slate-400">{report.summary.disclaimer}</p>
                 </div>
                 <div className="flex gap-2">
                   <a className="btn-ghost" href={`/api/reports/${report.id}/export.json`}>
@@ -710,7 +743,7 @@ export function SettingsPage({ user }: { user: User }) {
         <p className="text-sm text-slate-300">
           {user.display_name} · <span className="text-slate-400">{user.email}</span>
         </p>
-        <p className="mt-2 text-xs text-slate-500">
+        <p className="mt-2 text-xs text-slate-400">
           Passwords are hashed with scrypt server-side. Sessions use httpOnly cookies. All datasets, rules, findings and
           reports are private to this account and enforced server-side.
         </p>
@@ -729,7 +762,7 @@ export function SettingsPage({ user }: { user: User }) {
           <li><b>success_after_failures</b> — success following repeated failures for an account.</li>
           <li><b>error_spike</b> — a concentration of error events in a window.</li>
         </ul>
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-400">
           Every match is reported as a suspicious pattern. See docs/DETECTION_LOGIC.md for the exact comparisons and
           their limitations.
         </p>

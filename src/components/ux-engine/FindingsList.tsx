@@ -53,7 +53,7 @@ export function FindingsList({
               key={`${pass.ruleId}-${index}`}
               className="rounded-card border border-line bg-panel p-3 text-xs text-ink-muted"
             >
-              <span className="font-mono text-2xs uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <span className="font-mono text-2xs uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                 pass · {pass.ruleId}
               </span>
               <p className="mt-1">{pass.evidence}</p>
