@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Finding, type Project, type User } from './api';
 import { formatTimestamp, remediationTone, scanStatusTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
@@ -114,7 +114,7 @@ export function OverviewPage() {
           </ul>
         )}
       </Card>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         Findings are scanner output, not proof of exploitability. No findings does not prove a dependency is safe.
       </p>
     </div>
@@ -174,7 +174,7 @@ export function ProjectsPage() {
                 <div>
                   <div className="font-medium">{p.name}</div>
                   <p className="text-sm text-slate-400">{p.description}</p>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-slate-400">
                     {p.manifest_count} manifests · {p.scan_count} scans · {p.finding_count} findings
                     {p.repository_ref ? ` · ${p.repository_ref}` : ''}
                   </p>
@@ -239,7 +239,7 @@ export function ManifestsPage() {
               Upload
             </button>
           </form>
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-400">
             Manifests are read as text only — uploaded projects are never installed and no code is executed.
           </p>
         </Card>
@@ -304,11 +304,12 @@ export function ManifestsPage() {
 /* -------------------------------- Scans -------------------------------- */
 
 export function ScansPage() {
-  const [projects, wsError, reloadProjects, selected] = useProjectSelection();
+  const [, wsError, reloadProjects, selected] = useProjectSelection();
   const [manifests] = useAsync(() => (selected ? api.manifests(selected) : Promise.resolve([])), [selected]);
   const [scans, error, reload] = useAsync(() => (selected ? api.scans(selected) : Promise.resolve([])), [selected]);
   const [actionError, setActionError] = useState('');
   const [message, setMessage] = useState('');
+  const [blocked, setBlocked] = useState('');
 
   return (
     <div className="space-y-4">
@@ -320,10 +321,17 @@ export function ScansPage() {
       <Card title="Run an audit scan">
         <button
           className="btn-primary"
-          disabled={!manifests || manifests.length === 0}
           onClick={async () => {
             const chosen = manifests?.find((m) => m.selected) ?? manifests?.[0];
-            if (!chosen) return;
+            if (!chosen) {
+              // A disabled control is out of the tab order, so the reason it cannot
+              // be used has to live somewhere else. Say it where the button is.
+              setBlocked(
+                'There is nothing to scan yet: upload a dependency manifest for this project on the Manifests page first.',
+              );
+              return;
+            }
+            setBlocked('');
             try {
               const result = await api.runScan(chosen.id);
               setMessage(
@@ -340,7 +348,12 @@ export function ScansPage() {
         >
           Run scan (selected manifest)
         </button>
-        <p className="mt-2 text-xs text-slate-500">
+        {blocked ? (
+          <p role="status" className="mt-2 text-xs text-amber-300">
+            {blocked}
+          </p>
+        ) : null}
+        <p className="mt-2 text-xs text-slate-400">
           The auditor runs in a sandboxed subprocess with a hard timeout and --no-deps. A failed scan is reported as a
           failure — never as zero findings.
         </p>
@@ -406,17 +419,18 @@ function RemediationForm({ finding, onSaved }: { finding: Finding; onSaved: () =
         }
       }}
     >
-      <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+      <select className="input" aria-label="Finding status" value={status} onChange={(e) => setStatus(e.target.value)}>
         <option>Open</option>
         <option>Under Review</option>
         <option>Resolved</option>
         <option>Accepted Risk</option>
       </select>
-      <input className="input" placeholder="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
-      <input className="input md:col-span-2" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <input className="input" aria-label="Responsible person" placeholder="Responsible person" value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+      <input className="input md:col-span-2" aria-label="Notes" placeholder="Notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       {status === 'Accepted Risk' ? (
         <input
           className="input md:col-span-3"
+          aria-label="Exception reason"
           placeholder="Exception reason (required for Accepted Risk)"
           value={exceptionReason}
           onChange={(e) => setExceptionReason(e.target.value)}
@@ -442,7 +456,7 @@ export function FindingsPage() {
       <div className="w-64">
         {projects ? <ProjectPicker projects={projects} value={selected} onChange={setSelected} /> : <Loading />}
       </div>
-      <p className="text-xs text-slate-500">
+      <p className="text-xs text-slate-400">
         The scanner's original finding (advisory, package, version, description) is immutable. Remediation status,
         assignee, notes and risk-exception reasons are stored separately.
       </p>
@@ -460,7 +474,7 @@ export function FindingsPage() {
                   {f.package}=={f.version}
                 </span>
                 <span className="text-sm text-slate-300">{f.advisory_id}</span>
-                {f.aliases.length > 0 ? <span className="text-xs text-slate-500">({f.aliases.join(', ')})</span> : null}
+                {f.aliases.length > 0 ? <span className="text-xs text-slate-400">({f.aliases.join(', ')})</span> : null}
                 {f.fix_versions.length > 0 ? (
                   <Badge tone="bg-emerald-950 text-emerald-300 border border-emerald-800">
                     fix: {f.fix_versions.join(', ')}

@@ -26,16 +26,17 @@ export default function DeskPage() {
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Add a feed</h3>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <input className="input" placeholder="feed name" value={name} onChange={(e) => setName(e.target.value)} style={{ maxWidth: "18rem" }} />
+          <input aria-label="Feed name" className="input" placeholder="feed name" value={name} onChange={(e) => setName(e.target.value)} style={{ maxWidth: "18rem" }} />
           <select className="input" style={{ maxWidth: "12rem" }} value={kind} onChange={(e) => setKind(e.target.value)}>
             <option value="simulated">simulated (demo)</option>
             <option value="file">file import</option>
             <option value="manual">manual</option>
           </select>
-          <button className="btn" disabled={!name.trim()} onClick={async () => {
+          <button aria-describedby="desk-threatintel-desk-1-hint" className="btn" disabled={!name.trim()} onClick={async () => {
             try { await api.createFeed(name, kind); setName(""); setFlash("Feed created."); load() }
             catch (e) { setError(String(e)) }
           }}>Create feed</button>
+          <span id="desk-threatintel-desk-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
@@ -45,20 +46,21 @@ export default function DeskPage() {
             <option value="">feed…</option>
             {feeds.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
-          <button className="btn secondary" disabled={!importFeed || !text.trim()} onClick={async () => {
+          <button aria-describedby="desk-threatintel-desk-2-hint" className="btn secondary" disabled={!importFeed || !text.trim()} onClick={async () => {
             try {
               const r = await api.ingest(Number(importFeed), text)
               setFlash(`Fetched ${r.fetched}: ${r.new} new, ${r.merged} merged, ${r.errors} rejected.`)
               setText(""); load()
             } catch (e) { setError(String(e)) }
           }}>Ingest lines</button>
+          <span id="desk-threatintel-desk-2-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         <textarea className="input" rows={5} placeholder={"one indicator per line — domain, IP, URL or hash\nbad.example\n8.8.8.8"} value={text} onChange={(e) => setText(e.target.value)} />
       </div>
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       <table className="table card">
-        <thead><tr><th>Feed</th><th>Kind</th><th>Interval</th><th>Last run</th><th></th></tr></thead>
+        <thead><tr><th scope="col">Feed</th><th scope="col">Kind</th><th scope="col">Interval</th><th scope="col">Last run</th><th scope="col"></th></tr></thead>
         <tbody>
           {feeds.map((f) => (
             <tr key={f.id}>
@@ -82,7 +84,7 @@ export default function DeskPage() {
         <div className="card">
           <h3 style={{ marginTop: 0 }}>Run history — feed #{selected}</h3>
           <table className="table">
-            <thead><tr><th>Started</th><th>Status</th><th>Fetched</th><th>New</th><th>Merged</th><th>Errors</th><th>Note</th></tr></thead>
+            <thead><tr><th scope="col">Started</th><th scope="col">Status</th><th scope="col">Fetched</th><th scope="col">New</th><th scope="col">Merged</th><th scope="col">Errors</th><th scope="col">Note</th></tr></thead>
             <tbody>
               {runs.map((r) => (
                 <tr key={r.id}>

@@ -261,7 +261,7 @@ export function SavedPage() {
                 <div className="text-xs text-slate-400">
                   {s.kind} · saved {s.created_at ? new Date(s.created_at).toLocaleString() : '—'}
                 </div>
-                <div className="mt-1 font-mono text-xs text-slate-500">{JSON.stringify(s.result)}</div>
+                <div className="mt-1 font-mono text-xs text-slate-400">{JSON.stringify(s.result)}</div>
               </div>
               <ConfirmButton
                 label="Delete"

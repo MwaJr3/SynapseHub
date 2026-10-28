@@ -23,7 +23,7 @@ export default function CasesPage() {
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {cases.length === 0 && <p style={{ color: "var(--muted)" }}>No cases yet — create one from a record.</p>}
       <table className="table card">
-        <thead><tr><th>Title</th><th>Disposition</th><th>Created</th></tr></thead>
+        <thead><tr><th scope="col">Title</th><th scope="col">Disposition</th><th scope="col">Created</th></tr></thead>
         <tbody>
           {cases.map((c) => (
             <tr key={c.id} style={{ cursor: "pointer" }} onClick={() => open(c.id)}>
@@ -39,10 +39,11 @@ export default function CasesPage() {
             {notes.map((n) => <li key={n.id}><strong>{n.author}</strong>: {n.body} <em style={{ color: "var(--muted)" }}>{n.created_at}</em></li>)}
           </ul>
           <div style={{ display: "flex", gap: "0.75rem" }}>
-            <input className="input" value={body} onChange={(e) => setBody(e.target.value)} placeholder="add note" />
-            <button className="btn" disabled={!body.trim()} onClick={async () => {
+            <input aria-label="Add a case note" className="input" value={body} onChange={(e) => setBody(e.target.value)} placeholder="add note" />
+            <button aria-describedby="cases-hashsight-1-hint" className="btn" disabled={!body.trim()} onClick={async () => {
               await api.addNote(selected, body); setBody(""); setNotes((await api.caseNotes(selected)).notes)
             }}>Add note</button>
+          <span id="cases-hashsight-1-hint" className="hint">Fill in the field above to enable this.</span>
           </div>
         </div>
       )}

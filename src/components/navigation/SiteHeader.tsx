@@ -15,6 +15,7 @@ const navItems = [
   { to: '/journey', label: 'Journey' },
   { to: '/approach', label: 'Approach' },
   { to: '/operations', label: 'Operations' },
+  { to: '/ux-engine', label: 'UX engine' },
   { to: '/contact', label: 'Contact' },
 ];
 
@@ -123,7 +124,7 @@ export function SiteHeader() {
             aria-controls="mobile-navigation"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span aria-hidden="true" className="grid gap-[3px]">
+            <span aria-hidden="true" className="grid gap-1">
               <span className="block h-[1.5px] w-4 bg-current" />
               <span className="block h-[1.5px] w-4 bg-current" />
               <span className="block h-[1.5px] w-4 bg-current" />

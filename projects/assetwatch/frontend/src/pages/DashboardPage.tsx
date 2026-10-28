@@ -6,7 +6,7 @@ export default function DashboardPage() {
   const [error, setError] = useState("")
   useEffect(() => { api.dashboard().then(setData).catch((e) => setError(String(e))) }, [])
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!data) return <p>Loading…</p>
+  if (!data) return <p className="loading" role="status" aria-live="polite">Loading Dashboard…</p>
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Exposure dashboard</h1>

@@ -1,0 +1,250 @@
+@import 'tailwindcss';
+
+:root {
+  --ink: #14181f;
+  --paper: #f7f8fa;
+  --card: #ffffff;
+  /* Text on the accent fill. Named, because "white" is a colour and not a role. */
+  --on-accent: #ffffff;
+  --line: #dfe3ea;
+  /* A border that has to be seen on its own, not just to separate two panels:
+   * form fields, and controls whose edge is the only cue that they are
+   * interactive. #7b8698 clears 3:1 against both the paper and the card. */
+  --line-strong: #7b8698;
+  --panel-2: #f1f5fa;
+  --muted: #5b6472;
+  --accent: #7a4b1e;
+  --accent-soft: #f6ecdf;
+  --good: #1f6f43;
+  --warn: #8a5a00;
+  --bad: #9b2c2c;
+  /* Legal destinations on the board. Green on its own is too close to the dark
+   * square, so the mark always carries an ink ring with it. */
+  --move: #1f6f43;
+  /* One radius scale. An inner corner is the outer radius minus its padding. */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.btn {
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: 1px solid var(--line);
+  background: var(--card);
+  cursor: pointer;
+}
+/* Disabled keeps its label readable: a faded label is the one thing the user
+ * needs in order to know what is blocked and why. */
+.btn:disabled {
+  background: var(--panel-2);
+  border-color: var(--line);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+.field {
+  width: 100%;
+  /* The boundary of a text field is information (WCAG 1.4.11), so it uses the
+   * strong line rather than the panel separator. */
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  background: var(--card);
+}
+
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  width: min(92vw, 460px);
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.4rem, 5vw, 2.3rem);
+  line-height: 1;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+}
+.square.light { background: #f0eadd; }
+/* 3:1 against the light square, so the grid is legible without relying on a
+ * highlight to find a square. */
+.square.dark { background: #a17b5f; }
+.square.selected { box-shadow: inset 0 0 0 3px var(--accent); }
+.square.target::after {
+  content: '';
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  border-radius: var(--radius-pill);
+  background: var(--move);
+  /* The ring is what makes the mark visible on the dark squares too: green
+   * alone sits at 1.5:1 against them. */
+  box-shadow: 0 0 0 2px var(--ink);
+}
+.square.target.occupied::after {
+  width: 82%;
+  height: 82%;
+  background: transparent;
+  border: 4px solid var(--move);
+  box-shadow: 0 0 0 2px var(--ink);
+}
+
+.bar { height: 8px; border-radius: var(--radius-pill); background: #eceef2; overflow: hidden; }
+.bar > span { display: block; height: 100%; border-radius: var(--radius-pill); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ---------------------------------------------------------------- motion
+ *
+ * Depth without a 3D library: layered gradients, perspective on the container
+ * and a small rotate on hover. Everything here is transform/opacity only, so it
+ * stays on the compositor, and the block at the bottom of this file turns the
+ * whole lot off for anyone who asked for less motion.
+ */
+
+.stage {
+  perspective: 900px;
+}
+
+.tilt {
+  transform-style: preserve-3d;
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 320ms ease, border-color 320ms ease;
+  will-change: transform;
+}
+.tilt:hover,
+.tilt:focus-within {
+  transform: rotateX(2.5deg) rotateY(-3deg) translateY(-3px);
+  box-shadow: 0 18px 40px -24px rgb(20 24 31 / 55%);
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+}
+
+/* The profile header: a soft, slowly drifting field of light behind the text. */
+.aurora {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  isolation: isolate;
+}
+.aurora::before,
+.aurora::after {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  background:
+    radial-gradient(closest-side at 30% 35%, color-mix(in srgb, var(--accent) 32%, transparent), transparent 70%),
+    radial-gradient(closest-side at 72% 60%, color-mix(in srgb, var(--good) 26%, transparent), transparent 72%),
+    radial-gradient(closest-side at 55% 85%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
+  filter: blur(18px);
+  animation: drift 26s ease-in-out infinite alternate;
+}
+.aurora::after {
+  animation-duration: 34s;
+  animation-direction: alternate-reverse;
+  opacity: 0.7;
+}
+
+@keyframes drift {
+  from { transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1); }
+  to   { transform: translate3d(5%, 3%, 0) rotate(12deg) scale(1.08); }
+}
+
+/* Score rings: the stroke is drawn from the value, so the picture is the data. */
+.ring-fill {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Cards arrive in sequence rather than all at once. */
+.rise {
+  animation: rise 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* A quiet shimmer used only on the "not supplied" state, never on a real score. */
+.unsupplied {
+  background-image: linear-gradient(100deg, transparent 20%, color-mix(in srgb, var(--line) 70%, transparent) 40%, transparent 60%);
+  background-size: 240% 100%;
+  animation: sweep 3.4s linear infinite;
+}
+@keyframes sweep {
+  from { background-position: 180% 0; }
+  to   { background-position: -60% 0; }
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius);
+  filter: saturate(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt:hover,
+  .tilt:focus-within { transform: none; }
+  .aurora::before,
+  .aurora::after { animation: none; }
+  .unsupplied { animation: none; }
+}
+
+/* ------------------------------------------------------------------ review
+   A progress track whose width changes only when a review was recorded. It is
+   the only moving thing on the review screen: no idle pulses, no drifting. The
+   bar reports what the learner did, which is the one thing worth animating. */
+.review-progress {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--line);
+  overflow: hidden;
+}
+.review-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #ffffff));
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-progress > span {
+    transition: none;
+  }
+}
+
+/* A code sample is a surface, not a colour: it takes the panel token so the
+ * dark theme does not keep a light grey block. */
+.code-block {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}

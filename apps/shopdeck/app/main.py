@@ -14,12 +14,15 @@ app = FastAPI(title="ShopDeck", docs_url=None, redoc_url=None)
 store = Store("shopdeck.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · ShopDeck</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1d3557}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#1d3557}}
 a{{color:#457b9d}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #d7e3ef;padding:.45rem;text-align:left}}
 button,input,select{{padding:.5rem;border:1px solid #a8c6df;border-radius:6px}}button{{background:#1d3557;color:#fff;border:0;cursor:pointer}}
 .badge{{background:#eef4f8;padding:.15rem .5rem;border-radius:99px;font-size:.8rem}}.alert{{background:#fff3cd;padding:.55rem;border-radius:6px;margin:.35rem 0}}</style>
 </head><body><header><strong><a href="/" style="color:#1d3557;text-decoration:none">ShopDeck</a></strong> · e-commerce operations (demo catalog)</header>
-<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#6c7f93">Demo catalog with simulated data. Order and inventory
+<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#5c6473">Demo catalog with simulated data. Order and inventory
 states are explicit state machines; prices carry an audit trail; reports flag data-quality issues instead of hiding them.</footer></body></html>"""
 
 
@@ -36,22 +39,22 @@ async def index():
     rows = "".join(f"<tr><td>{p['sku']}</td><td>{p['name']}</td><td>{p['unit_price']:.2f}</td>"
                    f"<td>{p['stock']}</td><td><span class='badge'>{p['inv_state']}</span></td>"
                    f"<td><form method='post' action='/product/{p['id']}/stock'>"
-                   f"<input name='stock' type='number' style='width:5rem' value='{p['stock']}'>"
+                   f"<input aria-label='Stock on hand' name='stock' type='number' style='width:5rem' value='{p['stock']}'>"
                    f"<button>update</button></form></td></tr>" for p in products)
-    body += ("<table><tr><th>SKU</th><th>name</th><th>price</th><th>stock</th><th>state</th><th>set stock</th></tr>"
+    body += ("<table><tr><th scope='col'>SKU</th><th scope='col'>name</th><th scope='col'>price</th><th scope='col'>stock</th><th scope='col'>state</th><th scope='col'>set stock</th></tr>"
              f"{rows}</table>")
     body += ("<h2>New product</h2><form method='post' action='/product/new'>"
-             "<input name='sku' placeholder='SKU' required><input name='name' placeholder='name' required>"
-             "<input name='unit_price' type='number' step='0.01' placeholder='price' required>"
-             "<input name='stock' type='number' placeholder='stock' required>"
-             "<input name='threshold' type='number' value='5' placeholder='low-stock threshold'>"
+             "<label>SKU<input name='sku' placeholder='SKU' required></label><label>Name<input name='name' placeholder='name' required></label>"
+             "<label>Unit price<input name='unit_price' type='number' step='0.01' placeholder='price' required></label>"
+             "<label>Stock on hand<input name='stock' type='number' placeholder='stock' required></label>"
+             "<label>Low-stock threshold<input name='threshold' type='number' value='5' placeholder='low-stock threshold'></label>"
              "<button>Add</button></form>")
     body += ("<h2>New order</h2><form method='post' action='/order/new'>"
-             "<input name='customer' placeholder='customer' required>"
-             "<input name='product_id' type='number' placeholder='product id' required>"
-             "<input name='quantity' type='number' placeholder='qty' required>"
-             "<input name='code' placeholder='discount code (optional)'>"
-             "<input name='percent_off' type='number' step='0.1' placeholder='% off (optional)'>"
+             "<label>Customer<input name='customer' placeholder='customer' required></label>"
+             "<label>Product ID<input name='product_id' type='number' placeholder='product id' required></label>"
+             "<label>Quantity<input name='quantity' type='number' placeholder='qty' required></label>"
+             "<label>Code<input name='code' placeholder='discount code (optional)'></label>"
+             "<label>Percent off<input name='percent_off' type='number' step='0.1' placeholder='% off (optional)'></label>"
              "<button>Create order</button></form>")
     body += "<p><a href='/report'>Sales report</a></p>"
     return page("home", body)

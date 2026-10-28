@@ -21,7 +21,7 @@ export default function IncidentPage() {
   useEffect(() => { load() }, [id])
 
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!rec) return <p>Loading…</p>
+  if (!rec) return <p className="loading" role="status" aria-live="polite">Loading Incident…</p>
 
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
@@ -39,13 +39,14 @@ export default function IncidentPage() {
               load()
             }}>Move to {t}</button>
           ))}
-          <input className="input" placeholder="transition note (optional)" value={note} onChange={(e) => setNote(e.target.value)} style={{ maxWidth: "22rem" }} />
+          <input aria-label="Transition note (optional)" className="input" placeholder="transition note (optional)" value={note} onChange={(e) => setNote(e.target.value)} style={{ maxWidth: "22rem" }} />
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} style={{ maxWidth: "14rem" }} />
-          <button className="btn secondary" disabled={!assignee.trim()} onClick={async () => {
+          <input aria-label="Assignee" className="input" placeholder="assignee" value={assignee} onChange={(e) => setAssignee(e.target.value)} style={{ maxWidth: "14rem" }} />
+          <button aria-describedby="incident-incidentflow-1-hint" className="btn secondary" disabled={!assignee.trim()} onClick={async () => {
             await api.assign(rec!.id, assignee); setAssignee(""); setFlash("Assigned."); load()
           }}>Assign</button>
+          <span id="incident-incidentflow-1-hint" className="hint">Fill in the field above to enable this.</span>
           <button className="btn" onClick={async () => {
             const report = await api.report(rec!.id)
             const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" })
@@ -66,10 +67,11 @@ export default function IncidentPage() {
           ))}
         </ul>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="add responder note" value={note} onChange={(e) => setNote(e.target.value)} />
-          <button className="btn secondary" disabled={!note.trim()} onClick={async () => {
+          <input aria-label="Add responder note" className="input" placeholder="add responder note" value={note} onChange={(e) => setNote(e.target.value)} />
+          <button aria-describedby="incident-incidentflow-2-hint" className="btn secondary" disabled={!note.trim()} onClick={async () => {
             await api.addEvent(rec!.id, note); setNote(""); load()
           }}>Add entry</button>
+          <span id="incident-incidentflow-2-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
@@ -85,10 +87,11 @@ export default function IncidentPage() {
           </div>
         ))}
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="new task" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
-          <button className="btn secondary" disabled={!taskTitle.trim()} onClick={async () => {
+          <input aria-label="New task" className="input" placeholder="new task" value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)} />
+          <button aria-describedby="incident-incidentflow-3-hint" className="btn secondary" disabled={!taskTitle.trim()} onClick={async () => {
             await api.addTask(rec!.id, taskTitle, ""); setTaskTitle(""); load()
           }}>Add task</button>
+          <span id="incident-incidentflow-3-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
@@ -100,15 +103,16 @@ export default function IncidentPage() {
           </div>
         ))}
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <input className="input" placeholder="filename" value={evName} onChange={(e) => setEvName(e.target.value)} style={{ maxWidth: "14rem" }} />
-          <input className="input" placeholder="paste text evidence" value={evContent} onChange={(e) => setEvContent(e.target.value)} />
-          <button className="btn secondary" disabled={!evName || !evContent} onClick={async () => {
+          <input aria-label="Filename" className="input" placeholder="filename" value={evName} onChange={(e) => setEvName(e.target.value)} style={{ maxWidth: "14rem" }} />
+          <input aria-label="Paste text evidence" className="input" placeholder="paste text evidence" value={evContent} onChange={(e) => setEvContent(e.target.value)} />
+          <button aria-describedby="incident-incidentflow-4-hint" className="btn secondary" disabled={!evName || !evContent} onClick={async () => {
             try {
               const r = await api.addEvidence(rec!.id, evName, evContent, "")
               setFlash(r.note)
             } catch (e) { setError(String(e)) }
             setEvName(""); setEvContent(""); load()
           }}>Collect evidence</button>
+          <span id="incident-incidentflow-4-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
       </div>
     </div>

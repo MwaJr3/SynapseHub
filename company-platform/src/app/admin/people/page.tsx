@@ -35,11 +35,11 @@ export default async function AdminPeoplePage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="py-2 pr-4">Name</th>
-                <th className="py-2 pr-4">Role</th>
-                <th className="py-2 pr-4">Profile</th>
-                <th className="py-2 pr-4">Publication</th>
-                <th className="py-2">Account</th>
+                <th scope="col" className="py-2 pr-4">Name</th>
+                <th scope="col" className="py-2 pr-4">Role</th>
+                <th scope="col" className="py-2 pr-4">Profile</th>
+                <th scope="col" className="py-2 pr-4">Publication</th>
+                <th scope="col" className="py-2">Account</th>
               </tr>
             </thead>
             <tbody>

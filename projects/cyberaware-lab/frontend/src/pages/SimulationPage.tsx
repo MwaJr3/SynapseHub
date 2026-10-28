@@ -33,7 +33,7 @@ export default function SimulationPage() {
   }
 
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!tpl) return <p style={{ color: "var(--muted)" }}>Loading exercise…</p>
+  if (!tpl) return <p className="loading" role="status" aria-live="polite">Loading exercise…</p>
 
   return (
     <div style={{ display: "grid", gap: "1rem" }}>

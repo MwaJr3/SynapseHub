@@ -83,9 +83,10 @@ export function CompanyHomePage() {
         </Container>
       </Section>
 
-      <Section>
+      <Section id="capabilities" labelledBy="capabilities-heading">
         <Container className="py-14 sm:py-16">
           <SectionHeading
+            id="capabilities-heading"
             eyebrow="What we build"
             title="Three kinds of work, one standard of evidence"
             description="Each area below maps to shipped, tested code in the portfolio — not to a service menu."
@@ -137,11 +138,15 @@ export function CompanyHomePage() {
         </Container>
       </Section>
 
-      <Section>
+      <Section id="principles" labelledBy="principles-heading">
         <Container className="py-14 sm:py-16">
           <div className="grid gap-10 lg:grid-cols-[1fr_1fr]">
             <div>
-              <SectionHeading eyebrow="How we work" title="Claims you can check" />
+              <SectionHeading
+                id="principles-heading"
+                eyebrow="How we work"
+                title="Claims you can check"
+              />
               <ul className="mt-6 flex flex-col gap-3">
                 {principles.map((principle) => (
                   <li key={principle} className="flex gap-3 text-sm leading-relaxed text-fg-muted">

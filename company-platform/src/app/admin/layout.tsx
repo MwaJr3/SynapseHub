@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { CurrentNavLink } from '@/components/current-nav-link';
 import type { ReactNode } from 'react';
 
 import { requireUser } from '@/lib/auth';
@@ -21,6 +21,7 @@ const ADMIN_NAV = [
   { href: '/admin/case-studies', label: 'Case studies' },
   { href: '/admin/people', label: 'People' },
   { href: '/admin/review-queue', label: 'Review queue' },
+  { href: '/admin/support', label: 'Support inbox' },
   { href: '/admin/media', label: 'Media' },
   { href: '/admin/settings', label: 'Settings' },
 ] as const;
@@ -63,9 +64,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       </header>
       <nav aria-label="Admin" className="flex flex-wrap gap-2">
         {ADMIN_NAV.map((item) => (
-          <Link key={item.href} href={item.href} className="btn btn-secondary">
+          <CurrentNavLink
+            key={item.href}
+            href={item.href}
+            className="btn btn-secondary"
+            activeClassName="btn font-semibold underline decoration-2 underline-offset-4"
+          >
             {item.label}
-          </Link>
+          </CurrentNavLink>
         ))}
       </nav>
       <div>{children}</div>

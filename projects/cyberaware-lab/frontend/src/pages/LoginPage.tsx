@@ -33,11 +33,11 @@ export default function LoginPage() {
     <div className="card" style={{ maxWidth: "26rem", margin: "3rem auto" }}>
       <h1 style={{ marginTop: 0 }}>{mode === "login" ? "Sign in" : "Create account"}</h1>
       <form onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
-        <input className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input className="input" type="password" placeholder="account password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input aria-label="Email" className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input aria-label="Account password (12+ characters)" className="input" type="password" placeholder="account password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {mode === "register" && (
           <>
-            <input className="input" placeholder="display name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+            <input aria-label="Display name" className="input" placeholder="display name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
             <select className="input" value={role} onChange={(e) => setRole(e.target.value)}>
               <option value="learner">Learner</option>
               <option value="instructor">Instructor</option>

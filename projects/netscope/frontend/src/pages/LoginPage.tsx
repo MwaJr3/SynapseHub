@@ -51,17 +51,17 @@ export default function LoginPage() {
         {mode === "login" ? "Sign in" : mode === "register" ? "Create analyst account" : "Reset password"}
       </h1>
       <form onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
-        <input className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <input aria-label="Email" className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         {mode !== "reset" && (
-          <input className="input" type="password" placeholder="password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input aria-label="Password (12+ characters)" className="input" type="password" placeholder="password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
         )}
         {mode === "login" && (
-          <input className="input" placeholder="MFA code (if enabled)" value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} inputMode="numeric" />
+          <input aria-label="MFA code (if enabled)" className="input" placeholder="MFA code (if enabled)" value={mfaCode} onChange={(e) => setMfaCode(e.target.value)} inputMode="numeric" />
         )}
         {mode === "reset" && (devToken || resetToken) && (
           <>
-            <input className="input" placeholder="reset token" value={resetToken} onChange={(e) => setResetToken(e.target.value)} />
-            <input className="input" type="password" placeholder="new password (12+ characters)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+            <input aria-label="Reset token" className="input" placeholder="reset token" value={resetToken} onChange={(e) => setResetToken(e.target.value)} />
+            <input aria-label="New password (12+ characters)" className="input" type="password" placeholder="new password (12+ characters)" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
           </>
         )}
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}

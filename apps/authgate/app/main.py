@@ -18,14 +18,17 @@ store = Store("authgate.db")
 login_limiter = RateLimiter(max_per_window=10, window_seconds=60)
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · AuthGate</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:44rem;margin:2rem auto;padding:0 1rem;color:#14213d}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:system-ui,sans-serif;max-width:44rem;margin:2rem auto;padding:0 1rem;color:#14213d}}
 form{{display:grid;gap:.6rem;max-width:22rem}}input,button{{padding:.55rem;border:1px solid #b8c1ec;border-radius:6px}}
 button{{background:#14213d;color:#fff;border:0;cursor:pointer}}.err{{color:#c1121f}}.ok{{color:#2a9d8f}}
 table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #dfe7ff;padding:.45rem;text-align:left}}
 .flash{{background:#fff3cd;padding:.6rem;border-radius:6px}}code{{background:#f1f3f9;padding:.15rem .35rem;border-radius:4px}}</style>
 </head><body><header><strong><a href="/" style="color:#14213d;text-decoration:none">AuthGate</a></strong>
  · demo dashboard</header><main>{body}</main>
-<footer style="margin-top:2rem;font-size:.85rem;color:#5c6b9e">Security headers (CSP, frame deny, nosniff, no-referrer)
+<footer style="margin-top:2rem;font-size:.85rem;color:#5c6473">Security headers (CSP, frame deny, nosniff, no-referrer)
 are set on every response. Passwords are stored as PBKDF2-SHA256 ({iters} iterations) with per-user salts.
 Generic login errors avoid username enumeration. HSTS requires HTTPS — see README.</footer></body></html>"""
 
@@ -66,8 +69,8 @@ async def index(request: Request):
 @app.get("/register", response_class=HTMLResponse)
 async def register_form(request: Request):
     return page("register", "<h1>Register</h1><form method='post' action='/register'>"
-                "<input name='username' placeholder='username' required>"
-                "<input name='password' type='password' placeholder='password' required>"
+                "<label>Username<input name='username' placeholder='username' required></label>"
+                "<label>Password<input name='password' type='password' placeholder='password' required></label>"
                 "<input name='csrf' type='hidden' value='" + request.cookies.get("ag_anon", "") + "'>"
                 "<button>Create account</button></form>"
                 "<p>Policy: ≥12 chars with upper, lower, digit, symbol; no username reuse; no bundled common passwords.</p>")
@@ -92,9 +95,9 @@ async def register(request: Request):
 @app.get("/login", response_class=HTMLResponse)
 async def login_form():
     return page("login", "<h1>Sign in</h1><form method='post' action='/login'>"
-                "<input name='username' placeholder='username' required>"
-                "<input name='password' type='password' placeholder='password' required>"
-                "<input name='otp' placeholder='MFA code (if enabled)'>"
+                "<label>Username<input name='username' placeholder='username' required></label>"
+                "<label>Password<input name='password' type='password' placeholder='password' required></label>"
+                "<label>MFA code<input name='otp' placeholder='MFA code (if enabled)'></label>"
                 "<button>Sign in</button></form>")
 
 
@@ -152,10 +155,10 @@ async def profile(request: Request):
     if not user["mfa_secret"]:
         secret = pyotp.random_base32()
         body += ("<h2>Enable TOTP MFA</h2><p>Secret (demo): <code>" + secret + "</code></p>"
-                 "<form method='post' action='/mfa/enable'><input name='secret' value='" + secret + "' readonly>"
-                 "<input name='code' placeholder='6-digit code' required><button>Enable MFA</button></form>")
+                 "<form method='post' action='/mfa/enable'><label>Shared secret<input name='secret' value='" + secret + "' readonly></label>"
+                 "<label>Code<input name='code' placeholder='6-digit code' required></label><button>Enable MFA</button></form>")
     else:
-        body += "<form method='post' action='/mfa/disable'><input name='code' placeholder='6-digit code' required><button>Disable MFA</button></form>"
+        body += "<form method='post' action='/mfa/disable'><label>Code<input name='code' placeholder='6-digit code' required></label><button>Disable MFA</button></form>"
     body += "<p><a href='/'>Home</a></p>"
     return page("profile", body)
 
@@ -199,7 +202,7 @@ async def admin(request: Request):
     rows = store.conn.execute("SELECT username, role, failed_attempts, locked_until, created_at FROM users ORDER BY username").fetchall()
     trs = "".join(f"<tr><td>{r['username']}</td><td>{r['role']}</td><td>{r['failed_attempts']}</td><td>{r['locked_until'] or '—'}</td></tr>" for r in rows)
     return page("admin", f"<h1>Admin</h1><p>Role-based access: this page requires <code>admin</code>.</p>"
-                f"<table><tr><th>user</th><th>role</th><th>failed</th><th>locked until</th></tr>{trs}</table>")
+                f"<table><tr><th scope='col'>user</th><th scope='col'>role</th><th scope='col'>failed</th><th scope='col'>locked until</th></tr>{trs}</table>")
 
 
 @app.get("/api/health")

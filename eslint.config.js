@@ -12,6 +12,7 @@ export default tseslint.config(
     // projects/README.md).
     ignores: [
       'dist',
+      '**/dist/**',
       'node_modules',
       'coverage',
       'public',
@@ -52,6 +53,7 @@ export default tseslint.config(
   {
     files: [
       'scripts/**/*.mjs',
+      'scripts/**/*.ts',
       '*.config.js',
       'native/mobile/**/*.cjs',
       'tools/synapsehub-smoke/*.mjs',
@@ -61,6 +63,21 @@ export default tseslint.config(
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      // CLI scripts report scan progress and results as part of their interface.
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+    },
+  },
+  {
+    // The UX engine is a Node CLI and a plugin: its modules run in Node (process,
+    // fs, timers) and print to stdout, which is how the CLI reports anything.
+    files: ['northstar-ux-engine/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
     },
   },
   {

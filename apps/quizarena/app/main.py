@@ -14,12 +14,15 @@ app = FastAPI(title="QuizArena", docs_url=None, redoc_url=None)
 store = Store("quizarena.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · QuizArena</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#22223b}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#22223b}}
 a{{color:#5c4d9b}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #e2e0f2;padding:.45rem;text-align:left}}
 button,input,textarea,select{{padding:.5rem;border:1px solid #c9c4ec;border-radius:6px}}button{{background:#5c4d9b;color:#fff;border:0;cursor:pointer}}
 .badge{{background:#eee;padding:.15rem .5rem;border-radius:99px;font-size:.8rem}}.warn{{background:#fff3cd;padding:.55rem;border-radius:6px}}</style>
 </head><body><header><strong><a href="/" style="color:#22223b;text-decoration:none">QuizArena</a></strong> · collaborative quiz platform (demo data)</header>
-<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#7a7793">Demo instance with simulated content.
+<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#5c6473">Demo instance with simulated content.
 Attempts are reproducible from their recorded seed. Leaderboard: best score, then fastest time.</footer></body></html>"""
 
 
@@ -39,8 +42,8 @@ async def index():
 @app.get("/quiz/new", response_class=HTMLResponse)
 async def new_quiz_form():
     return page("new quiz", "<h1>Create quiz</h1><form method='post' action='/quiz/new'>"
-                "<input name='title' placeholder='title' required>"
-                "<input name='author' placeholder='author' required>"
+                "<label>Title<input name='title' placeholder='title' required></label>"
+                "<label>Author<input name='author' placeholder='author' required></label>"
                 "<textarea name='description' placeholder='description'></textarea>"
                 "<button>Create</button></form>")
 
@@ -57,10 +60,10 @@ async def new_quiz(request: Request):
 async def add_question_form(quiz_id: int):
     return page("add question", f"<h1>Add question</h1><form method='post' action='/quiz/{quiz_id}/add'>"
                 "<textarea name='prompt' placeholder='prompt' required></textarea>"
-                "<input name='opt0' placeholder='option 1' required><input name='opt1' placeholder='option 2' required>"
-                "<input name='opt2' placeholder='option 3'><input name='opt3' placeholder='option 4'>"
+                "<label>Option 1<input name='opt0' placeholder='option 1' required></label><label>Option 2<input name='opt1' placeholder='option 2' required></label>"
+                "<label>Option 3<input name='opt2' placeholder='option 3'></label><label>Option 4<input name='opt3' placeholder='option 4'></label>"
                 "<select name='answer_index'><option>0</option><option>1</option><option>2</option><option>3</option></select>"
-                "<input name='explanation' placeholder='explanation (shown after submit)'>"
+                "<label>Explanation<input name='explanation' placeholder='explanation (shown after submit)'></label>"
                 "<select name='difficulty'><option>easy</option><option selected>medium</option><option>hard</option></select>"
                 "<button>Add question</button></form><p><a href='/quiz/{quiz_id}'>Done — view quiz</a></p>")
 
@@ -117,7 +120,7 @@ async def take_quiz(quiz_id: int, request: Request):
         "</fieldset><br>"
         for i, idx in enumerate(order))
     return page("take quiz", f"<form method='post' action='/quiz/{quiz_id}/submit'>"
-                f"<input type='hidden' name='seed' value='{seed}'><input name='player' placeholder='your name' required>"
+                f"<input type='hidden' name='seed' value='{seed}'><label>Your name<input name='player' placeholder='your name' required></label>"
                 f"{rows}<button>Submit</button></form>")
 
 
@@ -156,7 +159,7 @@ async def leaderboard(quiz_id: int):
     board = store.leaderboard(quiz_id)
     rows = "".join(f"<tr><td>{b['rank']}</td><td>{b['player']}</td><td>{b['score_percent']}%</td>"
                    f"<td>{b['best_time_seconds']}</td></tr>" for b in board) or "<tr><td colspan=4>no attempts</td></tr>"
-    return page("leaderboard", f"<h1>Leaderboard</h1><table><tr><th>#</th><th>player</th><th>best score</th><th>best time</th></tr>{rows}</table>"
+    return page("leaderboard", f"<h1>Leaderboard</h1><table><tr><th scope='col'>#</th><th scope='col'>player</th><th scope='col'>best score</th><th scope='col'>best time</th></tr>{rows}</table>"
                 f"<p>Tie-break: higher score first, then lower completion time.</p><p><a href='/quiz/{quiz_id}'>Back</a></p>")
 
 
@@ -170,7 +173,7 @@ async def export(quiz_id: int):
 @app.get("/bank/import", response_class=HTMLResponse)
 async def import_form():
     return page("import", "<h1>Import quiz bank (JSON)</h1><form method='post' action='/bank/import'>"
-                "<input name='title' placeholder='quiz title' required>"
+                "<label>Title<input name='title' placeholder='quiz title' required></label>"
                 "<textarea name='payload' placeholder='{\"questions\": [...]}' required></textarea>"
                 "<button>Import</button></form>")
 

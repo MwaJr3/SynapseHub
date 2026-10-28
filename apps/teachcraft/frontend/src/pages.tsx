@@ -60,8 +60,8 @@ export function LessonsPage({ user }: { user: User }) {
           });
           setTitle('');
         }}>
-          <input className="input" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
-          <select className="input" name="template">
+          <input className="input" aria-label="Lesson title" placeholder="Lesson title" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <select className="input" name="template" aria-label="Template type">
             <option value="lesson_plan">Lesson plan</option>
             <option value="worked_example">Worked example</option>
             <option value="revision_sheet">Revision sheet</option>
@@ -82,7 +82,7 @@ export function LessonsPage({ user }: { user: User }) {
                 <div>
                   <span className="font-medium">{l.title}</span>{' '}
                   <Badge tone={workflowTone(l.status)}>{l.status}</Badge>{' '}
-                  <span className="text-xs text-slate-500">v{l.version}</span>
+                  <span className="text-xs text-slate-400">v{l.version}</span>
                   <div className="text-xs text-slate-400">{l.objective}</div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -104,7 +104,7 @@ export function LessonsPage({ user }: { user: User }) {
                     <button className="btn-ghost" onClick={() => void act(() => api.transition(detail.id, 'archived'))}>Archive</button>
                   </div>
                   <div>
-                    <h3 className="mb-1 text-sm font-medium text-slate-300">Version history</h3>
+                    <h2 className="mb-1 text-sm font-medium text-slate-300">Version history</h2>
                     <ul className="space-y-1">
                       {detail.versions.map((v) => (
                         <li key={v.version} className="flex items-center justify-between rounded-lg border border-slate-800 px-3 py-1.5 text-xs">
@@ -113,10 +113,10 @@ export function LessonsPage({ user }: { user: User }) {
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-1 text-xs text-slate-500">Restoring creates a new version — history is never rewritten.</p>
+                    <p className="mt-1 text-xs text-slate-400">Restoring creates a new version — history is never rewritten.</p>
                   </div>
                   <div>
-                    <h3 className="mb-1 text-sm font-medium text-slate-300">Reviewer comments</h3>
+                    <h2 className="mb-1 text-sm font-medium text-slate-300">Reviewer comments</h2>
                     <ul className="space-y-1">
                       {detail.comments.map((c) => (
                         <li key={c.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400">
@@ -128,11 +128,11 @@ export function LessonsPage({ user }: { user: User }) {
                       e.preventDefault();
                       await act(async () => { await api.addComment(detail.id, comment); setComment(''); });
                     }}>
-                      <input className="input flex-1" placeholder="Add a comment…" value={comment} onChange={(e) => setComment(e.target.value)} />
+                      <input className="input flex-1" aria-label="Add a comment" placeholder="Add a comment…" value={comment} onChange={(e) => setComment(e.target.value)} />
                       <button className="btn-ghost">Add</button>
                     </form>
                   </div>
-                  <p className="text-xs text-slate-500">{EXPORT_NOTE}</p>
+                  <p className="text-xs text-slate-400">{EXPORT_NOTE}</p>
                 </div>
               ) : null}
             </div>

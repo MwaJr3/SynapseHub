@@ -348,6 +348,39 @@ export const contactSubmissions = pgTable('contact_submissions', {
   createdAt: createdAt(),
 });
 
+/**
+ * Support requests raised from an assistant conversation.
+ *
+ * This is the human handoff: a visitor's transcript plus their contact details,
+ * stored so a person can pick it up. It is deliberately separate from
+ * `contact_submissions` — that is the general enquiry form and goes through
+ * Brevo, whereas this records a conversation that already happened on the site.
+ */
+export const supportRequestStatusEnum = pgEnum('support_request_status', [
+  'OPEN',
+  'ACKED',
+  'CLOSED',
+]);
+export const supportRequests = pgTable('support_requests', {
+  id: id(),
+  /** Short code a visitor can quote: VLQ-4F8K2A. */
+  reference: text('reference').notNull().unique(),
+  companyId: text('company_id')
+    .notNull()
+    .references(() => companies.id),
+  assistant: text('assistant').notNull(),
+  name: text('name').notNull(),
+  email: text('email').notNull(),
+  message: text('message').notNull(),
+  transcript: json('transcript')
+    .$type<{ role: string; text: string }[]>()
+    .notNull()
+    .default([]),
+  status: supportRequestStatusEnum('status').notNull().default('OPEN'),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 export const auditEvents = pgTable('audit_events', {
   id: id(),
   actorId: text('actor_id').references(() => users.id),

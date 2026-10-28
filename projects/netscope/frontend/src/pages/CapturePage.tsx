@@ -17,7 +17,7 @@ export default function CapturePage() {
   useEffect(() => { load() }, [id])
 
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!rec) return <p>Loading…</p>
+  if (!rec) return <p className="loading" role="status" aria-live="polite">Loading Capture…</p>
   const s = rec.summary as Record<string, unknown>
   const byProtocol = (s.by_protocol ?? {}) as Record<string, number>
   const sources = (s.top_sources ?? []) as Array<[string, number]>
@@ -54,7 +54,7 @@ export default function CapturePage() {
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Label &amp; export</h3>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" value={label} onChange={(e) => setLabel(e.target.value)} style={{ maxWidth: "18rem" }} />
+          <input aria-label="Capture label" className="input" value={label} onChange={(e) => setLabel(e.target.value)} style={{ maxWidth: "18rem" }} />
           <button className="btn secondary" onClick={async () => { await api.setLabel(rec!.id, label); setFlash("Label saved.") }}>Save label</button>
           <button className="btn" onClick={async () => {
             const report = await api.report(rec!.id)
@@ -75,9 +75,10 @@ export default function CapturePage() {
             <option value="">select capture…</option>
             {others.map((o) => <option key={o.id} value={o.id}>#{o.id} {o.filename} ({o.status})</option>)}
           </select>
-          <button className="btn secondary" disabled={!compareId} onClick={async () => {
+          <button aria-describedby="capture-netscope-1-hint" className="btn secondary" disabled={!compareId} onClick={async () => {
             setDiff(await api.compare(Number(id), Number(compareId)))
           }}>Compare</button>
+          <span id="capture-netscope-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         {diff && (
           <div>

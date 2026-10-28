@@ -361,7 +361,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
       {error || attendanceError || actionError ? <ErrorBanner message={error || attendanceError || actionError} /> : null}
       <div className="grid gap-3 lg:grid-cols-2">
         <div>
-          <h3 className="mb-2 text-sm font-medium text-slate-300">Grades</h3>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Grades</h2>
           <ul className="space-y-1">
             {(grades ?? []).map((g) => (
               <li key={g.id} className="flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-1.5 text-sm">
@@ -372,7 +372,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 </Badge>
               </li>
             ))}
-            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-500">No grades recorded.</li> : null}
+            {(grades ?? []).length === 0 ? <li className="text-sm text-slate-400">No grades recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form
@@ -389,9 +389,9 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" placeholder="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
-              <input className="input w-20" type="number" min={0} max={100} required placeholder="Score" value={score} onChange={(e) => setScore(e.target.value)} />
-              <select className="input w-28" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <input className="input flex-1" aria-label="Assessment" placeholder="Assessment" required value={assessment} onChange={(e) => setAssessment(e.target.value)} />
+              <input className="input w-20" type="number" min={0} max={100} required aria-label="Score" placeholder="Score" value={score} onChange={(e) => setScore(e.target.value)} />
+              <select className="input w-28" aria-label="Grade status" value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="final">final</option>
                 <option value="draft">draft</option>
               </select>
@@ -400,7 +400,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
           ) : null}
         </div>
         <div>
-          <h3 className="mb-2 text-sm font-medium text-slate-300">Attendance</h3>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Attendance</h2>
           <ul className="space-y-1">
             {(attendance ?? []).map((r) => (
               <li key={r.id} className="flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-1.5 text-sm">
@@ -408,7 +408,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 <Badge tone={attendanceTone(r.status)}>{r.status}</Badge>
               </li>
             ))}
-            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-500">No attendance recorded.</li> : null}
+            {(attendance ?? []).length === 0 ? <li className="text-sm text-slate-400">No attendance recorded.</li> : null}
           </ul>
           {canWrite ? (
             <form
@@ -424,8 +424,8 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
                 }
               }}
             >
-              <input className="input flex-1" type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
-              <select className="input w-28" value={attStatus} onChange={(e) => setAttStatus(e.target.value)}>
+              <input className="input flex-1" type="date" required aria-label="Attendance date" value={date} onChange={(e) => setDate(e.target.value)} />
+              <select className="input w-28" aria-label="Attendance status" value={attStatus} onChange={(e) => setAttStatus(e.target.value)}>
                 <option value="present">present</option>
                 <option value="absent">absent</option>
                 <option value="late">late</option>

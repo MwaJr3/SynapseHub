@@ -49,7 +49,7 @@ export default function App() {
   useEffect(() => {
     api.me().then(setAuth).catch(() => setAuth(null)).finally(() => setLoading(false))
   }, [])
-  if (loading) return <div className="shell">Loading…</div>
+  if (loading) <div className="shell"><p className="loading" role="status" aria-live="polite">Loading your session…</p></div>
   return (
     <AuthCtx.Provider value={{ auth, setAuth }}>
       <BrowserRouter>

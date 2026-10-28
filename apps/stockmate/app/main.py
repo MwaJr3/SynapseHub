@@ -10,12 +10,15 @@ app = FastAPI(title="StockMate", docs_url=None, redoc_url=None)
 store = Store("stockmate.db")
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · StockMate</title>
-<style>body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#2d3436}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#2d3436}}
 a{{color:#2e7d6f}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #d3dedd;padding:.45rem;text-align:left}}
 button,input,select{{padding:.5rem;border:1px solid #a9c9c2;border-radius:6px}}button{{background:#2e7d6f;color:#fff;border:0;cursor:pointer}}
 .badge{{background:#e8f2f0;padding:.15rem .5rem;border-radius:99px;font-size:.8rem}}.alert{{background:#fff3cd;padding:.55rem;border-radius:6px;margin:.35rem 0}}</style>
 </head><body><header><strong><a href="/" style="color:#2d3436;text-decoration:none">StockMate</a></strong> · inventory with audit trail (demo warehouse)</header>
-<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#72807e">Stock changes are an immutable ledger — corrections are reversing
+<main>{body}</main><footer style="margin-top:2.5rem;font-size:.85rem;color:#5c6473">Stock changes are an immutable ledger — corrections are reversing
 entries. Demand figures are labelled ESTIMATE with assumptions. Role permissions are enforced server-side. Demo warehouse with simulated data.</footer></body></html>"""
 
 
@@ -31,11 +34,11 @@ async def index():
     rows = "".join(f"<tr><td><a href='/item/{p['id']}'>{p['sku']}</a></td><td>{p['name']}</td>"
                    f"<td>{p['on_hand']}</td><td>{p['reorder_level']}</td><td>{p['unit_cost']:.2f}</td>"
                    f"<td><span class='badge'>{'archived' if p['archived'] else 'active'}</span></td></tr>" for p in items)
-    body += ("<h1>Items</h1><table><tr><th>SKU</th><th>name</th><th>on hand</th><th>reorder</th><th>unit cost</th><th>state</th></tr>"
+    body += ("<h1>Items</h1><table><tr><th scope='col'>SKU</th><th scope='col'>name</th><th scope='col'>on hand</th><th scope='col'>reorder</th><th scope='col'>unit cost</th><th scope='col'>state</th></tr>"
              f"{rows}</table>")
-    body += ("<h2>Add item</h2><form method='post' action='/item/new'><input name='sku' placeholder='SKU' required>"
-             "<input name='name' placeholder='name' required><input name='unit_cost' type='number' step='0.01' placeholder='unit cost' required>"
-             "<input name='reorder_level' type='number' value='5'><button>Add</button></form>")
+    body += ("<h2>Add item</h2><form method='post' action='/item/new'><label>SKU<input name='sku' placeholder='SKU' required></label>"
+             "<label>Name<input name='name' placeholder='name' required></label><label>Unit cost<input name='unit_cost' type='number' step='0.01' placeholder='unit cost' required></label>"
+             "<label>Reorder level<input name='reorder_level' type='number' value='5'></label><button>Add</button></form>")
     body += "<p><a href='/report'>Valuation &amp; demand report</a></p>"
     return page("home", body)
 
@@ -61,12 +64,12 @@ async def item_page(item_id: int):
             f"<p>on hand: <strong>{item['on_hand']}</strong> · reorder level {item['reorder_level']}</p>")
     body += ("<h2>New movement</h2><form method='post' action='/item/" + str(item_id) + "/move'>"
              "<select name='kind'><option>receive</option><option>issue</option><option>adjust</option></select>"
-             "<input name='quantity' type='number' placeholder='quantity'><input name='actor' placeholder='actor' value='clerk'>"
+             "<label>Quantity<input name='quantity' type='number' placeholder='quantity'></label><label>Actor<input name='actor' placeholder='actor' value='clerk'></label>"
              "<select name='role'><option>clerk</option><option>manager</option><option>viewer</option></select>"
-             "<input name='note' placeholder='note'><button>Record movement</button></form>")
-    body += f"<h2>Immutable ledger</h2><table><tr><th>#</th><th>at</th><th>kind</th><th>qty</th><th>actor</th><th>note</th></tr>{rows}</table>"
+             "<label>Note<input name='note' placeholder='note'></label><button>Record movement</button></form>")
+    body += f"<h2>Immutable ledger</h2><table><tr><th scope='col'>#</th><th scope='col'>at</th><th scope='col'>kind</th><th scope='col'>qty</th><th scope='col'>actor</th><th scope='col'>note</th></tr>{rows}</table>"
     body += ("<h2>Reverse a movement</h2><form method='post' action='/reverse'>"
-             "<input name='movement_id' type='number' placeholder='movement id'><input name='actor' value='manager'>"
+             "<label>Movement ID<input name='movement_id' type='number' placeholder='movement id'></label><label>Actor<input name='actor' value='manager'></label>"
              "<select name='role'><option>manager</option><option>clerk</option></select><button>Reverse</button></form>")
     body += f"<p><a href='/item/{item_id}/forecast'>Demand estimate</a> · <a href='/'>Home</a></p>"
     return page("item", body)

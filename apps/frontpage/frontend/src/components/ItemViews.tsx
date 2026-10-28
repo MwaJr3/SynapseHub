@@ -23,9 +23,14 @@ interface RowProps extends ItemHandlers {
 
 function stop(e: MouseEvent) { e.stopPropagation(); }
 
+/** Attaches the broken-image fallback without an interaction handler on the non-interactive <img>. */
+function hideBrokenImage(el: HTMLImageElement | null) {
+  el?.addEventListener('error', () => { el.style.display = 'none'; }, { once: true });
+}
+
 function Actions({ item, onToggleSave, onToggleRead, onOriginal }: ItemHandlers & { item: Item }) {
   return (
-    <div className="item-actions" onClick={stop}>
+    <div className="item-actions" role="presentation" onClick={stop}>
       <button className="icon-btn icon-btn-sm" aria-pressed={item.is_bookmarked} aria-label={item.is_bookmarked ? 'Remove from saved' : 'Save for later'} title={item.is_bookmarked ? 'Remove from saved (s)' : 'Save for later (s)'} onClick={() => onToggleSave(item)}>
         {item.is_bookmarked ? <BookmarkCheck size={16} aria-hidden /> : <Bookmark size={16} aria-hidden />}
       </button>
@@ -54,10 +59,10 @@ function Meta({ item }: { item: Item }) {
 
 function Thumb({ item }: { item: Item }) {
   if (!item.image_url) return null;
-  return <img className="thumb" src={item.image_url} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={(e) => { e.currentTarget.style.display = 'none'; }} />;
+  return <img ref={hideBrokenImage} className="thumb" src={item.image_url} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />;
 }
 
-export const ItemRow = memo(forwardRef<HTMLElement, RowProps>(function ItemRow(props, ref) {
+export const ItemRow = memo(forwardRef<HTMLDivElement, RowProps>(function ItemRow(props, ref) {
   const { item, selected, active, query, layout, onOpen, hero } = props;
   const cls = ['item', `item-${layout}`, item.is_read ? 'is-read' : 'is-unread', selected ? 'is-selected' : '', active ? 'is-active' : '', hero ? 'item-hero' : ''].filter(Boolean).join(' ');
   const handleKey = (e: React.KeyboardEvent) => {
@@ -65,8 +70,9 @@ export const ItemRow = memo(forwardRef<HTMLElement, RowProps>(function ItemRow(p
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(item); }
   };
   return (
-    <article
+    <div
       ref={ref}
+      role="button"
       className={cls}
       data-item-id={item.id}
       tabIndex={selected ? 0 : -1}
@@ -98,6 +104,6 @@ export const ItemRow = memo(forwardRef<HTMLElement, RowProps>(function ItemRow(p
           <Actions {...props} />
         </>
       )}
-    </article>
+    </div>
   );
 }));
