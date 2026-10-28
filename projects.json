@@ -51,6 +51,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -65,6 +66,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -79,6 +81,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5176,
       "package": "campusflow-frontend",
@@ -95,6 +98,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5178,
       "package": "chessscope-frontend",
@@ -111,6 +115,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5177,
       "package": "circuitlab-calc-frontend",
@@ -127,6 +132,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5185,
       "package": "classconnect-frontend",
@@ -143,6 +149,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -157,6 +164,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -171,6 +179,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5175,
       "package": "dependsecure-frontend",
@@ -187,6 +196,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -201,6 +211,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5188,
       "package": "eduaccess-frontend",
@@ -217,6 +228,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5174,
       "package": "fileguard-frontend",
@@ -233,6 +245,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -247,6 +260,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -261,6 +275,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5189,
       "package": "frontpage-frontend",
@@ -277,6 +292,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -291,6 +307,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -305,6 +322,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -319,6 +337,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -333,6 +352,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app",
       "variantOf": "incidentflow"
@@ -348,6 +368,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5180,
       "package": "learnbridge-frontend",
@@ -364,6 +385,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5184,
       "package": "learnpulse-frontend",
@@ -380,6 +402,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -394,6 +417,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app",
       "variantOf": "netscope"
@@ -409,6 +433,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -423,6 +448,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5186,
       "package": "openlearn-commons-frontend",
@@ -439,6 +465,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -453,6 +480,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -467,6 +495,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5181,
       "package": "pathwise-frontend",
@@ -483,6 +512,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app",
       "variantOf": "phishlens"
@@ -498,6 +528,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -512,6 +543,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -526,6 +558,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -540,6 +573,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5187,
       "package": "reachlearn-frontend",
@@ -556,6 +590,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -570,6 +605,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -584,6 +620,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -598,6 +635,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5179,
       "package": "sentinelcore-frontend",
@@ -614,6 +652,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5173,
       "package": "sentinellog-frontend",
@@ -630,6 +669,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -644,6 +684,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -658,6 +699,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -672,6 +714,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -686,6 +729,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -700,6 +744,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -714,6 +759,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5183,
       "package": "teachcraft-frontend",
@@ -731,6 +777,7 @@
         "fastapi",
         "docker"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5197,
       "package": "tessera-frontend",
@@ -747,6 +794,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app",
       "variantOf": "threatintel-desk"
@@ -762,6 +810,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -776,6 +825,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5182,
       "package": "tutorspring-frontend",
@@ -792,6 +842,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -806,6 +857,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -820,6 +872,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -834,6 +887,7 @@
         "python",
         "cli"
       ],
+      "deployment": "catalogue",
       "deploys": [],
       "pythonPackage": "app"
     },
@@ -845,8 +899,9 @@
       "kind": "product",
       "block": "products",
       "interface": [
-        "other"
+        "nextjs"
       ],
+      "deployment": "separate",
       "deploys": [],
       "package": "company-platform"
     },
@@ -861,6 +916,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5300,
       "package": "assetwatch-frontend",
@@ -872,18 +928,6 @@
       }
     },
     {
-      "slug": ".github",
-      "name": ".Github",
-      "path": "projects/cbu-assignments/.github",
-      "owner": null,
-      "kind": "coursework",
-      "block": "companies",
-      "interface": [
-        "other"
-      ],
-      "deploys": []
-    },
-    {
       "slug": "bank_system",
       "name": "Bank_system",
       "path": "projects/cbu-assignments/bank_system",
@@ -893,6 +937,7 @@
       "interface": [
         "other"
       ],
+      "deployment": "none",
       "deploys": []
     },
     {
@@ -905,6 +950,7 @@
       "interface": [
         "other"
       ],
+      "deployment": "none",
       "deploys": []
     },
     {
@@ -919,6 +965,7 @@
         "fastapi",
         "docker"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5309,
       "package": "tenantcore-frontend",
@@ -934,6 +981,7 @@
       "interface": [
         "other"
       ],
+      "deployment": "none",
       "deploys": []
     },
     {
@@ -947,6 +995,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5301,
       "package": "cyberaware-lab-frontend",
@@ -968,6 +1017,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5302,
       "package": "hashsight-frontend",
@@ -989,6 +1039,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5303,
       "package": "incidentflow-frontend",
@@ -1009,6 +1060,7 @@
       "interface": [
         "other"
       ],
+      "deployment": "none",
       "deploys": []
     },
     {
@@ -1021,6 +1073,7 @@
       "interface": [
         "react"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5401,
       "package": "mwangala-portfolio",
@@ -1040,6 +1093,7 @@
       "interface": [
         "other"
       ],
+      "deployment": "none",
       "deploys": []
     },
     {
@@ -1053,6 +1107,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5304,
       "package": "netscope-frontend",
@@ -1074,6 +1129,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5305,
       "package": "phishlens-frontend",
@@ -1095,6 +1151,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5306,
       "package": "securecode-workbench-frontend",
@@ -1116,6 +1173,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5307,
       "package": "threatintel-desk-frontend",
@@ -1137,6 +1195,7 @@
         "react",
         "fastapi"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5308,
       "package": "transcriptwise-frontend",
@@ -1150,9 +1209,11 @@
       "kind": "product",
       "block": "products",
       "interface": [
+        "react",
         "fastapi",
         "docker"
       ],
+      "deployment": "separate",
       "deploys": [],
       "devPort": 5500,
       "package": "vocal-separator-web",
@@ -1166,8 +1227,9 @@
       "kind": "product",
       "block": "products",
       "interface": [
-        "other"
+        "nextjs"
       ],
+      "deployment": "separate",
       "deploys": [],
       "package": "workniche"
     }

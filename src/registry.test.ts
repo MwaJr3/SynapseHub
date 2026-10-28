@@ -33,6 +33,12 @@ interface ProjectEntry {
   path: string;
   owner: 'velaqori' | 'tamuzi' | null;
   kind: 'catalogue' | 'project' | 'product' | 'coursework';
+  /**
+   * The owner's delivery rule (2026-10-28): a project with its own working frontend
+   * and backend stays a separate deployment; a CLI-only build is catalogued on the
+   * company site instead; `none` is not deliverable at all.
+   */
+  deployment: 'separate' | 'catalogue' | 'none';
   /** Port block this project's port was allocated from — recorded, not inferred. */
   block: string;
   interface: string[];
@@ -237,6 +243,61 @@ describe('the registry and the tree agree', () => {
     if (existsSync(join(REPO, 'vercel.json'))) found.push('vercel.json');
     expect(found).toEqual([]);
   });});
+
+describe('the delivery rule', () => {
+  const hasFrontend = (entry: ProjectEntry) =>
+    entry.interface.includes('react') || entry.interface.includes('nextjs');
+  const hasBackend = (entry: ProjectEntry) =>
+    entry.interface.includes('fastapi') || entry.interface.includes('python');
+
+  it('keeps full-stack catalogue builds as their own deployment', () => {
+    const fullStack = registry.projects.filter(
+      (entry) => entry.path.startsWith('apps/') && hasFrontend(entry) && hasBackend(entry),
+    );
+    expect(fullStack.length).toBeGreaterThan(10);
+    for (const entry of fullStack) {
+      expect(entry.deployment, `${entry.slug} is full-stack`).toBe('separate');
+    }
+  });
+
+  it('catalogues the catalogue builds that are not full-stack', () => {
+    const cliOnly = registry.projects.filter(
+      (entry) => entry.path.startsWith('apps/') && !(hasFrontend(entry) && hasBackend(entry)),
+    );
+    expect(cliOnly.length).toBeGreaterThan(20);
+    for (const entry of cliOnly) {
+      expect(entry.deployment, `${entry.slug} has no frontend`).toBe('catalogue');
+    }
+  });
+
+  it('never marks a full-stack project as a catalogue entry', () => {
+    const wrong = registry.projects
+      .filter((entry) => entry.deployment === 'catalogue' && hasFrontend(entry) && hasBackend(entry))
+      .map((entry) => entry.path);
+    expect(wrong).toEqual([]);
+  });
+
+  it('reserves `none` for projects with nothing to deliver', () => {
+    const undeliverable = registry.projects.filter((entry) => entry.deployment === 'none');
+    expect(undeliverable.length).toBeGreaterThan(0);
+    for (const entry of undeliverable) {
+      expect(entry.interface, `${entry.slug} has a surface but is marked none`).toEqual(['other']);
+    }
+  });
+
+  it('catalogues the whole CLI-only set on the company site', () => {
+    // The catalogue entries are generated into the company platform from this
+    // registry, so the two cannot disagree: same slugs, same count.
+    const published = JSON.parse(
+      readFileSync(join(REPO, 'company-platform/src/content/catalogue.generated.json'), 'utf8'),
+    ) as { slug: string; path: string }[];
+    const expected = registry.projects
+      .filter((entry) => entry.deployment === 'catalogue')
+      .map((entry) => entry.path)
+      .sort();
+    expect(published.map((entry) => entry.path).sort()).toEqual(expected);
+  });
+});
 
 describe('the failure modes are real, not merely absent', () => {
   const base: ProjectEntry = {

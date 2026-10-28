@@ -164,3 +164,78 @@ built to assume either answer: the hosting configuration is still removed, and
 4. Add a single API project only for the products the site calls.
 5. Move each entry in `projects.json` from `pausedDeployment` to `deploys` in the
    same change that makes it live — the registry test fails until it is correct.
+
+---
+
+## Would Netlify do the trick? (checked 2026-10-28)
+
+Short answer: **for the 36 catalogue builds and the frontends, yes — and it is
+better than Vercel on the licence. For the 32 full-stack projects, no: Netlify
+cannot run the backends at all.**
+
+### The two facts that decide it
+
+**1. Netlify Functions have no Python runtime.** Netlify's own primitives map lists
+request compute as *"Netlify Functions (JS/TS, Go) + Edge Functions (Deno)"*, and
+the Functions docs state functions are written in JavaScript or TypeScript, with Go
+supported through a Lambda-compatible API. Where a Python endpoint is needed, that
+is a hard constraint, not a preference. Every one of this repository's backends is
+FastAPI — 28 full-stack projects plus 8 standalone CLIs' worth of Python service
+code. **Vercel does support a Python runtime; Netlify does not.**
+
+**2. Netlify bills per deploy, and the new free plan is much tighter.** Since
+September 2025 new accounts are credit-based: **300 credits a month, hard limit**,
+with **15 credits per production deploy**, 20 per GB of bandwidth, and 1 concurrent
+build. Vercel Hobby is **100 deployments a day** with a 45-minute build ceiling.
+Both meter the thing that actually hurts here — *one deploy per project per push* —
+but Netlify's budget is roughly **20 production deploys a month**, where Vercel's is
+about 100 a day.
+
+| | Vercel Hobby | Netlify Free | Cloudflare Pages |
+| --- | --- | --- | --- |
+| Cost | $0 | $0 | $0 |
+| **Commercial use** | **not permitted** (personal only) | permitted | permitted |
+| Deploy allowance | 100/day | ~20/month (300 credits ÷ 15) | 500 builds/month |
+| Concurrent builds | 1 | 1 | 1 |
+| Bandwidth | 100 GB | ~15 GB (20 credits/GB) | unmetered |
+| **Python functions** | **yes** | **no** (JS/TS/Go only) | Workers: JS/WASM only |
+
+### What that means for this repository
+
+The owner's rule — *full-stack stays separate, CLI-only goes in the catalogue* —
+leaves **32 separate deployments**. On **either** free host, connecting all 32 to
+one repository is the same trap that was already hit here: a push that touches one
+project rebuilds all of them. Two mitigations, and both are needed regardless of
+host:
+
+1. **Skip builds that cannot have changed.** Both hosts support it — Vercel through
+   the monorepo ignore step, Netlify through an `ignore` command in `netlify.toml`
+   that compares the changed paths. Without it, 32 projects × one push is 32 deploys
+   and the day is gone on Vercel, the month on Netlify.
+2. **Split the backends off the static host.** Netlify/Cloudflare serve the
+   frontends; the FastAPI services need a Python host (Render, Fly.io, Railway, or
+   Vercel Pro). That is a second platform to operate, and it is the price of the
+   separation.
+
+So the honest recommendation, in order of cost:
+
+| Option | Monthly | What it gets |
+| --- | ---: | --- |
+| **Vercel Hobby + catalogue in the umbrella** | $0 | Works today. Non-commercial only. Needs build-skipping. Python runs. |
+| **Netlify Free for the frontends + a Python host for the backends** | $0 | Commercial use allowed. Two platforms, tighter deploy budget, backend host to choose. |
+| **Cloudflare Pages for the frontends + a Python host** | $0 | Unmetered bandwidth, 500 builds/month, commercial use allowed. Same two-platform cost. |
+| **Vercel Pro** | $20 | Removes the licence limit, the deploy cap and the concurrency queue in one step. Python included. |
+
+Nothing above is a claim about which is "best" in the abstract. If the sites must
+carry a company's name and take money, **Hobby's licence is the blocker and $20 is
+cheaper than any of the workarounds** — that was true before Netlify and Netlify
+does not change it.
+
+### What is actually built, pending that decision
+
+- `projects.json` now records `deployment` for all 73 projects: **32 `separate`,
+  36 `catalogue`, 5 `none`** (coursework and scratch folders with nothing to serve).
+- The 36 catalogue builds are published on the company site at **`/catalogue`**,
+  generated from the registry by `npm run catalogue`, with a test on each side that
+  fails if the page and the registry disagree.
+- Nothing is deployed. No hosting config has been re-added.

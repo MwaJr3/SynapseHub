@@ -161,6 +161,8 @@ function walk() {
       }
       for (const child of readdirSync(join(REPO, relative)).sort()) {
         const nested = `${relative}/${child}`;
+        // `.github`, `.vscode`: repository furniture, never a project.
+        if (child.startsWith('.')) continue;
         if (NOT_A_PROJECT.has(child)) continue;
         if (!statSync(join(REPO, nested)).isDirectory()) continue;
         found.push(nested);
@@ -196,6 +198,28 @@ function npmPackage(dir) {
   return undefined;
 }
 
+/**
+ * How this project is delivered. The owner's rule, 2026-10-28: a project with its
+ * own working frontend and backend stays a separate deployment; a CLI-only build is
+ * catalogued on the company site instead.
+ *
+ * `none` is for things that are not deliverable at all — coursework, scratch
+ * folders, anything with no detectable surface. They are recorded so the registry
+ * still accounts for every directory, not so they can be deployed.
+ */
+function deploymentFor(path, surfaces) {
+  const hasFrontend = surfaces.includes('react') || surfaces.includes('nextjs');
+  const hasBackend = surfaces.includes('fastapi') || surfaces.includes('python');
+  if (path.startsWith('apps/')) {
+    // Catalogue builds: standalone only when they are a real full-stack app,
+    // otherwise a catalogue entry on the company site.
+    return hasFrontend && hasBackend ? 'separate' : 'catalogue';
+  }
+  // TenantCore lives inside the coursework folder but is a real full-stack app,
+  // so the surface decides, not the folder it sits in.
+  return hasFrontend || hasBackend ? 'separate' : 'none';
+}
+
 function blockFor(path) {
   if (path.startsWith('apps/')) return 'catalogue';
   if (path === 'projects/mysul/mwangala-portfolio') return 'sites';
@@ -213,7 +237,9 @@ function kindFor(path) {
 function interfaceFor(dir) {
   const has = (...parts) => existsSync(join(REPO, dir, ...parts));
   const surfaces = [];
-  if (has('frontend') || has('vite.config.ts')) surfaces.push('react');
+  if (has('next.config.mjs') || has('next.config.ts') || has('next.config.js')) surfaces.push('nextjs');
+  // `web/` is the frontend for vocal-separator; the other two are the usual shapes.
+  if (has('frontend') || has('web/vite.config.ts') || has('vite.config.ts')) surfaces.push('react');
   if (has('backend')) surfaces.push('fastapi');
   else if (has('app') && readdirSync(join(REPO, dir, 'app')).some((f) => f.endsWith('.py')))
     surfaces.push('python');
@@ -234,14 +260,17 @@ function build() {
     .map((path) => {
       const meta = REGISTRY_META[path] ?? {};
       const slug = path.split('/').pop();
+      const kind = kindFor(path);
+      const surfaces = interfaceFor(path);
       const entry = {
         slug,
         name: DISPLAY_NAME[path] ?? slug.replaceAll('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
         path,
         owner: ownerFor(path),
-        kind: kindFor(path),
+        kind,
         block: blockFor(path),
-        interface: interfaceFor(path),
+        interface: surfaces,
+        deployment: deploymentFor(path, surfaces),
         deploys: [],
       };
       const port = devPort(path);

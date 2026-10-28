@@ -13,6 +13,7 @@ const PUBLIC_NAV = [
   { href: '/companies', label: 'Companies' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/products', label: 'Products' },
+  { href: '/catalogue', label: 'Catalogue' },
   { href: '/ecosystem', label: 'Learning systems' },
   { href: '/support', label: 'IT triage' },
   { href: '/study-plan', label: 'Study planning' },
