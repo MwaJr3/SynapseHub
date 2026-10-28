@@ -244,8 +244,8 @@ npm run dev                    # http://localhost:5197, proxies /api to :8024
 Tests:
 
 ```bash
-cd backend  && python3 -m pytest -q     # 354 tests, 7 skipped (the live-PostgreSQL file)
-cd frontend && npm test && npm run build   # 99 tests, then typecheck + bundle
+cd backend  && python3 -m pytest -q     # 399 tests, 7 skipped (the live-PostgreSQL file)
+cd frontend && npm test && npm run build   # 144 tests, then typecheck + bundle
 ```
 
 ## Retrieval practice, and a scheduler you can check
@@ -489,6 +489,65 @@ time spent — only quests, and only against evidence. Those features are listed
 missing rather than half-built, because a progress bar showing "level 4" would be a
 claim that no code computes.
 
+## Your data, and leaving
+
+Two buttons under **Profile → Your data**, both of which do what they say:
+
+- **Download my data** writes one JSON file, built on the server from the learner's
+  own rows. The manifest lists a row count per table, so an empty table is visibly
+  empty rather than missing, and the file names what it withheld and why — the
+  password hash, the digests of access tokens, and `session_tokens` entirely. A
+  downloaded file must never be a login.
+- **Delete this account** shows the counts the server would remove *before* offering
+  the button, keeps the destructive control behind an "I want to delete my account…"
+  step, and requires the account email typed by hand plus the password. The delete is
+  a hard delete, verified afterwards: if any table still holds a row the request
+  fails loudly instead of reporting success.
+
+The set of tables is derived from the schema (`app/account.py`), not listed: every
+table with a foreign key to `users.id`, plus rows reached through a parent that
+always names a learner (`assessment_scores` names an assessment, and nothing on it
+names a learner). Tests fail if a table belongs to none of the three groups — owned,
+indirectly owned, or shared catalogue — so a later stage cannot add a table that is
+silently neither exported nor deleted. The shared curriculum (lessons, questions,
+sources, openings, puzzles, quests, seasons, OAuth clients) is not learner data and
+survives; the export says so in the same words the delete screen uses.
+
+`GET /api/account/export`, `GET /api/account/delete-preview` and
+`POST /api/account/delete` are the routes. `tests/test_account_data.py` (18 tests)
+covers the format and manifest, the withheld credentials, one learner's rows only,
+the preview matching the export, a wrong password and a mistyped email changing
+nothing, and a deletion that leaves no row behind on either engine.
+
+## Accessibility
+
+The stage-6 pass is recorded in [`docs/a11y/tessera-2026-10.md`](../../docs/a11y/tessera-2026-10.md):
+eleven screens and the app shell swept with axe (WCAG 2.2 A/AA plus best-practice
+rules), contrast computed from the tokens that ship, and a list of what could not be
+checked because this environment has no browser or assistive technology.
+
+It found real defects, all fixed: form fields whose only boundary was 1.29:1 against
+the card, no `h1` anywhere, a document title that never changed between screens,
+keyboard focus left on the navigation button after a section change, chess-board
+squares at 2.86:1, a legal-move marker at 1.51:1 on the dark squares, and two CSS
+custom properties that did not exist (`--border`, `--danger`) — the first of which
+made a whole bordered panel on the consent screen invisible.
+
+## Production build and preflight
+
+[`docs/DEPLOYMENT.md`](../../docs/DEPLOYMENT.md) has the detail. In short: one image
+(`apps/tessera/Dockerfile`) builds the frontend with Node, then runs the API on
+Python, serving both from one origin; the start command runs `alembic upgrade head`
+and then `python -m app.preflight`, and exits if the preflight fails. The preflight
+checks the database, the schema revision, the seeded curriculum, the production
+settings, the frontend build and the SQLite directory, and prints the command that
+fixes each failure. `TESSERA_PRODUCTION=1` turns on a Secure cookie and HSTS, and
+makes the preflight refuse SQLite or a localhost origin.
+
+Neither the image nor `docker compose up` has been run: this environment has no
+Docker daemon. The Dockerfile and the compose file are checked by tests that read
+them, and the PostgreSQL path has been exercised with a real server.
+
 ## Storage: SQLite for one, PostgreSQL for a product
 
 Every learner's profile, answers, review schedule and tutor threads live in one
@@ -525,7 +584,8 @@ would execute, which is not the same as executing it. Stage 4 installed a real
 server (PostgreSQL **16.2**, via the `pgserver` wheel), and the whole path has now
 been run against it:
 
-- all four revisions applied to an empty database, in order;
+- every revision applied to an empty database, in order (seven of them, head
+  `b7d3e14f2c80`);
 - `alembic check` — **no new upgrade operations detected** — on both PostgreSQL
   and SQLite, which is what makes drift a test failure rather than a surprise;
 - `downgrade -1` and `upgrade head` round-tripped on both dialects;
@@ -534,8 +594,10 @@ been run against it:
 - the **entire backend suite passed on PostgreSQL** as well as SQLite.
 
 That last point is the one that matters: the tests use `create_all`, so the tables
-come from the models, not from the migration history. Both paths now produce a
-schema the same 354 tests accept.
+come from the models, not from the migration history. Both paths produce a schema
+the same tests accept — 399 passing on SQLite (7 skipped), 405 on PostgreSQL with the
+live-database file included. Stage 6 added no migration: export, delete and the
+response headers change no table.
 
 ```bash
 export TESSERA_POSTGRES_URL='postgresql+psycopg2://postgres:@/scratch?host=/tmp/pgdata'
@@ -812,6 +874,7 @@ frontend/src/
   profile.tsx        the ten axes, assessment history and the add-assessment form
   hooks.ts           the shared async-loading hook
   rings.tsx          score rings and the profile header
+  data.tsx           export, deletion preview and the delete flow
   library.tsx        the Library screen: own concepts, relations, notes, sessions
   review.tsx         the Review screen: queue, prompts, grading, progress
   quests.tsx         the Quests screen: evidence gates, claim, guardrails, ledger

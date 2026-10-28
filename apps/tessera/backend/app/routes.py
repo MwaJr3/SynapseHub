@@ -79,9 +79,14 @@ def _set_session(response: Response, token: str) -> None:
         config.SESSION_COOKIE,
         token,
         httponly=True,
-        samesite="lax",
+        # Both follow the deployment: a Secure cookie over plain HTTP is silently
+        # discarded by the browser, which looks exactly like "the session did not
+        # stick". The default is insecure for local development and secure in
+        # production, and `production_problems()` refuses the combination that
+        # cannot work.
+        samesite=config.SESSION_COOKIE_SAMESITE,
         max_age=config.SESSION_MAX_AGE_SECONDS,
-        secure=False,
+        secure=config.SESSION_COOKIE_SECURE,
     )
 
 

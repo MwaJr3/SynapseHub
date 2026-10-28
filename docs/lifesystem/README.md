@@ -43,7 +43,7 @@ before the next major phase.
 | 3 | Software: retrieval + review scheduling | Four retrieval formats, append-only attempt history, explainable queue, recovery plan, measured scheduler | **done** |
 | 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps, PostgreSQL invariants executed | **done** |
 | 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | **done** |
-| 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | |
+| 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | **done** |
 | 7 | Learner development (the document's Phase I) | Learner model, dimensions, processes, technique groups A–I, personal protocol | after software |
 | 8 | Learning-system design (the document's Phase II) | Lifecycle, priority heuristic, competence model, experiment protocol | |
 | 9 | Gamification rules (the document's Phase III) | Operational definitions and safeguards, if stage 5 needs revising by them | |
@@ -51,6 +51,93 @@ before the next major phase.
 Stages 1–6 are the software. The document's own Phase IV–VI work is largely
 supplied by the prompt, which is what makes building first possible at all.
 
+
+## Stage 6 — the exit door, the accessibility pass, and a build that can be deployed
+
+Stages 1–5 all asked the learner to put something in. Stage 6 is about the two
+questions that decide whether that was fair: *can I get it out?* and *can anyone use
+this, or only someone like me?*
+
+### Export and delete
+
+**Derived, not listed.** The tables that hold a learner's rows are read from the
+schema: every table with a foreign key to `users.id` (19 of them), plus rows reached
+through a parent that always names a learner — `assessment_scores` names an
+assessment, and nothing on it names a person. A hand-kept list would be right once.
+Three tests keep it honest: every learner-owned table must cascade from `users`; every
+table in the database must belong to one of three groups (owned, indirectly owned,
+shared catalogue), so a new table cannot be silently outside the story; and after a
+deletion no table in any group may still hold a row.
+
+**What is withheld, and said out loud.** The export omits the password hash, the
+digests of access tokens and authorization codes, and `session_tokens` entirely — a
+file that can sign in as you is not an archive, it is a liability. The manifest lists
+a row count per table so an empty table is visibly empty rather than missing, and
+every omission is named with its reason inside the file.
+
+**Deletion is hard, and checked afterwards.** Sessions go first, then the account;
+the cascade removes the children; then the same schema-derived set is queried again
+and the request fails loudly if anything survived. The confirmation is the account
+email typed by hand plus the password — a checkbox is one misfired click away from
+erasing a year of work.
+
+### The accessibility pass
+
+Recorded in full in `docs/a11y/tessera-2026-10.md`, including what could not be
+checked. Eleven screens and the app shell are swept with axe (WCAG 2.2 A/AA plus
+best-practice rules) in jsdom; contrast is computed from the tokens that ship, since
+jsdom cannot composite colours. The pass found and fixed real defects: form borders at
+1.29:1, no `h1` anywhere, a title that never changed between screens, focus left on
+the navigation after a section change, board squares at 2.86:1, a move marker at
+1.51:1 on the dark squares, and two custom properties that were read but never
+declared — one of which made a bordered panel on the consent screen invisible.
+
+**The limit is stated rather than papered over:** there is no browser and no screen
+reader in this environment. No visual rendering, no assistive-technology run, no
+200% zoom or 320 px reflow, no observed reduced-motion behaviour. Those are listed as
+gaps.
+
+### The production build
+
+One image, one origin: Node compiles the frontend, Python runs the API and serves the
+build, so the session cookie is first-party and CORS never applies in production. The
+start command is `alembic upgrade head && python -m app.preflight && uvicorn` — the
+preflight **refuses** an unsafe configuration (SQLite in production, a localhost
+origin, a missing schema, an absent curriculum, a `SameSite=None` cookie without
+`Secure`) and exits instead of serving. `docs/DEPLOYMENT.md` has the rest.
+
+The schema stays the migration history's: stage 6 added no revision, `alembic check`
+reports no drift on either dialect, and the suite runs green on both. The image and
+`docker compose up` were **not** executed here — no Docker daemon — and the Dockerfile
+is checked by tests that read it, not by a build.
+
+### Exercise — stage 6
+
+1. Sign in, do a review, write a note, then open **Profile → Your data** and download
+   the file. Search it for your password, your session cookie's value, and any other
+   learner's email. None should be there.
+2. Compare the manifest with the "N records would be removed" line under the delete
+   card: the numbers should agree, except for the session row, which is deleted and
+   never exported.
+3. Type your email with one character wrong and a wrong password. The button stays
+   disabled for the email; with the right email and a wrong password the server
+   refuses, and nothing is removed.
+4. Delete the account. The sign-in screen says the account was erased. Sign in with
+   the old password: refused. Register the same email again: allowed, and the new
+   account starts empty while the curriculum is still there.
+5. Run `python3 -m app.preflight` against a local database and read the failures on an
+   empty file; then set `TESSERA_PRODUCTION=1` with SQLite and watch it refuse.
+
+**How it is assessed:** pass means the file is complete and credential-free, the
+counts agree with what is deleted, a refusal changes nothing, a deletion leaves no row
+in any table the schema says is the learner's — directly or through a parent — and the
+preflight stops a configuration that would be unsafe for real learners. Report
+anything that looked wrong, especially anything the export claims to include that you
+cannot find in it.
+
+**Next milestone (on your acknowledgement):** stage 7 — learner development, the
+document's Phase I: the learner model, the five dimensions, the five processes, the
+technique groups, and a personal protocol built from them.
 
 ## Stage 5 — quests, an idempotent XP ledger, seasons
 
@@ -131,9 +218,6 @@ duplicate an award, a second claim in the same season is refused by name, the le
 explains every number it contains, and no route exists that can move a learner's XP
 backwards or erase an entry. Report anything that looked wrong — a total that moves
 when the reason says it should not is a defect, not a rounding difference.
-
-**Next milestone (on your acknowledgement):** stage 6 — hardening: export and delete,
-the accessibility pass, and the production build.
 
 ## Stage 4 — competency, and a database that enforces what it says
 

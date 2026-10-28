@@ -1,0 +1,2287 @@
+{
+  "competency": {
+    "as_of": "2026-10-27T22:07:01.572060+00:00",
+    "calibration": {
+      "accuracy": null,
+      "answered": 0,
+      "buckets": [],
+      "mean_confidence": null,
+      "overconfidence": null,
+      "reason": "No multiple-choice answers yet, so there is no confidence to compare with anything."
+    },
+    "concepts": [
+      {
+        "concept_id": "chess.endgames",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "chess.endgames",
+            "kind": "no_evidence",
+            "label": "Basic endgames",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "chess.endgames",
+          "kind": "no_evidence",
+          "label": "Basic endgames",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Chess",
+        "title": "Basic endgames",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "py.exceptions",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "py.exceptions",
+            "kind": "no_evidence",
+            "label": "Exceptions and error handling",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "py.exceptions",
+          "kind": "no_evidence",
+          "label": "Exceptions and error handling",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Python",
+        "title": "Exceptions and error handling",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "py.files",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "py.files",
+            "kind": "no_evidence",
+            "label": "Files and resource handling",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "py.files",
+          "kind": "no_evidence",
+          "label": "Files and resource handling",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Python",
+        "title": "Files and resource handling",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "py.functions",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "py.functions",
+            "kind": "no_evidence",
+            "label": "Functions and argument passing",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "py.functions",
+          "kind": "no_evidence",
+          "label": "Functions and argument passing",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Python",
+        "title": "Functions and argument passing",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "sec.hashing",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "sec.hashing",
+            "kind": "no_evidence",
+            "label": "Hashing and password storage",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "sec.hashing",
+          "kind": "no_evidence",
+          "label": "Hashing and password storage",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Security",
+        "title": "Hashing and password storage",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "sec.input-validation",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "sec.input-validation",
+            "kind": "no_evidence",
+            "label": "Input validation and injection",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "sec.input-validation",
+          "kind": "no_evidence",
+          "label": "Input validation and injection",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Security",
+        "title": "Input validation and injection",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "chess.pieces",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "chess.pieces",
+            "kind": "no_evidence",
+            "label": "Piece movement and legal play",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "chess.pieces",
+          "kind": "no_evidence",
+          "label": "Piece movement and legal play",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Chess",
+        "title": "Piece movement and legal play",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "chess.tactics",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "chess.tactics",
+            "kind": "no_evidence",
+            "label": "Tactical motifs",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "chess.tactics",
+          "kind": "no_evidence",
+          "label": "Tactical motifs",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Chess",
+        "title": "Tactical motifs",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "sec.threat-model",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "sec.threat-model",
+            "kind": "no_evidence",
+            "label": "Threat modelling",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "sec.threat-model",
+          "kind": "no_evidence",
+          "label": "Threat modelling",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Security",
+        "title": "Threat modelling",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      },
+      {
+        "concept_id": "py.variables",
+        "disagreement": null,
+        "evidence": {
+          "auto": 0,
+          "confidence": 0.0,
+          "effective": 0.0,
+          "first_observed_at": null,
+          "formats": {},
+          "last_observed_at": null,
+          "observations": 0,
+          "recent_score": null,
+          "score": null,
+          "self": 0
+        },
+        "gaps": [
+          {
+            "action": "Answer one multiple-choice question or one review prompt on it.",
+            "concept_id": "py.variables",
+            "kind": "no_evidence",
+            "label": "Variables and names",
+            "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+            "severity": 0.35,
+            "type": "concept"
+          }
+        ],
+        "mastery": null,
+        "primary_gap": {
+          "action": "Answer one multiple-choice question or one review prompt on it.",
+          "concept_id": "py.variables",
+          "kind": "no_evidence",
+          "label": "Variables and names",
+          "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+          "severity": 0.35,
+          "type": "concept"
+        },
+        "subject": "Python",
+        "title": "Variables and names",
+        "verdict": "no_evidence",
+        "verdict_reason": "No graded attempt on this concept yet. Unmeasured is not the same as weak, so no score is shown."
+      }
+    ],
+    "counts": {
+      "concepts": 10,
+      "observations": 0,
+      "self_graded": 0,
+      "server_graded": 0,
+      "with_evidence": 0,
+      "without_evidence": 10
+    },
+    "coverage_note": "0 of 10 visible concepts have at least one graded attempt. 10 have none and are reported as unmeasured.",
+    "gaps": [
+      {
+        "action": "Record a result from the instrument, or reassess the report you have.",
+        "axes": [
+          {
+            "axis": "dimension",
+            "instrument": "icanstudy-dimensions",
+            "label": "Mindset",
+            "name": "mindset"
+          },
+          {
+            "axis": "dimension",
+            "instrument": "icanstudy-dimensions",
+            "label": "Self-regulation",
+            "name": "self_regulation"
+          },
+          {
+            "axis": "dimension",
+            "instrument": "icanstudy-dimensions",
+            "label": "Deep processing",
+            "name": "deep_processing"
+          },
+          {
+            "axis": "dimension",
+            "instrument": "icanstudy-dimensions",
+            "label": "Retrieval",
+            "name": "retrieval"
+          },
+          {
+            "axis": "dimension",
+            "instrument": "icanstudy-dimensions",
+            "label": "Self-management",
+            "name": "self_management"
+          },
+          {
+            "axis": "process",
+            "instrument": "icanstudy-processes",
+            "label": "Priming",
+            "name": "priming"
+          },
+          {
+            "axis": "process",
+            "instrument": "icanstudy-processes",
+            "label": "Encoding",
+            "name": "encoding"
+          },
+          {
+            "axis": "process",
+            "instrument": "icanstudy-processes",
+            "label": "Reference",
+            "name": "reference"
+          },
+          {
+            "axis": "process",
+            "instrument": "icanstudy-processes",
+            "label": "Retrieval and interleaving",
+            "name": "retrieval_interleaving"
+          },
+          {
+            "axis": "process",
+            "instrument": "icanstudy-processes",
+            "label": "Overlearning",
+            "name": "overlearning"
+          }
+        ],
+        "kind": "unmeasured_axes",
+        "reason": "10 of 10 baseline axes have no score (Mindset, Self-regulation, Deep processing, Retrieval, Self-management, Priming, Encoding, Reference, Retrieval and interleaving, Overlearning). Nothing has been estimated in their place.",
+        "severity": 0.5,
+        "type": "axes"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "py.variables",
+        "kind": "no_evidence",
+        "label": "Variables and names",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "py.functions",
+        "kind": "no_evidence",
+        "label": "Functions and argument passing",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "py.exceptions",
+        "kind": "no_evidence",
+        "label": "Exceptions and error handling",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "py.files",
+        "kind": "no_evidence",
+        "label": "Files and resource handling",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "chess.pieces",
+        "kind": "no_evidence",
+        "label": "Piece movement and legal play",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "chess.tactics",
+        "kind": "no_evidence",
+        "label": "Tactical motifs",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "chess.endgames",
+        "kind": "no_evidence",
+        "label": "Basic endgames",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "sec.threat-model",
+        "kind": "no_evidence",
+        "label": "Threat modelling",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "sec.input-validation",
+        "kind": "no_evidence",
+        "label": "Input validation and injection",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      },
+      {
+        "action": "Answer one multiple-choice question or one review prompt on it.",
+        "concept_id": "sec.hashing",
+        "kind": "no_evidence",
+        "label": "Hashing and password storage",
+        "reason": "No graded attempt on this concept. It is unmeasured, not weak.",
+        "severity": 0.35,
+        "type": "concept"
+      }
+    ],
+    "gaps_total": 11,
+    "policy": "A verdict comes only from graded attempts: the quiz and the retrieval formats. Mastery is the scheduler's stored estimate and is shown beside it, never merged with it. A concept with no attempt is unmeasured; it is not scored zero and is not averaged in. Evidence halves in weight every 30 days, and self-graded evidence counts at 0.5 of a server-graded answer.",
+    "thresholds": {
+      "developing_min_effective": 1.5,
+      "developing_min_score": 0.6,
+      "disagreement_gap": 0.25,
+      "half_life_days": 30.0,
+      "secure_min_effective": 3.0,
+      "secure_min_score": 0.8
+    },
+    "verdicts": {
+      "developing": 0,
+      "emerging": 0,
+      "no_evidence": 10,
+      "secure": 0
+    }
+  },
+  "concept": {
+    "concept": {
+      "difficulty": 2.0,
+      "explanation": "A variable in Python is a name attached to an object, not a box that holds a value. `a = [1, 2]` binds the name `a` to a list object. `b = a` binds a second name to the same object, so a change made through `b` is visible through `a`. Rebinding \u2014 `a = [3]` \u2014 attaches `a` to a different object and leaves `b` alone. Most confusion about Python 'pass by reference' comes from mixing up rebinding and mutation.",
+      "id": "py.variables",
+      "subject": "Python",
+      "summary": "A name bound to a value, and why rebinding is not the same as mutating.",
+      "title": "Variables and names"
+    },
+    "lesson": {
+      "application": "When a function seems to change a caller's variable 'for no reason', check whether both names point at the same mutable object.",
+      "est_minutes": 4,
+      "example": "a = [1]\nb = a\nb.append(2)\nprint(a)  # [1, 2] \u2014 same object\na = [9]\nprint(b)  # [1, 2] \u2014 rebinding a did not touch b",
+      "explanation": "Binding attaches a name to an object. Rebinding moves the name; mutation changes the object both names still refer to.",
+      "hook": "Two names, one list, and a bug that looks impossible.",
+      "id": "ls-py-variables",
+      "recap": "Rebinding \u2260 mutation. `is` compares identity; `==` compares value.",
+      "title": "Names, not boxes"
+    },
+    "prerequisites": [],
+    "provenance": {
+      "attribution": "Original material written for Tessera, Tamuzi Learning.",
+      "author": "Tamuzi Learning",
+      "license_class": "OPEN",
+      "license_name": "CC BY 4.0 (original work)",
+      "retrieved_at": "2026-10-27",
+      "title": "Tessera curriculum (original)",
+      "url": "https://github.com/MwaJr3/SynapseHub"
+    },
+    "questions": [
+      {
+        "choices": [
+          "[1]",
+          "[1, 2]",
+          "An error",
+          "[]"
+        ],
+        "difficulty": 2.0,
+        "id": "q-py-variables-1",
+        "prompt": "After `a = [1]; b = a; b.append(2)`, what does `a` contain?"
+      },
+      {
+        "choices": [
+          "`b` becomes [9] because the list was updated",
+          "`b` is still [1] because `a` was rebound to a new object",
+          "`b` raises an error",
+          "`a` and `b` are the same object"
+        ],
+        "difficulty": 2.0,
+        "id": "q-py-variables-2",
+        "prompt": "Which statement is true after `a = [1]; b = a; a = [9]`?"
+      }
+    ],
+    "state": null
+  },
+  "connections": {
+    "connections": []
+  },
+  "instruments": {
+    "instruments": [
+      {
+        "axes": [
+          {
+            "axis": "dimension",
+            "label": "Mindset",
+            "name": "mindset"
+          },
+          {
+            "axis": "dimension",
+            "label": "Self-regulation",
+            "name": "self_regulation"
+          },
+          {
+            "axis": "dimension",
+            "label": "Deep processing",
+            "name": "deep_processing"
+          },
+          {
+            "axis": "dimension",
+            "label": "Retrieval",
+            "name": "retrieval"
+          },
+          {
+            "axis": "dimension",
+            "label": "Self-management",
+            "name": "self_management"
+          }
+        ],
+        "id": "icanstudy-dimensions",
+        "label": "iCanStudy learning dimensions",
+        "note": "Five dimensions the diagnostic scores separately. Self-management was not scored.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "process",
+            "label": "Priming",
+            "name": "priming"
+          },
+          {
+            "axis": "process",
+            "label": "Encoding",
+            "name": "encoding"
+          },
+          {
+            "axis": "process",
+            "label": "Reference",
+            "name": "reference"
+          },
+          {
+            "axis": "process",
+            "label": "Retrieval and interleaving",
+            "name": "retrieval_interleaving"
+          },
+          {
+            "axis": "process",
+            "label": "Overlearning",
+            "name": "overlearning"
+          }
+        ],
+        "id": "icanstudy-processes",
+        "label": "iCanStudy learning processes",
+        "note": "Five learning processes. A supplied 0 is a real score, not a missing one.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Visual",
+            "name": "visual"
+          },
+          {
+            "axis": "preference",
+            "label": "Auditory",
+            "name": "auditory"
+          },
+          {
+            "axis": "preference",
+            "label": "Read/write",
+            "name": "read_write"
+          },
+          {
+            "axis": "preference",
+            "label": "Kinesthetic",
+            "name": "kinesthetic"
+          }
+        ],
+        "id": "vark",
+        "label": "VARK modality preference",
+        "note": "A preference profile. Learning-style matching is not supported by the evidence.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Solitary",
+            "name": "solitary"
+          },
+          {
+            "axis": "preference",
+            "label": "Structured",
+            "name": "structured"
+          },
+          {
+            "axis": "preference",
+            "label": "Concrete",
+            "name": "concrete"
+          },
+          {
+            "axis": "preference",
+            "label": "Analytical",
+            "name": "analytical"
+          }
+        ],
+        "id": "fastudy",
+        "label": "Fastudy study preferences",
+        "note": "Preference percentages. Balanced scores mean no strong leaning either way.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Theorist",
+            "name": "theorist"
+          },
+          {
+            "axis": "preference",
+            "label": "Activist",
+            "name": "activist"
+          },
+          {
+            "axis": "preference",
+            "label": "Reflector",
+            "name": "reflector"
+          },
+          {
+            "axis": "preference",
+            "label": "Pragmatist",
+            "name": "pragmatist"
+          }
+        ],
+        "id": "honey-mumford",
+        "label": "Honey and Mumford orientations",
+        "note": "Raw orientation scores on the instrument's own 0\u201320 scale.",
+        "scale_max": 20.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "attribute",
+            "label": "Linguistic",
+            "name": "linguistic"
+          },
+          {
+            "axis": "attribute",
+            "label": "Logical-mathematical",
+            "name": "logical_mathematical"
+          },
+          {
+            "axis": "attribute",
+            "label": "Spatial",
+            "name": "spatial"
+          },
+          {
+            "axis": "attribute",
+            "label": "Musical",
+            "name": "musical"
+          },
+          {
+            "axis": "attribute",
+            "label": "Interpersonal",
+            "name": "interpersonal"
+          },
+          {
+            "axis": "attribute",
+            "label": "Intrapersonal",
+            "name": "intrapersonal"
+          },
+          {
+            "axis": "attribute",
+            "label": "Naturalistic",
+            "name": "naturalistic"
+          },
+          {
+            "axis": "attribute",
+            "label": "Kinesthetic",
+            "name": "kinesthetic"
+          }
+        ],
+        "id": "intellectual-attributes",
+        "label": "Intellectual attributes (supplied assessment)",
+        "note": "Scores from the supplied assessment. Not standardised measures of intelligence.",
+        "scale_max": 5.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "label",
+            "label": "Learner archetype",
+            "name": "archetype"
+          }
+        ],
+        "id": "icanstudy-learner-type",
+        "label": "iCanStudy learner type",
+        "note": "The learner-type quiz reports an archetype name, not a score. Record the name; if the report also gives numeric dimensions, enter those under the matching instruments rather than inventing a scale here.",
+        "scale_max": null,
+        "scale_min": null,
+        "value_kind": "label"
+      },
+      {
+        "axes": [
+          {
+            "axis": "label",
+            "label": "MBTI",
+            "name": "mbti"
+          },
+          {
+            "axis": "label",
+            "label": "Enneagram",
+            "name": "enneagram"
+          },
+          {
+            "axis": "label",
+            "label": "Learner archetype",
+            "name": "archetype"
+          }
+        ],
+        "id": "self-described",
+        "label": "Self-described labels",
+        "note": "Self-reported labels. Reflective context only \u2014 no score, no bearing on mastery.",
+        "scale_max": null,
+        "scale_min": null,
+        "value_kind": "label"
+      }
+    ]
+  },
+  "knowledge": {
+    "concepts": [
+      {
+        "concept_id": "py.variables",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Variables and names"
+      },
+      {
+        "concept_id": "py.functions",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Functions and argument passing"
+      },
+      {
+        "concept_id": "py.exceptions",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Exceptions and error handling"
+      },
+      {
+        "concept_id": "py.files",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Files and resource handling"
+      },
+      {
+        "concept_id": "chess.pieces",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Piece movement and legal play"
+      },
+      {
+        "concept_id": "chess.tactics",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Tactical motifs"
+      },
+      {
+        "concept_id": "chess.endgames",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Basic endgames"
+      },
+      {
+        "concept_id": "sec.threat-model",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Threat modelling"
+      },
+      {
+        "concept_id": "sec.input-validation",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Input validation and injection"
+      },
+      {
+        "concept_id": "sec.hashing",
+        "lapses": 0,
+        "mastery": 0.0,
+        "next_review_at": null,
+        "reps": 0,
+        "retained": 0.0,
+        "stability_days": null,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Hashing and password storage"
+      }
+    ],
+    "subjects": [
+      {
+        "average_mastery": 0.0,
+        "concepts": [
+          {
+            "concept_id": "py.variables",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Python",
+            "tier": "unseen",
+            "title": "Variables and names"
+          },
+          {
+            "concept_id": "py.functions",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Python",
+            "tier": "unseen",
+            "title": "Functions and argument passing"
+          },
+          {
+            "concept_id": "py.exceptions",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Python",
+            "tier": "unseen",
+            "title": "Exceptions and error handling"
+          },
+          {
+            "concept_id": "py.files",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Python",
+            "tier": "unseen",
+            "title": "Files and resource handling"
+          }
+        ],
+        "subject": "Python"
+      },
+      {
+        "average_mastery": 0.0,
+        "concepts": [
+          {
+            "concept_id": "chess.pieces",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Chess",
+            "tier": "unseen",
+            "title": "Piece movement and legal play"
+          },
+          {
+            "concept_id": "chess.tactics",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Chess",
+            "tier": "unseen",
+            "title": "Tactical motifs"
+          },
+          {
+            "concept_id": "chess.endgames",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Chess",
+            "tier": "unseen",
+            "title": "Basic endgames"
+          }
+        ],
+        "subject": "Chess"
+      },
+      {
+        "average_mastery": 0.0,
+        "concepts": [
+          {
+            "concept_id": "sec.threat-model",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Security",
+            "tier": "unseen",
+            "title": "Threat modelling"
+          },
+          {
+            "concept_id": "sec.input-validation",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Security",
+            "tier": "unseen",
+            "title": "Input validation and injection"
+          },
+          {
+            "concept_id": "sec.hashing",
+            "lapses": 0,
+            "mastery": 0.0,
+            "next_review_at": null,
+            "reps": 0,
+            "retained": 0.0,
+            "stability_days": null,
+            "subject": "Security",
+            "tier": "unseen",
+            "title": "Hashing and password storage"
+          }
+        ],
+        "subject": "Security"
+      }
+    ]
+  },
+  "library": {
+    "activities": [
+      {
+        "id": "priming",
+        "label": "Priming \u2014 activating what you already know, within a time box."
+      },
+      {
+        "id": "encoding",
+        "label": "Encoding \u2014 turning the material into meaning in your own words."
+      },
+      {
+        "id": "reference",
+        "label": "Reference \u2014 capturing only what is worth looking up again."
+      },
+      {
+        "id": "retrieval",
+        "label": "Retrieval \u2014 recalling it without the notes."
+      },
+      {
+        "id": "application",
+        "label": "Application \u2014 using it on a problem you have not seen."
+      },
+      {
+        "id": "reflection",
+        "label": "Reflection \u2014 what worked, what to change next time."
+      }
+    ],
+    "concepts": [],
+    "relations": [
+      {
+        "gates": "true",
+        "id": "prerequisite",
+        "label": "is a prerequisite of",
+        "meaning": "You need this first. Gates recommendations."
+      },
+      {
+        "gates": "false",
+        "id": "contrasts_with",
+        "label": "contrasts with",
+        "meaning": "Often confused, and the difference is worth knowing."
+      },
+      {
+        "gates": "false",
+        "id": "example_of",
+        "label": "is an example of",
+        "meaning": "A concrete instance of the other idea."
+      },
+      {
+        "gates": "false",
+        "id": "mechanism_behind",
+        "label": "explains how it works",
+        "meaning": "The causal story under the other idea."
+      },
+      {
+        "gates": "false",
+        "id": "evidence_for",
+        "label": "is evidence for",
+        "meaning": "Supports the other claim."
+      },
+      {
+        "gates": "false",
+        "id": "application_of",
+        "label": "is an application of",
+        "meaning": "Where the other idea gets used."
+      },
+      {
+        "gates": "false",
+        "id": "exception_to",
+        "label": "is an exception to",
+        "meaning": "The boundary case where the other idea fails."
+      },
+      {
+        "gates": "false",
+        "id": "related_to",
+        "label": "is related to",
+        "meaning": "Associated, with no stronger claim made."
+      }
+    ],
+    "stats": {
+      "concepts_own": 0,
+      "minutes_recorded": 0,
+      "note": "Counts of what you recorded. They are not a measure of what you learned.",
+      "notes": 0,
+      "sessions_finished": 0,
+      "sessions_open": 0
+    }
+  },
+  "map": {
+    "edges": [
+      {
+        "from": "py.variables",
+        "id": "a4253f035d1c4779a6e04398751614c0",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "py.functions"
+      },
+      {
+        "from": "py.functions",
+        "id": "30e8f54148354fe7a5068dedea495647",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "py.exceptions"
+      },
+      {
+        "from": "py.exceptions",
+        "id": "8232c73b5c5e4049b5a47e3a9f472ae2",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "py.files"
+      },
+      {
+        "from": "chess.pieces",
+        "id": "207b2d7c15494cfdb5ed3f2cf1a8a4b2",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "chess.tactics"
+      },
+      {
+        "from": "chess.tactics",
+        "id": "52b0372a9ef54cc5b48f7d05b3b7558e",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "chess.endgames"
+      },
+      {
+        "from": "sec.threat-model",
+        "id": "abd3bb0521c44d56801c61da5c67147b",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "sec.input-validation"
+      },
+      {
+        "from": "sec.threat-model",
+        "id": "309eb1abc5e640dfbc8b070841c8a43c",
+        "own": false,
+        "relation": "prerequisite",
+        "to": "sec.hashing"
+      }
+    ],
+    "nodes": [
+      {
+        "difficulty": 2.0,
+        "id": "py.variables",
+        "mastery": 0.0,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Variables and names"
+      },
+      {
+        "difficulty": 2.5,
+        "id": "py.functions",
+        "mastery": 0.0,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Functions and argument passing"
+      },
+      {
+        "difficulty": 3.0,
+        "id": "py.exceptions",
+        "mastery": 0.0,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Exceptions and error handling"
+      },
+      {
+        "difficulty": 3.0,
+        "id": "py.files",
+        "mastery": 0.0,
+        "subject": "Python",
+        "tier": "unseen",
+        "title": "Files and resource handling"
+      },
+      {
+        "difficulty": 1.5,
+        "id": "chess.pieces",
+        "mastery": 0.0,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Piece movement and legal play"
+      },
+      {
+        "difficulty": 3.0,
+        "id": "chess.tactics",
+        "mastery": 0.0,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Tactical motifs"
+      },
+      {
+        "difficulty": 3.5,
+        "id": "chess.endgames",
+        "mastery": 0.0,
+        "subject": "Chess",
+        "tier": "unseen",
+        "title": "Basic endgames"
+      },
+      {
+        "difficulty": 2.5,
+        "id": "sec.threat-model",
+        "mastery": 0.0,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Threat modelling"
+      },
+      {
+        "difficulty": 3.0,
+        "id": "sec.input-validation",
+        "mastery": 0.0,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Input validation and injection"
+      },
+      {
+        "difficulty": 3.0,
+        "id": "sec.hashing",
+        "mastery": 0.0,
+        "subject": "Security",
+        "tier": "unseen",
+        "title": "Hashing and password storage"
+      }
+    ]
+  },
+  "me": {
+    "display_name": "Demo Learner",
+    "email": "demo@tessera.test"
+  },
+  "openings": {
+    "families": {
+      "English": 1,
+      "Indian": 1,
+      "Italian": 2,
+      "Queen's Gambit": 2,
+      "Ruy Lopez": 1,
+      "Sicilian": 3
+    },
+    "openings": [
+      {
+        "eco": "A10",
+        "family": "English",
+        "id": "eco-a10-c2c4",
+        "idea": "A flank first move that fights for d5 without occupying the centre. Often transposes into Queen's Gambit or Indian structures - so naming it early is a choice, not a distinction.",
+        "moves_san": "1. c4",
+        "moves_uci": "c2c4",
+        "name": "English Opening",
+        "plies": 1
+      },
+      {
+        "eco": "A45",
+        "family": "Indian",
+        "id": "eco-a45-g8f6",
+        "idea": "Black controls e4 from a distance and delays committing pawns to the centre. Flexible, and the gateway to the King's Indian and Nimzo-Indian structures.",
+        "moves_san": "1. d4 Nf6",
+        "moves_uci": "d2d4 g8f6",
+        "name": "Indian Game",
+        "plies": 2
+      },
+      {
+        "eco": "B20",
+        "family": "Sicilian",
+        "id": "eco-b20-c7c5",
+        "idea": "Black answers the centre with a flank pawn, unbalancing the position from move one. The trade is space for counterplay on the queenside.",
+        "moves_san": "1. e4 c5",
+        "moves_uci": "e2e4 c7c5",
+        "name": "Sicilian Defence",
+        "plies": 2
+      },
+      {
+        "eco": "B50",
+        "family": "Sicilian",
+        "id": "eco-b50-f3d4",
+        "idea": "White opens the centre and gets a knight to d4; Black accepts a slightly cramped but solid position with play against the d4 knight.",
+        "moves_san": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4",
+        "moves_uci": "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4",
+        "name": "Sicilian, Classical",
+        "plies": 7
+      },
+      {
+        "eco": "B90",
+        "family": "Sicilian",
+        "id": "eco-b90-a7a6",
+        "idea": "The most heavily analysed line in chess. a7-a6 controls b5 and prepares ...e5 or ...b5, keeping maximum flexibility.",
+        "moves_san": "1. e4 c5 2. Nf3 d6 3. d4 cxd4 4. Nxd4 Nf6 5. Nc3 a6",
+        "moves_uci": "e2e4 c7c5 g1f3 d7d6 d2d4 c5d4 f3d4 g8f6 b1c3 a7a6",
+        "name": "Sicilian, Najdorf",
+        "plies": 10
+      },
+      {
+        "eco": "C50",
+        "family": "Italian",
+        "id": "eco-c50-f1c4",
+        "idea": "The bishop takes the a2-g8 diagonal before the position closes. Direct, principled and the best place for a beginner to learn development.",
+        "moves_san": "1. e4 e5 2. Nf3 Nc6 3. Bc4",
+        "moves_uci": "e2e4 e7e5 g1f3 b8c6 f1c4",
+        "name": "Italian Game",
+        "plies": 5
+      },
+      {
+        "eco": "C55",
+        "family": "Italian",
+        "id": "eco-c55-g8f6",
+        "idea": "Black develops and hits e4 rather than defending passively. White must decide between quiet development and the sharp Ng5 lines.",
+        "moves_san": "1. e4 e5 2. Nf3 Nc6 3. Bc4 Nf6",
+        "moves_uci": "e2e4 e7e5 g1f3 b8c6 f1c4 g8f6",
+        "name": "Italian, Two Knights Defence",
+        "plies": 6
+      },
+      {
+        "eco": "C65",
+        "family": "Ruy Lopez",
+        "id": "eco-c65-g8f6",
+        "idea": "The pin on c6 is tested immediately. The resulting endgames are famously hard to win against a prepared opponent - a good practical choice.",
+        "moves_san": "1. e4 e5 2. Nf3 Nc6 3. Bb5 Nf6",
+        "moves_uci": "e2e4 e7e5 g1f3 b8c6 f1b5 g8f6",
+        "name": "Ruy Lopez, Berlin Defence",
+        "plies": 6
+      },
+      {
+        "eco": "D06",
+        "family": "Queen's Gambit",
+        "id": "eco-d06-c2c4",
+        "idea": "A pawn offer on c4. Accepting does not win a pawn cleanly, because White regains it with e2-e3 and a bishop on the long diagonal.",
+        "moves_san": "1. d4 d5 2. c4",
+        "moves_uci": "d2d4 d7d5 c2c4",
+        "name": "Queen's Gambit",
+        "plies": 3
+      },
+      {
+        "eco": "D30",
+        "family": "Queen's Gambit",
+        "id": "eco-d30-e7e6",
+        "idea": "Black holds the centre rather than grabbing material. The cost is a passive light-squared bishop, which shapes the whole middlegame.",
+        "moves_san": "1. d4 d5 2. c4 e6",
+        "moves_uci": "d2d4 d7d5 c2c4 e7e6",
+        "name": "Queen's Gambit Declined",
+        "plies": 4
+      }
+    ]
+  },
+  "profile": {
+    "assessments": [],
+    "axes": [
+      {
+        "axis": "dimension",
+        "label": "Mindset",
+        "missing": true,
+        "name": "mindset",
+        "score": null
+      },
+      {
+        "axis": "dimension",
+        "label": "Self-regulation",
+        "missing": true,
+        "name": "self_regulation",
+        "score": null
+      },
+      {
+        "axis": "dimension",
+        "label": "Deep processing",
+        "missing": true,
+        "name": "deep_processing",
+        "score": null
+      },
+      {
+        "axis": "dimension",
+        "label": "Retrieval",
+        "missing": true,
+        "name": "retrieval",
+        "score": null
+      },
+      {
+        "axis": "dimension",
+        "label": "Self-management",
+        "missing": true,
+        "name": "self_management",
+        "score": null
+      },
+      {
+        "axis": "process",
+        "label": "Priming",
+        "missing": true,
+        "name": "priming",
+        "score": null
+      },
+      {
+        "axis": "process",
+        "label": "Encoding",
+        "missing": true,
+        "name": "encoding",
+        "score": null
+      },
+      {
+        "axis": "process",
+        "label": "Reference",
+        "missing": true,
+        "name": "reference",
+        "score": null
+      },
+      {
+        "axis": "process",
+        "label": "Retrieval and interleaving",
+        "missing": true,
+        "name": "retrieval_interleaving",
+        "score": null
+      },
+      {
+        "axis": "process",
+        "label": "Overlearning",
+        "missing": true,
+        "name": "overlearning",
+        "score": null
+      }
+    ],
+    "caveats": [
+      "These are scores an instrument reported. They are not measurements of ability, and a low score is a development target rather than a ceiling.",
+      "A score that was never supplied stays missing. It is never treated as zero and the system will not invent one to fill the gap.",
+      "Personality and learning-preference labels are context for choosing a strategy. They are not predictors of performance and never set a limit.",
+      "Nothing on this page changes what you have demonstrated. Mastery comes only from graded answers, separately."
+    ],
+    "context": "",
+    "demo_baseline": false,
+    "instruments": [
+      {
+        "axes": [
+          {
+            "axis": "dimension",
+            "label": "Mindset",
+            "name": "mindset"
+          },
+          {
+            "axis": "dimension",
+            "label": "Self-regulation",
+            "name": "self_regulation"
+          },
+          {
+            "axis": "dimension",
+            "label": "Deep processing",
+            "name": "deep_processing"
+          },
+          {
+            "axis": "dimension",
+            "label": "Retrieval",
+            "name": "retrieval"
+          },
+          {
+            "axis": "dimension",
+            "label": "Self-management",
+            "name": "self_management"
+          }
+        ],
+        "id": "icanstudy-dimensions",
+        "label": "iCanStudy learning dimensions",
+        "note": "Five dimensions the diagnostic scores separately. Self-management was not scored.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "process",
+            "label": "Priming",
+            "name": "priming"
+          },
+          {
+            "axis": "process",
+            "label": "Encoding",
+            "name": "encoding"
+          },
+          {
+            "axis": "process",
+            "label": "Reference",
+            "name": "reference"
+          },
+          {
+            "axis": "process",
+            "label": "Retrieval and interleaving",
+            "name": "retrieval_interleaving"
+          },
+          {
+            "axis": "process",
+            "label": "Overlearning",
+            "name": "overlearning"
+          }
+        ],
+        "id": "icanstudy-processes",
+        "label": "iCanStudy learning processes",
+        "note": "Five learning processes. A supplied 0 is a real score, not a missing one.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Visual",
+            "name": "visual"
+          },
+          {
+            "axis": "preference",
+            "label": "Auditory",
+            "name": "auditory"
+          },
+          {
+            "axis": "preference",
+            "label": "Read/write",
+            "name": "read_write"
+          },
+          {
+            "axis": "preference",
+            "label": "Kinesthetic",
+            "name": "kinesthetic"
+          }
+        ],
+        "id": "vark",
+        "label": "VARK modality preference",
+        "note": "A preference profile. Learning-style matching is not supported by the evidence.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Solitary",
+            "name": "solitary"
+          },
+          {
+            "axis": "preference",
+            "label": "Structured",
+            "name": "structured"
+          },
+          {
+            "axis": "preference",
+            "label": "Concrete",
+            "name": "concrete"
+          },
+          {
+            "axis": "preference",
+            "label": "Analytical",
+            "name": "analytical"
+          }
+        ],
+        "id": "fastudy",
+        "label": "Fastudy study preferences",
+        "note": "Preference percentages. Balanced scores mean no strong leaning either way.",
+        "scale_max": 100.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "preference",
+            "label": "Theorist",
+            "name": "theorist"
+          },
+          {
+            "axis": "preference",
+            "label": "Activist",
+            "name": "activist"
+          },
+          {
+            "axis": "preference",
+            "label": "Reflector",
+            "name": "reflector"
+          },
+          {
+            "axis": "preference",
+            "label": "Pragmatist",
+            "name": "pragmatist"
+          }
+        ],
+        "id": "honey-mumford",
+        "label": "Honey and Mumford orientations",
+        "note": "Raw orientation scores on the instrument's own 0\u201320 scale.",
+        "scale_max": 20.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "attribute",
+            "label": "Linguistic",
+            "name": "linguistic"
+          },
+          {
+            "axis": "attribute",
+            "label": "Logical-mathematical",
+            "name": "logical_mathematical"
+          },
+          {
+            "axis": "attribute",
+            "label": "Spatial",
+            "name": "spatial"
+          },
+          {
+            "axis": "attribute",
+            "label": "Musical",
+            "name": "musical"
+          },
+          {
+            "axis": "attribute",
+            "label": "Interpersonal",
+            "name": "interpersonal"
+          },
+          {
+            "axis": "attribute",
+            "label": "Intrapersonal",
+            "name": "intrapersonal"
+          },
+          {
+            "axis": "attribute",
+            "label": "Naturalistic",
+            "name": "naturalistic"
+          },
+          {
+            "axis": "attribute",
+            "label": "Kinesthetic",
+            "name": "kinesthetic"
+          }
+        ],
+        "id": "intellectual-attributes",
+        "label": "Intellectual attributes (supplied assessment)",
+        "note": "Scores from the supplied assessment. Not standardised measures of intelligence.",
+        "scale_max": 5.0,
+        "scale_min": 0.0,
+        "value_kind": "number"
+      },
+      {
+        "axes": [
+          {
+            "axis": "label",
+            "label": "Learner archetype",
+            "name": "archetype"
+          }
+        ],
+        "id": "icanstudy-learner-type",
+        "label": "iCanStudy learner type",
+        "note": "The learner-type quiz reports an archetype name, not a score. Record the name; if the report also gives numeric dimensions, enter those under the matching instruments rather than inventing a scale here.",
+        "scale_max": null,
+        "scale_min": null,
+        "value_kind": "label"
+      },
+      {
+        "axes": [
+          {
+            "axis": "label",
+            "label": "MBTI",
+            "name": "mbti"
+          },
+          {
+            "axis": "label",
+            "label": "Enneagram",
+            "name": "enneagram"
+          },
+          {
+            "axis": "label",
+            "label": "Learner archetype",
+            "name": "archetype"
+          }
+        ],
+        "id": "self-described",
+        "label": "Self-described labels",
+        "note": "Self-reported labels. Reflective context only \u2014 no score, no bearing on mastery.",
+        "scale_max": null,
+        "scale_min": null,
+        "value_kind": "label"
+      }
+    ],
+    "learner": {
+      "display_name": "Demo Learner",
+      "email": "demo@tessera.test"
+    },
+    "missing": [
+      "Mindset",
+      "Self-regulation",
+      "Deep processing",
+      "Retrieval",
+      "Self-management",
+      "Priming",
+      "Encoding",
+      "Reference",
+      "Retrieval and interleaving",
+      "Overlearning"
+    ],
+    "quiz_links": [],
+    "updated_at": null
+  },
+  "puzzle": {
+    "board": {
+      "fen": "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1",
+      "in_check": false,
+      "legal_moves": [
+        "a1a2",
+        "a1a3",
+        "a1a4",
+        "a1a5",
+        "a1a6",
+        "a1a7",
+        "a1a8",
+        "a1b1",
+        "a1c1",
+        "a1d1",
+        "a1e1",
+        "a1f1",
+        "g1f1",
+        "g1f2",
+        "g1g2",
+        "g1h1",
+        "g1h2"
+      ],
+      "plies_played": 0,
+      "side_to_move": "white"
+    },
+    "difficulty": 1.5,
+    "id": "pz-back-rank",
+    "theme": "back-rank",
+    "title": "Back-rank mate"
+  },
+  "puzzles": {
+    "puzzles": [
+      {
+        "difficulty": 1.5,
+        "id": "pz-back-rank",
+        "side_to_move": "white",
+        "theme": "back-rank",
+        "title": "Back-rank mate"
+      },
+      {
+        "difficulty": 2.5,
+        "id": "pz-smothered",
+        "side_to_move": "white",
+        "theme": "smothered",
+        "title": "Smothered mate"
+      },
+      {
+        "difficulty": 1.5,
+        "id": "pz-queen-mate",
+        "side_to_move": "white",
+        "theme": "mate-in-one",
+        "title": "Queen supported by the king"
+      }
+    ]
+  },
+  "quests": {
+    "guardrails": {
+      "absence_penalty": false,
+      "capped": false,
+      "message": "",
+      "minutes_limit": 120,
+      "minutes_today": 0,
+      "paused": false,
+      "xp_cap": 400,
+      "xp_today": 0
+    },
+    "quests": [
+      {
+        "base_xp": 20,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "py.variables",
+          "py.functions"
+        ],
+        "difficulty": 1,
+        "evidence": {
+          "have": 0,
+          "need": 1
+        },
+        "kind": "retrieval",
+        "season_id": "s004",
+        "slug": "first-recall",
+        "state": "available",
+        "summary": "Answer two retrieval prompts from memory before looking at your notes.",
+        "title": "Say it back: variables and functions"
+      },
+      {
+        "base_xp": 25,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [],
+        "difficulty": 1,
+        "evidence": {
+          "have": 0,
+          "need": 1
+        },
+        "kind": "reflection",
+        "season_id": "s004",
+        "slug": "sit-and-reflect",
+        "state": "available",
+        "summary": "Complete a learning session with an objective and a stopping condition.",
+        "title": "Finish one sitting"
+      },
+      {
+        "base_xp": 35,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "py.exceptions"
+        ],
+        "difficulty": 2,
+        "evidence": {
+          "have": 0,
+          "need": 3
+        },
+        "kind": "retrieval",
+        "season_id": "s004",
+        "slug": "exception-drill",
+        "state": "available",
+        "summary": "Three retrieval prompts on exceptions, without re-reading first.",
+        "title": "Exception drill"
+      },
+      {
+        "base_xp": 35,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "py.files"
+        ],
+        "difficulty": 2,
+        "evidence": {
+          "have": 0,
+          "need": 3
+        },
+        "kind": "practice",
+        "season_id": "s004",
+        "slug": "files-by-hand",
+        "state": "available",
+        "summary": "Three attempts on file handling: read, write, and what happens on failure.",
+        "title": "Files by hand"
+      },
+      {
+        "base_xp": 30,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "sec.hashing"
+        ],
+        "difficulty": 2,
+        "evidence": {
+          "have": 0,
+          "need": 3
+        },
+        "kind": "retrieval",
+        "season_id": "s004",
+        "slug": "hash-basics",
+        "state": "available",
+        "summary": "Three recall attempts on what a hash guarantees and what it does not.",
+        "title": "Hashing basics"
+      },
+      {
+        "base_xp": 45,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "chess.tactics",
+          "chess.endgames"
+        ],
+        "difficulty": 3,
+        "evidence": {
+          "have": 0,
+          "need": 5
+        },
+        "kind": "practice",
+        "season_id": "s004",
+        "slug": "chess-vision",
+        "state": "available",
+        "summary": "Five attempts on tactics and endgames.",
+        "title": "Chess vision"
+      },
+      {
+        "base_xp": 50,
+        "claimed_at": null,
+        "completed_at": null,
+        "concept_ids": [
+          "sec.threat-model",
+          "sec.input-validation"
+        ],
+        "difficulty": 3,
+        "evidence": {
+          "have": 0,
+          "need": 4
+        },
+        "kind": "application",
+        "season_id": "s004",
+        "slug": "threat-model-sketch",
+        "state": "available",
+        "summary": "Four attempts across threat modelling and input validation.",
+        "title": "Sketch a threat model"
+      }
+    ],
+    "season": {
+      "ends_at": "2026-12-07T00:00:00+00:00",
+      "id": "s004",
+      "name": "Season 4",
+      "starts_at": "2026-09-14T00:00:00+00:00",
+      "theme": "Retrieval over recognition"
+    }
+  },
+  "review": {
+    "due": [],
+    "empty_state": "Nothing is scheduled yet: reviews appear after you have answered something. Practice a concept from the knowledge bank and it will start coming back.",
+    "overdue_count": 0,
+    "policy": "Ordered by how far overdue each concept is, then by how unlikely recall is. The reasons on each item are the numbers the order was computed from.",
+    "recovery": {
+      "active": false,
+      "reason": "Nothing is overdue.",
+      "remaining_after_today": 0,
+      "spread_days": 0,
+      "today_target": 0
+    },
+    "target_retention": 0.9,
+    "today": [],
+    "upcoming": []
+  },
+  "review_stats": {
+    "note": "Predicted recall is the scheduler's own estimate for each studied concept. It is shown so it can be checked, not because it is a measurement.",
+    "prediction": [],
+    "summary": {
+      "by_format": [],
+      "note": "Counts of attempts and how they were graded. Self-graded attempts are shown separately because they are weaker evidence.",
+      "total": 0
+    }
+  },
+  "season": {
+    "days_remaining": 40,
+    "ends_at": "2026-12-07T00:00:00+00:00",
+    "guardrails": {
+      "absence_penalty": false,
+      "capped": false,
+      "message": "",
+      "minutes_limit": 120,
+      "minutes_today": 0,
+      "paused": false,
+      "xp_cap": 400,
+      "xp_today": 0
+    },
+    "id": "s004",
+    "name": "Season 4",
+    "starts_at": "2026-09-14T00:00:00+00:00",
+    "theme": "Retrieval over recognition",
+    "xp": 0
+  },
+  "sources": {
+    "sources": [
+      {
+        "attribution": "Original material written for Tessera, Tamuzi Learning.",
+        "author": "Tamuzi Learning",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY 4.0 (original work)",
+        "reason": "'CC BY 4.0 (original work)' permits adaptation with attribution.",
+        "retrieved_at": "2026-10-27",
+        "source_id": "src-tessera-original",
+        "title": "Tessera curriculum (original)",
+        "url": "https://github.com/MwaJr3/SynapseHub",
+        "usage": "full"
+      },
+      {
+        "attribution": "Course materials from MIT OpenCourseWare. Referenced by link; not reproduced.",
+        "author": "MIT OpenCourseWare",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY-NC-SA 4.0",
+        "reason": "Licence 'CC BY-NC-SA 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-ocw-6-0001",
+        "title": "MIT OpenCourseWare \u2014 Introduction to Computer Science and Programming in Python",
+        "url": "https://ocw.mit.edu/courses/6-0001-introduction-to-computer-science-and-programming-in-python-fall-2016/",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "Course materials from MIT OpenCourseWare. Referenced by link; not reproduced.",
+        "author": "MIT OpenCourseWare",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY-NC-SA 4.0",
+        "reason": "Licence 'CC BY-NC-SA 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-ocw-6-006",
+        "title": "MIT OpenCourseWare \u2014 Introduction to Algorithms",
+        "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "Course materials from MIT OpenCourseWare. Referenced by link; not reproduced.",
+        "author": "MIT OpenCourseWare",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY-NC-SA 4.0",
+        "reason": "Licence 'CC BY-NC-SA 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-ocw-18-06",
+        "title": "MIT OpenCourseWare \u2014 Linear Algebra",
+        "url": "https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "OpenStax Biology 2e, Rice University. CC BY 4.0. Referenced by link; no text reproduced.",
+        "author": "OpenStax, Rice University",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY 4.0",
+        "reason": "Licence 'CC BY 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-openstax-biology-2e",
+        "title": "OpenStax \u2014 Biology 2e",
+        "url": "https://openstax.org/details/books/biology-2e",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "OpenStax Psychology 2e, Rice University. CC BY 4.0. Referenced by link; no text reproduced.",
+        "author": "OpenStax, Rice University",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY 4.0",
+        "reason": "Licence 'CC BY 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-openstax-psychology-2e",
+        "title": "OpenStax \u2014 Psychology 2e",
+        "url": "https://openstax.org/details/books/psychology-2e",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "OpenStax College Algebra 2e, Rice University. CC BY 4.0. Referenced by link; no text reproduced.",
+        "author": "OpenStax, Rice University",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC BY 4.0",
+        "reason": "Licence 'CC BY 4.0' permits reuse, but this deployment holds only a catalogue record and links to the original. No material was copied, so none may be presented as Tessera's.",
+        "retrieved_at": "",
+        "source_id": "src-openstax-college-algebra",
+        "title": "OpenStax \u2014 College Algebra 2e",
+        "url": "https://openstax.org/details/books/college-algebra-2e",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "Opening reference linked to lichess.org. No explorer data is copied or scraped.",
+        "author": "lichess.org",
+        "commercial_deployment": false,
+        "license_class": "LINK_ONLY",
+        "license_name": "Site service; opening names and ECO codes are reference data",
+        "reason": "Rights permit referencing only: link to the original and do not reproduce its text.",
+        "retrieved_at": "",
+        "source_id": "src-lichess-openings",
+        "title": "Lichess \u2014 opening explorer (reference)",
+        "url": "https://lichess.org/opening",
+        "usage": "reference_only"
+      },
+      {
+        "attribution": "Puzzles from the Lichess open database, released under CC0.",
+        "author": "Lichess (published by the lichess.org project)",
+        "commercial_deployment": false,
+        "license_class": "OPEN",
+        "license_name": "CC0 1.0 (public domain dedication)",
+        "reason": "'CC0 1.0 (public domain dedication)' permits adaptation with attribution.",
+        "retrieved_at": "",
+        "source_id": "src-lichess-puzzles",
+        "title": "Lichess open puzzle database",
+        "url": "https://database.lichess.org/",
+        "usage": "full"
+      }
+    ]
+  },
+  "today": {
+    "available_minutes": 15,
+    "empty_state": null,
+    "items": [
+      {
+        "concept_id": "sec.threat-model",
+        "kind": "new_concept",
+        "minutes": 5,
+        "reasons": [
+          "You have not studied Threat modelling yet.",
+          "It unlocks 2 further concepts."
+        ],
+        "title": "Threat modelling"
+      }
+    ]
+  },
+  "tutor_status": {
+    "base_url": "",
+    "configured": false,
+    "key_source": null,
+    "missing": [
+      "TESSERA_TUTOR_API_KEY"
+    ],
+    "model": "gpt-4o-mini",
+    "note": "Retrieval returns sourced passages from the curriculum with no model involved. It is not a conversation and is labelled as such in the interface.",
+    "provider": "openai",
+    "reason": "No model credential is configured, so no model is called. Set TESSERA_TUTOR_API_KEY (a Hugging Face token works: TESSERA_TUTOR_BASE_URL=https://router.huggingface.co/v1) \u2014 sourced material is still available through retrieval in the meantime.",
+    "retrieval_available": true
+  },
+  "xp_ledger": {
+    "count": 0,
+    "entries": []
+  }
+}

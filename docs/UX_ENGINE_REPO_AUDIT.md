@@ -1,8 +1,8 @@
 # UX engine repository audit
 
-Generated 2026-10-27 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
+Generated 2026-10-28 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
 
-Scope: **22 frontends**, **476 source files**, **84 findings**.
+Scope: **22 frontends**, **477 source files**, **84 findings**.
 
 ## Method and limitations
 
@@ -37,7 +37,7 @@ Scope: **22 frontends**, **476 source files**, **84 findings**.
 | apps/sentinelcore | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/sentinellog | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/teachcraft | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/tessera | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tessera | 21 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/tutorspring | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Portfolio website
