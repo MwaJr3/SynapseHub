@@ -1,4 +1,4 @@
-# Engine module reused from apps/threatintel-desk (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/threatintel-desk-cli (tested CLI engine) — behavior preserved.
 """Provider adapters with an explicit interface; external lookups are opt-in.
 
 Rules (documented + tested):

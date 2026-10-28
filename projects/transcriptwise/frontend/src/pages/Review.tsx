@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
   ArrowRight,
@@ -65,7 +65,6 @@ function TranscriptReview({ transcript }: { transcript: Transcript }) {
   const [language, setLanguage] = useState(transcript.language || '')
   const [version, setVersion] = useState(transcript.version)
   const [showOriginal, setShowOriginal] = useState(false)
-  const [page, setPage] = useState(0)
   const [pending, setPending] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -88,6 +87,19 @@ function TranscriptReview({ transcript }: { transcript: Transcript }) {
   const timestamped = segments.some((s) => s.start !== null)
   const perPage = 20
   const pageCount = Math.ceil(segments.length / perPage)
+  // The page lives in the URL, so refreshing or sharing keeps the reader where
+  // they were. `page` stays 0-based in this component; the query string is 1-based.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requested = Number(searchParams.get('page') ?? '1')
+  const page = Math.min(Math.max((Number.isFinite(requested) ? requested : 1) - 1, 0), Math.max(pageCount - 1, 0))
+  const setPage = (next: number | ((current: number) => number)) => {
+    const target = typeof next === 'function' ? next(page) : next
+    setSearchParams((current) => {
+      const params = new URLSearchParams(current)
+      params.set('page', String(Math.max(target, 0) + 1))
+      return params
+    }, { replace: true })
+  }
   const updateSegment = (id: string, text: string) =>
     setSegments((current) => current.map((s) => (s.id === id ? { ...s, text } : s)))
   const saveSource = async (): Promise<Transcript> => {

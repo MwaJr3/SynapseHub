@@ -39,11 +39,11 @@ export default async function AdminCaseStudiesPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-line">
-                <th className="py-2 pr-4">Case study</th>
-                <th className="py-2 pr-4">Product</th>
-                <th className="py-2 pr-4">Company</th>
-                <th className="py-2 pr-4">Publication</th>
-                <th className="py-2">Action</th>
+                <th scope="col" className="py-2 pr-4">Case study</th>
+                <th scope="col" className="py-2 pr-4">Product</th>
+                <th scope="col" className="py-2 pr-4">Company</th>
+                <th scope="col" className="py-2 pr-4">Publication</th>
+                <th scope="col" className="py-2">Action</th>
               </tr>
             </thead>
             <tbody>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChessScope — Chess Game Analyzer (Demo)</title>
+<meta name="description" content="ChessScope demo: import PGNs, replay games, and study honest performance stats. Sample games included.">
+<link rel="stylesheet" href="../app-shared.css">
+<style>.board{display:grid;grid-template-columns:repeat(8,1fr);max-width:420px;border:2px solid var(--line2);border-radius:8px;overflow:hidden}
+.sq{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(1.2rem,4.5vw,2rem);cursor:default;position:relative}
+.sq.l{background:#e9edf5}.sq.d{background:#8fa3c8}.sq.last{outline:3px solid #2563eb;outline-offset:-3px}
+.sq .co{position:absolute;font-size:.55rem;color:#64748b;font-family:var(--m)}.moves{display:flex;flex-wrap:wrap;gap:4px;max-height:220px;overflow:auto}
+.mv{font-family:var(--m);font-size:.8rem;padding:3px 8px;border-radius:6px;border:1px solid var(--line);cursor:pointer;background:var(--card)}
+.mv.cur{background:var(--acc);color:#fff;border-color:var(--acc)}</style>
+</head>
+<body class="app-light">
+<header class="topbar">
+  <a class="brand" href="../../earlier-work"><span class="brand-mark">♞</span>ChessScope</a>
+  <span class="sim">Demo · Sample games</span><span class="sp"></span>
+  <span class="userchip" id="userChip"></span>
+  <a class="btn btn-s" href="../../earlier-work">← Portfolio</a>
+  <button class="btn btn-s" id="btnSignout" hidden>Sign out</button>
+</header>
+
+<div id="authView" class="authwrap" hidden>
+  <h1>ChessScope</h1><p class="sub">Your private game library. Demo auth (browser-local).</p>
+  <div class="toolbar"><button class="btn btn-s" id="tabLogin">Sign in</button><button class="btn btn-s" id="tabReg">Register</button></div>
+  <div id="paneLogin"><label class="fl">Email<input id="liEmail" type="email"></label><label class="fl">Password<input id="liPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnLogin">Sign in</button><button class="btn" id="btnDemo">Use demo account</button></div></div>
+  <div id="paneReg" hidden><label class="fl">Email<input id="rgEmail" type="email"></label><label class="fl">Password (min 8)<input id="rgPw" type="password"></label>
+  <div class="toolbar"><button class="btn btn-p" id="btnReg">Create account</button></div></div>
+  <div class="errbar" id="authErr" hidden></div>
+  <p class="note">Demo: <span class="mono">player@demo / demo1234</span></p>
+</div>
+
+<div id="app" hidden>
+<div class="mobile-nav" id="mnav"></div>
+<div class="layout">
+  <aside class="side" id="side"></aside>
+  <main class="main">
+    <section class="view" id="v-overview"><h1>Overview</h1><p class="sub">Descriptive statistics from your library. Heuristic labels are marked <b>heuristic</b>; nothing here is engine analysis.</p>
+      <div class="toolbar"><label>Perspective (your name) <input id="ovName" size="20"></label><button class="btn btn-s" id="btnName">Set</button><span class="badge b-info" id="engStat">Engine: not configured</span></div>
+      <div class="stats" id="ovStats"></div>
+      <div class="grid2"><div class="panel"><h3>Results by colour</h3><div id="ovColor"></div></div>
+      <div class="panel"><h3>Tactical-event totals</h3><div id="ovTact"></div></div></div>
+    </section>
+    <section class="view" id="v-library"><h1>Game library</h1><p class="sub">Upload <span class="mono">.pgn</span> (multi-game supported) or paste PGN. Malformed records are reported, never crash the import.</p>
+      <div class="panel"><div class="toolbar"><input type="file" id="upFile" accept=".pgn,.txt"><button class="btn btn-p btn-s" id="btnUp">Import file</button><button class="btn btn-s" id="btnPaste">Paste PGN…</button></div><div id="upMsg"></div>
+      <div id="pasteBox" hidden><textarea id="pasteTxt" placeholder="[White &quot;…&quot;] … 1. e4 e5 …"></textarea><div class="toolbar"><button class="btn btn-s btn-p" id="btnDoPaste">Import pasted PGN</button></div></div></div>
+      <div class="toolbar"><input id="fText" placeholder="Player, opening, tag…" size="24"><select id="fRes"><option value="">Any result</option><option>1-0</option><option>0-1</option><option>1/2-1/2</option><option>*</option></select><select id="fCol"><option value="">Any colour (me)</option><option>white</option><option>black</option></select><button class="btn btn-s" id="btnFGo">Apply</button></div>
+      <div id="libList"></div>
+    </section>
+    <section class="view" id="v-review"><h1>Game review</h1><div id="revBody"><div class="empty">Open a game from the library.</div></div></section>
+    <section class="view" id="v-openings"><h1>Opening statistics</h1><p class="sub">Heuristic classification from the first moves — indicative, not authoritative.</p><div id="opBody"></div></section>
+    <section class="view" id="v-trends"><h1>Performance trends</h1><p class="sub">Score over time from your perspective (win = 1, draw = 0.5).</p><div class="panel"><div id="trChart"></div></div><div class="panel"><h3>Game-length distribution</h3><div id="trLen"></div></div></section>
+    <section class="view" id="v-collections"><h1>Collections</h1>
+      <div class="toolbar"><input id="colName" placeholder="New collection" size="26"><button class="btn btn-p btn-s" id="btnColAdd">Create</button></div>
+      <div id="colList"></div>
+    </section>
+    <section class="view" id="v-notes"><h1>Saved notes</h1><p class="sub">Games with your annotations.</p><div id="noteList"></div></section>
+    <section class="view" id="v-settings"><h1>Settings</h1>
+      <div class="panel"><h3>Engine analysis</h3><p class="note">Status: <b>not configured</b> in this browser demo. The production build connects an installed Stockfish binary (depth/time-limited, subprocess with timeouts); all features here work fully without it. Never trust a “blunder” label that isn't backed by a configured engine — this app makes no such claims.</p>
+      <label class="fl">External engine notes (stored per game in Review, labelled user-supplied)</label></div>
+      <div class="panel"><h3>Account</h3><label class="fl">New password<input id="setPw" type="password"></label>
+      <div class="toolbar"><button class="btn btn-s" id="btnPw">Change password</button><button class="btn btn-s btn-d" id="btnWipe">Delete my data</button><button class="btn btn-s" id="btnReseed">Reset sample games</button></div><div id="setMsg"></div></div>
+    </section>
+  </main>
+</div>
+</div>
+<script>
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10);
+const fmtT=t=>new Date(t).toLocaleString();
+async function sha(s){try{if(crypto.subtle){const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,"0")).join("");}}catch(e){}return"demo-"+s.length;}
+const KU="cs1:users",KS="cs1:session",KD=u=>"cs1:data:"+u;
+const getUsers=()=>{try{return JSON.parse(localStorage.getItem(KU)||"{}")}catch(e){return{}}};
+const setUsers=u=>localStorage.setItem(KU,JSON.stringify(u));
+const me=()=>sessionStorage.getItem(KS);
+let DB=null;const save=()=>localStorage.setItem(KD(me()),JSON.stringify(DB));
+function load(){try{DB=JSON.parse(localStorage.getItem(KD(me()))||null)}catch(e){DB=null}if(!DB){DB=seed();save();}}
+/* ================= PGN ================= */
+function splitGames(text){const parts=text.split(/\n\s*\n(?=\s*\[)/);const out=[];
+ parts.forEach(p=>{p=p.trim();if(p)out.push(p);});
+ if(!out.length&&text.trim())out.push(text.trim());return out;}
+function parseOne(block){
+  const tags={};let rest=block;
+  const tagRe=/\[(\w+)\s+"([^"]*)"\]/g;let m,lastIdx=0;
+  while((m=tagRe.exec(block))){tags[m[1]]=m[2];lastIdx=m.index+m[0].length;}
+  rest=block.slice(lastIdx);
+  rest=rest.replace(/\{[^}]*\}/g," ").replace(/;[^\n]*/g," ");
+  // strip variations (nested)
+  let depth=0,tmp="";for(const ch of rest){if(ch==="(")depth++;else if(ch===")")depth=Math.max(0,depth-1);else if(!depth)tmp+=ch;}
+  rest=tmp.replace(/\$\d+/g," ").replace(/(1-0|0-1|1\/2-1\/2|\*)\s*$/," ").replace(/\d+\.(\.\.)?/g," ").trim();
+  const sans=rest.split(/\s+/).filter(t=>t&&!/^(1-0|0-1|1\/2-1\/2|\*)$/.test(t));
+  if(!sans.length)return{error:"No moves found."};
+  return{tags,moves:sans,result:(block.match(/(1-0|0-1|1\/2-1\/2|\*)\s*$/)||[])[1]||tags.Result||"*"};
+}
+/* ================= board replay (pseudo-legal SAN matching) ================= */
+const FILES="abcdefgh";
+function startBoard(){const back=["r","n","b","q","k","b","n","r"];
+ const b=new Array(64).fill(null);
+ for(let f=0;f<8;f++){b[f]=back[f];b[8+f]="p";b[48+f]="P";b[56+f]=back[f].toUpperCase();}
+ return b;}
+const sq=(f,r)=>r*8+f, inB=(f,r)=>f>=0&&f<8&&r>=0&&r<8;
+function slideMoves(b,from,dirs,white){const out=[];const f0=from%8,r0=(from/8)|0;
+ for(const[df,dr]of dirs){let f=f0+df,r=r0+dr;while(inB(f,r)){const t=b[sq(f,r)];
+  if(!t)out.push(sq(f,r));else{if((t===t.toUpperCase())!==white)out.push(sq(f,r));break;}f+=df;r+=dr;}}return out;}
+function pseudoMoves(b,from,ep){const p=b[from];if(!p)return[];const white=p===p.toUpperCase();const f=from%8,r=(from/8)|0;const T=p.toUpperCase();const out=[];
+ const push=(f2,r2)=>{if(!inB(f2,r2))return;const t=b[sq(f2,r2)];if(!t||(t===t.toUpperCase())!==white)out.push(sq(f2,r2));};
+ if(T==="N")[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]].forEach(([df,dr])=>push(f+df,r+dr));
+ else if(T==="K"){for(let df=-1;df<=1;df++)for(let dr=-1;dr<=1;dr++){if(df||dr)push(f+df,r+dr);}}
+ else if(T==="B")slideMoves(b,from,[[-1,-1],[-1,1],[1,-1],[1,1]],white).forEach(x=>out.push(x));
+ else if(T==="R")slideMoves(b,from,[[-1,0],[1,0],[0,-1],[0,1]],white).forEach(x=>out.push(x));
+ else if(T==="Q")slideMoves(b,from,[[-1,-1],[-1,1],[1,-1],[1,1],[-1,0],[1,0],[0,-1],[0,1]],white).forEach(x=>out.push(x));
+ else{const dir=white?-1:1,start=white?6:1;
+  if(inB(f,r+dir)&&!b[sq(f,r+dir)]){out.push(sq(f,r+dir));if(r===start&&!b[sq(f,r+2*dir)])out.push(sq(f,r+2*dir));}
+  [-1,1].forEach(df=>{if(inB(f+df,r+dir)){const s2=sq(f+df,r+dir),t=b[s2];if((t&&(t===t.toUpperCase())!==white)||s2===ep)out.push(s2);}});}
+ return out;}
+function applySAN(b,san,white,ep){let s=san.replace(/[+#?!]+$/,"");
+ // castling
+ if(/^O-O(-O)?$/.test(s.replace(/0/g,"O"))){const long=s.includes("O-O-O");const r=white?7:0;
+  const path=long?[1,2,3]:[5,6];if(path.some(f=>b[sq(f,r)]))return{err:"castling path blocked"};
+  const nb=b.slice();nb[sq(4,r)]=null;nb[long?sq(2,r):sq(6,r)]=white?"K":"k";nb[long?sq(0,r):sq(7,r)]=null;nb[long?sq(3,r):sq(5,r)]=white?"R":"r";
+  return{board:nb,from:sq(4,r),to:long?sq(2,r):sq(6,r),ep:null,castle:true};}
+ const m=s.match(/^([KQRBN])?([a-h]?[1-8]?)(x)?([a-h][1-8])(?:=([QRBN]))?$/);
+ if(!m)return{err:"unparseable SAN: "+san};
+ const piece=(m[1]||(m[5]?"P":"P"));const dis=m[2]||"",cap=!!m[3],dest=F(m[4][0])+ (8-parseInt(m[4][1]))*8,promo=m[5];
+ const want=white?piece.toUpperCase():piece.toLowerCase();
+ const cands=[];
+ for(let i=0;i<64;i++){if(b[i]!==want)continue;
+  if(dis){const f=i%8,r=8-((i/8)|0);if(/[a-h]/.test(dis)&&FILES[f]!==dis[0])continue;if(/[1-8]/.test(dis)&&String(r)!==dis.slice(-1))continue;}
+  if(pseudoMoves(b,i,ep).includes(dest))cands.push(i);}
+ // en-passant candidate: pawn capture to empty ep square
+ let from=cands[0];
+ const target=b[dest];
+ if(cap&&!target&&(!ep||ep!==dest)){if(cands.length===0)return{err:"capture to empty square: "+san};}
+ if(from==null){
+  // lenient retry: ignore disambiguation
+  for(let i=0;i<64;i++){if(b[i]===want&&pseudoMoves(b,i,ep).includes(dest)){from=i;break;}}
+  if(from==null)return{err:"no piece can play "+san};}
+ const nb=b.slice();nb[from]=null;
+ if(ep===dest&&piece==="P"&&!target){nb[dest+(white?8:-8)]=null;} // ep capture
+ nb[dest]=promo?(white?promo:promo.toLowerCase()):want;
+ let newEp=null;if(piece==="P"&&Math.abs(dest-from)===16)newEp=(from+dest)/2;
+ return{board:nb,from,to:dest,ep:newEp,castle:false};}
+function F(f){return FILES.indexOf(f);}
+function replay(moves){let b=startBoard(),white=true,ep=null;const snaps=[{b:b.slice(),last:null}];
+ for(let i=0;i<moves.length;i++){const r=applySAN(b,moves[i],white,ep);
+  if(r.err)return{snaps,error:`Replay stopped at move ${Math.floor(i/2)+1}${i%2?"…":""} (${moves[i]}): ${r.err}. Stats below cover the full movetext; the board shows ${i} plies.`};
+  b=r.board;ep=r.ep;white=!white;snaps.push({b:b.slice(),last:[r.from,r.to]});}
+ return{snaps,error:null};}
+const VAL={P:1,N:3,B:3,R:5,Q:9,K:0};
+function material(b){let w=0,bl=0;for(const p of b){if(!p)continue;const v=VAL[p.toUpperCase()]||0;if(p===p.toUpperCase())w+=v;else bl+=v;}return w-bl;}
+function classify(moves){const s=moves.map(m=>m.replace(/[+#]/g,""));
+ const j=s.slice(0,8).join(" ");
+ const has=(...t)=>t.every((x,i)=>s[i]===x);
+ if(has("e4","e5","Nf3","Nc6","Bb5"))return"Ruy Lopez (heuristic)";
+ if(has("e4","e5","Nf3","Nc6","Bc4"))return"Italian Game (heuristic)";
+ if(has("e4","e5","Nf3","Nf6"))return"Petrov Defence (heuristic)";
+ if(has("e4","c5"))return"Sicilian Defence (heuristic)";
+ if(has("e4","e6"))return"French Defence (heuristic)";
+ if(has("e4","c6"))return"Caro-Kann (heuristic)";
+ if(has("e4","e5"))return"Open Game (heuristic)";
+ if(has("e4"))return"King's Pawn (heuristic)";
+ if(has("d4","d5","c4"))return"Queen's Gambit (heuristic)";
+ if(has("d4","Nf6","c4"))return"Indian Defence (heuristic)";
+ if(has("d4","d5"))return"Closed Game (heuristic)";
+ if(has("d4"))return"Queen's Pawn (heuristic)";
+ if(has("c4"))return"English Opening (heuristic)";
+ if(has("Nf3"))return"Réti Opening (heuristic)";
+ if(has("f3","e5","g4"))return"Fool's Mate pattern (illustrative)";
+ if(!j)return"Unknown";return"Unclassified ("+s.slice(0,4).join(" ")+", heuristic)";}
+function stats(moves){let cap=0,chk=0,cs=0,pro=0;const mat=[0];
+ moves.forEach(m=>{if(m.includes("x"))cap++;if(/[+#]$/.test(m))chk++;if(m.startsWith("O-O"))cs++;if(m.includes("="))pro++;});
+ return{plies:moves.length,captures:cap,checks:chk,castles:cs,promotions:pro};}
+/* seed */
+const SAMPLE=`[White "A. Demo"][Black "B. Sample"][Result "1/2-1/2"][Date "2026.03.14"]
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 Nf6 5. O-O Be7 6. Re1 b5 7. Bb3 d6 8. c3 O-O 9. h3 Na5 10. Bc2 c5 11. d4 Qc7 12. d5 Bd7 1/2-1/2
+
+[White "C. Learner"][Black "A. Demo"][Result "1/2-1/2"][Date "2026.05.02"]
+1. d4 d5 2. c4 e6 3. Nc3 Nf6 4. Bg5 Be7 5. e3 O-O 6. Nf3 h6 7. Bh4 b6 8. cxd5 Nxd5 9. Bxe7 Qxe7 10. Nxd5 exd5 11. Rc1 Bd7 12. Bd3 c6 1/2-1/2
+
+[White "A. Demo"][Black "D. Club"][Result "1-0"][Date "2026.06.20"]
+1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6 4. Qxf7# 1-0
+
+[White "E. Friend"][Black "A. Demo"][Result "0-1"][Date "2026.07.11"]
+1. f3 e5 2. g4 Qh4# 0-1`;
+function seed(){const games=[];splitGames(SAMPLE).forEach((b,i)=>{const p=parseOne(b);
+ games.push({id:uid(),white:p.tags.White||"White",black:p.tags.Black||"Black",result:p.result,date:p.tags.Date||"????.??.??",opening:classify(p.moves),moves:p.moves,tags:p.tags,collections:[],noteTags:["sample"],notes:"",engineNotes:"",importedAt:Date.now(),sample:true});});
+ return{games,collections:[{id:"c1",name:"Sample games",gameIds:games.map(g=>g.id)}],myName:"A. Demo",reviewId:games[0].id,ply:0};}
+/* import */
+function importPGN(text){const blocks=splitGames(text);let ok=0;const errs=[];
+ if(blocks.length>200)return{ok:0,errs:["Too many games in one file (cap 200). Split the file."]};
+ blocks.forEach((b,i)=>{if(b.length>200000){errs.push(`Game ${i+1}: exceeds size cap, skipped.`);return;}
+  try{const p=parseOne(b);if(p.error){errs.push(`Game ${i+1}: ${p.error}`);return;}
+   if(p.moves.length>600){errs.push(`Game ${i+1}: exceeds 600-ply cap, skipped.`);return;}
+   DB.games.unshift({id:uid(),white:p.tags.White||"Unknown",black:p.tags.Black||"Unknown",result:p.result,date:p.tags.Date||"????.??.??",opening:p.tags.Opening||classify(p.moves),moves:p.moves,tags:p.tags,collections:[],noteTags:[],notes:"",engineNotes:"",importedAt:Date.now(),sample:false});ok++;
+  }catch(e){errs.push(`Game ${i+1}: ${e.message||"parse failure"}`);}});
+ return{ok,errs};}
+/* helpers */
+const game=id=>DB.games.find(g=>g.id===id);
+function myColor(g){const n=(DB.myName||"").toLowerCase();if(g.white.toLowerCase()===n)return"white";if(g.black.toLowerCase()===n)return"black";return null;}
+function myScore(g){const c=myColor(g);if(!c)return null;if(g.result==="1/2-1/2")return 0.5;if(g.result==="1-0")return c==="white"?1:0;if(g.result==="0-1")return c==="black"?1:0;return null;}
+/* nav */
+const NAV=[["overview","◉ Overview"],["library","♜ Library"],["review","◉ Review"],["openings","❖ Openings"],["trends","📈 Trends"],["collections","🗂 Collections"],["notes","✎ Notes"],["settings","⚙ Settings"]];
+function renderNav(){$("#side").innerHTML=NAV.map(([v,l])=>`<button data-v="${v}">${l}</button>`).join("");
+ $("#mnav").innerHTML=NAV.map(([v,l])=>`<button class="btn btn-s" data-v="${v}">${l}</button>`).join("");
+ $$("#side button,#mnav button").forEach(b=>b.onclick=()=>show(b.dataset.v));}
+function show(v){$$(".view").forEach(x=>x.classList.remove("on"));$("#v-"+v).classList.add("on");$$("#side button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));render();}
+const GLYPH={K:"♚",Q:"♛",R:"♜",B:"♝",N:"♞",P:"♟",k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟"};
+function boardHTML(snap,flip){const b=snap.b;let h='<div class="board">';
+ for(let r=0;r<8;r++)for(let f=0;f<8;f++){const rr=flip?7-r:r,ff=flip?7-f:f;const p=b[sq(ff,rr)];
+  const last=snap.last&&(snap.last[0]===sq(ff,rr)||snap.last[1]===sq(ff,rr));
+  const dark=(rr+ff)%2===1;
+  const glyph=p?(p===p.toUpperCase()?`<span style="color:#0f172a">${GLYPH[p]}</span>`:`<span style="color:#1e293b;text-shadow:0 0 2px #fff">${GLYPH[p]}</span>`):"";
+  const coord=(f===0?`<span class="co" style="left:2px;top:1px">${8-rr}</span>`:"")+(r===7?`<span class="co" style="right:2px;bottom:1px">${FILES[ff]}</span>`:"");
+  h+=`<div class="sq ${dark?"d":"l"}${last?" last":""}">${glyph}${coord}</div>`;}
+ return h+"</div>";}
+/* views */
+function rOverview(){$("#ovName").value=DB.myName;
+ const scored=DB.games.map(g=>({g,s:myScore(g)})).filter(x=>x.s!==null);
+ const w=scored.filter(x=>x.s===1).length,d=scored.filter(x=>x.s===0.5).length,l=scored.filter(x=>x.s===0).length;
+ $("#ovStats").innerHTML=`<div class="stat"><b>${DB.games.length}</b><span>games reviewed</span></div><div class="stat"><b>${w}</b><span>wins</span></div><div class="stat"><b>${d}</b><span>draws</span></div><div class="stat"><b>${l}</b><span>losses</span></div>`;
+ const byC={white:[0,0,0],black:[0,0,0]};scored.forEach(x=>{const c=myColor(x.g);byC[c][x.s===1?0:x.s===0.5?1:2]++;});
+ $("#ovColor").innerHTML=["white","black"].map(c=>`<div style="padding:6px 0;border-top:1px solid var(--line)">As <b>${c}</b>: ${byC[c][0]}W · ${byC[c][1]}D · ${byC[c][2]}L</div>`).join("");
+ let cap=0,chk=0,cs=0;DB.games.forEach(g=>{const s=stats(g.moves);cap+=s.captures;chk+=s.checks;cs+=s.castles;});
+ $("#ovTact").innerHTML=`<div style="padding:6px 0;border-top:1px solid var(--line)">Captures: <b>${cap}</b></div><div style="padding:6px 0;border-top:1px solid var(--line)">Checks given (per notation): <b>${chk}</b></div><div style="padding:6px 0;border-top:1px solid var(--line)">Castling events: <b>${cs}</b></div><p class="sub">Counts come from the recorded movetext — no engine judgement involved.</p>`;}
+function filteredLib(){const t=$("#fText").value.trim().toLowerCase(),r=$("#fRes").value,c=$("#fCol").value;
+ return DB.games.filter(g=>(!t||(g.white+g.black+g.opening+(g.noteTags||[]).join(" ")).toLowerCase().includes(t))&&(!r||g.result===r)&&(!c||myColor(g)===c));}
+function rLibrary(){const list=filteredLib();
+ $("#libList").innerHTML=list.map(g=>{const s=stats(g.moves);
+ return `<div class="panel"><h3>${esc(g.white)} – ${esc(g.black)} <span class="badge b-info">${esc(g.result)}</span> ${g.sample?'<span class="badge b-med">sample</span>':""}</h3>
+ <p class="sub">${esc(g.date)} · ${Math.ceil(s.plies/2)} moves · ${esc(g.opening)}${(g.noteTags||[]).length?" · tags: "+g.noteTags.map(esc).join(", "):""}</p>
+ <div class="toolbar"><button class="btn btn-s" data-a="open" data-id="${g.id}">Review</button><button class="btn btn-s" data-a="tag" data-id="${g.id}">Edit tags</button><button class="btn btn-s" data-a="col" data-id="${g.id}">Collections…</button><button class="btn btn-s btn-d" data-a="del" data-id="${g.id}">Delete</button></div></div>`;}).join("")||'<div class="empty">No games match.</div>';
+ $$("#libList [data-a]").forEach(b=>b.onclick=()=>{const g=game(b.dataset.id);
+  if(b.dataset.a==="open"){DB.reviewId=g.id;DB.ply=g.moves.length;save();show("review");}
+  if(b.dataset.a==="tag"){const t=prompt("Tags (comma-separated):",(g.noteTags||[]).join(", "));if(t!==null){g.noteTags=t.split(",").map(s=>s.trim()).filter(Boolean).slice(0,10);save();render();}}
+  if(b.dataset.a==="col"){const c=prompt("Collection id to toggle:\n"+DB.collections.map(x=>x.id+" = "+x.name).join("\n"));const col=DB.collections.find(x=>x.id===(c||"").trim());if(!col)return;
+   col.gameIds.includes(g.id)?col.gameIds=col.gameIds.filter(x=>x!==g.id):col.gameIds.push(g.id);save();render();}
+  if(b.dataset.a==="del"&&confirm("Delete this game?")){DB.games=DB.games.filter(x=>x.id!==g.id);DB.collections.forEach(c=>c.gameIds=c.gameIds.filter(x=>x!==g.id));save();render();}});}
+let flip=false;
+function rReview(){const g=game(DB.reviewId);const box=$("#revBody");if(!g){box.innerHTML='<div class="empty">Open a game from the library.</div>';return;}
+ const rp=replay(g.moves);DB.ply=Math.max(0,Math.min(DB.ply,rp.snaps.length-1));
+ const snap=rp.snaps[DB.ply];const s=stats(g.moves);
+ const mat=material(snap.b);
+ const mvHTML=g.moves.map((m,i)=>{const n=Math.floor(i/2)+1;const pre=i%2===0?n+". ":"";
+  return `<span class="mv${DB.ply===i+1?" cur":""}" data-p="${i+1}">${pre}${esc(m)}</span>`;}).join("");
+ box.innerHTML=`<div class="grid2"><div>
+  <h3 style="margin-top:0">${esc(g.white)} – ${esc(g.black)} <span class="badge b-info">${esc(g.result)}</span></h3>
+  <p class="sub">${esc(g.date)} · ${esc(g.opening)}</p>
+  ${boardHTML(snap,flip)}
+  <div class="toolbar"><button class="btn btn-s" data-nav="0">⏮</button><button class="btn btn-s" data-nav="-1">← Prev</button><button class="btn btn-s" data-nav="1">Next →</button><button class="btn btn-s" data-nav="end">⏭</button><button class="btn btn-s" id="btnFlip">Flip</button><span class="sub mono">ply ${DB.ply}/${g.moves.length}</span></div>
+  ${rp.error?`<div class="warnbar">${esc(rp.error)}</div>`:""}
+  <div class="moves">${mvHTML}</div></div>
+  <div><div class="panel"><h3>Game facts</h3>
+   <dl class="kv"><dt>Moves</dt><dd>${Math.ceil(s.plies/2)} (${s.plies} plies)</dd><dt>Captures</dt><dd>${s.captures}</dd><dt>Checks</dt><dd>${s.checks}</dd><dt>Castles</dt><dd>${s.castles}</dd><dt>Promotions</dt><dd>${s.promotions}</dd><dt>Material now</dt><dd>${mat>0?"+":""}${mat} (White perspective, heuristic values)</dd></dl></div>
+  <div class="panel"><h3>Your notes</h3><textarea id="revNotes">${esc(g.notes||"")}</textarea>
+  <h3>External engine notes <span class="badge">user-supplied</span></h3><textarea id="revEng" placeholder="Paste Stockfish lines here only if you ran them yourself…">${esc(g.engineNotes||"")}</textarea>
+  <div class="toolbar"><button class="btn btn-s btn-p" id="btnRevSave">Save annotations</button></div></div></div></div>`;
+ $$("#revBody [data-nav]").forEach(b=>b.onclick=()=>{const v=b.dataset.nav;
+  DB.ply=v==="0"?0:v==="end"?rp.snaps.length-1:DB.ply+ +v;save();rReview();});
+ $$("#revBody .mv").forEach(el=>el.onclick=()=>{DB.ply=+el.dataset.p;save();rReview();});
+ $("#btnFlip").onclick=()=>{flip=!flip;rReview();};
+ $("#btnRevSave").onclick=()=>{g.notes=$("#revNotes").value.slice(0,5000);g.engineNotes=$("#revEng").value.slice(0,5000);save();rReview();};}
+function rOpenings(){const agg={};
+ DB.games.forEach(g=>{const s=myScore(g);const o=agg[g.opening]=agg[g.opening]||{n:0,pts:0,w:0,d:0,l:0};o.n++;if(s!==null){o.pts+=s;if(s===1)o.w++;else if(s===0.5)o.d++;else o.l++;}});
+ const rows=Object.entries(agg).sort((a,b)=>b[1].n-a[1].n);
+ $("#opBody").innerHTML=`<div class="tblwrap"><table><thead><tr><th>Opening (heuristic)</th><th>Games</th><th>Score</th><th>W–D–L</th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.n}</td><td>${(v.pts).toFixed(1)} (${v.n?(v.pts/v.n*100).toFixed(0):0}%)</td><td>${v.w}–${v.d}–${v.l}</td></tr>`).join("")}</tbody></table></div>`;}
+function bars(el,data){if(!data.length){el.innerHTML='<div class="empty">No data.</div>';return;}
+ const W=520,H=170,P=26,mx=Math.max(...data.map(d=>d.v),1);const bw=(W-P*2)/data.length;let s=`<svg class="chart" viewBox="0 0 ${W} ${H}">`;
+ data.forEach((d,i)=>{const h=(H-P*2)*(d.v/mx);s+=`<rect x="${(P+i*bw+2).toFixed(1)}" y="${(H-P-h).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="#2563eb"><title>${esc(d.l)}: ${d.v}</title></rect>`;});
+ el.innerHTML=s+"</svg>";}
+function rTrends(){const scored=DB.games.map(g=>({d:g.date,s:myScore(g)})).filter(x=>x.s!==null).reverse();
+ let cum=0;const data=scored.map((x,i)=>{cum+=x.s;return{v:Math.round(cum/(i+1)*100),l:"game "+(i+1)};});
+ bars($("#trChart"),data.length?data:[{v:0,l:"no scored games"}]);
+ const lens=DB.games.map(g=>Math.ceil(g.moves.length/2));const buckets=[["≤15",0],["16–25",0],["26–40",0],["41+",0]];
+ lens.forEach(L=>{buckets[L<=15?0:L<=25?1:L<=40?2:3][1]++;});
+ bars($("#trLen"),buckets.map(([l,v])=>({l:l+" ("+v+")",v})));}
+function rCollections(){$("#colList").innerHTML=DB.collections.map(c=>{const gs=c.gameIds.map(game).filter(Boolean);
+ return `<div class="panel"><h3>${esc(c.name)} <span class="badge b-info">${gs.length}</span></h3>
+ ${gs.map(g=>`<div style="padding:5px 0;border-top:1px solid var(--line)">${esc(g.white)} – ${esc(g.black)} (${esc(g.result)}) <button class="btn btn-s" data-c="open" data-id="${g.id}">Review</button> <button class="btn btn-s" data-c="rm" data-g="${g.id}" data-id="${c.id}">Remove</button></div>`).join("")||'<p class="sub">Empty.</p>'}
+ <div class="toolbar"><button class="btn btn-s btn-d" data-c="del" data-id="${c.id}">Delete collection</button></div></div>`;}).join("")||'<div class="empty">No collections.</div>';
+ $$("#colList [data-c]").forEach(b=>b.onclick=()=>{
+  if(b.dataset.c==="open"){DB.reviewId=b.dataset.id;DB.ply=game(b.dataset.id).moves.length;save();show("review");}
+  if(b.dataset.c==="rm"){const c=DB.collections.find(x=>x.id===b.dataset.id);c.gameIds=c.gameIds.filter(x=>x!==b.dataset.g);save();render();}
+  if(b.dataset.c==="del"&&confirm("Delete collection (games stay in library)?")){DB.collections=DB.collections.filter(x=>x.id!==b.dataset.id);save();render();}});}
+function rNotes(){const list=DB.games.filter(g=>(g.notes||"").trim()||(g.engineNotes||"").trim());
+ $("#noteList").innerHTML=list.map(g=>`<div class="panel"><h3>${esc(g.white)} – ${esc(g.black)} (${esc(g.result)})</h3><p>${esc((g.notes||"").slice(0,300))}</p>${g.engineNotes?`<p class="sub"><b>User-supplied engine notes:</b> ${esc(g.engineNotes.slice(0,200))}</p>`:""}<button class="btn btn-s" data-n="open" data-id="${g.id}">Open in review</button></div>`).join("")||'<div class="empty">No annotated games yet.</div>';
+ $$("#noteList [data-n]").forEach(b=>b.onclick=()=>{DB.reviewId=b.dataset.id;save();show("review");});}
+function render(){if(!me())return;rOverview();rLibrary();rReview();rOpenings();rTrends();rCollections();rNotes();}
+/* boot */
+function afterAuth(){$("#authView").hidden=true;$("#app").hidden=false;$("#btnSignout").hidden=false;$("#userChip").textContent=me();renderNav();render();show("overview");}
+async function boot(){
+ $("#tabLogin").onclick=()=>{$("#paneLogin").hidden=false;$("#paneReg").hidden=true;};
+ $("#tabReg").onclick=()=>{$("#paneLogin").hidden=true;$("#paneReg").hidden=false;};
+ const u0=getUsers();if(!u0["player@demo"]){u0["player@demo"]={salt:"s",hash:await sha("s::demo1234"),at:Date.now()};setUsers(u0);}
+ if(me()&&getUsers()[me()]){load();afterAuth();$("#authView").hidden=true;return;}
+ $("#authView").hidden=false;
+ const err=m=>{const e=$("#authErr");e.hidden=!m;e.textContent=m||"";};
+ $("#btnDemo").onclick=()=>{sessionStorage.setItem(KS,"player@demo");load();afterAuth();};
+ $("#btnLogin").onclick=async()=>{const e=$("#liEmail").value.trim().toLowerCase(),u=getUsers()[e];
+  if(!u||await sha(u.salt+"::"+$("#liPw").value)!==u.hash)return err("Invalid email or password.");sessionStorage.setItem(KS,e);load();afterAuth();};
+ $("#btnReg").onclick=async()=>{const e=$("#rgEmail").value.trim().toLowerCase(),p=$("#rgPw").value,u=getUsers();
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e))return err("Enter a valid email.");if(p.length<8)return err("Min 8.");
+  if(u[e])return err("Exists — sign in.");u[e]={salt:"s",hash:await sha("s::"+p),at:Date.now()};setUsers(u);sessionStorage.setItem(KS,e);load();afterAuth();};
+ $("#btnSignout").onclick=()=>{sessionStorage.removeItem(KS);location.reload();};
+ $("#btnName").onclick=()=>{DB.myName=$("#ovName").value.trim()||DB.myName;save();render();};
+ $("#btnUp").onclick=()=>{const f=$("#upFile").files[0],box=$("#upMsg");if(!f){box.innerHTML='<div class="errbar">Choose a file.</div>';return;}
+  if(!/\.(pgn|txt)$/i.test(f.name)){box.innerHTML='<div class="errbar">Only .pgn / .txt.</div>';return;}
+  if(f.size>1048576){box.innerHTML='<div class="errbar">File exceeds 1 MB.</div>';return;}
+  const rd=new FileReader();rd.onload=()=>{const r=importPGN(String(rd.result||""));save();render();
+   box.innerHTML=`<p class="note">Imported <b>${r.ok}</b> game(s).${r.errs.length?" Issues:<br>"+r.errs.slice(0,8).map(esc).join("<br>"):""}</p>`;};rd.readAsText(f);};
+ $("#btnPaste").onclick=()=>{$("#pasteBox").hidden=!$("#pasteBox").hidden;};
+ $("#btnDoPaste").onclick=()=>{const r=importPGN($("#pasteTxt").value);save();render();$("#upMsg").innerHTML=`<p class="note">Imported <b>${r.ok}</b>.${r.errs.length?" "+esc(r.errs.slice(0,5).join("; ")):""}</p>`;};
+ $("#btnFGo").onclick=()=>rLibrary();
+ $("#btnColAdd").onclick=()=>{const n=$("#colName").value.trim();if(!n)return;DB.collections.push({id:uid(),name:n.slice(0,60),gameIds:[]});save();render();};
+ $("#btnPw").onclick=async()=>{const p=$("#setPw").value;if(p.length<8){$("#setMsg").innerHTML='<div class="errbar">Min 8.</div>';return;}const u=getUsers();u[me()].hash=await sha(u[me()].salt+"::"+p);setUsers(u);$("#setMsg").innerHTML='<p class="note">Changed.</p>';};
+ $("#btnWipe").onclick=()=>{if(confirm("Delete your library?")){localStorage.removeItem(KD(me()));load();render();}};
+ $("#btnReseed").onclick=()=>{if(confirm("Reset sample games?")){DB=seed();save();render();}};
+}
+document.addEventListener("DOMContentLoaded",boot);
+</script>
+</body>
+</html>

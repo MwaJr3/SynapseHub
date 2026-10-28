@@ -3,7 +3,7 @@
 **Keep the response moving — and keep the record honest.** A working
 React/TypeScript + FastAPI application: lifecycle state machine, role-based
 rights, append-only audit trail, tasks, evidence intake (hashing engine reused
-from `apps/incidentflow`), and reports that state their limitations.
+from `apps/incidentflow-cli`), and reports that state their limitations.
 
 ## What is implemented
 
@@ -34,7 +34,7 @@ uvicorn app.main:app --reload --port 8017
 
 cd ../frontend
 npm install --legacy-peer-deps
-npm run dev                          # http://localhost:5180
+npm run dev                          # http://localhost:5303
 ```
 
 ## Test

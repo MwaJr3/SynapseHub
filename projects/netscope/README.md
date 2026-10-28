@@ -2,7 +2,7 @@
 
 **See the shape of the traffic. Never the contents.** A working
 React/TypeScript + FastAPI application wrapping the tested NetScope engine
-(reused from `apps/netscope` — dependency-free struct-based pcap parsing).
+(reused from `apps/netscope-cli` — dependency-free struct-based pcap parsing).
 
 ## What is implemented
 
@@ -32,7 +32,7 @@ uvicorn app.main:app --reload --port 8016
 
 cd ../frontend
 npm install --legacy-peer-deps
-npm run dev                          # http://localhost:5179
+npm run dev                          # http://localhost:5304
 ```
 
 ## Test

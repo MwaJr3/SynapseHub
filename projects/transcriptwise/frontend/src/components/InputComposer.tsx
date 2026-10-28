@@ -295,11 +295,12 @@ export function InputComposer({ compact = false }: { compact?: boolean }) {
                     setTitle('')
                     setError('')
                   }}
-                  disabled={!text}
                 >
                   Clear
                 </button>
-                <button className="button primary small" onClick={start} disabled={pending || !text.trim()}>
+                {/* Kept enabled with no text so pressing it can say what is missing:
+                    `start` already explains the minimum length and focuses the box. */}
+                <button className="button primary small" onClick={start} disabled={pending}>
                   {pending ? (
                     <Spinner label="Preparing…" small />
                   ) : (

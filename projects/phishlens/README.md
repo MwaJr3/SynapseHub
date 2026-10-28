@@ -2,7 +2,7 @@
 
 **See the signal. Review the evidence. Decide for yourself.** A working
 React/TypeScript + FastAPI application wrapping the tested PhishLens rule
-engine (reused from `apps/phishlens`). Paste a raw message, get structured
+engine (reused from `apps/phishlens-cli`). Paste a raw message, get structured
 indicator warnings with explanations — never a verdict.
 
 ## What is implemented
@@ -23,7 +23,7 @@ Login/Register/Reset/MFA. Loading, empty, error and success states throughout.
 ## Architecture
 ```
 backend/app/
-  engine/          # parse.py, rules.py, report.py — reused from apps/phishlens
+  engine/          # parse.py, rules.py, report.py — reused from apps/phishlens-cli
   security.py      # PBKDF2 + TOTP MFA + reset tokens + sessions
   models.py        # users, sessions, reset_tokens, messages, findings, notes
   main.py          # FastAPI routes
@@ -43,7 +43,7 @@ uvicorn app.main:app --reload --port 8015
 
 cd ../frontend
 npm install --legacy-peer-deps
-npm run dev                          # http://localhost:5178
+npm run dev                          # http://localhost:5305
 ```
 
 ## Test

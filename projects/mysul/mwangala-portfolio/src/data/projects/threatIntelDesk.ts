@@ -34,7 +34,7 @@ export const threatIntelDesk: Project = {
   keyTech: ['Python', 'FastAPI', 'PostgreSQL', 'React', 'Background jobs'],
   featured: false,
   order: 3,
-  status: 'Built — modular connectors with ingestion and deduplication complete and tested as a Python CLI in apps/threatintel-desk, and delivered as the full-stack application described in this case study at projects/threatintel-desk (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
+  status: 'Built — modular connectors with ingestion and deduplication complete and tested as a Python CLI in apps/threatintel-desk-cli, and delivered as the full-stack application described in this case study at projects/threatintel-desk (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, connector framework, normalisation and deduplication, frontend',
   accent: 'violet',

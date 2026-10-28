@@ -46,7 +46,7 @@ export default function FindingsPage() {
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       {findings.length === 0 ? <p style={{ color: "var(--muted)" }}>No findings match this filter.</p> : (
         <table className="table card">
-          <thead><tr><th>Rule</th><th>Severity</th><th>Location</th><th>Summary</th><th>Triage</th></tr></thead>
+          <thead><tr><th scope="col">Rule</th><th scope="col">Severity</th><th scope="col">Location</th><th scope="col">Summary</th><th scope="col">Triage</th></tr></thead>
           <tbody>
             {findings.map((f) => (
               <tr key={f.id} style={{ cursor: "pointer" }} onClick={() => setOpen(f)}>

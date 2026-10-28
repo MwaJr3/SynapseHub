@@ -1,0 +1,8 @@
+{
+  "name": "northstar-ux-engine",
+  "description": "A UX engine for people who ship: four commands (review, design, audit, restyle), nine skills, source-level checks that produce evidence instead of opinions, and a hard rule that nothing is reported as observed unless it was.",
+  "author": {
+    "name": "Mwangala / SynapseHub"
+  },
+  "keywords": ["ux", "design-system", "accessibility", "wcag", "audit", "restyle", "frontend"]
+}

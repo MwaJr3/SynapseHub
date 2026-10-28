@@ -1,4 +1,4 @@
-# Engine module reused from apps/phishlens (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/phishlens-cli (tested CLI engine) — behavior preserved.
 """Human-readable and JSON reports (defanged URLs, no live fetching)."""
 from __future__ import annotations
 

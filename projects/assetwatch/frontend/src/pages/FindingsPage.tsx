@@ -19,7 +19,7 @@ export default function FindingsPage() {
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       {findings.length === 0 ? <p style={{ color: "var(--muted)" }}>No findings recorded.</p> : (
         <table className="table card">
-          <thead><tr><th>Target</th><th>Port</th><th>Service</th><th>Severity</th><th>Exposure</th><th>Importance</th><th>Status</th><th>Remediation</th></tr></thead>
+          <thead><tr><th scope="col">Target</th><th scope="col">Port</th><th scope="col">Service</th><th scope="col">Severity</th><th scope="col">Exposure</th><th scope="col">Importance</th><th scope="col">Status</th><th scope="col">Remediation</th></tr></thead>
           <tbody>
             {findings.map((f) => (
               <tr key={f.id}>
@@ -27,11 +27,12 @@ export default function FindingsPage() {
                 <td><span className={`badge ${f.severity}`}>{f.severity}</span></td>
                 <td>{f.exposure}</td><td>{f.business_importance}</td><td>{f.status}</td>
                 <td>
-                  <input className="input" placeholder="owner team" value={taskOwner} onChange={(e) => setTaskOwner(e.target.value)} style={{ maxWidth: "9rem", display: "inline-block" }} />
-                  <button className="btn secondary" style={{ marginLeft: "0.4rem" }} disabled={!taskOwner.trim()}
+                  <input aria-label="Owner team" className="input" placeholder="owner team" value={taskOwner} onChange={(e) => setTaskOwner(e.target.value)} style={{ maxWidth: "9rem", display: "inline-block" }} />
+                  <button aria-describedby="findings-assetwatch-1-hint" className="btn secondary" style={{ marginLeft: "0.4rem" }} disabled={!taskOwner.trim()}
                     onClick={async () => { await api.createTask(f.id, taskOwner, ""); setTaskOwner(""); setFlash("Remediation task created.") }}>
                     Assign
                   </button>
+          <span id="findings-assetwatch-1-hint" className="hint">Fill in the field above to enable this.</span>
                 </td>
               </tr>
             ))}

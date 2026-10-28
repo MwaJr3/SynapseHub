@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { screen } from '@testing-library/react';
 import App from '@/App';
 import { renderWithProviders } from '@/test/render-app';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 /**
  * Structural accessibility checks.

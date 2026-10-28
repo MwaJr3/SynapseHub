@@ -12,6 +12,7 @@ export default tseslint.config(
     // projects/README.md).
     ignores: [
       'dist',
+      '**/dist/**',
       'node_modules',
       'coverage',
       'public',
@@ -51,12 +52,39 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs', '*.config.js'],
+    files: [
+      'scripts/**/*.mjs',
+      'scripts/**/*.ts',
+      '*.config.js',
+      'native/mobile/**/*.cjs',
+      'tools/synapsehub-smoke/*.mjs',
+    ],
     languageOptions: {
-      globals: { ...globals.node },
+      globals: { ...globals.node, ...globals.browser },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',
+      // CLI scripts report scan progress and results as part of their interface.
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
+    },
+  },
+  {
+    // The scanner is a CLI: stdout is where a CLI reports. Its tests assert on the
+    // report it writes, not on the console.
+    files: ['tools/northstar/engine/scan.ts'],
+    rules: { 'no-console': 'off' },
+  },
+  {
+    // The UX engine is a Node CLI and a plugin: its modules run in Node (process,
+    // fs, timers) and print to stdout, which is how the CLI reports anything.
+    files: ['tools/northstar/**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.node },
+    },
+    rules: {
+      'no-console': ['warn', { allow: ['warn', 'error', 'log'] }],
     },
   },
   {

@@ -1,4 +1,4 @@
-# Engine module reused from apps/netscope (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/netscope-cli (tested CLI engine) — behavior preserved.
 """Flow aggregation, statistical summaries, configurable unusual-volume rules."""
 from __future__ import annotations
 

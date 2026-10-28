@@ -28,13 +28,24 @@
     --border-strong: 197 207 222;
     --text: 14 21 35;
     --text-muted: 79 91 112;
-    --text-subtle: 121 133 154;
+    /* Darkened from 121 133 154 (3.53:1 on the surface) to pass 4.5:1 AA on
+       both the page surface (4.81:1) and white panels (5.08:1). */
+    --text-subtle: 99 111 132;
     --accent: 35 71 214;
     --accent-soft: 229 236 255;
     --accent-ink: 255 255 255;
     --accent-2: 12 118 111;
     --caution: 150 82 12;
     --focus: 35 71 214;
+
+    /* One corner scale for the whole site. Components pick a step; they do not
+       invent a number. `--radius-pill` is a shape (chips, tags), not a corner. */
+    --radius-xs: 2px;
+    --radius-sm: 4px;
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 20px;
+    --radius-pill: 999px;
   }
 
   .dark {
@@ -57,9 +68,13 @@
     --focus: 126 162 255;
   }
 
-  /* Intentional dark panels — the hybrid identity. */
+  /* Intentional dark panels — the hybrid identity. The surface colour is
+     applied here so any contrast-toned section gets the dark backdrop its
+     light text tokens assume, even without an explicit background class. */
   [data-tone='contrast'] {
     color-scheme: dark;
+    background-color: rgb(var(--surface));
+    color: rgb(var(--text));
 
     --surface: 11 15 25;
     --surface-2: 15 20 32;
@@ -146,6 +161,14 @@
   h4 {
     @apply text-balance;
     font-weight: 600;
+  }
+
+  /* The native checkbox/radio glyph may render at 13px, but its wrapping
+     label is the activation area and must carry the design system's 44px
+     touch target (also clears the WCAG 2.2 24px minimum). */
+  label:has(> input[type='checkbox']),
+  label:has(> input[type='radio']) {
+    min-height: 44px;
   }
 
   p {

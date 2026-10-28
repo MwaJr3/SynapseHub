@@ -1,4 +1,4 @@
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '@challenges';
 
 const palette = [
   ['#e9efea', '#28483e', '#e5a96f'],

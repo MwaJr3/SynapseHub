@@ -25,16 +25,17 @@ export default function BoardPage() {
       <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
         <h3 style={{ margin: 0 }}>Open an incident</h3>
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <input className="input" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} style={{ maxWidth: "22rem" }} />
+          <input aria-label="Title" className="input" placeholder="title" value={title} onChange={(e) => setTitle(e.target.value)} style={{ maxWidth: "22rem" }} />
           <select className="input" style={{ maxWidth: "10rem" }} value={severity} onChange={(e) => setSeverity(e.target.value)}>
             <option>low</option><option>medium</option><option>high</option><option>critical</option>
           </select>
-          <button className="btn" disabled={!title.trim()} onClick={async () => {
+          <button aria-describedby="board-incidentflow-1-hint" className="btn" disabled={!title.trim()} onClick={async () => {
             try {
               await api.create(title, "security-event", severity, description)
               setTitle(""); setDescription(""); setFlash("Incident created."); load()
             } catch (e) { setError(String(e)) }
           }}>Create</button>
+          <span id="board-incidentflow-1-hint" className="hint">Fill in the field above to enable this.</span>
         </div>
         <textarea className="input" rows={2} placeholder="initial description (optional)" value={description} onChange={(e) => setDescription(e.target.value)} />
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}
@@ -48,7 +49,7 @@ export default function BoardPage() {
       </div>
       {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>No incidents in this view.</p> : (
         <table className="table card">
-          <thead><tr><th>#</th><th>Title</th><th>Severity</th><th>Status</th><th>Assignee</th><th>Created</th></tr></thead>
+          <thead><tr><th scope="col">#</th><th scope="col">Title</th><th scope="col">Severity</th><th scope="col">Status</th><th scope="col">Assignee</th><th scope="col">Created</th></tr></thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.id}>

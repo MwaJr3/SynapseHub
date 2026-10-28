@@ -13,7 +13,10 @@ from app.triage import build_incident
 app = FastAPI(title="SecOps Dash", docs_url=None, redoc_url=None)
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title} · SecOps Dash</title>
-<style>body{{font-family:ui-monospace,monospace;max-width:56rem;margin:2rem auto;padding:0 1rem;color:#1b2430}}
+<style>
+label{{display:block;margin:.35rem 0;font-size:.9rem}}label>input,label>select,label>textarea{{display:block;width:100%;margin-top:.15rem;box-sizing:border-box}}
+:focus-visible{{outline:2px solid #14213d;outline-offset:2px}}
+body{{font-family:ui-monospace,monospace;max-width:56rem;margin:2rem auto;padding:0 1rem;color:#1b2430}}
 a{{color:#0f4c75}}table{{width:100%;border-collapse:collapse}}td,th{{border:1px solid #cfd8e3;padding:.45rem;text-align:left}}
 button,input,select{{padding:.5rem;border:1px solid #9db2c7;border-radius:6px}}button{{background:#0f4c75;color:#fff;border:0;cursor:pointer}}
 .sev{{padding:.15rem .5rem;border-radius:4px;font-size:.8rem}}.s5{{background:#f8d7da}}.s4{{background:#ffe5cc}}.s3{{background:#fff3cd}}.s2{{background:#e2f0d9}}.s1{{background:#e9ecef}}
@@ -48,11 +51,11 @@ async def index():
     rejected = "".join(f"<li>#{r['index']}: {'; '.join(r['reasons'])}</li>" for r in STATE["rejected"]) or "<li>none</li>"
     body = ("<div class='note'>Simulated security events from local fixtures. No live telemetry is collected; "
             "this is an offline triage training surface.</div>")
-    body += f"<h1>Events ({len(STATE['events'])})</h1><table><tr><th>id</th><th>asset</th><th>category</th><th>sev</th><th>summary</th><th>collected at</th></tr>{rows}</table>"
+    body += f"<h1>Events ({len(STATE['events'])})</h1><table><tr><th scope='col'>id</th><th scope='col'>asset</th><th scope='col'>category</th><th scope='col'>sev</th><th scope='col'>summary</th><th scope='col'>collected at</th></tr>{rows}</table>"
     body += f"<h2>Ingest validation</h2><p>Rejected rows (with reasons, never silently dropped):</p><ul>{rejected}</ul>"
     body += ("<h2>Open an incident</h2><form method='post' action='/incident/new'>"
-             "<input name='event_ids' placeholder='event ids, comma-separated' required>"
-             "<input name='analyst' placeholder='analyst name' required><button>Create incident</button></form>"
+             "<label>Event IDs<input name='event_ids' placeholder='event ids, comma-separated' required></label>"
+             "<label>Analyst<input name='analyst' placeholder='analyst name' required></label><button>Create incident</button></form>"
              "<p><a href='/incidents'>Incidents</a> · <a href='/provenance'>Data provenance</a></p>")
     return page("events", body)
 
@@ -83,7 +86,7 @@ async def incidents():
     rows = "".join(f"<tr><td><a href='/incident/{i.incident_id}'>{i.incident_id}</a></td><td>{i.score}</td>"
                    f"<td>{', '.join(i.assets)}</td><td>{', '.join(i.categories)}</td><td>{i.status}</td></tr>"
                    for i in STATE["incidents"]) or "<tr><td colspan=5>no incidents</td></tr>"
-    return page("incidents", f"<h1>Incidents</h1><table><tr><th>id</th><th>score</th><th>assets</th><th>categories</th><th>status</th></tr>{rows}</table>")
+    return page("incidents", f"<h1>Incidents</h1><table><tr><th scope='col'>id</th><th scope='col'>score</th><th scope='col'>assets</th><th scope='col'>categories</th><th scope='col'>status</th></tr>{rows}</table>")
 
 
 @app.get("/incident/{incident_id}", response_class=HTMLResponse)
@@ -98,7 +101,7 @@ async def incident_page(incident_id: str):
             f"<p>status: <strong>{incident.status}</strong> · assets: {', '.join(incident.assets)} · "
             f"categories: {', '.join(incident.categories)}</p>"
             f"<p class='note'>Score = Σ severity × (1 + criticality weight). Criticality from the local asset inventory.</p>")
-    body += "<h2>Timeline (collection timestamps)</h2><table><tr><th>at</th><th>event</th><th>summary</th></tr>" + timeline + "</table>"
+    body += "<h2>Timeline (collection timestamps)</h2><table><tr><th scope='col'>at</th><th scope='col'>event</th><th scope='col'>summary</th></tr>" + timeline + "</table>"
     body += ("<h2>Response playbook (manual runbook)</h2><ol>" +
              "".join(f"<li>{step}</li>" for step in incident.playbook) + "</ol>"
              "<p class='note'>Playbook steps are manual. This dashboard performs no containment or remediation.</p>")

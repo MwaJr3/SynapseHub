@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 export default function NotFoundPage() {
   usePageMeta({ title: 'Page not found', description: 'This address does not match a page in Mwangala’s portfolio.', path: '/404', noIndex: true });

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "synapsehub-local",
+  "description": "Plugins developed alongside the SynapseHub portfolio. Install with /plugin marketplace add <path-to-this-repo>.",
+  "owner": {
+    "name": "Mwangala / SynapseHub"
+  },
+  "plugins": [
+    {
+      "name": "northstar-ux-engine",
+      "description": "Four UX commands, nine skills, and a source-level checker that turns UX review into evidence.",
+      "author": {
+        "name": "Mwangala / SynapseHub"
+      },
+      "source": "./tools/northstar",
+      "category": "design"
+    }
+  ]
+}

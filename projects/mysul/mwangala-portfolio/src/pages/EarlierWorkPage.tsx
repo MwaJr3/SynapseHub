@@ -1,10 +1,13 @@
 import { earlierProjects, type EarlierProject } from '@/data/earlierWork';
 import { usePageMeta } from '@/lib/seo';
+import { useScrollSpy } from '@/hooks/useScrollSpy';
 import { Container, Section } from '@/components/ui/Layout';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { Panel } from '@/components/ui/Panel';
 import { Badge } from '@/components/ui/Badge';
+
+const earlierSlugs = earlierProjects.map((project) => project.slug);
 
 function ProseList({ items }: { items: string[] }) {
   return (
@@ -28,6 +31,11 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   );
 }
 
+/** Where the archived demo for a slug is served from. One place, so a move is one edit. */
+function demoHref(slug: string) {
+  return `${import.meta.env.BASE_URL.replace(/\/$/, '')}/demos/${slug}/`;
+}
+
 function EarlierCaseStudy({ project }: { project: EarlierProject }) {
   return (
     <Panel as="article" id={project.slug} className="scroll-mt-24 p-6 sm:p-8">
@@ -39,10 +47,17 @@ function EarlierCaseStudy({ project }: { project: EarlierProject }) {
             {project.category} · {project.status} · {project.difficulty}
           </p>
         </div>
-        <p className="max-w-xs text-xs leading-relaxed text-ink-3">
-          Archived case study from my standalone portfolio. Source repositories were never
-          published for this earlier work, so no code link is shown.
-        </p>
+        <div className="max-w-xs">
+          <p className="text-xs leading-relaxed text-ink-3">
+            Archived case study from my standalone portfolio. Source repositories were never
+            published for this earlier work, so no code link is shown.
+          </p>
+          {/* The seven demos were static HTML in the retired standalone site; they are
+              served from public/demos/ inside this one rather than linked out. */}
+          <a className="btn btn-s mt-3 inline-block" href={demoHref(project.slug)}>
+            Open the working demo
+          </a>
+        </div>
       </div>
 
       <p className="mt-5 text-sm leading-relaxed text-ink-2">{project.description}</p>
@@ -103,6 +118,10 @@ function EarlierCaseStudy({ project }: { project: EarlierProject }) {
 }
 
 export function EarlierWorkPage() {
+  // The archive is long; the chips double as a table of contents, so they say
+  // which case study is currently on screen.
+  const activeSlug = useScrollSpy(earlierSlugs);
+
   usePageMeta({
     title: 'Earlier work — Mwangala',
     description:
@@ -120,15 +139,23 @@ export function EarlierWorkPage() {
       <Section>
         <Container className="flex flex-col gap-8 py-12 sm:py-16">
           <nav aria-label="Earlier projects" className="flex flex-wrap gap-2">
-            {earlierProjects.map((project) => (
-              <a
-                key={project.slug}
-                href={`#${project.slug}`}
-                className="rounded-full border border-line px-4 py-2 text-sm text-ink-2 transition hover:border-accent-line hover:text-ink"
-              >
-                {project.name}
-              </a>
-            ))}
+            {earlierProjects.map((project) => {
+              const current = activeSlug === project.slug;
+              return (
+                <a
+                  key={project.slug}
+                  href={`#${project.slug}`}
+                  aria-current={current ? 'location' : undefined}
+                  className={
+                    current
+                      ? 'rounded-full border border-accent-line bg-accent-soft px-4 py-2 text-sm font-semibold text-ink underline decoration-accent decoration-2 underline-offset-4'
+                      : 'rounded-full border border-line px-4 py-2 text-sm text-ink-2 transition hover:border-accent-line hover:text-ink'
+                  }
+                >
+                  {project.name}
+                </a>
+              );
+            })}
           </nav>
 
           <SectionHeading

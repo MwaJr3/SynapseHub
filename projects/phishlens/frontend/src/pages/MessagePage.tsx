@@ -14,7 +14,7 @@ export default function MessagePage() {
   useEffect(() => { load() }, [id])
 
   if (error) return <p role="alert" style={{ color: "#9b2226" }}>{error}</p>
-  if (!rec) return <p>Loading…</p>
+  if (!rec) return <p className="loading" role="status" aria-live="polite">Loading Message…</p>
 
   async function exportReport() {
     const report = await api.report(rec!.id)
@@ -48,10 +48,11 @@ export default function MessagePage() {
           {DISPOSITIONS.map((d) => <option key={d}>{d}</option>)}
         </select>
         <div style={{ display: "flex", gap: "0.75rem" }}>
-          <input className="input" placeholder="investigation note" value={note} onChange={(e) => setNote(e.target.value)} />
-          <button className="btn secondary" disabled={!note.trim()} onClick={async () => {
+          <input aria-label="Investigation note" className="input" placeholder="investigation note" value={note} onChange={(e) => setNote(e.target.value)} />
+          <button aria-describedby="message-phishlens-1-hint" className="btn secondary" disabled={!note.trim()} onClick={async () => {
             await api.addNote(rec!.id, note); setNote(""); setFlash("Note saved.")
           }}>Save note</button>
+          <span id="message-phishlens-1-hint" className="hint">Fill in the field above to enable this.</span>
           <button className="btn" onClick={exportReport}>Export report</button>
         </div>
         {flash && <p role="status" style={{ color: "#1b5e34", margin: 0 }}>{flash}</p>}

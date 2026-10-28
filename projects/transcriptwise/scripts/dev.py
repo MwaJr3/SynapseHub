@@ -35,7 +35,7 @@ def main():
     signal.signal(signal.SIGTERM, terminate)
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--api-port", type=int, default=8000)
-    parser.add_argument("--web-port", type=int, default=5173)
+    parser.add_argument("--web-port", type=int, default=5308)
     parser.add_argument(
         "--reload", action="store_true", help="Reload the API when Python files change"
     )

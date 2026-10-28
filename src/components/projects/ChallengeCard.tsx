@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '@challenges';
 import { ChallengeVisual } from './ChallengeVisual';
 import { ChallengeLinks } from './ChallengeLinks';
 

@@ -7,6 +7,7 @@ import { ThemeSwitcher } from './ThemeSwitcher';
 const navItems = [
   { to: '/', label: 'Home', end: true },
   { to: '/system', label: 'System' },
+  { to: '/synapsehub', label: 'SynapseHub' },
   { to: '/about', label: 'About' },
   { to: '/projects', label: 'Projects' },
   { to: '/apps', label: 'Apps' },
@@ -122,7 +123,7 @@ export function SiteHeader() {
             aria-controls="mobile-navigation"
             onClick={() => setMenuOpen((open) => !open)}
           >
-            <span aria-hidden="true" className="grid gap-[3px]">
+            <span aria-hidden="true" className="grid gap-1">
               <span className="block h-[1.5px] w-4 bg-current" />
               <span className="block h-[1.5px] w-4 bg-current" />
               <span className="block h-[1.5px] w-4 bg-current" />

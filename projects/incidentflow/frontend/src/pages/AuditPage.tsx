@@ -15,7 +15,7 @@ export default function AuditPage() {
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {events.length === 0 ? <p style={{ color: "var(--muted)" }}>No audit entries yet.</p> : (
         <table className="table card">
-          <thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead>
+          <thead><tr><th scope="col">Time</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Detail</th></tr></thead>
           <tbody>
             {events.map((e, i) => (
               <tr key={i}><td>{e.at}</td><td>{e.actor}</td><td><span className="badge">{e.action}</span></td><td>{e.detail}</td></tr>

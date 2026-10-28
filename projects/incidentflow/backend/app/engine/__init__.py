@@ -1,1 +1,1 @@
-# IncidentFlow intake engine (reused from apps/incidentflow).
+# IncidentFlow intake engine (reused from apps/incidentflow-cli).

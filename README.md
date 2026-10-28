@@ -1,3 +1,12 @@
+> **SynapseHub connected beta:** open `/synapsehub` for local knowledge-to-action
+> workflows plus managed-auth, PDF library, selected-source retrieval, opt-in Ollama
+> generation and explicit cloud sync. Expo mobile and Tauri desktop client projects
+> are included. See [setup, verification status, native build limits and security](docs/SYNAPSEHUB_CONNECTED.md).
+> Cloud API connectivity and email redirects require deployment configuration;
+> native bundle exports are not signed or device-tested applications.
+> [Release execution log and remaining setup](docs/SYNAPSEHUB_RELEASE.md): high-severity
+> mobile audit findings remediated; corrected deployment awaits Vercel quota reset.
+
 # Mwangala — Education Technology Portfolio
 
 A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.
@@ -99,19 +108,20 @@ data.
 
 ## What is implemented
 
-| Area               | Detail                                                                                                                                                                                                                             |
-| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Routes             | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (60 challenge records), `/apps`, `/apps/:slug` (60 prototypes), `/skills`, `/journey`, `/approach`, `/operations`, `/contact`, custom 404                                      |
-| Personal OS        | Private local-first 90-day workspace for identity, Tier 1–3 goals, projects, weekly capacity and actions, decisions, energy, blocker interventions, meaning, reviews, learning, relationships, personal doctrine, a simple financial ledger, cycle archives, and validated JSON export/import |
-| Catalogue          | 60 sourced Frontend Mentor challenge records plus 60 uniquely mapped local-first prototype definitions                                                                                                                           |
-| Discovery          | Search over challenge metadata; category, type and difficulty filters; sorting and shareable URL state; 12-item pagination and clear-filter state                                                                                  |
-| Case studies       | Challenge-source context, attribution, prototype link and explicit verification status                                                                                                                                            |
-| Links and attribution | Official challenge source URLs remain separate from prototypes; no unconfigured demo, repository or profile links are shown                                                                                                              |
-| Theming            | Light / Dark / System with persistence, an OS listener, pre-paint initialisation (no wrong-theme flash) and a hybrid tone system (light surfaces + intentional dark panels)                                                        |
-| Visuals            | Representative interface visuals are clearly labeled; supplied reference images are not presented as verified prototype screenshots                                                                                                      |
-| Accessibility      | Semantic landmarks, skip link, keyboard-accessible mobile menu with Escape handling, visible focus states, live regions for search results and copy feedback, `prefers-reduced-motion` support, text equivalents for every diagram |
-| SEO                | Per-page titles and descriptions, Open Graph metadata, canonical URLs only when a site origin is configured, `robots.txt` and an optional sitemap generator                                                                       |
-| Quality            | TypeScript strict mode, unit/component/routing tests, ESLint, data-integrity checks, and production build (see the verification run below)                                                                                   |
+| Area                  | Detail                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Routes                | `/`, `/system`, `/about`, `/projects`, `/projects/:slug` (60 challenge records), `/apps`, `/apps/:slug` (60 prototypes), `/skills`, `/journey`, `/approach`, `/operations`, `/ux-engine`, `/contact`, custom 404                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| UX/UI engine          | Pattern-driven design intelligence at `/ux-engine`: 76 structured UX patterns, deterministic constraint checks (WCAG contrast, touch targets, spacing/radius/motion scales), a 14-state component matrix, a primitive→semantic→component token graph, evidence-based audits with scoring, React/Tailwind and acceptance-test adapters, and the eight blueprint slash commands — every finding traced to a rule and its patterns. A static code scanner (`npm run ux:scan`) applies the same rule catalog to all 21 repository frontends, with a regression-gate test keeping the portfolio finding-free and blocking new critical/major defects; results land in `docs/UX_ENGINE_REPO_AUDIT.md` |
+| Personal OS           | Private local-first 90-day workspace for identity, Tier 1–3 goals, projects, weekly capacity and actions, decisions, energy, blocker interventions, meaning, reviews, learning, relationships, personal doctrine, a simple financial ledger, cycle archives, and validated JSON export/import                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Catalogue             | 60 sourced Frontend Mentor challenge records plus 60 uniquely mapped local-first prototype definitions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Discovery             | Search over challenge metadata; category, type and difficulty filters; sorting and shareable URL state; 12-item pagination and clear-filter state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Case studies          | Challenge-source context, attribution, prototype link and explicit verification status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Links and attribution | Official challenge source URLs remain separate from prototypes; no unconfigured demo, repository or profile links are shown                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Theming               | Light / Dark / System with persistence, an OS listener, pre-paint initialisation (no wrong-theme flash) and a hybrid tone system (light surfaces + intentional dark panels)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Visuals               | Representative interface visuals are clearly labeled; supplied reference images are not presented as verified prototype screenshots                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Accessibility         | Semantic landmarks, skip link, keyboard-accessible mobile menu with Escape handling, visible focus states, live regions for search results and copy feedback, `prefers-reduced-motion` support, text equivalents for every diagram                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| SEO                   | Per-page titles and descriptions, Open Graph metadata, canonical URLs only when a site origin is configured, `robots.txt` and an optional sitemap generator                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Quality               | TypeScript strict mode, unit/component/routing tests, ESLint, data-integrity checks, and production build (see the verification run below)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ### Honesty rules the code enforces
 
@@ -162,20 +172,21 @@ actual repository architecture and deliberate scope boundaries.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # http://localhost:5400
 ```
 
-| Command              | Purpose                                                            |
-| -------------------- | ------------------------------------------------------------------ |
-| `npm run dev`        | Development server (bound to `0.0.0.0` so container previews work) |
-| `npm run build`      | Type check, then production build into `dist/`                     |
-| `npm run preview`    | Serve the production build locally                                 |
-| `npm run typecheck`  | `tsc --noEmit`                                                     |
-| `npm run lint`       | ESLint over the repository                                         |
-| `npm test`           | Vitest run (unit, component and routing tests)                     |
-| `npm run test:watch` | Vitest in watch mode                                               |
-| `npm run check`      | Type check → lint → tests → build                                  |
-| `npm run sitemap`    | Generate `public/sitemap.xml` (requires `VITE_SITE_URL`)           |
+| Command              | Purpose                                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| `npm run dev`        | Development server (bound to `0.0.0.0` so container previews work)                                       |
+| `npm run build`      | Type check, then production build into `dist/`                                                           |
+| `npm run preview`    | Serve the production build locally                                                                       |
+| `npm run typecheck`  | `tsc --noEmit`                                                                                           |
+| `npm run lint`       | ESLint over the repository                                                                               |
+| `npm test`           | Vitest run (unit, component and routing tests)                                                           |
+| `npm run test:watch` | Vitest in watch mode                                                                                     |
+| `npm run check`      | Type check → lint → tests → build                                                                        |
+| `npm run sitemap`    | Generate `public/sitemap.xml` (requires `VITE_SITE_URL`)                                                 |
+| `npm run ux:scan`    | Run the UX engine's static detectors across every frontend and regenerate `docs/UX_ENGINE_REPO_AUDIT.md` |
 
 ---
 
@@ -245,15 +256,15 @@ Challenge titles and source links are recorded in `src/data/challengeManifest.ts
 
 The build output is a static SPA in `dist/`.
 
-- **Company website:** `company-platform/` is a separate Next.js app, deployed
-  on Vercel from this repository with Root Directory `company-platform/` —
-  see `company-platform/README.md`. Every project's source is in this same
-  repository (`projects/`, `workniche/`, `stock-price-*/`), so the hosted
-  company site and all project code share one home.
+- **Nothing is deployed.** Deployment was removed on 2026-10-28 so the
+  repository can be restructured and redeployed deliberately — see
+  `docs/deployment/README.md`. Every project's source and folder layout is
+  unchanged.
 
 - **Any static host / CDN:** upload `dist/`. Configure a single-page fallback to `index.html` so direct navigation
   and refresh work on `/projects/:slug`. `public/_redirects` already provides the Netlify form of this rule;
-  Vercel needs a `vercel.json` rewrite, and Nginx/Apache need an equivalent `try_files`/`.htaccess` rule.
+  a static host that needs an explicit rewrite takes one platform-specific file added
+  next to the build; Nginx/Apache need an equivalent `try_files`/`.htaccess` rule.
 - **Sitemap:** set `VITE_SITE_URL` and run `npm run sitemap` before uploading (the file is generated, not committed).
 - **Contact form:** point `VITE_CONTACT_ENDPOINT` at your form service or endpoint. Without it, no form is rendered.
 - **Social preview image:** `public/og-image.png` is referenced through `VITE_SITE_URL`; add a genuine image before
@@ -263,20 +274,27 @@ The build output is a static SPA in `dist/`.
 
 ## Checks executed for this build
 
-| Check      | Command            | Result                                                                                 |
-| ---------- | ------------------ | -------------------------------------------------------------------------------------- |
-| Type check | `npm run typecheck` | Passed                                                                                       |
-| Lint       | `npm run lint`      | Passed                                                                                       |
-| Tests      | `npm test`          | 13 files, 584 tests, all passing                                                            |
-| Build      | `npm run build`     | Succeeded; route-level code splitting                                                       |
-| Dev server | `npm run dev`       | Serves the portfolio routes and unknown routes through the SPA fallback                    |
+| Check              | Command                       | Result                                                                                    |
+| ------------------ | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| Type check         | `npm run typecheck`           | Passed                                                                                    |
+| Lint               | `npm run lint`                | Passed (0 errors; two intentional exhaustive-deps warnings)                              |
+| Tests              | `npm test`                    | 25 files, 696 tests, all passing — including 25 scanner tests and 11 runtime axe audits  |
+| UX engine scan     | `npm run ux:scan -- --strict` | All 21 frontends: zero critical/major findings; 75 deferred minor spacing-token items   |
+| Build              | `npm run build`               | Succeeded; route-level code splitting                                                     |
+| Dev server         | `npm run dev`                 | Serves the portfolio routes and unknown routes through the SPA fallback                  |
 
-The test suite covers the challenge manifest and all 60 app routes, interactive prototype flows, URL-backed discovery, the personal operating system, the operations layer and shared site controls. The standalone company-platform and WorkNiche applications have their own check scripts and are not part of this root `npm run check` run.
+The test suite covers the challenge manifest and all 60 app routes, interactive prototype flows, URL-backed
+discovery, the personal operating system, the operations layer, the UX engine and shared site controls. The
+standalone company-platform and WorkNiche applications have their own check scripts and are not part of this root
+`npm run check` run. The same gate runs in CI via `.github/workflows/ux-quality.yml`, which also fails when the
+committed `docs/UX_ENGINE_REPO_AUDIT.md` drifts from a fresh scan.
 
-Automated accessibility checks (axe) and end-to-end browser runs are **not** included; the accessibility work here
-is semantic markup, focus management, live regions, contrast-reviewed tokens and reduced-motion handling, reviewed
-by hand rather than by a tool. No Lighthouse or performance score is published because none was measured in this
-environment.
+Accessibility is now checked at three layers: semantic markup plus structural assertions in the test suite,
+runtime axe-core audits of the rendered DOM (WCAG 2.x AA and best-practice rules on key routes, with
+layout-dependent rules such as color-contrast deferred to manual review under jsdom), and the static UX engine
+scanner over every frontend. End-to-end browser runs remain **not** included, so keyboard, screen-reader and
+real-viewport verification is still manual. No Lighthouse or performance score is published because none was
+measured in this environment.
 
 ---
 
@@ -288,3 +306,10 @@ environment.
 - No learning-outcome, adoption or performance metrics are claimed because none have been measured.
 - The contact form requires a configured real endpoint; email delivery and spam protection are that endpoint's responsibility.
 - Automated visual regression and end-to-end browser testing are not configured for this portfolio.
+
+### Ollama Cloud setup
+
+The workspace now offers Ollama Cloud (`gemma4:31b`) alongside the existing local
+adapter. See [server-only key setup, UI selection and real-request smoke command](docs/OLLAMA_CLOUD.md).
+The live smoke attempt was network-blocked in this sandbox; no real model reply
+has been received or fabricated.

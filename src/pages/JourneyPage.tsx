@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 const themes = [
   { title: 'Layout and responsive design', category: 'Landing pages', text: 'Page composition, content hierarchy and responsive presentation.' },

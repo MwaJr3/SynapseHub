@@ -1,0 +1,712 @@
+[
+  {
+    "slug": "authgate",
+    "name": "AuthGate",
+    "path": "apps/authgate",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Authentication and authorization dashboard with MFA, lockout and security headers.",
+    "title": "AuthGate",
+    "tags": [
+      "security",
+      "web",
+      "fastapi",
+      "authentication"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "budgetbook",
+    "name": "BudgetBook",
+    "path": "apps/budgetbook",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Personal expense tracker: exact decimal money math, refunds, audited corrections, period summaries.",
+    "title": "BudgetBook",
+    "tags": [
+      "finance",
+      "cli",
+      "data-processing"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "creadesk",
+    "name": "CreateDesk",
+    "path": "apps/creadesk",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Content pipeline: editorial states, role rights, version history, scheduling and link allowlist.",
+    "title": "CreateDesk",
+    "tags": [
+      "content",
+      "web",
+      "fastapi",
+      "workflow"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "datadesk",
+    "name": "DataDesk",
+    "path": "apps/datadesk",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "CSV analysis with explicit cleaning decisions, descriptive statistics, trends and accessible reports.",
+    "title": "DataDesk",
+    "tags": [
+      "data",
+      "cli",
+      "visualization",
+      "reports"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "docsage",
+    "name": "DocSage",
+    "path": "apps/docsage",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Team knowledge base with citations, review status, version diffs and offline ranked search.",
+    "title": "DocSage",
+    "tags": [
+      "knowledge-base",
+      "web",
+      "fastapi",
+      "search"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "fileseal",
+    "name": "FileSeal",
+    "path": "apps/fileseal",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "File encryption/decryption with AES-256-GCM and scrypt key derivation; safe, documented container format.",
+    "title": "FileSeal",
+    "tags": [
+      "security",
+      "cli",
+      "cryptography"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "flashkit",
+    "name": "FlashKit",
+    "path": "apps/flashkit",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Flashcard learning: decks, documented review scheduling, and confidence tracked apart from recall.",
+    "title": "FlashKit",
+    "tags": [
+      "education",
+      "cli",
+      "sqlite",
+      "spaced-repetition"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "gradeflow",
+    "name": "GradeFlow",
+    "path": "apps/gradeflow",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Student grade management: registration, marks, configurable grading bands, results and ranking.",
+    "title": "GradeFlow",
+    "tags": [
+      "education",
+      "cli",
+      "data-processing"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "guessmaster",
+    "name": "GuessMaster",
+    "path": "apps/guessmaster",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Number guessing game with configurable difficulty, attempt tracking and persistent high scores.",
+    "title": "GuessMaster",
+    "tags": [
+      "game",
+      "cli",
+      "state-machine"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "headercheck",
+    "name": "HeaderCheck",
+    "path": "apps/headercheck",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "HTTP security header evaluation with context-aware severities and scoped targets.",
+    "title": "HeaderCheck",
+    "tags": [
+      "security",
+      "cli",
+      "web"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "hostwatch",
+    "name": "HostWatch",
+    "path": "apps/hostwatch",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Read-only endpoint observation: scoped file facts, process metadata, evidence-backed review alerts.",
+    "title": "HostWatch",
+    "tags": [
+      "security",
+      "cli",
+      "endpoint",
+      "monitoring"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "incidentflow-cli",
+    "name": "IncidentFlow (CLI)",
+    "path": "apps/incidentflow-cli",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
+    "summary": "Forensics evidence intake, chain of custody, hash verification and honest timelines.",
+    "title": "IncidentFlow",
+    "tags": [
+      "security",
+      "cli",
+      "forensics",
+      "sqlite"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "loginsense",
+    "name": "LoginSense",
+    "path": "apps/loginsense",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Suspicious login detection: normalised auth events, documented rules, transparent risk scores.",
+    "title": "LoginSense",
+    "tags": [
+      "security",
+      "cli",
+      "identity",
+      "detection"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "netscope-cli",
+    "name": "NetScope (CLI)",
+    "path": "apps/netscope-cli",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
+    "summary": "Offline packet-capture analysis: protocol summaries, talkers, volume heuristics — payloads never inspected.",
+    "title": "NetScope",
+    "tags": [
+      "security",
+      "cli",
+      "network",
+      "pcap"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "notekit",
+    "name": "NoteKit",
+    "path": "apps/notekit",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Personal knowledge management with versioned edits, tags, note links, sources and lesson summaries.",
+    "title": "NoteKit",
+    "tags": [
+      "productivity",
+      "cli",
+      "sqlite",
+      "knowledge"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "passforge",
+    "name": "PassForge",
+    "path": "apps/passforge",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Secure password and passphrase generator built on Python's secrets module, with honest strength guidance.",
+    "title": "PassForge",
+    "tags": [
+      "security",
+      "cli",
+      "passwords",
+      "cryptography"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "passmeter",
+    "name": "PassMeter",
+    "path": "apps/passmeter",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Local password strength analysis with transparent signals and honest limitations.",
+    "title": "PassMeter",
+    "tags": [
+      "security",
+      "cli",
+      "passwords"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "phishlens-cli",
+    "name": "PhishLens (CLI)",
+    "path": "apps/phishlens-cli",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
+    "summary": "Explainable phishing email analysis: header, URL and attachment signals with honest framing.",
+    "title": "PhishLens",
+    "tags": [
+      "security",
+      "cli",
+      "email",
+      "threat-detection"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "prepwise",
+    "name": "PrepWise",
+    "path": "apps/prepwise",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Interview prep with question filters, mock sessions, timer and spaced review.",
+    "title": "PrepWise",
+    "tags": [
+      "education",
+      "web",
+      "fastapi",
+      "interviews"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "quizarena",
+    "name": "QuizArena",
+    "path": "apps/quizarena",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Collaborative quiz platform with seeded shuffling, leaderboards and quiz-bank import/export.",
+    "title": "QuizArena",
+    "tags": [
+      "education",
+      "web",
+      "fastapi",
+      "collaboration"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "quizbox",
+    "name": "QuizBox",
+    "path": "apps/quizbox",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Categorized, difficulty-tagged multiple-choice quizzes with explanations and scored results.",
+    "title": "QuizBox",
+    "tags": [
+      "education",
+      "cli",
+      "quiz"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "secops-dash",
+    "name": "SecOps Dash",
+    "path": "apps/secops-dash",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Offline security-operations triage: events, incidents, timelines and manual response playbooks.",
+    "title": "SecOps Dash",
+    "tags": [
+      "security",
+      "web",
+      "fastapi",
+      "soc",
+      "triage"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "secretscan",
+    "name": "SecretScan",
+    "path": "apps/secretscan",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Scoped scanner for candidate secrets in source code, with redacted reports and remediation guidance.",
+    "title": "SecretScan",
+    "tags": [
+      "security",
+      "cli",
+      "secrets",
+      "sdld"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "secweblab",
+    "name": "SecWebLab",
+    "path": "apps/secweblab",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Web-security training lab with seeded vulnerable samples and fix-oriented findings.",
+    "title": "SecWebLab",
+    "tags": [
+      "security",
+      "cli",
+      "training",
+      "web"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "shelfwise",
+    "name": "ShelfWise",
+    "path": "apps/shelfwise",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Library management distinguishing titles from physical copies, with loans, overdue rules and inventory.",
+    "title": "ShelfWise",
+    "tags": [
+      "cli",
+      "sqlite",
+      "relational-modeling"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "shopdeck",
+    "name": "ShopDeck",
+    "path": "apps/shopdeck",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "E-commerce operations admin: order/inventory state machines, pricing audit, data-quality-flagged reports.",
+    "title": "ShopDeck",
+    "tags": [
+      "e-commerce",
+      "web",
+      "fastapi",
+      "operations"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "simforge",
+    "name": "SimForge",
+    "path": "apps/simforge",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Engineering simulations with explicit units, bounded solvers and reproducible reports.",
+    "title": "SimForge",
+    "tags": [
+      "engineering",
+      "cli",
+      "simulation",
+      "numerical"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "skycast",
+    "name": "SkyCast",
+    "path": "apps/skycast",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Weather application with pluggable providers, explicit units/timezones and honest data labelling.",
+    "title": "SkyCast",
+    "tags": [
+      "cli",
+      "api-integration",
+      "weather"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "stockmate",
+    "name": "StockMate",
+    "path": "apps/stockmate",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Inventory management with immutable movement ledger, role permissions and labelled demand estimates.",
+    "title": "StockMate",
+    "tags": [
+      "inventory",
+      "web",
+      "fastapi",
+      "operations"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "taskdeck",
+    "name": "TaskDeck",
+    "path": "apps/taskdeck",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Personal task manager: priorities, deadlines, filters, and honest handling of malformed data.",
+    "title": "TaskDeck",
+    "tags": [
+      "productivity",
+      "cli",
+      "oop"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "threatintel-desk-cli",
+    "name": "ThreatIntel Desk (CLI)",
+    "path": "apps/threatintel-desk-cli",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
+    "summary": "Indicator normalisation, local enrichment and opt-in provider adapters with provenance and honest verdicts.",
+    "title": "ThreatIntel Desk",
+    "tags": [
+      "security",
+      "cli",
+      "threat-intelligence"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "tidyfiles",
+    "name": "TidyFiles",
+    "path": "apps/tidyfiles",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "File organizer that moves files by content-aware rules with dry-run safety and honest reports.",
+    "title": "TidyFiles",
+    "tags": [
+      "productivity",
+      "cli",
+      "filesystem",
+      "safety"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "unicore",
+    "name": "UniCore",
+    "path": "apps/unicore",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Modular university management: students, lecturers, courses, enrolments, grades and transcripts.",
+    "title": "UniCore",
+    "tags": [
+      "education",
+      "cli",
+      "sqlite",
+      "layered-architecture"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "urlshield",
+    "name": "URLShield",
+    "path": "apps/urlshield",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Explainable phishing-URL classification with offline structural features and honest estimates.",
+    "title": "URLShield",
+    "tags": [
+      "security",
+      "cli",
+      "machine-learning",
+      "phishing"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "wattwise",
+    "name": "WattWise",
+    "path": "apps/wattwise",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Home energy analysis: meter imports, configurable tariffs, transparent anomalies, labelled estimates.",
+    "title": "WattWise",
+    "tags": [
+      "energy",
+      "cli",
+      "sqlite",
+      "data"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  },
+  {
+    "slug": "webwatch",
+    "name": "WebWatch",
+    "path": "apps/webwatch",
+    "companySlug": null,
+    "companyName": null,
+    "summary": "Web data collection from explicitly permitted sources with change detection and provenance.",
+    "title": "WebWatch",
+    "tags": [
+      "cli",
+      "data",
+      "collection",
+      "sqlite"
+    ],
+    "interfaces": [
+      "python",
+      "cli"
+    ],
+    "runnableLocally": true
+  }
+]

@@ -48,7 +48,7 @@ uvicorn app.main:app --reload --port 8012
 # frontend
 cd frontend
 npm install --legacy-peer-deps
-npm run dev                          # http://localhost:5175 (proxies /api to 8012)
+npm run dev                          # http://localhost:5300 (proxies /api to 8012)
 ```
 
 ## Test

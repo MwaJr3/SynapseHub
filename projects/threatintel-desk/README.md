@@ -2,7 +2,7 @@
 
 **Collect the observations. Keep the doubt. Make the call yourself.** A
 working React/TypeScript + FastAPI application wrapping the tested
-ThreatIntel Desk indicator engine (reused from `apps/threatintel-desk`).
+ThreatIntel Desk indicator engine (reused from `apps/threatintel-desk-cli`).
 
 ## What is implemented
 
@@ -32,7 +32,7 @@ uvicorn app.main:app --reload --port 8018
 
 cd ../frontend
 npm install --legacy-peer-deps
-npm run dev                          # http://localhost:5181
+npm run dev                          # http://localhost:5307
 ```
 
 ## Test

@@ -88,7 +88,7 @@ npm run dev
 
 Open the Vite URL shown in the terminal—by default:
 
-- Web: <http://localhost:5174>
+- Web: <http://localhost:5500>
 - API health: <http://localhost:8000/api/health>
 
 The browser uses same-origin `/api` URLs. Vite proxies them to the backend during development.
@@ -118,7 +118,7 @@ docker compose up --build
 
 Services:
 
-- Web/Nginx on `${WEB_PORT:-5174}`
+- Web/Nginx on `${WEB_PORT:-5500}`
 - FastAPI on `${API_PORT:-8000}`
 - Redis-backed worker
 - PostgreSQL

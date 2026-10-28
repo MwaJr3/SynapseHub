@@ -124,9 +124,9 @@ tests both sides, `.env.example`, README with setup + known limitations):
 - **SecureCode Workbench** → `projects/securecode-workbench/` (14 backend + 2 frontend tests green)
 - **CyberAware Lab** → `projects/cyberaware-lab/` (11 backend + 2 frontend tests green)
 
-The four CLI-backed products (PhishLens → `apps/phishlens`, NetScope →
-`apps/netscope`, IncidentFlow → `apps/incidentflow`, ThreatIntel Desk →
-`apps/threatintel-desk`) remain as previously built and tested CLIs; their
+The four CLI-backed products (PhishLens → `apps/phishlens-cli`, NetScope →
+`apps/netscope-cli`, IncidentFlow → `apps/incidentflow-cli`, ThreatIntel Desk →
+`apps/threatintel-desk-cli`) remain as previously built and tested CLIs; their
 portfolio case-study records now say so explicitly. TranscriptWise
 (`projects/transcriptwise/`, PR #16) is unchanged.
 
@@ -155,7 +155,10 @@ hardened the earlier full-stack ones:
 - **Earlier work combined**: the seven archived case studies from
   `projects/mysul/mwangala/` now live in the company website portfolio
   (`/earlier-work`, module `src/data/earlierWork.ts`) with honest unavailable-
-  source states; the old directory keeps a pointer README.
+  source states. **2026-10-28:** the remaining content of that directory — the
+  seven working demos and the Python circuit reference — was merged in too, and
+  the directory was removed. Demos are served from
+  `projects/mysul/mwangala-portfolio/public/demos/<slug>/`.
 - **Captured metrics** (2026-10-24): backend statement coverage
   (`pytest --cov=app`) PhishLens 90 %, NetScope 79 %, IncidentFlow 76 %,
   ThreatIntel Desk 65 %, HashSight 93 %, AssetWatch 96 %, SecureCode Workbench

@@ -16,7 +16,7 @@
  *   node scripts/visual-smoke.mjs
  *
  * Environment:
- *   BASE  origin to test        (default http://127.0.0.1:5173)
+ *   BASE  origin to test        (default http://127.0.0.1:5401)
  *   OUT   screenshot directory  (default ./qa-shots)
  *   EXEC  explicit browser binary (default: newest chromium headless shell
  *         under ~/.cache/ms-playwright)
@@ -32,7 +32,7 @@ import { mkdirSync, readdirSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const BASE = process.env.BASE ?? 'http://127.0.0.1:5173';
+const BASE = process.env.BASE ?? 'http://127.0.0.1:5401';
 const OUT = process.env.OUT ?? './qa-shots';
 
 function findBrowser() {

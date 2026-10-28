@@ -1,0 +1,45 @@
+name: UX engine quality gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit, component and detector tests
+        run: npm test
+
+      - name: UX engine tests (CLI, plugin, fixer)
+        run: npm run ux:test
+
+      - name: UX engine repository scan (strict)
+        run: npm run ux:scan -- --strict
+
+      - name: Audit report is up to date
+        run: git diff --exit-code --ignore-matching-lines='^Generated ' docs/UX_ENGINE_REPO_AUDIT.md
+
+      - name: Production build
+        run: npm run build

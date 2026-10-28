@@ -1,15 +1,22 @@
 /** Global header and footer — shared design system, per-company tokens. */
 import Link from 'next/link';
+import { CurrentNavLink } from './current-nav-link';
 import type { ReactNode } from 'react';
 
 import { CompanyTokenSync } from '@/components/company-token-sync';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import type { Actor } from '@/lib/auth';
+import { externalAnchorProps } from '@/lib/links';
+import { portfolioLink } from '@/lib/portfolio-link';
 
 const PUBLIC_NAV = [
   { href: '/companies', label: 'Companies' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/products', label: 'Products' },
+  { href: '/catalogue', label: 'Catalogue' },
+  { href: '/ecosystem', label: 'Learning systems' },
+  { href: '/support', label: 'IT triage' },
+  { href: '/study-plan', label: 'Study planning' },
   { href: '/case-studies', label: 'Case Studies' },
   { href: '/people', label: 'People' },
   { href: '/about', label: 'About' },
@@ -25,9 +32,9 @@ export function SiteHeader({ actor }: { actor: Actor | null }) {
         </Link>
         <nav aria-label="Primary" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           {PUBLIC_NAV.map((item) => (
-            <Link key={item.href} href={item.href} className="text-muted hover:underline">
+            <CurrentNavLink key={item.href} href={item.href} className="text-muted hover:underline">
               {item.label}
-            </Link>
+            </CurrentNavLink>
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-3">
@@ -57,6 +64,7 @@ export function SiteHeader({ actor }: { actor: Actor | null }) {
 }
 
 export function SiteFooter() {
+  const portfolio = portfolioLink();
   return (
     <footer className="surface mt-16 border-t border-line">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-sm text-muted sm:grid-cols-3">
@@ -72,10 +80,21 @@ export function SiteFooter() {
         <div>
           <p className="font-semibold text-[var(--ink)]">Explore</p>
           <ul className="mt-2 space-y-1">
+            <li><Link href="/ecosystem" className="hover:underline">The learning systems</Link></li>
             <li><Link href="/products" className="hover:underline">All products</Link></li>
             <li><Link href="/case-studies" className="hover:underline">Case studies</Link></li>
             <li><Link href="/people" className="hover:underline">People</Link></li>
             <li><Link href="/about" className="hover:underline">About the platform</Link></li>
+            {/* The personal portfolio is a separate site reached from here, not a
+                section of this one. Unset means the link is simply absent, so
+                nothing points at a destination that does not exist. */}
+            {portfolio ? (
+              <li>
+                <a href={portfolio.href} {...externalAnchorProps} className="hover:underline">
+                  {portfolio.label}
+                </a>
+              </li>
+            ) : null}
           </ul>
         </div>
         <div>

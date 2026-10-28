@@ -11,15 +11,15 @@ Test counts below are verified by running each suite (pytest / vitest) on
 
 | Project | Directory | Backend port | Frontend port | Tests (BE / FE) | BE coverage | State |
 |---|---|---|---|---|---|---|
-| PhishLens — email phishing-risk analyser | `projects/phishlens/` | 8015 | 5178 | 12 / 2 | 90 % | Built + tested |
-| NetScope — offline PCAP network analyser | `projects/netscope/` | 8016 | 5179 | 11 / 2 | 79 % | Built + tested |
-| IncidentFlow — incident lifecycle workspace | `projects/incidentflow/` | 8017 | 5180 | 9 / 2 | 76 % | Built + tested |
-| ThreatIntel Desk — indicator workspace | `projects/threatintel-desk/` | 8018 | 5181 | 10 / 2 | 65 % | Built + tested |
-| HashSight — file-hash reputation explorer | `projects/hashsight/` | 8011 | 5174 | 19 / 2 | 93 % | Built + tested |
-| AssetWatch — authorized asset & exposure monitor | `projects/assetwatch/` | 8012 | 5175 | 15 (1 skipped: live nmap) / 2 | 96 % | Built + tested |
-| SecureCode Workbench — SAST orchestration & triage | `projects/securecode-workbench/` | 8013 | 5176 | 18 / 2 | 92 % | Built + tested |
-| CyberAware Lab — fictional simulation training | `projects/cyberaware-lab/` | 8014 | 5177 | 15 / 2 | 95 % | Built + tested |
-| TranscriptWise — transcript-to-study-guide platform | `projects/transcriptwise/` | 8000 | 5173 | merged via PR #16 (not re-measured above) | — | Built + tested |
+| PhishLens — email phishing-risk analyser | `projects/phishlens/` | 8015 | 5305 | 12 / 2 | 90 % | Built + tested |
+| NetScope — offline PCAP network analyser | `projects/netscope/` | 8016 | 5304 | 11 / 2 | 79 % | Built + tested |
+| IncidentFlow — incident lifecycle workspace | `projects/incidentflow/` | 8017 | 5303 | 9 / 2 | 76 % | Built + tested |
+| ThreatIntel Desk — indicator workspace | `projects/threatintel-desk/` | 8018 | 5307 | 10 / 2 | 65 % | Built + tested |
+| HashSight — file-hash reputation explorer | `projects/hashsight/` | 8011 | 5302 | 19 / 2 | 93 % | Built + tested |
+| AssetWatch — authorized asset & exposure monitor | `projects/assetwatch/` | 8012 | 5300 | 15 (1 skipped: live nmap) / 2 | 96 % | Built + tested |
+| SecureCode Workbench — SAST orchestration & triage | `projects/securecode-workbench/` | 8013 | 5306 | 18 / 2 | 92 % | Built + tested |
+| CyberAware Lab — fictional simulation training | `projects/cyberaware-lab/` | 8014 | 5301 | 15 / 2 | 95 % | Built + tested |
+| TranscriptWise — transcript-to-study-guide platform | `projects/transcriptwise/` | 8000 | 5308 | merged via PR #16 (not re-measured above) | — | Built + tested |
 
 Also here: `projects/mysul/` — the MySul portfolio properties (company website
 portfolio in `mwangala-portfolio/`, which now also carries the seven archived

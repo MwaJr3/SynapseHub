@@ -1,4 +1,4 @@
-"""Engine tests ported from apps/phishlens (behavior preserved)."""
+"""Engine tests ported from apps/phishlens-cli (behavior preserved)."""
 import json
 import pathlib
 

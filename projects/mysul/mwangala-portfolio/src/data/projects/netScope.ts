@@ -35,7 +35,7 @@ export const netScope: Project = {
   keyTech: ['Python', 'FastAPI', 'Scapy', 'Pandas', 'React', 'PostgreSQL'],
   featured: true,
   order: 2,
-  status: 'Built — offline capture analysis complete and tested as a dependency-free Python CLI in apps/netscope (stdlib pcap parsing), and delivered as the full-stack application described in this case study at projects/netscope (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
+  status: 'Built — offline capture analysis complete and tested as a dependency-free Python CLI in apps/netscope-cli (stdlib pcap parsing), and delivered as the full-stack application described in this case study at projects/netscope (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, parsing pipeline, analysis rules, frontend visualisation',
   accent: 'blue',

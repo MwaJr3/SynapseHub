@@ -677,9 +677,10 @@ export default function App() {
             <h2>{authMode === 'register' ? 'Create your account' : 'Welcome back'}</h2>
             <p className="muted">Projects and audio are owner-scoped. Signed URLs expire automatically.</p>
             {alerts}
-            <div className="segmented-control" role="tablist" aria-label="Authentication mode">
+            <div className="segmented-control" role="group" aria-label="Authentication mode">
               <button
                 type="button"
+                aria-pressed={authMode === 'login'}
                 className={authMode === 'login' ? 'active' : ''}
                 onClick={() => setAuthMode('login')}
               >
@@ -687,6 +688,7 @@ export default function App() {
               </button>
               <button
                 type="button"
+                aria-pressed={authMode === 'register'}
                 className={authMode === 'register' ? 'active' : ''}
                 onClick={() => setAuthMode('register')}
               >
@@ -1169,6 +1171,10 @@ export default function App() {
                   <div className="voice-grid">
                     {results.voices.map((voice) => {
                       const associatedStemId = associatedStemByVoice.get(voice.voice_id);
+                      // The sentence under these controls explains why they are inert;
+                      // the id lets each control point at it so a screen reader announces
+                      // the reason together with the control instead of leaving it nearby.
+                      const stemGateId = `stem-gate-${voice.voice_id}`;
                       const displayClass = voice.user_classification || voice.classification;
                       return (
                         <article key={voice.voice_id} className="voice-card">
@@ -1249,6 +1255,7 @@ export default function App() {
                               <select
                                 value={classificationDrafts[voice.voice_id] ?? displayClass}
                                 disabled={!associatedStemId}
+                                aria-describedby={!associatedStemId ? stemGateId : undefined}
                                 onChange={(event) =>
                                   setClassificationDrafts((previous) => ({
                                     ...previous,
@@ -1265,6 +1272,7 @@ export default function App() {
                               type="button"
                               className="button small"
                               disabled={!associatedStemId || busy === `voice-${voice.voice_id}`}
+                              aria-describedby={!associatedStemId ? stemGateId : undefined}
                               onClick={() => void handleClassificationSave(voice)}
                             >
                               Save correction
@@ -1273,13 +1281,16 @@ export default function App() {
                               type="button"
                               className="button small primary"
                               disabled={!associatedStemId}
+                              aria-describedby={!associatedStemId ? stemGateId : undefined}
                               onClick={() => requestPractice(voice)}
                             >
                               Practice stem
                             </button>
                           </div>
                           {!associatedStemId && (
-                            <p className="fine-print">Corrections and practice activate when this line produces an exported stem.</p>
+                            /* Linked by id so the sentence is announced with the control
+                               it explains, instead of sitting next to it unconnected. */
+                            <p id={stemGateId} className="fine-print">Corrections and practice activate when this line produces an exported stem.</p>
                           )}
                         </article>
                       );

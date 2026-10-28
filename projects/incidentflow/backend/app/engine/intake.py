@@ -1,4 +1,4 @@
-# Engine module reused from apps/incidentflow (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/incidentflow-cli (tested CLI engine) — behavior preserved.
 """Evidence intake: hashing, metadata, duplicates. Source files stay read-only."""
 from __future__ import annotations
 

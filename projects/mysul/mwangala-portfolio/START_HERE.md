@@ -7,7 +7,7 @@ lives in `README.md` and `docs/`.
 
 ```bash
 npm install        # or: npm ci
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5401
 ```
 
 No environment variables are required. `.env.example` documents the four
