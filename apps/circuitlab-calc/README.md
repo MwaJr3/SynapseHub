@@ -15,7 +15,7 @@ product **CircuitLab Calc** (Velaqori Systems).
 - **Unit conversion** — V/mV/kV, A/mA/uA, ohm/kohm/Mohm, W/mW/kW, Hz/kHz/MHz.
 
 The calculation core is the tested Python module
-`projects/mysul/mwangala/python-reference/circuit_math.py`, vendored verbatim
+`projects/mysul/mwangala-portfolio/python-reference/circuit_math.py`, vendored verbatim
 into `backend/app/circuit_math.py` (provenance noted at the top of the file).
 
 ## Stack

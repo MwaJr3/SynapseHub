@@ -189,7 +189,6 @@ earlier portfolio sites or class exercises:
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
 | `projects/mysul/Cpp Projects` | Cpp Projects | — | other | — | **no** | — | — | — |
 | `projects/mysul/WebstormProjects` | WebstormProjects | — | other | — | **no** | — | — | — |
-| `projects/mysul/mwangala` | MWANGALA | — | other | 10 | **no** | — | — | — |
 | `projects/mysul/mwangala-portfolio` | Mwangala | — | React (static) | 149 | yes | — | 5401 | — |
 
 ## 6. Every directory under `apps/` and `projects/`
@@ -313,10 +312,11 @@ tells a newcomer which of the two is the live site.
 | --- | --- | --- | ---: |
 | Portfolio (current) | `/` | React + Vite, 60 challenges | 705 |
 | Portfolio + case studies | `projects/mysul/mwangala-portfolio` | React + Vite, 9 case studies | 149 |
-| Earliest portfolio | `projects/mysul/mwangala` | static HTML/JS + `server.py` | 10 |
+| Earliest portfolio | *(removed 2026-10-28 — merged into `mwangala-portfolio`)* | static HTML/JS + `server.py` | 10 |
 
-Three generations of the same idea, all still present, no note anywhere saying which
-supersedes which.
+Three generations of the same idea. Two are still present; the earliest was merged
+into the second on 2026-10-28 (demos to `public/demos/`, case studies already in
+`earlierWork.ts`). Nothing yet says which of the two that remain is canonical.
 
 ### 7.4 `app` is the package name in 62 projects
 

@@ -31,6 +31,11 @@ function FieldBlock({ label, children }: { label: string; children: React.ReactN
   );
 }
 
+/** Where the archived demo for a slug is served from. One place, so a move is one edit. */
+function demoHref(slug: string) {
+  return `${import.meta.env.BASE_URL.replace(/\/$/, '')}/demos/${slug}/`;
+}
+
 function EarlierCaseStudy({ project }: { project: EarlierProject }) {
   return (
     <Panel as="article" id={project.slug} className="scroll-mt-24 p-6 sm:p-8">
@@ -42,10 +47,17 @@ function EarlierCaseStudy({ project }: { project: EarlierProject }) {
             {project.category} · {project.status} · {project.difficulty}
           </p>
         </div>
-        <p className="max-w-xs text-xs leading-relaxed text-ink-3">
-          Archived case study from my standalone portfolio. Source repositories were never
-          published for this earlier work, so no code link is shown.
-        </p>
+        <div className="max-w-xs">
+          <p className="text-xs leading-relaxed text-ink-3">
+            Archived case study from my standalone portfolio. Source repositories were never
+            published for this earlier work, so no code link is shown.
+          </p>
+          {/* The seven demos were static HTML in the retired standalone site; they are
+              served from public/demos/ inside this one rather than linked out. */}
+          <a className="btn btn-s mt-3 inline-block" href={demoHref(project.slug)}>
+            Open the working demo
+          </a>
+        </div>
       </div>
 
       <p className="mt-5 text-sm leading-relaxed text-ink-2">{project.description}</p>

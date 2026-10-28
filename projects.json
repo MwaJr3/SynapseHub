@@ -1012,18 +1012,6 @@
       "deploys": []
     },
     {
-      "slug": "mwangala",
-      "name": "MWANGALA",
-      "path": "projects/mysul/mwangala",
-      "owner": null,
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "static"
-      ],
-      "deploys": []
-    },
-    {
       "slug": "mwangala-portfolio",
       "name": "Mwangala",
       "path": "projects/mysul/mwangala-portfolio",

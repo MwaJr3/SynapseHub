@@ -21,7 +21,7 @@ claimed live.
 | VDownloader OS desktop video downloader | [CBU_Assignments#6](https://github.com/MwaJr3/CBU_Assignments/pull/6) | **Yes** — MERGED 2026-10-23 (`ccc9700`), inspected after the repo became public | `projects/cbu-assignments/video_downloader_app/` |
 | Stock Price Analysis — comparative financial time-series analytics | [SynapseHub#4](https://github.com/MwaJr3/SynapseHub/pull/4) | **Yes** — MERGED 2026-10-19, 69 files | `stock-price-analysis/`, `stock-price-time-series-analysis/` |
 | The 60 challenge records | [SynapseHub#3](https://github.com/MwaJr3/SynapseHub/pull/3) | **Yes** — MERGED 2026-10-23, 100 files | this repository's portfolio app (`src/apps`, `/apps` routes) |
-| The cybersecurity projects | [MySul#1](https://github.com/MwaJr3/MySul/pull/1) | **Yes** — MERGED 2026-10-23 (`be39a9e`), 24 files | `projects/mysul/mwangala/` |
+| The cybersecurity projects | [MySul#1](https://github.com/MwaJr3/MySul/pull/1) | **Yes** — MERGED 2026-10-23 (`be39a9e`), 24 files | `projects/mysul/mwangala-portfolio/` |
 | Mwangala React portfolio site (Vite + TypeScript) | [MySul#2](https://github.com/MwaJr3/MySul/pull/2) | **Yes** — MERGED 2026-10-23 (`7a01e8b`), 100 files | `projects/mysul/mwangala-portfolio/` |
 
 ## How the evidence maps to the 25 catalogue products
@@ -35,8 +35,8 @@ working application source. Source Code buttons appear only for the sixteen.
 `circuitlab-calc`, `campusflow` — **full working full-stack applications
 built into this repository at `apps/<slug>/`** (backend + frontend + tests,
 built 2026-10-23), with demo and case-study pages vendored at
-`projects/mysul/mwangala/apps/<slug>/` and
-`projects/mysul/mwangala/projects/<slug>/`, provenance
+`projects/mysul/mwangala-portfolio/public/demos/<slug>/` and
+`projects/mysul/mwangala-portfolio/src/data/earlierWork.ts`, provenance
 [MySul#1](https://github.com/MwaJr3/MySul/pull/1). Each product's Source Code
 button links to its `apps/<slug>/` folder **inside this repository**. Status
 stays **Built (not publicly deployed)**: source exists and runs; no hosted

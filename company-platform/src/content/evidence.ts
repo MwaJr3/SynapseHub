@@ -37,9 +37,9 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/MySul/pull/1',
     subject: 'The cybersecurity projects (working apps)',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/mysul/mwangala',
+    inRepoPath: 'projects/mysul/mwangala-portfolio',
     detail:
-      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/), each with case-study pages (projects/<slug>/), plus a Python circuit-math reference with tests. Source now resides in this repository at projects/mysul/mwangala/.',
+      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/), with case-study pages, plus a Python circuit-math reference with tests. Merged 2026-10-28 into the single portfolio site at projects/mysul/mwangala-portfolio/ (apps served from public/demos/<slug>/).',
   },
   mySulReactPortfolio: {
     label: 'MySul PR #2 — Mwangala React portfolio site (Vite + TypeScript)',
@@ -119,7 +119,7 @@ function appAddendum(slug: string): string {
     `Working full-stack application built and verified in this repository at apps/${slug} (backend + frontend + tests), ` +
     'with demo and case-study pages vendored from the owner-supplied MySul source ' +
     '(https://github.com/MwaJr3/MySul/pull/1, merged 2026-10-23) at ' +
-    `projects/mysul/mwangala/apps/${slug} and projects/mysul/mwangala/projects/${slug}. ` +
+    `projects/mysul/mwangala-portfolio/public/demos/${slug}/ and projects/mysul/mwangala-portfolio/src/data/earlierWork.ts. ` +
     'Not publicly deployed; no hosted demo is claimed.'
   );
 }
