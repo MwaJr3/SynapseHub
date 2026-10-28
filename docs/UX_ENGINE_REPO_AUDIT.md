@@ -1,130 +1,335 @@
-# UX audit · repository
+# UX engine repository audit
 
-41 projects · 22 defects across 99 occurrences · 0 P0 · 0 P1 · 0 P2 · 22 P3
+Generated 2026-10-28 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
 
-Produced by the Northstar UX Engine from source analysis. Every finding names a file and a line;
-nothing here was observed in a browser, and no screenshot is implied. Checks that need rendering
-are listed under “Not checked” in the project docs.
+Scope: **22 frontends**, **457 source files**, **75 findings**.
 
-## Top three
+## Method and limitations
 
-### 1. Table header without `scope` — apps/campusflow
+- Static, deterministic analysis of TS/TSX/CSS source — the same rule IDs and pattern traceability as the interactive audit at `/ux-engine`. Detectors cover focus removal, 44px touch targets, form labels and accessible names, image alt text, autoFocus, z-index escalation, spacing tokens, motion vocabulary, reduced-motion fallbacks, WCAG contrast pairs and hover-only handlers.
+- Runtime accessibility is enforced separately by axe-core (`src/test/axe-a11y.test.tsx`) against the rendered DOM; this static scan cannot execute the interfaces.
+- Findings carry confidence levels: **high** for mechanical facts (outline removal, missing labels, z-index, contrast math), **medium/low** for structural heuristics that still need a human or runtime check.
+- This scan does not execute the interfaces: runtime keyboard navigation, screen-reader output, rendered hit-box geometry and visual contrast over images remain manual verification steps.
+- Python backends, CLI tools and data notebooks are out of scope because they ship no UI.
 
-- **Severity:** P3
-- **Where:** `src/pages.tsx:134` (15 occurrences)
-- **Pattern:** P63
-- **Why it matters:** Without `scope`, a screen reader cannot say which column a cell belongs to, and the table degrades to a stream of numbers.
-- **Fix:** Add `scope="col"` to column headers and `scope="row"` to row headers.
-- **Evidence:** `<th className="th">Enrollment no.</th>`
+## Summary
 
-### 2. Table header without `scope` — apps/dependsecure
+| Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Portfolio website | 100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Company platform (Next.js) | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vocal separator web app | 10 | 0 | 0 | 75 | 0 | 0 | 75 | 0 |
+| apps/campusflow | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/chessscope | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/circuitlab-calc | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/classconnect | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/dependsecure | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/eduaccess | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/fileguard | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/frontpage | 33 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/learnbridge | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/learnpulse | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/openlearn-commons | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/pathwise | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/reachlearn | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/sentinelcore | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/sentinellog | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/teachcraft | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tessera | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tutorspring | 7 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
-- **Severity:** P3
-- **Where:** `src/pages.tsx:256` (12 occurrences)
-- **Pattern:** P63
-- **Why it matters:** Without `scope`, a screen reader cannot say which column a cell belongs to, and the table degrades to a stream of numbers.
-- **Fix:** Add `scope="col"` to column headers and `scope="row"` to row headers.
-- **Evidence:** `<th className="th">File</th>`
+## Portfolio website
 
-### 3. Table header without `scope` — apps/fileguard
+Root: `src` — 0 findings.
 
-- **Severity:** P3
-- **Where:** `src/pages.tsx:261` (11 occurrences)
-- **Pattern:** P63
-- **Why it matters:** Without `scope`, a screen reader cannot say which column a cell belongs to, and the table degrades to a stream of numbers.
-- **Fix:** Add `scope="col"` to column headers and `scope="row"` to row headers.
-- **Evidence:** `<th className="th">Name</th>`
+No findings — every static detector passed.
 
-## Per project
+## Company platform (Next.js)
 
-| Project | Kind | Files | Defects | P0 | P1 | P2 | P3 |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| [projects/cbu-assignments/tenantcore](projects/cbu-assignments/tenantcore/) | react-spa | 21 | 6 | 0 | 0 | 0 | 6 |
-| [apps/frontpage](apps/frontpage/) | react-spa | 28 | 4 | 0 | 0 | 0 | 4 |
-| [apps/campusflow](apps/campusflow/) | react-spa | 6 | 2 | 0 | 0 | 0 | 2 |
-| [apps/dependsecure](apps/dependsecure/) | react-spa | 6 | 2 | 0 | 0 | 0 | 2 |
-| [apps/fileguard](apps/fileguard/) | react-spa | 6 | 2 | 0 | 0 | 0 | 2 |
-| [apps/sentinelcore](apps/sentinelcore/) | react-spa | 6 | 2 | 0 | 0 | 0 | 2 |
-| [.](./) | react-spa | 68 | 2 | 0 | 0 | 0 | 2 |
-| [apps/pathwise](apps/pathwise/) | react-spa | 6 | 1 | 0 | 0 | 0 | 1 |
-| [vocal-separator](vocal-separator/) | react-spa | 7 | 1 | 0 | 0 | 0 | 1 |
-| [apps/authgate](apps/authgate/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/chessscope](apps/chessscope/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/circuitlab-calc](apps/circuitlab-calc/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/classconnect](apps/classconnect/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/creadesk](apps/creadesk/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/docsage](apps/docsage/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/eduaccess](apps/eduaccess/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/learnbridge](apps/learnbridge/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/learnpulse](apps/learnpulse/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/openlearn-commons](apps/openlearn-commons/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/prepwise](apps/prepwise/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/quizarena](apps/quizarena/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/reachlearn](apps/reachlearn/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/secops-dash](apps/secops-dash/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/sentinellog](apps/sentinellog/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/shopdeck](apps/shopdeck/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/stockmate](apps/stockmate/) | server-rendered | 1 | 0 | 0 | 0 | 0 | 0 |
-| [apps/teachcraft](apps/teachcraft/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [apps/tessera](apps/tessera/) | react-spa | 25 | 0 | 0 | 0 | 0 | 0 |
-| [apps/tutorspring](apps/tutorspring/) | react-spa | 6 | 0 | 0 | 0 | 0 | 0 |
-| [company-platform](company-platform/) | next-app | 53 | 0 | 0 | 0 | 0 | 0 |
-| [workniche](workniche/) | next-app | 49 | 0 | 0 | 0 | 0 | 0 |
-| [projects/assetwatch](projects/assetwatch/) | react-spa | 11 | 0 | 0 | 0 | 0 | 0 |
-| [projects/cyberaware-lab](projects/cyberaware-lab/) | react-spa | 9 | 0 | 0 | 0 | 0 | 0 |
-| [projects/hashsight](projects/hashsight/) | react-spa | 10 | 0 | 0 | 0 | 0 | 0 |
-| [projects/incidentflow](projects/incidentflow/) | react-spa | 9 | 0 | 0 | 0 | 0 | 0 |
-| [projects/netscope](projects/netscope/) | react-spa | 8 | 0 | 0 | 0 | 0 | 0 |
-| [projects/phishlens](projects/phishlens/) | react-spa | 9 | 0 | 0 | 0 | 0 | 0 |
-| [projects/securecode-workbench](projects/securecode-workbench/) | react-spa | 9 | 0 | 0 | 0 | 0 | 0 |
-| [projects/threatintel-desk](projects/threatintel-desk/) | react-spa | 8 | 0 | 0 | 0 | 0 | 0 |
-| [projects/transcriptwise](projects/transcriptwise/) | react-spa | 25 | 0 | 0 | 0 | 0 | 0 |
-| [projects/mysul/mwangala-portfolio](projects/mysul/mwangala-portfolio/) | react-spa | 48 | 0 | 0 | 0 | 0 | 0 |
+Root: `company-platform/src` — 0 findings.
 
-## P0 · blocks the task or breaks for a whole user group (0)
+No findings — every static detector passed.
 
-None found from source.
+## WorkNiche (Next.js)
 
-## P1 · violates WCAG 2.2 AA or loses data (0)
+Root: `workniche/src` — 0 findings.
 
-None found from source.
+No findings — every static detector passed.
 
-## P2 · costs the user time or confidence (0)
+## Vocal separator web app
 
-None found from source.
+Root: `vocal-separator/web/src` — 75 findings.
 
-## P3 · polish, consistency, or craft (22)
-
-| Project | Where | Defect | Pattern | Evidence | Fix |
+| # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| apps/campusflow | `src/pages.tsx:134` | Table header without `scope` ×15 | P63 | <th className="th">Enrollment no.</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| apps/dependsecure | `src/pages.tsx:256` | Table header without `scope` ×12 | P63 | <th className="th">File</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| apps/fileguard | `src/pages.tsx:261` | Table header without `scope` ×11 | P63 | <th className="th">Name</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| apps/sentinelcore | `src/pages.tsx:128` | Table header without `scope` ×9 | P63 | <th className="th">Occurred</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| projects/cbu-assignments/tenantcore | `src/pages/SettingsPage.tsx:37` | Table header without `scope` ×6 | P63 | {tab === 'keys' && isAdmin && <div><div className="mb-5 flex justify-end"><Button onClick={() => setKeyOpen(true)}><Plus size={16} />Create API key</Button></d… | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| projects/cbu-assignments/tenantcore | `src/pages/TasksPage.tsx:37` | Table header without `scope` ×6 | P63 | {query.isLoading ? <LoadingRows /> : query.error ? <ErrorState error={query.error} onRetry={() => query.refetch()} /> : query.data && <><div className="table-w… | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| . | `src/components/ux-engine/StateMatrixView.tsx:188` | Table header without `scope` ×5 | P63 | <th className="px-4 py-3">State</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| apps/pathwise | `src/pages.tsx:195` | Table header without `scope` ×5 | P63 | <th className="th">Skill</th> | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| projects/cbu-assignments/tenantcore | `src/pages/MembersPage.tsx:34` | Table header without `scope` ×5 | P63 | {query.isLoading ? <LoadingRows /> : query.error ? <ErrorState error={query.error} onRetry={() => query.refetch()} /> : query.data && <><div className="table-w… | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| projects/cbu-assignments/tenantcore | `src/pages/ProjectsPage.tsx:38` | Table header without `scope` ×5 | P63 | <div className="table-wrap">{query.data.items.length ? <table className="table"><thead><tr><th>Project</th><th>Status</th><th>Created</th><th>Tenant binding</t… | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| projects/cbu-assignments/tenantcore | `src/pages/PlatformPage.tsx:43` | Table header without `scope` ×4 | P63 | {tenants.isLoading ? <LoadingRows /> : tenants.error ? <ErrorState error={tenants.error} onRetry={() => tenants.refetch()} /> : tenants.data && <><div classNam… | Add `scope="col"` to column headers and `scope="row"` to row headers. |
-| apps/dependsecure | `src/pages.tsx:272` | Numeric cell without tabular figures or right alignment ×3 | P63 | <td className="td">{m.package_count}</td> | Right-align numeric columns and set `font-variant-numeric: tabular-nums` (Tailwind: `tabular-nums text-right`). |
-| apps/frontpage | `src/components/Shell.tsx:46` | Icon-only control likely below the 24×24px minimum target ×3 | P42 | icon-btn menu-btn | Add padding so the hit area reaches 24×24 (44×44 is the comfortable size), or space neighbouring controls by 8px+. |
-| apps/frontpage | `src/components/Reader.tsx:70` | Icon-only control likely below the 24×24px minimum target ×2 | P42 | icon-btn | Add padding so the hit area reaches 24×24 (44×44 is the comfortable size), or space neighbouring controls by 8px+. |
-| . | `src/styles/apps.css:2` | More than five distinct literal border radii in one stylesheet | P72 | 9 values: 7px, 11px, 20px, 10px, 12px, 9px, 6px, 8px | Commit to a named scale in `:root` (2 · 4 · 8 · 12 · 16) and reference the tokens everywhere, so a new component picks a step instead of a number. |
-| apps/campusflow | `src/pages.tsx:149` | Numeric cell without tabular figures or right alignment | P63 | <td className="td">{s.enrolled_sections.length}</td> | Right-align numeric columns and set `font-variant-numeric: tabular-nums` (Tailwind: `tabular-nums text-right`). |
-| apps/fileguard | `src/pages.tsx:364` | Numeric cell without tabular figures or right alignment | P63 | <td className="td">{b.entry_count}</td> | Right-align numeric columns and set `font-variant-numeric: tabular-nums` (Tailwind: `tabular-nums text-right`). |
-| apps/frontpage | `src/components/common.tsx:126` | Icon-only control likely below the 24×24px minimum target | P42 | icon-btn dialog-close | Add padding so the hit area reaches 24×24 (44×44 is the comfortable size), or space neighbouring controls by 8px+. |
-| apps/frontpage | `src/components/Sidebar.tsx:51` | Icon-only control likely below the 24×24px minimum target | P42 | icon-btn drawer-close | Add padding so the hit area reaches 24×24 (44×44 is the comfortable size), or space neighbouring controls by 8px+. |
-| apps/sentinelcore | `src/pages.tsx:530` | Numeric cell without tabular figures or right alignment | P63 | <td className="td whitespace-nowrap text-slate-400">{row.created_at ? new Date(row.created_at).toLocaleString() : '—'}</td> | Right-align numeric columns and set `font-variant-numeric: tabular-nums` (Tailwind: `tabular-nums text-right`). |
-| projects/cbu-assignments/tenantcore | `src/components/Layout.tsx:25` | Raw colour literal in a component class list | P69 | return <div className="min-h-screen bg-[#f5f7fb]"> | Use the semantic token (`bg-surface`, `text-ink-muted`) or a theme value, not `bg-[#…]`. |
-| vocal-separator | `src/styles.css:112` | More than five distinct literal border radii in one stylesheet | P72 | 10 values: 15px, 999px, 12px, 10px, 16px, 20px, 14px, 18px | Commit to a named scale in `:root` (2 · 4 · 8 · 12 · 16) and reference the tokens everywhere, so a new component picks a step instead of a number. |
+| 1 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:86` | Rule ".header-inner" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 2 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:96` | Rule ".brand-block" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 3 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:135` | Rule ".header-actions" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 4 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:143` | Rule ".availability-chip" uses literal spacing 7, 6, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 5 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:188` | Rule ".page" uses literal spacing 30, 56px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 6 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:202` | Rule ".panel-heading" uses literal spacing 18, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 7 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:253` | Rule ".button" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 8 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:309` | Rule ".button.large" uses literal spacing 13, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 9 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:333` | Rule ".alert" uses literal spacing 18, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 10 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:354` | Rule ".alert.inline" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 11 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:373` | Rule ".auth-layout" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 12 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:408` | Rule ".capability-grid" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 13 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:415` | Rule ".capability-grid article" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 14 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:430` | Rule ".capability-grid h2" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 15 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:447` | Rule ".honesty-panel h2" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 16 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:453` | Rule ".honesty-list" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 17 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:475` | Rule ".segmented-control" uses literal spacing 6, 22, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 18 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:524` | Rule ".inline-form select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 19 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:540` | Rule ".compact-field select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 20 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:563` | Rule ".auth-health" uses literal spacing 26, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 21 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:569` | Rule ".auth-health h3" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 22 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:579` | Rule ".system-list > div" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 23 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:608` | Rule ".compact-system" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 24 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:619` | Rule ".content-column" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 25 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:631` | Rule ".stem-list" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 26 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:639` | Rule ".project-list" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 27 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:672` | Rule ".project-card" uses literal spacing 5, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 28 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:719` | Rule ".selected-job-chip" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 29 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:739` | Rule ".file-row" uses literal spacing 18, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 30 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:767` | Rule ".dropzone" uses literal spacing 18, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 31 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:829` | Rule ".selected-file" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 32 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:853` | Rule ".options-grid" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 33 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:875` | Rule ".radio-card" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 34 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:898` | Rule ".radio-card span" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 35 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:913` | Rule ".check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 36 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:944` | Rule ".large-check" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 37 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:951` | Rule ".practice-banner" uses literal spacing 13, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 38 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:962` | Rule ".job-row" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 39 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1014` | Rule ".section-actions" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 40 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1043` | Rule ".stages-list" uses literal spacing 9, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 41 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1051` | Rule ".stage-row" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 42 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1102` | Rule ".warning-list" uses literal spacing 18, 14, 34px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 43 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1112` | Rule ".warning-list.compact" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 44 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1119` | Rule ".summary-grid" uses literal spacing 14, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 45 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1126` | Rule ".summary-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 46 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1154` | Rule ".export-bar" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 47 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1179` | Rule ".transport" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 48 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1211` | Rule ".transport-grid .check-field" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 49 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1233` | Rule ".download-link" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 50 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1267` | Rule ".pitch-section" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 51 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1285` | Rule ".subsection-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 52 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1309` | Rule ".pitch-legend" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 53 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1318` | Rule ".pitch-legend span" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 54 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1335` | Rule ".stem-row" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 55 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1351` | Rule ".stem-identity" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 56 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1358` | Rule ".stem-title-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 57 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1387` | Rule ".stem-wave" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 58 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1404` | Rule ".stem-controls" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 59 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1424` | Rule ".stem-details" uses literal spacing 15, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 60 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1437` | Rule ".metric-grid > div" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 61 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1445` | Rule ".inline-form" uses literal spacing 10, 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 62 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1457` | Rule ".download-row" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 63 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1502` | Rule ".model-card" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 64 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1525` | Rule ".model-heading p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 65 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1560` | Rule ".voice-metrics" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 66 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1564` | Rule ".prediction-list" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 67 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1571` | Rule ".prediction-list span" uses literal spacing 6, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 68 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1581` | Rule ".withheld-box" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 69 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1586` | Rule ".voice-actions" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 70 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1604` | Rule ".raw-json" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 71 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1611` | Rule ".raw-json summary" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 72 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1642` | Rule ".empty-state" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 73 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1652` | Rule ".admin-summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 74 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1703` | Rule ".page" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 75 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `vocal-separator/web/src/styles.css:1725` | Rule ".panel" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 
-## By pattern
+## apps/campusflow
 
-| Pattern | Defects |
-| --- | --- |
-| P63 | 15 |
-| P42 | 4 |
-| P72 | 2 |
-| P69 | 1 |
+Root: `apps/campusflow/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/chessscope
+
+Root: `apps/chessscope/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/circuitlab-calc
+
+Root: `apps/circuitlab-calc/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/classconnect
+
+Root: `apps/classconnect/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/dependsecure
+
+Root: `apps/dependsecure/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/eduaccess
+
+Root: `apps/eduaccess/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/fileguard
+
+Root: `apps/fileguard/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/frontpage
+
+Root: `apps/frontpage/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/learnbridge
+
+Root: `apps/learnbridge/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/learnpulse
+
+Root: `apps/learnpulse/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/openlearn-commons
+
+Root: `apps/openlearn-commons/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/pathwise
+
+Root: `apps/pathwise/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/reachlearn
+
+Root: `apps/reachlearn/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/sentinelcore
+
+Root: `apps/sentinelcore/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/sentinellog
+
+Root: `apps/sentinellog/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/teachcraft
+
+Root: `apps/teachcraft/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/tessera
+
+Root: `apps/tessera/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## apps/tutorspring
+
+Root: `apps/tutorspring/frontend/src` — 0 findings.
+
+No findings — every static detector passed.
+
+## Triage decisions and deferred findings
+
+- **Fixed in this pass (all critical and major defects):** removed focus outlines without replacement, sub-44px touch targets, unlabelled controls, z-index escalation past the named layers, off-vocabulary motion durations, and missing reduced-motion fallbacks. Every fix is re-verified by this scan and by the regression gate in `src/features/ux-engine/scanner/repoScan.test.ts`.
+- **Deferred (minor token hygiene only):** the remaining findings are `TOKEN-SPACING-01` on literal spacing inside hand-tuned, non-minified custom stylesheets. They are convention deviations rather than user-facing defects. Normalising them means choosing between the two nearest scale tokens at each site, which changes rendered geometry; without a visual-regression harness for those standalone apps the change needs a design review instead of a blind mechanical edit. Each row below already carries the rule remediation (nearest 4px-scale token) and the exact location.
+
+| Frontend | Location | Off-scale values |
+| --- | --- | --- |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:86` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:96` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:135` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:143` | 7, 6, 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:188` | 30, 56px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:202` | 18, 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:253` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:309` | 13, 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:333` | 18, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:354` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:373` | 26px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:408` | 30px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:415` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:430` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:447` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:453` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:475` | 6, 22, 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:524` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:540` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:563` | 26, 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:569` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:579` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:608` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:619` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:631` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:639` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:672` | 5, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:719` | 13, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:739` | 18, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:767` | 18, 28px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:829` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:853` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:875` | 13, 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:898` | 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:913` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:944` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:951` | 13, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:962` | 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1014` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1043` | 9, 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1051` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1102` | 18, 14, 34px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1112` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1119` | 14, 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1126` | 17px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1154` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1179` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1211` | 10px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1233` | 7px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1267` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1285` | 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1309` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1318` | 7px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1335` | 17px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1351` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1358` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1387` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1404` | 15px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1424` | 15, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1437` | 11px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1445` | 10, 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1457` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1502` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1525` | 5px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1560` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1564` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1571` | 6, 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1581` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1586` | 9px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1604` | 20px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1611` | 14px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1642` | 22px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1652` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1703` | 18px |
+| Vocal separator web app | `vocal-separator/web/src/styles.css:1725` | 18px |
+
+## Remediation contract
+
+Every finding resolves through the engine rule catalog: the rule statement, impacted users, remediation steps and verification procedure are available from `/ux-engine` and `src/features/ux-engine/rules.ts`. Re-run this scan after fixes to confirm the finding disappears.
