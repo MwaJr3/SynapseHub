@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     access_token_minutes: int = 15
     refresh_token_days: int = 7
     invitation_hours: int = 72
-    cors_origins: str = "http://localhost:5309,http://127.0.0.1:5309"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     log_level: str = "INFO"
     rate_limit_fail_open: bool = True
     login_rate_limit: int = 10

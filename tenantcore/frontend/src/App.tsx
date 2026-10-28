@@ -17,7 +17,7 @@ const IsolationPage = lazy(() => import('./pages/IsolationPage'));
 
 function Protected() {
   const { user, loading } = useAuth();
-  if (loading) return <div className="grid min-h-screen place-items-center bg-ink-950 text-white"><div className="text-center"><Loader2 className="mx-auto animate-spin text-brand-500" /><p className="mt-3 text-sm text-slate-500">Verifying your session…</p></div></div>;
+  if (loading) return <div className="grid min-h-screen place-items-center bg-ink-950 text-white"><div className="text-center"><Loader2 className="mx-auto animate-spin text-brand-500" /><p className="mt-3 text-sm text-slate-400">Verifying your session…</p></div></div>;
   return user ? <Layout /> : <Navigate to="/login" replace />;
 }
 

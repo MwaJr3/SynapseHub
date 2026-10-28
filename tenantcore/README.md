@@ -46,7 +46,7 @@ docker compose up --build
 
 Compose starts PostgreSQL 16, Redis, a one-shot migration/seed job, FastAPI, a Celery worker/beat process, and Vite.
 
-- Dashboard: **http://localhost:5309**
+- Dashboard: **http://localhost:5173**
 - OpenAPI: **http://localhost:8000/docs**
 - Readiness: **http://localhost:8000/health/ready**
 - Prometheus metrics: **http://localhost:8000/metrics** (restrict this endpoint to the monitoring network in production)
