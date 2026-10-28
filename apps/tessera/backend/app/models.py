@@ -824,3 +824,166 @@ class XpEntry(Base):
     reason: Mapped[str] = mapped_column(Text, default="")
     concept_id: Mapped[str | None] = mapped_column(String(80), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow, index=True)
+
+
+# ------------------------------------------------ learner development (stage 7)
+#
+# Five tables for the document's Phase I. Two of them exist to hold something the
+# system must never fabricate:
+#
+# * `development_hypotheses` stores a *claim* with the evidence behind it, so a
+#   tentative inference ("retrieval practice is probably being avoided") is visible
+#   as an inference. Confidence is computed from evidence kinds, not asserted.
+# * `self_management_baselines` has no score column at all. The document asks for a
+#   behavioural baseline "without inventing a percentage", and the schema is where
+#   that instruction becomes impossible to break by accident.
+#
+# The rest record what a learner did: which lesson they worked through, the protocol
+# they wrote, and the experiments designed to test it.
+
+JSONDoc = JSON().with_variant(JSONB(), "postgresql")
+
+
+class DevelopmentHypothesis(Base):
+    """One provisional claim about this learner, with the evidence it rests on."""
+
+    __tablename__ = "development_hypotheses"
+    __table_args__ = (
+        # One live claim per area. Two competing hypotheses about the same dimension
+        # would make "what does the system think" ambiguous, which is the opposite of
+        # the point.
+        UniqueConstraint("user_id", "scope", "key", name="uq_development_hypotheses_area"),
+        CheckConstraint("scope IN ('dimension', 'process')", name="ck_development_hypotheses_scope"),
+        CheckConstraint(
+            "confidence IN ('none', 'low', 'moderate', 'high')",
+            name="ck_development_hypotheses_confidence",
+        ),
+        CheckConstraint(
+            "status IN ('open', 'supported', 'contradicted')",
+            name="ck_development_hypotheses_status",
+        ),
+        Index("ix_development_hypotheses_user", "user_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    #: dimension | process
+    scope: Mapped[str] = mapped_column(String(20))
+    key: Mapped[str] = mapped_column(String(40))
+    #: The claim in the learner's own words. Never a score.
+    claim: Mapped[str] = mapped_column(Text)
+    #: Why this claim was worth writing down.
+    rationale: Mapped[str] = mapped_column(Text, default="")
+    #: Computed from `evidence` — see app.development.confidence_for. Stored so a
+    #: later read cannot silently change what the learner was shown.
+    confidence: Mapped[str] = mapped_column(String(12), default="none")
+    #: What would support or contradict it, and what has been observed so far.
+    support: Mapped[list] = mapped_column(JSONList, default=list)
+    contradict: Mapped[list] = mapped_column(JSONList, default=list)
+    evidence: Mapped[list] = mapped_column(JSONList, default=list)
+    status: Mapped[str] = mapped_column(String(14), default="open")
+    review_note: Mapped[str] = mapped_column(Text, default="")
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class SelfManagementBaseline(Base):
+    """A behavioural baseline: self-report items plus one timed observation.
+
+    There is deliberately no total, average or percentage column. Adding one would
+    turn nine opinions and one afternoon into a measurement of a person.
+    """
+
+    __tablename__ = "self_management_baselines"
+    __table_args__ = (Index("ix_self_management_baselines_user", "user_id", "created_at"),)
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    #: [{key, prompt, answer, options}] — the answer is a word from `options`.
+    items: Mapped[list] = mapped_column(JSONList, default=list)
+    #: {task, planned_minutes, actual_minutes, started_after_minutes, interruptions,
+    #: resumed_after_minutes, finished}
+    observation: Mapped[dict] = mapped_column(JSONDoc, default=dict)
+    #: Derived prose. Counts and comparisons, never a score.
+    summary: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class LessonProgress(Base):
+    """How far one learner has worked through one lesson."""
+
+    __tablename__ = "lesson_progress"
+    __table_args__ = (
+        UniqueConstraint("user_id", "lesson_slug", name="uq_lesson_progress_lesson"),
+        CheckConstraint(
+            "state IN ('studied', 'practised', 'retrieval_passed')",
+            name="ck_lesson_progress_state",
+        ),
+        Index("ix_lesson_progress_user", "user_id"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    lesson_slug: Mapped[str] = mapped_column(String(80))
+    state: Mapped[str] = mapped_column(String(20), default="studied")
+    #: The learner's answer to the lesson's retrieval check, kept verbatim.
+    retrieval_answer: Mapped[str] = mapped_column(Text, default="")
+    #: Which of the lesson's criteria they believed their answer met. Self-marked,
+    #: because the criteria are prose and pretending a keyword match is grading
+    #: would be the fake integration this product avoids.
+    criteria_met: Mapped[list] = mapped_column(JSONList, default=list)
+    note: Mapped[str] = mapped_column(Text, default="")
+    studied_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    practised_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    retrieval_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class LearningProtocol(Base):
+    """A versioned personal operating procedure, written by the learner."""
+
+    __tablename__ = "learning_protocols"
+    __table_args__ = (
+        UniqueConstraint("user_id", "version", name="uq_learning_protocols_version"),
+        Index("ix_learning_protocols_user", "user_id", "is_current"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    version: Mapped[int] = mapped_column(Integer, default=1)
+    #: {section_key: text}. Empty sections stay empty; nothing is prefilled.
+    sections: Mapped[dict] = mapped_column(JSONDoc, default=dict)
+    #: {material_type: example}. All four are required before the gate opens.
+    material_examples: Mapped[dict] = mapped_column(JSONDoc, default=dict)
+    #: Only one row per learner is current; setting a new one clears the old.
+    is_current: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+
+class DevelopmentExperiment(Base):
+    """A comparison of two techniques, with the honesty rules attached."""
+
+    __tablename__ = "development_experiments"
+    __table_args__ = (
+        CheckConstraint(
+            "outcome IN ('pending', 'weak_signal', 'no_change', 'supported', 'abandoned')",
+            name="ck_development_experiments_outcome",
+        ),
+        CheckConstraint("sample_size >= 0", name="ck_development_experiments_sample"),
+        Index("ix_development_experiments_user", "user_id", "created_at"),
+    )
+
+    id: Mapped[str] = mapped_column(String(32), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    technique: Mapped[str] = mapped_column(String(120))
+    hypothesis: Mapped[str] = mapped_column(Text)
+    predicted: Mapped[str] = mapped_column(Text, default="")
+    #: How the result will be judged, written before the result exists.
+    measure: Mapped[str] = mapped_column(Text, default="")
+    #: How many comparable cases were observed. A conclusion from one case is not a
+    #: conclusion, and the API refuses to record it as one below MIN_SAMPLE.
+    sample_size: Mapped[int] = mapped_column(Integer, default=0)
+    observed: Mapped[str] = mapped_column(Text, default="")
+    outcome: Mapped[str] = mapped_column(String(14), default="pending")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    observed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

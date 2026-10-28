@@ -31,7 +31,6 @@ jobs:
         with: { node-version: '22', cache: npm }
       - run: npm ci
       - run: npm run typecheck
-      - run: node scripts/check-vercel-sources.mjs
       - run: node --test scripts/check-native-env.test.mjs
       # Repository-wide lint has unrelated existing violations; do not suppress them.
       - run: npx eslint src/features/synapsehub packages/synapse-client src/App.tsx vite.config.ts

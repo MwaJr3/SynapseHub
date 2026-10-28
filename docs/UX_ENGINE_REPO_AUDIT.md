@@ -2,7 +2,7 @@
 
 Generated 2026-10-28 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
 
-Scope: **23 frontends**, **462 source files**, **84 findings**.
+Scope: **23 frontends**, **463 source files**, **84 findings**.
 
 ## Method and limitations
 
@@ -38,7 +38,7 @@ Scope: **23 frontends**, **462 source files**, **84 findings**.
 | apps/sentinelcore | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/sentinellog | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/teachcraft | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| apps/tessera | 21 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| apps/tessera | 22 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | apps/tutorspring | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Portfolio website

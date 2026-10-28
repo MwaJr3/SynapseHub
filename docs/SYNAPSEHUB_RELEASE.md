@@ -31,8 +31,12 @@ New Vercel project: `synapsehub-workspace`, project ID
 `prj_M0GHRnxrkVF7OqikrNmXgtJf5QAD`. Its settings use the public Supabase URL/key;
 there are no service-role keys or model credentials in the deployment.
 
-`api/index.py`, root `requirements.txt` and `vercel.json` package the same FastAPI
-application alongside the Vite SPA, with same-origin `/api` routing. Vercel's upload
+`api/index.py` and root `requirements.txt` package the same FastAPI application
+alongside the Vite SPA, with same-origin `/api` routing. **The root `vercel.json` and
+`.vercelignore` were removed on 2026-10-28** with the rest of the deployment wiring
+(`docs/deployment/README.md`); a redeployment re-adds them to that project, not to this
+repository. The packaging description below records what the attempt did, not what the
+tree currently contains. Vercel's upload
 ceiling is smaller than the container profile: the API enforces **4 MiB on Vercel**
 and **5 MiB in a container**. Platform limits can reject a request before FastAPI
 runs; originals stored as bytea also have response-size limits on serverless hosts.

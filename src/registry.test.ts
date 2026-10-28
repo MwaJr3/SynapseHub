@@ -166,9 +166,14 @@ describe('the registry and the tree agree', () => {
     const registered = new Set(registry.projects.map((entry) => entry.path));
     const excluded = new Set(registry.excluded.map((entry) => entry.path));
     const unregistered: string[] = [];
+    // Installed dependencies are never projects. A workspace inside `apps/`
+    // hoists its `node_modules` here, and without this the check reports a
+    // hundred directories that nobody registered because nobody could.
+    const IGNORED = new Set(['node_modules', '__pycache__', '.venv', 'dist', 'build', '.next']);
 
     const walk = (relative: string, depth: number): void => {
       for (const name of readdirSync(join(REPO, relative))) {
+        if (IGNORED.has(name)) continue;
         const child = `${relative}/${name}`;
         if (!statSync(join(REPO, child)).isDirectory()) continue;
         if (registered.has(child) || excluded.has(child)) continue;
@@ -219,7 +224,7 @@ describe('the registry and the tree agree', () => {
     }
   });
 
-  it('ships no hosting configuration inside a project', () => {
+  it('ships no hosting configuration anywhere', () => {
     // Nothing may re-add a deploy manifest while deployment is paused. A project that is
     // being redeployed moves its entry from pausedDeployment to deploys in the same
     // change, which is what keeps this test honest rather than merely strict.
@@ -228,10 +233,8 @@ describe('the registry and the tree agree', () => {
     // the ones that existed were at `<project>/backend/vercel.json`, and a root-only
     // check passed while a manifest was present.
     //
-    // The repository root is deliberately out of scope. A root config was added after
-    // the strip (2026-10-28) for the connected workspace, which deploys the portfolio
-    // and backend/synapsehub as one unit rather than repointing a paused project. See
-    // docs/deployment/README.md.
+    // The root is included deliberately: a config there deploys the entire repository
+    // as one project, which is a larger claim than any single project's config.
     const MANIFESTS = new Set(['vercel.json', 'netlify.toml', 'wrangler.toml', 'now.json']);
     const found: string[] = [];
 
@@ -245,6 +248,9 @@ describe('the registry and the tree agree', () => {
     };
 
     for (const entry of registry.projects) visit(entry.path);
+    // The repository root is checked too. A root config deploys the whole tree as one
+    // project, which is more than any single project's wiring, not less.
+    if (existsSync(join(REPO, 'vercel.json'))) found.push('vercel.json');
     expect(found).toEqual([]);
   });});
 

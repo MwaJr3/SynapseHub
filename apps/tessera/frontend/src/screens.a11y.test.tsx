@@ -23,6 +23,7 @@ import type { ConsentPreview } from './api';
 import { api } from './api';
 import { ConnectedApps, ConsentPage } from './integration';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
+import { DevelopmentPage } from './development';
 import { TutorPage } from './tutor';
 
 vi.mock('./api', async (importOriginal) => {
@@ -40,6 +41,12 @@ vi.mock('./api', async (importOriginal) => {
       tutorStatus: vi.fn(),
       connections: vi.fn(),
       consentPreview: vi.fn(),
+      developmentModel: vi.fn(),
+      developmentCurriculum: vi.fn(),
+      developmentProtocol: vi.fn(),
+      developmentGate: vi.fn(),
+      developmentBaseline: vi.fn(),
+      developmentExperiments: vi.fn(),
     },
   };
 });
@@ -128,6 +135,14 @@ describe('every screen renders without an axe violation', () => {
   it('tutor', async () => {
     vi.mocked(api.tutorStatus).mockResolvedValue(fixtures.tutor_status as never);
     await expectAccessible(<TutorPage />, 'AI tutor');
+  });
+
+  it('learner development', async () => {
+    vi.mocked(api.developmentModel).mockResolvedValue(fixtures.development_model as never);
+    vi.mocked(api.developmentCurriculum).mockResolvedValue(fixtures.development_curriculum as never);
+    vi.mocked(api.developmentProtocol).mockResolvedValue(fixtures.development_protocol as never);
+    vi.mocked(api.developmentGate).mockResolvedValue(fixtures.development_gate as never);
+    await expectAccessible(<DevelopmentPage />, 'Learner development');
   });
 
   it('connected apps', async () => {

@@ -44,8 +44,8 @@ before the next major phase.
 | 4 | Software: competency and analytics | Evidence separated from mastery, reassessment, explainable gaps, PostgreSQL invariants executed | **done** |
 | 5 | Software: quests, XP ledger, seasons | Idempotent XP, anti-farming, recovery mode, anti-obsession controls | **done** |
 | 6 | Software: hardening | Export/delete, accessibility pass, migrations, production build | **done** |
-| 7 | Learner development (the document's Phase I) | Learner model, dimensions, processes, technique groups A–I, personal protocol | after software |
-| 8 | Learning-system design (the document's Phase II) | Lifecycle, priority heuristic, competence model, experiment protocol | |
+| 7 | Learner development (the document's Phase I) | Learner model, dimensions, processes, technique groups A–I, personal protocol | **done** |
+| 8 | Learning-system design (the document's Phase II) | Lifecycle, priority heuristic, competence model, experiment protocol | after acknowledgement |
 | 9 | Gamification rules (the document's Phase III) | Operational definitions and safeguards, if stage 5 needs revising by them | |
 
 Stages 1–6 are the software. The document's own Phase IV–VI work is largely
@@ -135,9 +135,132 @@ preflight stops a configuration that would be unsafe for real learners. Report
 anything that looked wrong, especially anything the export claims to include that you
 cannot find in it.
 
-**Next milestone (on your acknowledgement):** stage 7 — learner development, the
-document's Phase I: the learner model, the five dimensions, the five processes, the
-technique groups, and a personal protocol built from them.
+**Milestone after this:** stage 7 — learner development, the document's Phase I:
+the learner model, the five dimensions, the five processes, the technique groups, and
+a personal protocol built from them.
+
+## Stage 7 — learner development, the document's Phase I
+
+Stages 1–6 built a place to keep evidence. Stage 7 is the first stage about the
+person producing it: what the diagnostic actually said, what is still unknown, and
+what to do about the gaps. Everything here is under **Development** in the product.
+
+Four rules decide the shape of it, and the tests exist because each one is easier to
+break than to keep.
+
+### A hypothesis is not a finding
+
+The instrument reported scores. It did not report conclusions, and the page refuses
+to present one as the other. Each of the ten areas — five dimensions, five
+processes — carries either a recorded claim or an explicit statement that it is
+unmeasured, and each claim shows:
+
+- what the learner wrote, and why it was worth writing;
+- what would **support** it and what would **contradict** it, fixed before evidence
+  arrives;
+- a confidence label that is *computed* from the evidence actually present —
+  `none`, `low`, `moderate`, `high` — with the reason printed beside it.
+
+The policy is a policy, not a psychometric result, and it says so: a supplied score
+alone is `low`; a score plus one kind of recorded behaviour is `moderate`; a score
+plus two, or three behavioural kinds without one, is `high`. When new evidence
+arrives the label recomputes by itself. That is the document's *"update it after
+practice"*, implemented literally rather than as an instruction to be obeyed.
+
+Marking a claim `supported` requires a sentence saying what moved it. Without one it
+is a conclusion nobody can review.
+
+### Self-management gets a baseline, not a percentage
+
+The diagnostic never scored it, and the document is explicit: establish a
+behavioural baseline *"without inventing a percentage."* The product therefore asks
+for nine statements on a four-point frequency scale and one **timed observation** —
+planned minutes, actual minutes, minutes from intending to start to starting,
+interruptions, re-entry time, and whether the objective was met.
+
+What comes back is prose and counts:
+
+> 3 of 9 statements were answered 'most days' or 'every day'; 1 was answered
+> 'never'. … In the observed session you planned 40 minutes, worked 25, started 18
+> minutes after intending to, and were interrupted 2 time(s) … The objective was not
+> met. No score is calculated from these answers, by design.
+
+There is no score column in the database, no percentage in the payload, and a test
+asserts the `%` character never appears. A second baseline compares itself with the
+first in words, which is the only comparison nine opinions can honestly support.
+
+### The curriculum covers every topic, and proves it
+
+Twenty-four lessons carry the document's fifty-eight topics — every one, exactly
+once — across technique groups A–I, plus the five dimensions and five processes.
+Each lesson has the eight things the document asks for: a plain-language model,
+when to use it, when not to, a worked example, an exercise, how to judge the result,
+the common traps, and a retrieval check for a later session.
+
+The partition is a test, not a claim. `test_every_declared_topic_is_covered_exactly_once`
+fails if a topic is dropped or claimed twice, so "all topics covered" survives the
+next edit to the file.
+
+### Nine names, no invented definitions
+
+The source material names AIM, Bear Hunter System, VPReFRE criteria, GRINDE maps,
+PEER-Peer, OFF-rest timing, the survive-and-thrive filter, order control and the
+Huddle framework — and defines none of them. Each is listed as **undefined**, with
+the learning problem it appears to address and an openly supported alternative that
+can be used today. There is no field for a definition, so a fabricated one has
+nowhere to live, and a test asserts the field stays absent.
+
+### The protocol, and the plan to test it
+
+The personal protocol takes the twelve components the document lists — preparation,
+time-boxed priming, encoding, reference-note rules, retrieval and error correction,
+review scheduling, overlearning criteria, attention and recovery, reflection, the
+weekly audit, the monthly review, and how to compare techniques — plus one worked
+example for each of the four material types: factual, conceptual, procedural and
+application-heavy.
+
+Nothing is prefilled. A protocol written by the assistant would be the assistant's.
+
+Experiments carry the honesty rule into the interface: an outcome of `supported` or
+`no_change` is refused below five comparable cases, with a message that says why.
+Below that threshold the observation is still recorded — as `weak_signal`, because it
+is worth keeping and it is not a conclusion.
+
+### The Phase I gate
+
+`GET /api/development/gate` reports the seven deliverables and what is outstanding
+against each. It does not lock anything: work happens in any order, and a locked
+screen would be a worse teacher than a list.
+
+One requirement is deliberately hard to satisfy. *"Every supplied diagnostic score is
+explained"* would be vacuously true for a learner who supplied none, so the gate also
+requires that at least one score exists. A learner without diagnostic results has a
+real gap, and the gate says so rather than passing them.
+
+### Exercise — stage 7
+
+1. Open **Development → Learner model**. Without a diagnostic loaded, every area
+   reads *Not measured*. Record a claim for Retrieval; note that confidence is
+   `none` and says why.
+2. Record the self-management baseline. Search the response for a score. Then answer
+   it a second time with different answers and read the comparison — it is prose,
+   because nine opinions cannot support a number.
+3. Open **Curriculum → Named methods** and confirm all nine read *undefined*. Try to
+   find a definition anywhere in the payload; there is none.
+4. Work through one lesson: mark it studied, then practised, then submit the retrieval
+   check having ticked only some criteria. It should not pass. Tick the rest and
+   submit again.
+5. Design an experiment with a measure, then try to record the outcome as `supported`
+   with a sample size of one. Read the refusal, then record it as `weak_signal`.
+
+**How it is assessed:** pass means no area invents a score, self-management has no
+number anywhere, every named method is still undefined, a retrieval check that misses
+a criterion does not pass, and the gate reports outstanding work honestly. Report
+anything that looked like a conclusion the evidence does not carry.
+
+**Next milestone (on your acknowledgement):** stage 8 — the document's Phase II, a
+learning-system design: the fourteen-step lifecycle, a priority heuristic, a
+competence model and an experiment protocol.
 
 ## Stage 5 — quests, an idempotent XP ledger, seasons
 

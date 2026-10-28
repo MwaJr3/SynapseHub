@@ -32,6 +32,7 @@ decaying, what is weak, and — with a reason attached — what to do next.
 | AI tutor | Grounded retrieval works with no model at all. The streamed conversation appears only when a model is configured, and says so honestly when it is not. |
 | Provenance | Every piece of material records source, author, licence, attribution and retrieval date; a licence gate decides full use / reference only / refuse. |
 | Quests and XP | Seven quests whose evidence is real recorded work; an append-only ledger that stores the factors behind each award; seasons derived from the clock; diminishing returns, a daily cap and a rest pause instead of a streak. |
+| Learner development | The document's Phase I, built: a provisional learner model whose confidence is computed from evidence rather than asserted, a self-management baseline with **no score in it at all**, a 24-lesson curriculum covering all 58 named topics (asserted by test), nine named methods left deliberately undefined, a personal protocol with all twelve sections, experiments that refuse to conclude below five cases, and a gate that reports what is outstanding. |
 
 ## The learner profile (Project LIFESYSTEM)
 

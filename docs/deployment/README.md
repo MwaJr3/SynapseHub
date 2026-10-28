@@ -1,9 +1,10 @@
 # Deployment is paused — no project in this repository deploys
 
-**State as of 2026-10-28: no project deploys.** The nine Vercel projects were removed
-from the repository on the owner's instruction — *"Remove them from Vercel first, we'll
-redeploy them later."* The code, tests and folder layout of every project are untouched.
-What is gone is the deployment wiring that made them look shippable.
+**State as of 2026-10-28: nothing in this repository deploys.** The nine project-level
+Vercel configurations were removed on the owner's instruction — *"Remove them from Vercel
+first, we'll redeploy them later."* A root configuration added by the connected-workspace
+work was removed on the same reasoning. The code, tests and folder layout are untouched;
+what is gone is the deployment wiring that made any of it look shippable.
 
 ## What was removed
 
@@ -12,6 +13,9 @@ What is gone is the deployment wiring that made them look shippable.
 | `projects/*/backend/vercel.json` | 8 | The Vercel Python runtime config for each product API |
 | `projects/mysul/mwangala-portfolio/vercel.json` | 1 | SPA fallback + rewrite for the site |
 | `docs/DEPLOYMENT_TARGETS.md` | 1 | Vercel project names, root directories, Supabase schemas, env table |
+| `vercel.json` (repository root) | 1 | Whole-repository deploy: `api/index.py` function, SPA rewrites, `/api` no-store |
+| `.vercelignore` | 1 | Upload exclusions for that deploy; its anchor bug once dropped site sources |
+| `scripts/check-vercel-sources.mjs` | 1 | CI guard that the above kept required sources in the payload |
 
 Private data, no secrets, and no credentials were removed by this — the `.env.example`
 files never named a deployment target, and no key was ever committed. What is lost is
@@ -23,17 +27,23 @@ only the machine-readable link between a folder and a hosted project.
 > deployed, folders can be reorganised and each project repointed once, deliberately,
 > when it is redeployed.
 
-## The one root config
+## The root config that came and went
 
-A single `vercel.json` at the repository root was added on 2026-10-28, after the strip,
-by the connected-workspace work (`api/index.py`, `backend/synapsehub`, `packages/synapse-client`).
-It deploys **the repository root site and its API as one unit** — it is not a
-reinstatement of the nine project deployments, and no paused project gained a config
-back. The registry test therefore checks the manifests *inside projects*, not at the root.
+The connected-workspace work added a `vercel.json` at the repository root. It was kept
+through the restructure merge on the argument that it deployed the root site and its
+API as one unit rather than reinstating a paused project. **It has since been removed
+too**, on the owner's instruction, along with `.vercelignore` and the
+`scripts/check-vercel-sources.mjs` guard that existed only to protect that payload.
 
-If the connected workspace is taken down too, delete the root config and the
-`.vercelignore` alongside it; `scripts/check-vercel-sources.mjs` is the regression that
-keeps that file list honest, and it fails loudly if a required source is excluded.
+The distinction that survived: a root config deploys *the whole repository* as one
+project, which is a larger claim than any single project's wiring, not a smaller one.
+`src/registry.test.ts` checks every registered project **and the repository root**, so
+re-adding one anywhere fails a test rather than being discovered on a bill.
+
+What the removal did not touch: `api/index.py` (the ASGI entry point),
+`backend/synapsehub/`, `packages/synapse-client/`, the `/synapsehub` route, or any
+test. The deployment attempt recorded in `docs/SYNAPSEHUB_RELEASE.md` is history; the
+code it packaged still runs locally, which is where it is exercised.
 
 ## What still exists, deliberately
 
