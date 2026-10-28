@@ -37,7 +37,7 @@ async def probe(cloud=False, ollama=False, generate=False):
             model = os.getenv('OLLAMA_MODEL', '')
             if not url or not model:
                 raise ValueError('Set OLLAMA_URL and OLLAMA_MODEL; no model endpoint is assumed.')
-            key = os.getenv('OLLAMA_API_KEY', '')
+            key = os.getenv('OLLAMA_LOCAL_API_KEY', '')
             tags = await client.get(f'{url}/api/tags', headers={'Authorization': f'Bearer {key}'} if key else {})
             tags.raise_for_status()
             names = {row.get('name', '') for row in tags.json().get('models', [])}

@@ -161,4 +161,48 @@ describe('authenticated cloud workflows', () => {
       'Account-only task',
     );
   });
+  it('selects cloud explicitly and requires fresh consent after switching providers', async () => {
+    const user = userEvent.setup();
+    const id = '22222222-2222-4222-8222-222222222222';
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(
+        json([{ id, title: 'Cloud selection fixture', pages: 1 }]),
+      )
+      .mockResolvedValueOnce(
+        json({
+          mode: 'generated',
+          evidence: [],
+          claims: [],
+          message: 'No matching evidence in selected sources.',
+        }),
+      );
+    renderPanel();
+    await user.click(screen.getByRole('button', { name: 'Refresh library' }));
+    await user.click(
+      await screen.findByRole('checkbox', { name: /Cloud selection fixture/ }),
+    );
+    await user.type(screen.getByLabelText('Research question'), 'Voltage');
+    await user.click(screen.getByRole('checkbox', { name: /Allow sending/ }));
+    await user.selectOptions(
+      screen.getByLabelText('Inference provider'),
+      'cloud',
+    );
+    expect(
+      screen.getByRole('checkbox', { name: /Allow sending/ }),
+    ).not.toBeChecked();
+    expect(
+      screen.getByRole('button', { name: 'Generate cited answer' }),
+    ).toBeDisabled();
+    await user.click(screen.getByRole('checkbox', { name: /Allow sending/ }));
+    await user.click(
+      screen.getByRole('button', { name: 'Generate cited answer' }),
+    );
+    await screen.findByText('No matching evidence in selected sources.');
+    const init = vi.mocked(fetch).mock.calls[1]![1]!;
+    expect(JSON.parse(init.body as string)).toMatchObject({
+      provider: 'cloud',
+      generate: true,
+      consent: true,
+    });
+  });
 });

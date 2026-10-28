@@ -35,7 +35,7 @@ def test_probe_rejects_email_verification_disabled(monkeypatch):
 def test_probe_requires_installed_model_and_sends_server_only_key(monkeypatch):
     monkeypatch.setenv('OLLAMA_URL', 'https://ollama.test')
     monkeypatch.setenv('OLLAMA_MODEL', 'model:4b')
-    monkeypatch.setenv('OLLAMA_API_KEY', 'synthetic-private-key')
+    monkeypatch.setenv('OLLAMA_LOCAL_API_KEY', 'synthetic-private-key')
     def handler(req):
         assert req.headers['authorization'] == 'Bearer synthetic-private-key'
         return httpx.Response(200, json={'models': [{'name': 'other:latest'}]})

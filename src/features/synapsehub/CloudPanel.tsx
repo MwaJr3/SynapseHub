@@ -30,6 +30,7 @@ export function CloudPanel({
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState<Answer | null>(null);
   const [consent, setConsent] = useState(false);
+  const [provider, setProvider] = useState<'' | 'cloud'>('');
   const [pdf, setPdf] = useState<string>('');
   const objectUrl = useRef<string>('');
   const requestLock = useRef(false);
@@ -437,6 +438,27 @@ export function CloudPanel({
               by the server.
             </p>
             <label>
+              Inference provider
+              <select
+                aria-label="Inference provider"
+                value={provider}
+                onChange={(e) => {
+                  setProvider(e.target.value as '' | 'cloud');
+                  setConsent(false);
+                  setAnswer(null);
+                }}
+              >
+                <option value="">Existing local / configured service</option>
+                <option value="cloud">Ollama Cloud · gemma4:31b</option>
+              </select>
+            </label>
+            {provider === 'cloud' && (
+              <p>
+                Selected passages and your question will leave the API host and
+                be sent to Ollama Cloud. No local-to-cloud fallback occurs.
+              </p>
+            )}
+            <label>
               <input
                 type="checkbox"
                 checked={consent}
@@ -456,7 +478,15 @@ export function CloudPanel({
                 onClick={() => {
                   setAnswer(null);
                   void run(async () => {
-                    setAnswer(await api.ask(question, chosen, true, consent));
+                    setAnswer(
+                      await api.ask(
+                        question,
+                        chosen,
+                        true,
+                        consent,
+                        provider || undefined,
+                      ),
+                    );
                     setMessage(
                       'AI response received. Review every claim against its quote.',
                     );

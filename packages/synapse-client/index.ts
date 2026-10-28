@@ -119,11 +119,18 @@ export class SynapseClient {
     source_ids: string[],
     generate: boolean,
     consent: boolean,
+    provider?: 'local' | 'cloud',
   ): Promise<Answer> {
     return (
       await this.request('/ask', {
         method: 'POST',
-        body: JSON.stringify({ question, source_ids, generate, consent }),
+        body: JSON.stringify({
+          question,
+          source_ids,
+          generate,
+          consent,
+          ...(provider ? { provider } : {}),
+        }),
       })
     ).json();
   }

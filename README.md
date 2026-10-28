@@ -291,3 +291,10 @@ environment.
 - No learning-outcome, adoption or performance metrics are claimed because none have been measured.
 - The contact form requires a configured real endpoint; email delivery and spam protection are that endpoint's responsibility.
 - Automated visual regression and end-to-end browser testing are not configured for this portfolio.
+
+### Ollama Cloud setup
+
+The workspace now offers Ollama Cloud (`gemma4:31b`) alongside the existing local
+adapter. See [server-only key setup, UI selection and real-request smoke command](docs/OLLAMA_CLOUD.md).
+The live smoke attempt was network-blocked in this sandbox; no real model reply
+has been received or fabricated.

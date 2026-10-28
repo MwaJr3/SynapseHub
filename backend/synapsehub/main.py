@@ -74,7 +74,7 @@ def rate_limit(token, kind, limit):
 
 @app.get('/api/health')
 def health():
-    return {'status': 'ok', 'cloud_configured': bool(os.getenv('SUPABASE_URL') and os.getenv('SUPABASE_PUBLISHABLE_KEY')), 'ai_configured': bool(os.getenv('OLLAMA_URL') and os.getenv('OLLAMA_MODEL')), 'max_pdf_bytes': MAX_BYTES}
+    return {'status': 'ok', 'cloud_configured': bool(os.getenv('SUPABASE_URL') and os.getenv('SUPABASE_PUBLISHABLE_KEY')), 'ai_configured': bool(os.getenv('OLLAMA_URL') and os.getenv('OLLAMA_MODEL')), 'max_pdf_bytes': MAX_BYTES, 'ollama_cloud_configured': bool(os.getenv('OLLAMA_API_KEY', '').strip())}
 
 
 @app.get('/api/workspace')
@@ -144,6 +144,6 @@ async def ask(body: AskRequest, gateway=Depends(authenticated)):
     # Defense in depth: reject, not just hide, an adapter returning excluded sources.
     if any(str(row['document_id']) not in selected for row in evidence):
         raise HTTPException(502, 'Retrieval returned an excluded source; answer blocked.')
-    claims = await generate_answer(body.question, evidence) if body.generate and evidence else []
+    claims = await generate_answer(body.question, evidence, provider=body.provider) if body.generate and evidence else []
     return {'mode': 'generated' if body.generate else 'evidence', 'evidence': evidence, 'claims': claims,
             'message': 'No matching evidence in selected sources.' if not evidence else ('AI claims require your review; quote validation is not proof of entailment.' if body.generate else 'Retrieved passages, not an AI-generated answer.')}

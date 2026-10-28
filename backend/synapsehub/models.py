@@ -80,6 +80,7 @@ class SyncRequest(StrictModel):
 class AskRequest(StrictModel):
     question: str = Field(min_length=1, max_length=2000)
     source_ids: list[UUID] = Field(min_length=1, max_length=50)
+    provider: Literal['local', 'cloud'] | None = None
     generate: bool = False
     consent: bool = False
 
