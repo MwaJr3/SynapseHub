@@ -25,9 +25,10 @@ collection that grows that way should not be spread through a website's source
 tree, so it was given one entry point (`src/index.ts`), one alias (`@challenges`),
 and no imports from the application. The site consumes it; it does not own it.
 
-The split into its own repository is prepared and documented in
-[`docs/branch-splits.md`](../docs/branch-splits.md). It has **not** been performed:
-a branch cannot be created from the session that wrote this.
+This collection also exists on its own branch, `split/challenges`, cut from `main`
+on 2026-10-28 and verified by cloning that branch alone and running its suite
+(3 files, 9 tests). The arrangement, and what a full extraction still requires, is in
+[`docs/branch-splits.md`](../docs/branch-splits.md).
 
 ## Using it
 

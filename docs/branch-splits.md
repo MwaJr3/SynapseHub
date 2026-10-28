@@ -7,15 +7,41 @@ Two collections were asked to live on their own branches:
 | **CBU assignments** | `projects/cbu-assignments/` | Four separate coursework projects with their own tests, build files and CI workflow. Nothing else in the repository imports them. |
 | **Challenge prototypes** | `challenges/` | Sixty prototypes today, expected to pass sixty and gain real backends. A collection that grows that way should not live inside a website's source tree. |
 
-## Status: prepared, not performed
+## Status: cut and published (2026-10-28)
 
-Both collections are now self-contained. **The branches have not been created**,
-because the session that prepared them cannot create or push a branch — it is
-pinned to one working branch, and a second branch it created would not be tracked.
+| Branch | Head | Contents | Standalone test |
+| --- | --- | --- | --- |
+| `split/challenges` | `ee0b7a1` | 19 files — `src/`, `package.json`, `vitest.config.ts`, README | 3 files / 9 tests pass |
+| `split/cbu-assignments` | `7d82153` | 208 files — the four coursework projects, tests, workflow | 13 tests pass |
 
-What has been done instead is the part that needed judgement: making each
-collection a unit with no dangling references, so that cutting the branch is a
-mechanical command rather than a refactor.
+Both were cut with `scripts/split-branches.sh` from `main` after PR #43 merged, and
+both were checked the way a stranger would: cloned from GitHub on their own branch,
+dependencies installed, suite run. Nothing was taken on trust from the working copy.
+
+```sh
+git clone --branch split/challenges --single-branch https://github.com/MwaJr3/SynapseHub.git
+cd SynapseHub && npm install react@19 react-dom@19 && npm test   # 3 files, 9 tests
+
+git clone --branch split/cbu-assignments --single-branch https://github.com/MwaJr3/SynapseHub.git
+cd SynapseHub && pytest tests                                     # 13 passed
+```
+
+The branches are snapshots, not forks: they hold the history that touched their
+directory — two commits for the collection, seven for CBU — because everything
+before the extraction lived at other paths. The full history stays on `main`.
+
+**`main` still contains both collections.** Cutting the branch is not the same as
+moving the code out: the site imports `challenges/` through `@challenges`, so
+deleting it breaks the portfolio. That removal is a separate decision, listed below.
+Until it happens, both branches exist alongside the copy on `main`.
+
+### What the branch cut left behind, on purpose
+
+`main` still claims this code lives here, in `company-platform/src/content/evidence.ts`
+(`inRepoPath: 'challenges'`) and in `projects.json`. Two tests are written to fail at
+the moment a collection leaves the repository without those claims being rewritten:
+`company-platform/tests/evidence-paths.test.ts` and the registry path check. They do
+not fire today, because nothing has been removed from `main`.
 
 ## What "self-contained" was verified to mean
 
@@ -62,25 +88,23 @@ two claims have been rewritten to say where the code went.
 
 ## The commands
 
-Once a session that may create branches is available:
+This is what was run, and what to run if either branch is ever re-cut:
 
 ```bash
 # 1. Work from a clean main.
 git switch main && git pull
 
 # 2. Cut each collection, with its history, into its own branch.
-git subtree split --prefix=challenges -b split/challenges
-git subtree split --prefix=projects/cbu-assignments -b split/cbu-assignments
-
-# 3. Publish them.
-git push origin split/challenges
-git push origin split/cbu-assignments
+./scripts/split-branches.sh --push
 ```
 
-`scripts/split-branches.sh` does the same thing with the safety checks that matter:
-it refuses to run on a dirty tree, refuses to reuse an existing branch, prints the
-commit count and size of each split, and **does not push** unless `--push` is
-given.
+The script refuses a dirty tree and an existing branch, prints the commit count and
+size of each split, and does not push without `--push`.
+
+It uses `git subtree split` when that is installed and falls back to replaying each
+commit's subtree through `git commit-tree` when it is not — `git subtree` and
+`git filter-branch` are both absent from the image this was prepared in, and the
+fallback was proved against a throwaway clone before it was used here.
 
 ### Afterwards
 
