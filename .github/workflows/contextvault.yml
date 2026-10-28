@@ -51,7 +51,7 @@ jobs:
       EMBEDDING_PROVIDER: mock
     steps:
       - uses: actions/checkout@v4
-      - name: Build and start the PostgreSQL, MinIO, app and worker stack
+      - name: Build and start the PostgreSQL, RustFS, app and worker stack
         run: |
           bash tests/stack/ci-report.sh docker compose config --quiet
           bash tests/stack/ci-report.sh docker compose up --build -d --wait --wait-timeout 300

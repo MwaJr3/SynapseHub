@@ -6,7 +6,7 @@ Run `npm install && npm run dev` in `contextvault/`. Embedded PGlite is a single
 
 ## Docker Compose
 
-The Compose stack uses PostgreSQL 16 with pgvector 0.8.1, MinIO, a one-time migration job, a Next.js app, and a separate ingestion worker. It requires Docker with Compose v2. The runtime image prunes development dependencies; `tsx` remains a production dependency for the TypeScript migration and worker entrypoints.
+The Compose stack uses PostgreSQL 16 with pgvector 0.8.1, RustFS 1.0.0 for S3-compatible storage, a one-time bucket setup and migration job, a Next.js app, and a separate ingestion worker. The previously referenced `minio/minio` and `minio/mc` Docker Hub images no longer pull; RustFS is a different S3-compatible server, not a drop-in on-disk migration of existing MinIO volumes. It requires Docker with Compose v2. The runtime image prunes development dependencies; `tsx` remains a production dependency for the TypeScript migration and worker entrypoints.
 
 ```bash
 cd contextvault
@@ -19,19 +19,19 @@ docker compose ps
 docker compose logs -f app worker
 ```
 
-The app is published only on `127.0.0.1:3000` by default; PostgreSQL and MinIO are not published to the host. `APP_PORT` and `APP_BIND_ADDRESS` can change the binding. Use a TLS-terminating reverse proxy and appropriate network controls before allowing remote access; production session cookies require HTTPS (browsers may make a localhost exception). Mock AI is the default and makes no paid calls.
+The app is published only on `127.0.0.1:3000` by default; PostgreSQL and RustFS are not published to the host. `APP_PORT` and `APP_BIND_ADDRESS` can change the binding. Use a TLS-terminating reverse proxy and appropriate network controls before allowing remote access; production session cookies require HTTPS (browsers may make a localhost exception). Mock AI is the default and makes no paid calls.
 
 On a fresh database volume, `scripts/init-postgres.sh` creates `contextvault_app` as `NOSUPERUSER NOBYPASSRLS`, grants table privileges through migration-owner default privileges, and keeps table ownership separate. The official PostgreSQL image's initialization user `cvmigrate` is a **superuser**; the migration job uses it to install the extension, schema, HNSW/GIN indexes and RLS policies. The app and worker receive only the runtime database credential and set user context for each tenant transaction. Protect the migration credential and do not use it in the app. Initialization scripts run only on a fresh PostgreSQL volume; editing `.env` does **not** rotate existing role passwords.
 
-This Compose setup is a starting point, **not a hardened production installation**. In particular, its app and worker use the MinIO root credentials to keep the example self-contained. For real deployments provision a separate bucket-scoped identity limited to the required object operations, restrict network access, use encrypted transport and managed secrets, and follow the operations and security guidance below. For a local OpenAI-compatible provider, `host.docker.internal` is mapped to the Docker host on Linux; the provider must accept connections from containers. `LOCAL_AI_API_KEY` and model settings are passed to both app and worker.
+This Compose setup is a starting point, **not a hardened production installation**. In particular, its app and worker use the RustFS root credentials to keep the example self-contained. For real deployments provision a separate bucket-scoped identity limited to the required object operations, restrict network access, use encrypted transport and managed secrets, and follow the operations and security guidance below. For a local OpenAI-compatible provider, `host.docker.internal` is mapped to the Docker host on Linux; the provider must accept connections from containers. `LOCAL_AI_API_KEY` and model settings are passed to both app and worker.
 
-`GET /api/health/live` is a dependency-free liveness check. `GET /api/health/ready` returns 200 only when PostgreSQL and the core schema/pgvector extension are available, otherwise a generic 503. The Compose app healthcheck uses readiness. **Readiness does not check MinIO, worker progress, or AI-provider availability**; monitor those separately. Idle database disconnects are handled by the connection pool, and the worker polls again after an outage.
+`GET /api/health/live` is a dependency-free liveness check. `GET /api/health/ready` returns 200 only when PostgreSQL and the core schema/pgvector extension are available, otherwise a generic 503. The Compose app healthcheck uses readiness. **Readiness does not check RustFS, worker progress, or AI-provider availability**; monitor those separately. Idle database disconnects are handled by the connection pool, and the worker polls again after an outage.
 
 Data persists in the `postgres_data` and `object_data` volumes. `docker compose down` stops and removes containers but retains those volumes. **`docker compose down --volumes` permanently deletes the database and stored objects**; use it only for disposable stacks. Back up and restore both together.
 
 ### Test a disposable Compose stack
 
-The CI workflow `.github/workflows/contextvault.yml` builds the stack and exercises a real PDF upload, separate worker, MinIO, citations, cross-user authorization, pgvector/HNSW, and RLS with the actual runtime role. It stops/restarts PostgreSQL, checks readiness and recovery without restarting the app or worker, then restarts services and checks persistence and object-deletion outbox processing.
+The CI workflow `.github/workflows/contextvault.yml` builds the stack and exercises a real PDF upload, separate worker, RustFS, citations, cross-user authorization, pgvector/HNSW, and RLS with the actual runtime role. It stops/restarts PostgreSQL, checks readiness and recovery without restarting the app or worker, then restarts services and checks persistence and object-deletion outbox processing.
 
 To run the smoke test manually on a **disposable** stack (it creates and deletes test accounts and objects, and must never target production):
 

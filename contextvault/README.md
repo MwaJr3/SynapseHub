@@ -33,7 +33,7 @@ docker compose up --build -d --wait
 # Register at http://localhost:3000; no shared demo is enabled.
 ```
 
-This starts PostgreSQL 16 + pgvector, MinIO, migrations, the app and a separate worker. The app is bound to localhost by default; mock AI makes no paid calls. `docker compose down` preserves data volumes; `docker compose down --volumes` deletes them. The example uses MinIO root credentials and is **not production-hardened**. See [deployment](docs/deployment.md) for security, readiness, tests, backups and production alternatives.
+This starts PostgreSQL 16 + pgvector, RustFS, migrations, the app and a separate worker. The app is bound to localhost by default; mock AI makes no paid calls. `docker compose down` preserves data volumes; `docker compose down --volumes` deletes them. The example uses RustFS root credentials and is **not production-hardened**. See [deployment](docs/deployment.md) for security, readiness, tests, backups and production alternatives.
 
 ## What is implemented
 
