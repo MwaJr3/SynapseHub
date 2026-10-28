@@ -505,10 +505,10 @@ SynapseHub/
 ├── sites/
 │   └── portfolio/              projects/mysul/mwangala-portfolio — the single
 │                               portfolio (the legacy one merged into it 2026-10-28)
-├── challenges/                 60 interactive prototypes, self-contained and
-│                               prepared for its own branch (docs/branch-splits.md)
+├── challenges/                 60 interactive prototypes, self-contained; also on
+│                               split/challenges (docs/branch-splits.md)
 ├── coursework/
-│   └── cbu-assignments/        prepared for its own branch (docs/branch-splits.md)
+│   └── cbu-assignments/        also on split/cbu-assignments (docs/branch-splits.md)
 ├── products/
 │   ├── company-platform/       the Next.js site that publishes the catalogue
 │   ├── workniche/
