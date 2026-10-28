@@ -168,7 +168,7 @@ export function discoverProjects(repoRoot) {
   if (has(repoRoot, 'src', ['App.tsx', 'main.tsx'])) {
     // The engine's own fixtures are test data with defects planted on purpose;
     // counting them as product defects would be a false positive by construction.
-    add('.', repoRoot, 'react-spa', ['apps', 'projects', 'company-platform', 'workniche', 'northstar-ux-engine']);
+    add('.', repoRoot, 'react-spa', ['apps', 'projects', 'company-platform', 'workniche', 'tools/northstar']);
   }
 
   // 4. Next.js products.

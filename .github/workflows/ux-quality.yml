@@ -29,8 +29,11 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit, component and scanner tests
+      - name: Unit, component and detector tests
         run: npm test
+
+      - name: UX engine tests (CLI, plugin, fixer)
+        run: npm run ux:test
 
       - name: UX engine repository scan (strict)
         run: npm run ux:scan -- --strict

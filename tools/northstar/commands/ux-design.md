@@ -1,6 +1,6 @@
 ---
 description: Write a UX specification before writing code — flows, states, hierarchy, copy, tokens, and the accessibility contract. Ends with an explicit approval gate; no implementation until the user approves.
-allowed-tools: Read, Glob, Grep, Write(northstar-ux-engine/docs/**), Bash(git status:*), Bash(node:*)
+allowed-tools: Read, Glob, Grep, Write(tools/northstar/docs/**), Bash(git status:*), Bash(node:*)
 ---
 
 # /ux-design

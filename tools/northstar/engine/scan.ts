@@ -4,8 +4,8 @@
  * docs/UX_ENGINE_REPO_AUDIT.md.
  *
  * Usage:
- *   npx vite-node scripts/ux-scan.ts           # scan + refresh the report
- *   npx vite-node scripts/ux-scan.ts --strict  # exit 1 when critical findings remain
+ *   npm run ux:scan             # scan + refresh the report
+ *   npm run ux:scan -- --strict # exit 1 when critical findings remain
  *
  * The scan is static source analysis; it cannot replace runtime keyboard,
  * screen-reader or viewport testing, and the report says so explicitly.
@@ -17,11 +17,11 @@ import { fileURLToPath } from 'node:url';
 import {
   scanRoot,
   type ScanTarget,
-} from '../src/features/ux-engine/scanner/walk';
-import { getRule } from '../src/features/ux-engine/rules';
-import type { ScanReport } from '../src/features/ux-engine/scanner/types';
+} from './scanner/walk';
+import { getRule } from './rules';
+import type { ScanReport } from './scanner/types';
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const strict = process.argv.includes('--strict');
 
 async function discoverTargets(): Promise<ScanTarget[]> {
@@ -76,7 +76,7 @@ function renderReport(reports: ScanReport[]): string {
   const lines: string[] = [
     '# UX engine repository audit',
     '',
-    `Generated ${generated} by \`npx vite-node scripts/ux-scan.ts\` from the Advanced UX/UI engine's static detectors.`,
+    `Generated ${generated} by \`northstar scan\` (\`npm run ux:scan\`) from Northstar's static detectors.`,
     '',
     `Scope: **${reports.length} frontends**, **${totalFiles} source files**, **${totalFindings} findings**.`,
     '',

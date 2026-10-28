@@ -39,7 +39,7 @@ test('the guard blocks commits, pushes and deploys', () => {
 });
 
 test('the guard allows the reads a review needs', () => {
-  for (const command of ['git status --porcelain', 'git diff HEAD', 'node northstar-ux-engine/bin/northstar.mjs audit .']) {
+  for (const command of ['git status --porcelain', 'git diff HEAD', 'node tools/northstar/bin/northstar.mjs audit .']) {
     assert.equal(run(command).status, 0, `${command} is allowed`);
   }
 });

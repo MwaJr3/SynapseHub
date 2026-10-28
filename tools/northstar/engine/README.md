@@ -1,13 +1,29 @@
-# Advanced UX/UI Engine
+# Northstar — the knowledge layer
 
-Pattern-driven design intelligence, interaction architecture and UX auditing,
-implemented from `Advanced_UX_UI_Engine_Blueprint.pdf`. The engine behaves like
-a senior product designer, interaction designer, accessibility specialist,
-design-systems architect and UX auditor working together — entirely in the
-browser, deterministically, with no external service calls.
+This directory is the TypeScript half of **Northstar**, the standalone UX/UI engine
+(`tools/northstar/`). It holds the design intelligence: 76 catalogued patterns, the
+executable rule catalogue, the constraint math, the token graph, the state machine and
+the static source detectors that run over every frontend in this repository.
 
-The interactive studio lives at **`/ux-engine`**
-(`src/pages/UXEnginePage.tsx`, components in `src/components/ux-engine/`).
+**It is not part of any website.** Until 2026-10-28 the same code also powered an
+interactive studio at `/ux-engine` inside the portfolio site. That page, its components
+and its tests were removed: the engine is a tool that audits and fixes projects, so it
+lives in `tools/` and is reached through the `northstar` command, not through a route.
+
+Two detector layers share this project and one command line:
+
+| Layer | Where | What it finds | Reached by |
+| --- | --- | --- | --- |
+| Severity-ranked rules | `../rules.mjs`, `../engine.mjs` | 27 source checks reported as P0–P3, with a fixer | `northstar audit`, `check`, `fix`, `watch` |
+| Static detectors | `scanner/`, `scan.ts` (this directory) | 15 detector families with file:line evidence, written to `docs/UX_ENGINE_REPO_AUDIT.md` | `northstar scan` |
+
+The two sets check different things — `rules.mjs` has `table-semantics`,
+`pagination-not-in-url` and `swallowed-error`, which the detectors do not; the detectors
+have heading order, document language, keyboard traps and scroll regions, which the
+rules do not. Both are needed, so neither was deleted; they are now one project with one
+entry point instead of two tools in two trees.
+
+Everything below describes this layer.
 
 ## Architecture
 
@@ -84,9 +100,9 @@ monorepo can be audited mechanically.
   the tooling directory itself is excluded so detector source literals never
   self-flag. Entry `index.html` documents are attached to each target as
   explicit extra files for the document-language detector.
-- `scripts/ux-scan.ts` — CLI (`npm run ux:scan`, `--strict` for CI) that
-  discovers every frontend root and regenerates
-  `docs/UX_ENGINE_REPO_AUDIT.md` with file:line evidence.
+- `scan.ts` — the scan layer (`northstar scan`, `npm run ux:scan`, `--strict` for CI)
+  that discovers every frontend root and regenerates `docs/UX_ENGINE_REPO_AUDIT.md`
+  with file:line evidence.
 - `scanner/repoScan.test.ts` — regression gate: the portfolio must stay
   finding-free, no frontend may regain a critical/major/high-confidence
   finding, and the low-confidence scroll-region inventory is pinned by
@@ -111,9 +127,9 @@ and the browser suite runs in `.github/workflows/e2e.yml`.
 ## Tests
 
 ```bash
-npx vitest run src/features/ux-engine      # engine, scanner and gate tests
-npx vitest run src/pages/UXEnginePage       # studio integration tests
-npm run ux:scan                             # regenerate the repository audit
+npx vitest run tools/northstar/engine   # detectors, rules, constraints, gate tests
+npm run ux:scan                         # regenerate the repository audit
+npm run ux:test                         # the CLI, plugin and fixer tests
 ```
 
 Coverage includes pattern/rule integrity, WCAG ratio math, state-machine

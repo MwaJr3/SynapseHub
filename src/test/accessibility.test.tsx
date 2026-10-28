@@ -30,7 +30,6 @@ const routes: Array<[string, string]> = [
   ['/journey', 'journey'],
   ['/approach', 'approach'],
   ['/operations', 'operations'],
-  ['/ux-engine', 'UX engine studio'],
   ['/contact', 'contact'],
   ['/system', 'personal operating system'],
   ['/unknown-route', '404'],

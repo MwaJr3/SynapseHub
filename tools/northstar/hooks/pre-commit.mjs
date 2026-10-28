@@ -120,7 +120,7 @@ function main() {
       process.stderr.write(`  ${finding.severity} ${finding.project} ${finding.file}:${finding.line} ${finding.title}\n`);
     }
     process.stderr.write(
-      '\nThese need a decision, not a substitution. Run `node northstar-ux-engine/bin/northstar.mjs audit .`\n' +
+      '\nThese need a decision, not a substitution. Run `node tools/northstar/bin/northstar.mjs audit .`\n' +
         'for the full rationale and fix for each one. Skip this gate for one commit with\n' +
         '`NORTHSTAR_SKIP=1 git commit ...` if you are committing something unrelated.\n',
     );

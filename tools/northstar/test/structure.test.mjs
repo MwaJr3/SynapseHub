@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..');
-const repoRoot = path.resolve(root, '..');
+const repoRoot = path.resolve(root, '../..');
 
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), 'utf8');
 

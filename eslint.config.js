@@ -62,9 +62,15 @@ export default tseslint.config(
     },
   },
   {
+    // The scanner is a CLI: stdout is where a CLI reports. Its tests assert on the
+    // report it writes, not on the console.
+    files: ['tools/northstar/engine/scan.ts'],
+    rules: { 'no-console': 'off' },
+  },
+  {
     // The UX engine is a Node CLI and a plugin: its modules run in Node (process,
     // fs, timers) and print to stdout, which is how the CLI reports anything.
-    files: ['northstar-ux-engine/**/*.mjs'],
+    files: ['tools/northstar/**/*.mjs'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',

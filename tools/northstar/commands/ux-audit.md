@@ -18,7 +18,7 @@ Two modes, chosen by the user and never assumed:
 1. **Pick the target.** A screen, a component, a project, or everything. If the user
    did not say, audit the project they are working in and say which one.
 2. **Run the engine.**
-   `node northstar-ux-engine/bin/northstar.mjs audit <path> --out docs/ux/audit-<name>.md`
+   `node tools/northstar/bin/northstar.mjs audit <path> --out docs/ux/audit-<name>.md`
    Quote its counts exactly. If the path is the repository root, the report covers
    every project the engine can find and labels the kinds of UI it saw.
 3. **Do the part the engine cannot.** For each screen in scope, walk the manual

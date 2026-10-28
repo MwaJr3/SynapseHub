@@ -6,7 +6,7 @@ description: Use when reviewing, designing, auditing or restyling any interface 
 # Northstar UX
 
 This repository ships its UX engine as a Claude Code plugin at
-`northstar-ux-engine/`. This file exists so the engine is reachable through the
+`tools/northstar/`. This file exists so the engine is reachable through the
 repository's own `.agents/skills/` convention, not only through a plugin install.
 
 ## Commands
@@ -18,13 +18,13 @@ repository's own `.agents/skills/` convention, not only through a plugin install
 | `/ux-audit` | What is wrong with this interface | P0–P3, top three first; fixes only what is chosen |
 | `/restyle` | The product looks generic or inconsistent | one axis at a time, writes `DESIGN.md` |
 
-Full definitions: `northstar-ux-engine/commands/`.
+Full definitions: `tools/northstar/commands/`.
 
 ## Skills
 
 `intent-discovery`, `information-hierarchy`, `state-completeness`, `form-ux`,
 `feedback-and-affordance`, `ux-auditor`, `design-system`, `visual-character`,
-`responsive-design` — under `northstar-ux-engine/skills/`. Read the one that matches the
+`responsive-design` — under `tools/northstar/skills/`. Read the one that matches the
 task before writing code; each names the patterns it owns.
 
 ## The checker
@@ -33,12 +33,12 @@ task before writing code; each names the patterns it owns.
 npm run ux:audit              # whole repository → stdout + docs/ux/audit-repository.md
 npm run ux:check              # exit 1 if anything P1 or worse exists (CI)
 npm run ux:test               # the engine's own 41 tests
-node northstar-ux-engine/bin/northstar.mjs audit apps/tessera --out docs/ux/audit-tessera.md
+node tools/northstar/bin/northstar.mjs audit apps/tessera --out docs/ux/audit-tessera.md
 ```
 
 Every finding carries a file, a line, a snippet and — for contrast — the measured
 ratio. Where the engine cannot decide from source it stays silent; 48 of the 76
-patterns in `northstar-ux-engine/PATTERNS.md` are manual by design.
+patterns in `tools/northstar/PATTERNS.md` are manual by design.
 
 ## The rule that matters
 

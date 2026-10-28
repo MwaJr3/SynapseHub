@@ -1,8 +1,23 @@
 # Northstar UX Engine
 
-A Claude Code plugin that reviews, designs, audits and restyles interfaces — with a
-rule that most design tooling breaks: **it does not claim to have seen anything it has
-not seen.**
+**One project, one command line.** Northstar reviews, designs, audits and restyles
+interfaces, runs over every project in this repository, and fixes what it can prove.
+It is standalone: no website embeds it, no project imports it. Only this directory
+contains engine code.
+
+Merged on 2026-10-28 from two tools that had grown apart — `northstar-ux-engine/` (this
+CLI and plugin) and `src/features/ux-engine/` (a TypeScript pattern library and
+detector suite with an interactive studio inside the portfolio site). The studio was
+removed from the site; the TypeScript half moved here as `engine/`. The two check sets
+are complementary and both are kept, behind one entry point:
+
+| Layer | Where | Reached by |
+| --- | --- | --- |
+| Severity-ranked rules (27 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
+
+It holds to a rule most design tooling breaks: **it does not claim to have seen
+anything it has not seen.**
 
 Every finding carries a file, a line, a quoted snippet and, where a number exists, the
 number. Where a UX problem cannot be settled from source, the engine says so and lists
@@ -31,12 +46,17 @@ step.
 To use the checker without the plugin:
 
 ```bash
-node northstar-ux-engine/bin/northstar.mjs audit .            # whole repository
-node northstar-ux-engine/bin/northstar.mjs audit apps/tessera # one project
-node northstar-ux-engine/bin/northstar.mjs check . --min P1   # CI gate, exits 1
-node northstar-ux-engine/bin/northstar.mjs review . --ref HEAD~1
-node northstar-ux-engine/bin/northstar.mjs patterns          # the pattern index
+node tools/northstar/bin/northstar.mjs audit .            # whole repository, P0-P3
+node tools/northstar/bin/northstar.mjs audit apps/tessera # one project
+node tools/northstar/bin/northstar.mjs scan               # the detector layer + report
+node tools/northstar/bin/northstar.mjs check . --min P1   # CI gate, exits 1
+node tools/northstar/bin/northstar.mjs fix .              # apply the mechanical fixes
+node tools/northstar/bin/northstar.mjs review . --ref HEAD~1
+node tools/northstar/bin/northstar.mjs patterns          # the pattern index
 ```
+
+`scan` needs `vite-node` (a devDependency, because the detectors are TypeScript).
+Every other verb runs on Node's standard library alone.
 
 Node 20 or newer. No dependencies, no network access, no telemetry.
 

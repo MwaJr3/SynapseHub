@@ -30,7 +30,7 @@ A `DESIGN.md`-shaped inventory (see `templates/DESIGN.md`):
 ## Method
 
 - Count with the engine and with `grep`, not by memory:
-  `node northstar-ux-engine/bin/northstar.mjs audit <path> --json /tmp/map.json`
+  `node tools/northstar/bin/northstar.mjs audit <path> --json /tmp/map.json`
   gives per-rule counts; inspect the stylesheet for the raw values.
 - Read the stylesheet top to bottom once. Note where the token block ends and
   component styles begin — that boundary is usually where the system stops.

@@ -6,13 +6,21 @@
  * make the engine a background fixer rather than a report someone has to remember
  * to read:
  *
- *   audit   [path]  scan one project or the whole repository, write a report
+ *   audit   [path]  severity-ranked P0-P3 audit of one project or the repository
+ *   scan            the static detector layer over every frontend, with evidence
  *   review  [path]  scan only the files changed against a git ref (read-only)
  *   check   [path]  exit non-zero if any defect at or above a severity exists
  *   patterns        print the pattern index the skills reference
  *   fix     [path]  apply the mechanical fixes, verify each one, refuse the rest
  *   watch   [path]  re-audit on save; with --fix, re-fix too
  *   hooks           install the pre-commit gate that runs `fix` then `check`
+ *
+ * Two detector layers, one command line. `audit`/`check`/`fix`/`watch` are the
+ * severity-ranked layer in `engine.mjs`/`rules.mjs`. `scan` is the source-detector
+ * layer in `engine/` (TypeScript, run through vite-node), which writes the
+ * file:line evidence report the CI gate diffs. They check different things and
+ * both are needed; before this merge they were two separate tools in two trees,
+ * which is how two of them once ended up writing the same report file.
  *
  * No dependency outside Node's standard library, so the plugin works in a fresh
  * clone with no install step and no network.
@@ -214,7 +222,28 @@ function writeIfRequested(file, contents) {
   fs.writeFileSync(file, contents, 'utf8');
 }
 
+async function runScan(args) {
+  // The static detectors are TypeScript; vite-node runs them without a build step.
+  // Resolve the local binary first so the plugin does not reach for the network.
+  const local = path.join(process.cwd(), 'node_modules', '.bin', 'vite-node');
+  const binary = fs.existsSync(local) ? local : 'npx';
+  const argv = fs.existsSync(local)
+    ? ['tools/northstar/engine/scan.ts', ...args]
+    : ['--no-install', 'vite-node', 'tools/northstar/engine/scan.ts', ...args];
+  try {
+    execFileSync(binary, argv, { stdio: 'inherit', cwd: process.cwd() });
+    return 0;
+  } catch (error) {
+    if (error.status === 1) return 1;
+    throw new Error(
+      'the scan layer needs vite-node (a devDependency). Run `npm install`, then ' +
+        '`npx northstar scan`. Nothing else in the engine requires an install.',
+    );
+  }
+}
+
 async function main(argv) {
+  const rest = argv.slice(1);
   const options = parseArguments(argv);
 
   if (options.verb === 'patterns') {
@@ -236,6 +265,10 @@ async function main(argv) {
     writeIfRequested(options.out, text);
     if (!options.quiet) process.stdout.write(`${text}\n`);
     return 0;
+  }
+
+  if (options.verb === 'scan') {
+    return runScan(rest);
   }
 
   if (options.verb === 'hooks') {

@@ -12,7 +12,7 @@ with enough evidence that the reader can verify each one without asking you.
 1. Establish the target: a screen, a project, or the whole repository. If the request
    is ambiguous, audit the nearest project and say which one you chose.
 2. Run the engine for the mechanical checks:
-   `node northstar-ux-engine/bin/northstar.mjs audit <path>`
+   `node tools/northstar/bin/northstar.mjs audit <path>`
    Treat its output as data, not as your opinion. Quote its counts exactly.
 3. Read the source for what the engine cannot see: state coverage, focus order,
    heading structure, copy, error paths, overflow at 320px.

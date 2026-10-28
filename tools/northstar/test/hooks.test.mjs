@@ -30,7 +30,7 @@ test('installing writes an executable pre-commit hook that shells out to the eng
 
   const script = fs.readFileSync(hookPath(directory), 'utf8');
   assert.match(script, /managed by the Northstar UX engine/);
-  assert.match(script, /northstar-ux-engine\/hooks\/pre-commit\.mjs/);
+  assert.match(script, /tools\/northstar\/hooks\/pre-commit\.mjs/);
   assert.match(script, /NORTHSTAR_SKIP/);
   assert.ok(fs.statSync(hookPath(directory)).mode & 0o111, 'the hook is executable');
 

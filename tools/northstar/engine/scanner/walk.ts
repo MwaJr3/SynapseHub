@@ -31,7 +31,7 @@ async function walk(root: string): Promise<string[]> {
     const full = join(root, entry.name);
     // The scanner itself is tooling, not UI: its source contains detector
     // pattern literals that would otherwise trip the same detectors.
-    if (full.includes(`${sep}ux-engine${sep}scanner${sep}`)) continue;
+    if (full.includes(`${sep}${'northstar'}${sep}engine${sep}`)) continue;
     if (entry.isDirectory()) {
       files.push(...(await walk(full)));
     } else if (

@@ -30,7 +30,7 @@ If the range is empty, say so and stop — a review of nothing is not a clean re
    lockfiles and snapshots. If a change is backend-only, say the review is
    out of scope and name what you would need.
 2. **Run the engine on the changed files** rather than guessing:
-   `node northstar-ux-engine/bin/northstar.mjs review . --ref HEAD` (or the path to
+   `node tools/northstar/bin/northstar.mjs review . --ref HEAD` (or the path to
    the plugin's `bin/northstar.mjs` when installed elsewhere). Quote its findings;
    do not restate them as your own view.
 3. **Read the diff itself** for the things a rule cannot prove: does the new state

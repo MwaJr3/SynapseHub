@@ -61,7 +61,7 @@ ${
   chain
     ? `"$(dirname "$0")/pre-commit.pre-northstar" "$@" || exit $?\n`
     : ''
-}exec node "$(git rev-parse --show-toplevel)/northstar-ux-engine/hooks/pre-commit.mjs" "$@"
+}exec node "$(git rev-parse --show-toplevel)/tools/northstar/hooks/pre-commit.mjs" "$@"
 `;
   fs.writeFileSync(hookPath, script, 'utf8');
   fs.chmodSync(hookPath, 0o755);

@@ -1,8 +1,8 @@
 # UX engine repository audit
 
-Generated 2026-10-28 by `npx vite-node scripts/ux-scan.ts` from the Advanced UX/UI engine's static detectors.
+Generated 2026-10-28 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
 
-Scope: **22 frontends**, **477 source files**, **84 findings**.
+Scope: **22 frontends**, **453 source files**, **84 findings**.
 
 ## Method and limitations
 
@@ -17,7 +17,7 @@ Scope: **22 frontends**, **477 source files**, **84 findings**.
 
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Portfolio website | 101 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Portfolio website | 77 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Company platform (Next.js) | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Vocal separator web app | 11 | 0 | 0 | 76 | 0 | 0 | 75 | 1 |
