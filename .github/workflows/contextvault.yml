@@ -53,11 +53,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build and start the PostgreSQL, MinIO, app and worker stack
         run: |
-          docker compose config --quiet
-          docker compose up --build -d --wait --wait-timeout 300
-          docker compose exec -T app node tests/stack/health.mjs up
+          bash tests/stack/ci-report.sh docker compose config --quiet
+          bash tests/stack/ci-report.sh docker compose up --build -d --wait --wait-timeout 300
+          bash tests/stack/ci-report.sh docker compose exec -T app node tests/stack/health.mjs up
       - name: Test ingestion, citations, storage and runtime-role RLS
-        run: docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs create
+        run: bash tests/stack/ci-report.sh docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs create
       - name: Test database outage and worker recovery without restarting containers
         run: |
           app=$(docker compose ps -q app)
@@ -65,10 +65,10 @@ jobs:
           app_restarts=$(docker inspect --format '{{.RestartCount}}' "$app")
           worker_restarts=$(docker inspect --format '{{.RestartCount}}' "$worker")
           docker compose stop db
-          docker compose exec -T app node tests/stack/health.mjs down
+          bash tests/stack/ci-report.sh docker compose exec -T app node tests/stack/health.mjs down
           docker compose start db
-          docker compose exec -T app node tests/stack/health.mjs up
-          docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs recover
+          bash tests/stack/ci-report.sh docker compose exec -T app node tests/stack/health.mjs up
+          bash tests/stack/ci-report.sh docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs recover
           test "$(docker inspect --format '{{.State.Running}}' "$app")" = true
           test "$(docker inspect --format '{{.State.Running}}' "$worker")" = true
           test "$(docker inspect --format '{{.RestartCount}}' "$app")" = "$app_restarts"
@@ -76,8 +76,8 @@ jobs:
       - name: Test persistence after restarting application and storage services
         run: |
           docker compose restart object-storage app worker
-          docker compose up -d --wait --wait-timeout 180
-          docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs verify
+          bash tests/stack/ci-report.sh docker compose up -d --wait --wait-timeout 180
+          bash tests/stack/ci-report.sh docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs verify
       - name: Show service logs on failure
         if: failure()
         run: |
