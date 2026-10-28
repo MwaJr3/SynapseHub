@@ -10,5 +10,14 @@
   },
   "peerDependencies": {
     "react": "^19.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "*",
+    "jsdom": "*",
+    "vitest": "*"
   }
 }
