@@ -361,7 +361,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
       {error || attendanceError || actionError ? <ErrorBanner message={error || attendanceError || actionError} /> : null}
       <div className="grid gap-3 lg:grid-cols-2">
         <div>
-          <h3 className="mb-2 text-sm font-medium text-slate-300">Grades</h3>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Grades</h2>
           <ul className="space-y-1">
             {(grades ?? []).map((g) => (
               <li key={g.id} className="flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-1.5 text-sm">
@@ -400,7 +400,7 @@ function EnrollmentPanel({ enrollmentId, canWrite }: { enrollmentId: number; can
           ) : null}
         </div>
         <div>
-          <h3 className="mb-2 text-sm font-medium text-slate-300">Attendance</h3>
+          <h2 className="mb-2 text-sm font-medium text-slate-300">Attendance</h2>
           <ul className="space-y-1">
             {(attendance ?? []).map((r) => (
               <li key={r.id} className="flex items-center gap-2 rounded-lg border border-slate-800 px-3 py-1.5 text-sm">

@@ -272,7 +272,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Viewport-aware placement, grouped actions, safe submenus and keyboard/long-press parity.',
     evidence: 'context-menu.mp4',
-    ruleIds: ['RESP-PLACEMENT-01', 'A11Y-KEYBOARD-01'],
+    ruleIds: ['RESP-PLACEMENT-01', 'A11Y-KEYBOARD-01', 'A11Y-KEYBOARD-02', 'A11Y-SCROLL-01'],
     do: [
       'Flip/re-anchor within the viewport and group actions by intent',
       'Provide long-press and keyboard alternatives',
@@ -567,7 +567,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Large trigger, viewport flipping, keyboard controls and search for long lists.',
     evidence: 'dropdown-design.mp4',
-    ruleIds: ['RESP-PLACEMENT-01', 'A11Y-KEYBOARD-01', 'A11Y-TARGET-01'],
+    ruleIds: ['RESP-PLACEMENT-01', 'A11Y-KEYBOARD-01', 'A11Y-TARGET-01', 'A11Y-KEYBOARD-02'],
     do: [
       'Use a large trigger with a 44px target and flip within the viewport',
       'Add typeahead/search when options grow long',
@@ -1159,7 +1159,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Proportional construction, coordinated morphing, accessible semantics and optimistic rollback.',
     evidence: 'toggle-anatomy.mp4',
-    ruleIds: ['A11Y-SEMANTICS-01', 'STATE-OPTIMISTIC-01'],
+    ruleIds: ['A11Y-SEMANTICS-01', 'STATE-OPTIMISTIC-01', 'A11Y-HEADING-01'],
     do: [
       'Use role="switch" and coordinate track/thumb morphing',
       'Roll back visually when the server rejects the change',
@@ -1298,7 +1298,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Visible focus, :focus-visible, DOM/visual order parity, focus trapping/restoration and skip links.',
     evidence: 'focus-states.mp4',
-    ruleIds: ['A11Y-FOCUS-01', 'A11Y-KEYBOARD-01', 'A11Y-NAME-01'],
+    ruleIds: ['A11Y-FOCUS-01', 'A11Y-KEYBOARD-01', 'A11Y-NAME-01', 'A11Y-KEYBOARD-02', 'A11Y-SCROLL-01'],
     do: [
       'Show a high-contrast :focus-visible ring on every interactive element',
       'Trap focus in overlays and restore it on close',
@@ -1751,7 +1751,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Animate actual content, synchronize chevron/panel, semantic button plus ARIA and anchor expansion.',
     evidence: 'accordion-disclosure.mp4',
-    ruleIds: ['A11Y-SEMANTICS-01'],
+    ruleIds: ['A11Y-SEMANTICS-01', 'A11Y-HEADING-01', 'A11Y-LANG-01'],
     do: [
       'Use a real button with aria-expanded/aria-controls and animate the content itself',
       'Support deep-linking to an expanded section',
@@ -1863,7 +1863,7 @@ export const PATTERNS: UXPattern[] = [
     summary:
       'Optical sizing, grid alignment, consistent stroke, fixed bounding boxes and one style strategy.',
     evidence: 'icon-design-rules.mp4',
-    ruleIds: ['A11Y-NAME-01'],
+    ruleIds: ['A11Y-NAME-01', 'A11Y-LANG-01'],
     do: [
       'Draw icons on a shared grid with one stroke strategy and fixed bounding boxes',
       'Apply optical sizing so visually unequal shapes look equal',

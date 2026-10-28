@@ -199,7 +199,7 @@ export function AdaptWorkspacePage({ user }: { user: User }) {
         <Card title={detail.title}>
           <div className="text-xs text-slate-400">Source: {detail.source.attribution}</div>
           <p className="mt-2 text-sm text-slate-300">{detail.body}</p>
-          <h3 className="mt-4 text-sm font-medium text-slate-300">Translations (side-by-side review)</h3>
+          <h2 className="mt-4 text-sm font-medium text-slate-300">Translations (side-by-side review)</h2>
           <ul className="mt-2 space-y-2">
             {detail.translations.map((t) => (
               <li key={t.id} className="rounded-lg border border-slate-800 p-3">

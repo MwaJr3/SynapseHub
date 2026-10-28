@@ -9,7 +9,7 @@ import { cn } from '@/lib/cn';
 import type { Severity } from '@/features/ux-engine';
 
 const severityStyles: Record<Severity, string> = {
-  critical: 'border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-300',
+  critical: 'border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300',
   major:
     'border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-300',
   minor: 'border-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300',

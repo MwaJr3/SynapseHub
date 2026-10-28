@@ -100,7 +100,7 @@ export function ProfilePage() {
       </HeroPanel>
 
       <Card>
-        <h3 className="text-sm font-semibold">Read this before the numbers</h3>
+        <h2 className="text-sm font-semibold">Read this before the numbers</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[color:var(--muted)]">
           {data.caveats.map((caveat) => (
             <li key={caveat}>{caveat}</li>
@@ -110,7 +110,7 @@ export function ProfilePage() {
 
       <Card>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="text-sm font-semibold">The ten axes</h3>
+          <h2 className="text-sm font-semibold">The ten axes</h2>
           {data.missing.length > 0 ? (
             <Badge tone="warn">{data.missing.length} without a score</Badge>
           ) : (
@@ -168,7 +168,7 @@ export function ProfilePage() {
         </Card>
       ) : (
         <Card>
-          <h3 className="text-sm font-semibold">Assessments on record ({live.length})</h3>
+          <h2 className="text-sm font-semibold">Assessments on record ({live.length})</h2>
           <ul className="mt-3 space-y-4">
             {live.map((assessment) => (
               <AssessmentRow
@@ -198,7 +198,7 @@ export function ProfilePage() {
       {reassessment ? (
         <Card>
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h3 className="text-sm font-semibold">Reassessment of “{reassessment.priorLabel}”</h3>
+            <h2 className="text-sm font-semibold">Reassessment of “{reassessment.priorLabel}”</h2>
             <button type="button" className="text-xs underline" onClick={() => setReassessment(null)}>
               Dismiss
             </button>
@@ -212,7 +212,7 @@ export function ProfilePage() {
 
       {retired.length > 0 ? (
         <Card>
-          <h3 className="text-sm font-semibold">Retired ({retired.length})</h3>
+          <h2 className="text-sm font-semibold">Retired ({retired.length})</h2>
           <p className={`mt-1 text-sm ${muted}`}>
             Kept rather than deleted, so the correction itself is auditable. They no longer count as evidence.
           </p>
@@ -254,7 +254,7 @@ export function ProfilePage() {
 function AxisGroup({ title, axes }: { title: string; axes: CoreAxis[] }) {
   return (
     <div>
-      <h4 className={`text-xs font-semibold uppercase tracking-wide ${muted}`}>{title}</h4>
+      <h3 className={`text-xs font-semibold uppercase tracking-wide ${muted}`}>{title}</h3>
       <ul className="mt-2 divide-y" style={{ borderColor: 'var(--line)' }}>
         {axes.map((axis) => (
           <li key={axis.name} className="py-2">

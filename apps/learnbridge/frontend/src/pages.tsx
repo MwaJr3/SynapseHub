@@ -100,7 +100,7 @@ export function CataloguePage({ user: _user }: { user: User }) {
             <p className="mt-1 text-xs text-amber-300">Completion requires quiz score ≥ {openLesson.requirements.min_quiz_score}%.</p>
           ) : null}
           <div className="mt-4">
-            <h3 className="mb-2 text-sm font-medium text-slate-300">My notes</h3>
+            <h2 className="mb-2 text-sm font-medium text-slate-300">My notes</h2>
             <ul className="space-y-1">
               {openLesson.notes.map((n) => <li key={n.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400">{n.body}</li>)}
             </ul>
@@ -178,7 +178,7 @@ function QuizSection({ lessonId, onDone }: { lessonId: number; onDone: () => voi
   if (!quiz) return <p className="text-xs text-slate-400">No quiz attached to this lesson.</p>;
   return (
     <div>
-      <h3 className="mb-2 text-sm font-medium text-slate-300">Lesson quiz</h3>
+      <h2 className="mb-2 text-sm font-medium text-slate-300">Lesson quiz</h2>
       <div className="space-y-3">
           {quiz.questions.map((question) => (
             <div key={question.id} className="rounded-lg border border-slate-800 p-3">

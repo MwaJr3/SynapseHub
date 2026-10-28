@@ -277,7 +277,7 @@ export function IncidentsPage({ user }: { user: User }) {
                   <p className="text-xs text-slate-400">{detail.workflow_note}</p>
                   {detail.events.length > 0 ? (
                     <div>
-                      <h3 className="mb-1 text-sm font-medium text-slate-300">Related events</h3>
+                      <h2 className="mb-1 text-sm font-medium text-slate-300">Related events</h2>
                       <ul className="space-y-1">
                         {detail.events.map((e) => (
                           <li key={e.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400">
