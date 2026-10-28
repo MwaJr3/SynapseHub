@@ -1,0 +1,88 @@
+name: ContextVault quality and infrastructure
+
+on:
+  push:
+    paths:
+      - 'contextvault/**'
+      - '.github/workflows/contextvault.yml'
+  pull_request:
+    paths:
+      - 'contextvault/**'
+      - '.github/workflows/contextvault.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: contextvault
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: contextvault/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm audit --audit-level=high
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  compose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: contextvault
+    # Disposable CI-only credentials. Do not use these outside this test.
+    env:
+      COMPOSE_PROJECT_NAME: contextvault-ci
+      POSTGRES_PASSWORD: '0123456789abcdef0123456789abcdef'
+      POSTGRES_APP_PASSWORD: 'fedcba9876543210fedcba9876543210'
+      S3_ACCESS_KEY_ID: contextvaultci
+      S3_SECRET_ACCESS_KEY: contextvaultcisecret123
+      AI_PROVIDER: mock
+      EMBEDDING_PROVIDER: mock
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the PostgreSQL, MinIO, app and worker stack
+        run: |
+          docker compose config --quiet
+          docker compose up --build -d --wait --wait-timeout 300
+          docker compose exec -T app node tests/stack/health.mjs up
+      - name: Test ingestion, citations, storage and runtime-role RLS
+        run: docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs create
+      - name: Test database outage and worker recovery without restarting containers
+        run: |
+          app=$(docker compose ps -q app)
+          worker=$(docker compose ps -q worker)
+          app_restarts=$(docker inspect --format '{{.RestartCount}}' "$app")
+          worker_restarts=$(docker inspect --format '{{.RestartCount}}' "$worker")
+          docker compose stop db
+          docker compose exec -T app node tests/stack/health.mjs down
+          docker compose start db
+          docker compose exec -T app node tests/stack/health.mjs up
+          docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs recover
+          test "$(docker inspect --format '{{.State.Running}}' "$app")" = true
+          test "$(docker inspect --format '{{.State.Running}}' "$worker")" = true
+          test "$(docker inspect --format '{{.RestartCount}}' "$app")" = "$app_restarts"
+          test "$(docker inspect --format '{{.RestartCount}}' "$worker")" = "$worker_restarts"
+      - name: Test persistence after restarting application and storage services
+        run: |
+          docker compose restart object-storage app worker
+          docker compose up -d --wait --wait-timeout 180
+          docker compose exec -T -e STACK_TEST_ALLOW_MUTATION=1 app node tests/stack/smoke.mjs verify
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          docker compose ps -a
+          docker compose logs --no-color --tail=150
+      - name: Remove disposable test volumes
+        if: always()
+        run: docker compose down --volumes --remove-orphans

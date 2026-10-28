@@ -49,6 +49,12 @@ for deployment.
 
 ---
 
+## ContextVault — AI Retrieval-Augmented Knowledge Platform
+
+`contextvault/` is a standalone Next.js research workspace that turns document collections into citation-grounded conversations. It demonstrates a real PostgreSQL + pgvector retrieval pipeline, a durable ingestion worker, owner-scoped authorization and RLS, hybrid search, source inspection and evaluation. Its default local demo uses fictional content and deterministic mock providers, not a semantic AI model. See [ContextVault setup and limitations](contextvault/README.md) and its [architecture](contextvault/docs/architecture.md).
+
+---
+
 ## The AI Music & Vocal Part Separator application
 
 `vocal-separator/` is a standalone full-stack audio workspace — catalogued as

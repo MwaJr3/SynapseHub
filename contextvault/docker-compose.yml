@@ -1,0 +1,95 @@
+services:
+  db:
+    image: pgvector/pgvector:0.8.1-pg16
+    environment:
+      POSTGRES_DB: contextvault
+      POSTGRES_USER: cvmigrate
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set POSTGRES_APP_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-postgres.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    healthcheck:
+      # TCP avoids reporting ready during the image's socket-only init phase.
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U cvmigrate -d contextvault"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  object-storage:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY_ID:?Set S3_ACCESS_KEY_ID}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY}
+    volumes:
+      - object_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+  create-bucket:
+    image: minio/mc:RELEASE.2025-04-16T18-13-26Z
+    depends_on:
+      object-storage: { condition: service_healthy }
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["mc alias set local http://object-storage:9000 $$S3_ACCESS_KEY_ID $$S3_SECRET_ACCESS_KEY && mc mb --ignore-existing local/contextvault"]
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:?Set S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:?Set S3_SECRET_ACCESS_KEY}
+  migrate:
+    build: .
+    command: ["npm", "run", "db:migrate"]
+    environment:
+      DATABASE_URL: postgresql://cvmigrate:${POSTGRES_PASSWORD}@db:5432/contextvault
+    depends_on:
+      db: { condition: service_healthy }
+  app:
+    build: .
+    init: true
+    ports: ["${APP_BIND_ADDRESS:-127.0.0.1}:${APP_PORT:-3000}:3000"]
+    environment: &app_env
+      DATABASE_URL: postgresql://contextvault_app:${POSTGRES_APP_PASSWORD}@db:5432/contextvault
+      DEMO_MODE: "false"
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-mock}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_CHAT_MODEL: ${OPENAI_CHAT_MODEL:-gpt-4o-mini}
+      LOCAL_AI_BASE_URL: ${LOCAL_AI_BASE_URL:-http://host.docker.internal:11434/v1}
+      LOCAL_AI_API_KEY: ${LOCAL_AI_API_KEY:-}
+      LOCAL_LLM_MODEL: ${LOCAL_LLM_MODEL:-local-model}
+      LOCAL_EMBEDDING_MODEL: ${LOCAL_EMBEDDING_MODEL:-local-1536}
+      STORAGE_PROVIDER: s3
+      S3_BUCKET: contextvault
+      S3_REGION: us-east-1
+      S3_ENDPOINT: http://object-storage:9000
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      create-bucket: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 15s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+  worker:
+    build: .
+    init: true
+    command: ["npm", "run", "worker"]
+    environment: *app_env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      create-bucket: { condition: service_completed_successfully }
+    restart: unless-stopped
+volumes:
+  postgres_data:
+  object_data:

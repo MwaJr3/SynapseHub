@@ -6,7 +6,7 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default tseslint.config(
   {
-    // workniche/ and vocal-separator/ are self-contained apps with their own
+    // workniche/, contextvault/ and vocal-separator/ are self-contained apps with their own
     // tooling. projects/ holds consolidated copies of other repositories'
     // projects, each self-contained with its own tooling (see
     // projects/README.md).
@@ -16,6 +16,7 @@ export default tseslint.config(
       'coverage',
       'public',
       'workniche',
+      'contextvault',
       'vocal-separator',
       'projects',
       '**/.next/**',
