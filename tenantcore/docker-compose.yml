@@ -7,7 +7,7 @@ x-backend-environment: &backend-environment
   MIGRATION_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-tenantcore}:${POSTGRES_PASSWORD:-tenantcore_dev}@postgres:5432/${POSTGRES_DB:-tenantcore}
   REDIS_URL: redis://redis:6379/0
   JWT_SECRET: ${JWT_SECRET:-development-only-change-me-32-bytes}
-  CORS_ORIGINS: http://localhost:5173
+  CORS_ORIGINS: http://localhost:5309
   RATE_LIMIT_FAIL_OPEN: ${RATE_LIMIT_FAIL_OPEN:-true}
   LOG_LEVEL: ${LOG_LEVEL:-INFO}
 
@@ -87,7 +87,7 @@ services:
     environment:
       VITE_PROXY_TARGET: http://backend:8000
     ports:
-      - "5173:5173"
+      - "5309:5309"
 
 volumes:
   postgres-data:
