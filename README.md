@@ -157,7 +157,7 @@ actual repository architecture and deliberate scope boundaries.
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173
+npm run dev          # http://localhost:5400
 ```
 
 | Command              | Purpose                                                                                                  |

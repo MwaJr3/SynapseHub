@@ -1,4 +1,4 @@
-"""Engine tests ported from apps/netscope (behavior preserved)."""
+"""Engine tests ported from apps/netscope-cli (behavior preserved)."""
 import pytest
 
 from app.engine.pcap import PcapError, read_pcap

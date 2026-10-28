@@ -1,7 +1,7 @@
 {
-  "name": "NetScope",
-  "slug": "netscope",
-  "shortDescription": "Offline packet-capture analysis: protocol summaries, talkers, volume heuristics \u2014 payloads never inspected.",
+  "name": "NetScope (CLI)",
+  "slug": "netscope-cli",
+  "shortDescription": "Offline packet-capture analysis: protocol summaries, talkers, volume heuristics — payloads never inspected.",
   "tags": [
     "security",
     "cli",

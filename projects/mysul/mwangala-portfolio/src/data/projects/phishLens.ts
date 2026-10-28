@@ -33,7 +33,7 @@ export const phishLens: Project = {
   keyTech: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
   featured: true,
   order: 1,
-  status: 'Built — rule-based analysis engine complete and tested as a Python CLI in apps/phishlens, and delivered as the full-stack application described in this case study at projects/phishlens (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
+  status: 'Built — rule-based analysis engine complete and tested as a Python CLI in apps/phishlens-cli, and delivered as the full-stack application described in this case study at projects/phishlens (FastAPI + PostgreSQL-ready backend with Alembic migrations, React frontend, backend and frontend tests)',
   year: '2025',
   role: 'Design, backend, frontend, testing',
   accent: 'cyan',

@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
-    port: 5174,
+    port: 5302,
     strictPort: true,
     allowedHosts: ['.e2b.app', 'localhost', '127.0.0.1'],
     proxy: Object.fromEntries(
@@ -15,5 +15,5 @@ export default defineConfig({
       ]),
     ),
   },
-  preview: { host: '0.0.0.0', port: 5174, allowedHosts: ['.e2b.app', 'localhost'] },
+  preview: { host: '0.0.0.0', port: 5302, allowedHosts: ['.e2b.app', 'localhost'] },
 })

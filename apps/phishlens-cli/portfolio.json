@@ -1,6 +1,6 @@
 {
-  "name": "PhishLens",
-  "slug": "phishlens",
+  "name": "PhishLens (CLI)",
+  "slug": "phishlens-cli",
   "shortDescription": "Explainable phishing email analysis: header, URL and attachment signals with honest framing.",
   "tags": [
     "security",

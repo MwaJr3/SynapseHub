@@ -23,7 +23,7 @@
 | Browser copy blocked | Use HTTPS or a trusted localhost context, grant clipboard permissions, or download an export. Browser privacy policy can block copying. |
 | Print view does not open | Allow the user-triggered popup or open/download the print URL from the export control, then use browser Print. There is no backend PDF button pretending to generate a native PDF. |
 | Production `/docs` not available | Intentional CSP choice: interactive CDN docs are disabled in production. Use `/openapi.json`, local development `/docs`, and `docs/API.md`. |
-| E2E says ports in use | Tests require free 8001/5174 and refuse reusing a server. Stop a previous test/server, not your developer database. |
+| E2E says ports in use | Tests require free 8001/5311 and refuse reusing a server. Stop a previous test/server, not your developer database. |
 | Chromium missing libraries | From frontend run `npx playwright install --with-deps chromium`. Linux dependency installation can require administrative privileges. |
 | E2E Python missing | Default expects root `.venv`; set `TW_PYTHON` to the correct executable if installed elsewhere. |
 | Docker asks for PostgreSQL password | Generate/set a unique URL-safe `POSTGRES_PASSWORD` in root `.env`. Do not use empty/example secrets for production. |

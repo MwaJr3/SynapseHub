@@ -38,7 +38,7 @@ def _extra_origins() -> list[str]:
     return [value.strip() for value in raw.split(",") if value.strip()]
 
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5180", "http://127.0.0.1:5180"] + _extra_origins(),
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5303", "http://127.0.0.1:5303"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 DISCLAIMER = ("Incident records and timelines reflect what responders entered and when they entered "

@@ -22,8 +22,8 @@ Date: 2026-10-28. Branch `arena/eb2e33a1-synapsehub`, from `main` at `d0f7dc6`.
   (`mwangala-portfolio`), and only one is deployed.
 - **62 Python projects call their package `app`.** Only one can be imported in a
   process at a time.
-- **Nine dev ports collide**, and the collision is systematic: `apps/` owns 5173–5197
-  and `projects/` re-used 5173–5181.
+- **Nine dev ports collided**, systematically: `apps/` owns 5173–5197 and `projects/`
+  re-used 5173–5181. **Fixed in S2** — the 31 apps now claim 31 distinct ports (§7.5).
 - **CI covers one project.** No workflow mentions `apps/` or `projects/`.
 
 None of this is a bug in any single project. It is what two years of adding
@@ -81,19 +81,19 @@ a case-study route on the company site.
 | `apps/circuitlab-calc` | CircuitLab Calc | Velaqori | React + FastAPI | 19 | **no** | — | 5177 | — |
 | `apps/dependsecure` | DependSecure | Velaqori | React + FastAPI | 22 | **no** | — | 5175 | — |
 | `apps/fileguard` | FileGuard | Velaqori | React + FastAPI | 19 | **no** | — | 5174 | — |
-| `apps/incidentflow` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
-| `apps/netscope` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
-| `apps/phishlens` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
+| `apps/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
+| `apps/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
+| `apps/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
 | `apps/sentinelcore` | SentinelCore | Velaqori | React + FastAPI | 20 | **no** | — | 5179 | — |
 | `apps/sentinellog` | SentinelLog | Velaqori | React + FastAPI | 34 | **no** | — | 5173 | — |
-| `apps/threatintel-desk` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
-| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5175 | Vercel API |
-| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5174 | Vercel API |
-| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5180 | Vercel API |
-| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5179 | Vercel API |
-| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5178 | Vercel API |
-| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5176 | Vercel API |
-| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5181 | Vercel API |
+| `apps/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
+| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
+| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
+| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
+| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
+| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
+| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
+| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
 
 ### Tamuzi Learning (12 products, 12 directories)
 
@@ -109,8 +109,8 @@ a case-study route on the company site.
 | `apps/reachlearn` | ReachLearn | Tamuzi | React + FastAPI | 14 | yes | — | 5187 | — |
 | `apps/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5183 | — |
 | `apps/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5182 | — |
-| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5177 | Vercel API |
-| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5173 | — |
+| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
+| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
 
 **Tessera is not in this catalogue.** It is the largest product in the repository
 (30k lines, 524 test cases, 7 migrations), it says "a Tamuzi Learning product" on
@@ -166,7 +166,7 @@ company case study.
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
 | `company-platform` | Company Platform | — | Next.js | 138 | yes | — | — | — |
 | `workniche` | WorkNiche | — | Next.js | 47 | yes | — | — | — |
-| `vocal-separator` | AI Music & Vocal Part Separator | — | React + FastAPI | 8 | yes | — | 5174 | — |
+| `vocal-separator` | AI Music & Vocal Part Separator | — | React + FastAPI | 8 | yes | — | 5500 | — |
 
 ## 5. Coursework and archives
 
@@ -178,7 +178,7 @@ owns them.
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
 | `projects/cbu-assignments/bank_system` | bank_system | — | other | — | **no** | — | — | — |
 | `projects/cbu-assignments/library_management` | library_management | — | other | — | **no** | — | — | — |
-| `projects/cbu-assignments/tenantcore` | TenantCore | — | React + FastAPI | 43 | yes | — | 5173 | — |
+| `projects/cbu-assignments/tenantcore` | TenantCore | — | React + FastAPI | 43 | yes | — | 5309 | — |
 | `projects/cbu-assignments/tests` | tests | — | other | 13 | **no** | — | — | — |
 | `projects/cbu-assignments/video_downloader_app` | VDownloader OS | — | other | 21 | **no** | — | — | — |
 
@@ -190,7 +190,7 @@ earlier portfolio sites or class exercises:
 | `projects/mysul/Cpp Projects` | Cpp Projects | — | other | — | **no** | — | — | — |
 | `projects/mysul/WebstormProjects` | WebstormProjects | — | other | — | **no** | — | — | — |
 | `projects/mysul/mwangala` | MWANGALA | — | other | 10 | **no** | — | — | — |
-| `projects/mysul/mwangala-portfolio` | Mwangala | — | React (static) | 149 | yes | — | 5173 | — |
+| `projects/mysul/mwangala-portfolio` | Mwangala | — | React (static) | 149 | yes | — | 5401 | — |
 
 ## 6. Every directory under `apps/` and `projects/`
 
@@ -219,17 +219,17 @@ For completeness, the two main trees as they stand.
 | `apps/guessmaster` | GuessMaster | — | CLI | 11 | yes | — | — | — |
 | `apps/headercheck` | HeaderCheck | — | CLI | 7 | yes | — | — | — |
 | `apps/hostwatch` | HostWatch | — | CLI | 6 | yes | — | — | — |
-| `apps/incidentflow` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
+| `apps/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
 | `apps/learnbridge` | LearnBridge | Tamuzi | React + FastAPI | 17 | yes | — | 5180 | — |
 | `apps/learnpulse` | LearnPulse | Tamuzi | React + FastAPI | 10 | yes | — | 5184 | — |
 | `apps/loginsense` | LoginSense | — | CLI | 7 | yes | — | — | — |
-| `apps/netscope` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
+| `apps/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
 | `apps/notekit` | NoteKit | — | CLI | 10 | yes | — | — | — |
 | `apps/openlearn-commons` | OpenLearn Commons | Tamuzi | React + FastAPI | 13 | yes | — | 5186 | — |
 | `apps/passforge` | PassForge | — | CLI | 13 | yes | — | — | — |
 | `apps/passmeter` | PassMeter | — | CLI | 8 | yes | — | — | — |
 | `apps/pathwise` | PathWise | Tamuzi | React + FastAPI | 14 | yes | — | 5181 | — |
-| `apps/phishlens` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
+| `apps/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
 | `apps/prepwise` | PrepWise | — | FastAPI + HTML | 6 | yes | — | — | — |
 | `apps/quizarena` | QuizArena | — | FastAPI + HTML | 7 | yes | — | — | — |
 | `apps/quizbox` | QuizBox | — | CLI | 10 | yes | — | — | — |
@@ -247,7 +247,7 @@ For completeness, the two main trees as they stand.
 | `apps/taskdeck` | TaskDeck | — | CLI | 11 | yes | — | — | — |
 | `apps/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5183 | — |
 | `apps/tessera` | Tessera | — | React + FastAPI | 524 | yes | 7 | 5197 | — |
-| `apps/threatintel-desk` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
+| `apps/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
 | `apps/tidyfiles` | TidyFiles | — | CLI | 12 | yes | — | — | — |
 | `apps/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5182 | — |
 | `apps/unicore` | UniCore | — | CLI | 10 | yes | — | — | — |
@@ -259,15 +259,15 @@ For completeness, the two main trees as they stand.
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5175 | Vercel API |
-| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5177 | Vercel API |
-| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5174 | Vercel API |
-| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5180 | Vercel API |
-| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5179 | Vercel API |
-| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5178 | Vercel API |
-| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5176 | Vercel API |
-| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5181 | Vercel API |
-| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5173 | — |
+| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
+| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
+| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
+| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
+| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
+| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
+| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
+| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
+| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
 
 ## 7. Collisions
 
@@ -320,7 +320,7 @@ supersedes which.
 
 ### 7.4 `app` is the package name in 62 projects
 
-Every backend and CLI uses `app/` as its importable package: `apps/phishlens/app`,
+Every backend and CLI uses `app/` as its importable package: `apps/phishlens-cli/app`,
 `projects/assetwatch/backend/app`, `apps/tessera/backend/app`, and so on. Sixty-two
 of the 75 directories contain one.
 
@@ -331,25 +331,44 @@ for anything that wants to touch two: a repository-wide test runner, a shared li
 config, or an import in a tool. It also makes stack traces ambiguous — `app/models.py`
 appears 30+ times in this repository.
 
-### 7.5 Nine colliding dev ports
+### 7.5 Dev ports: collided, now allocated in blocks
 
-| Port | Claimed by | |
+**Resolved in S2.** The collision was exact: `apps/` was allocated 5173–5197 and
+`projects/` re-used 5173–5181, so four apps claimed 5173 and five more pairs collided.
+Because Vite silently picks the next free port unless `strictPort` is set, the symptom
+was a second app starting on `:5182` and a proxy or CORS rule pointing at the wrong one.
+Seven of the nine `projects/` apps set `strictPort: true`, so they failed outright.
+
+Ports are now allocated once, by target location, and never reused:
+
+| Block | Range | Held by |
 | --- | --- | --- |
-| 5173 | `apps/sentinellog`, `projects/transcriptwise`, `projects/cbu-assignments/tenantcore`, `projects/mysul/mwangala-portfolio` | **4** |
-| 5174 | `apps/fileguard`, `projects/hashsight`, `vocal-separator` | 3 |
-| 5175 | `apps/dependsecure`, `projects/assetwatch` | 2 |
-| 5176 | `apps/campusflow`, `projects/securecode-workbench` | 2 |
-| 5177 | `apps/circuitlab-calc`, `projects/cyberaware-lab` | 2 |
-| 5178 | `apps/chessscope`, `projects/phishlens` | 2 |
-| 5179 | `apps/sentinelcore`, `projects/netscope` | 2 |
-| 5180 | `apps/learnbridge`, `projects/incidentflow` | 2 |
-| 5181 | `apps/pathwise`, `projects/threatintel-desk` | 2 |
+| `catalogue/` | 5173–5299 | the 18 catalogue apps already on 5173–5197 (grandfathered; new ones take 5200+) |
+| `companies/` | 5300–5399 | the nine deployed company products + TenantCore |
+| `sites/` | 5400–5499 | the root portfolio (5400), `mwangala-portfolio` (5401) |
+| `products/` | 5500–5599 | `vocal-separator` (5500) |
 
-The pattern is exact: `apps/` was allocated 5173–5197 and `projects/` re-used
-5173–5181. Because Vite silently picks the next free port unless `strictPort` is set,
-the symptom is a second app starting on `:5182` and a proxy or CORS rule pointing at
-the wrong one. Seven of the nine `projects/` apps set `strictPort: true`, so they fail
-outright rather than drifting — which is better, but still a failure.
+| Directory | Was | Now |
+| --- | ---: | ---: |
+| `projects/assetwatch` | 5175 | 5300 |
+| `projects/cyberaware-lab` | 5177 | 5301 |
+| `projects/hashsight` | 5174 | 5302 |
+| `projects/incidentflow` | 5180 | 5303 |
+| `projects/netscope` | 5179 | 5304 |
+| `projects/phishlens` | 5178 | 5305 |
+| `projects/securecode-workbench` | 5176 | 5306 |
+| `projects/threatintel-desk` | 5181 | 5307 |
+| `projects/transcriptwise` | 5173 | 5308 |
+| `projects/cbu-assignments/tenantcore` | 5173 | 5309 |
+| `projects/mysul/mwangala-portfolio` | 5173 | 5401 |
+| `vocal-separator/web` | 5174 | 5500 |
+| repository root (portfolio site) | 5173 | 5400 |
+
+Each move updated the Vite dev **and** preview port, the backend CORS origins, the
+Playwright `baseURL`, `.env.example`, compose files and the README. TranscriptWise's
+dedicated e2e port moved off 5174 to 5311 for the same reason. **Preview ports used only
+by the root e2e gate (4173, 4174) were left alone** — CI spawns one at a time and they
+are not app allocations.
 
 ### 7.6 Three catalogues describing the same products
 
@@ -415,7 +434,7 @@ committed, listing every project:
   "devPort": 5178,
   "package": "phishlens-frontend",
   "pythonPackage": "app",
-  "variants": [{ "path": "apps/phishlens", "interface": ["cli"], "kind": "catalogue" }]
+  "variants": [{ "path": "apps/phishlens-cli", "interface": ["cli"], "kind": "catalogue" }]
 }
 ```
 
@@ -486,7 +505,7 @@ staged change with a gate at each step, not one commit.
 | Stage | Change | Reversible? | Gate |
 | --- | --- | --- | --- |
 | **S1** | Add `projects.json` + the registry test. No files move. | Yes, delete one file | `npm test` green; duplicate detection demonstrated on a deliberate duplicate |
-| **S2** | Fix the collisions that need no move: rename the four CLI slugs, disambiguate the two `mwangala-portfolio` packages, renumber `projects/` ports to 5300+ | Partly (renames are in history) | Every slug unique; every port unique; site still builds |
+| **S2** | Fix the collisions that need no move: rename the four CLI slugs, disambiguate the two `mwangala-portfolio` packages, renumber `projects/` ports to 5300+ | Partly (renames are in history) | Every slug unique; every port unique; site still builds — **done, see §7.5** |
 | **S3** | Add a CI matrix so each project's own suite runs | Yes | CI green, and a deliberately broken test in one project fails CI |
 | **S4** | Move `apps/` → `catalogue/` + `companies/`; update workspaces, Docker context, docs | No, but mechanical | Every workspace `npm ci && npm test`; Tessera image context updated |
 | **S5** | Move `projects/` → `companies/`, update the eight Vercel root directories in the dashboard | No | Each API redeploys and answers `/health` |

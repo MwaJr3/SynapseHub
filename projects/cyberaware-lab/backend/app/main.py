@@ -39,7 +39,7 @@ def _extra_origins() -> list[str]:
     return [value.strip() for value in raw.split(",") if value.strip()]
 
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5177", "http://127.0.0.1:5177"] + _extra_origins(),
+app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5301", "http://127.0.0.1:5301"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 

@@ -1,4 +1,4 @@
-# Engine module reused from apps/phishlens (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/phishlens-cli (tested CLI engine) — behavior preserved.
 """Email parsing: headers, body, URLs (never fetched), attachments metadata."""
 from __future__ import annotations
 

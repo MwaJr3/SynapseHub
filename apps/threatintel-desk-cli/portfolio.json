@@ -1,6 +1,6 @@
 {
-  "name": "ThreatIntel Desk",
-  "slug": "threatintel-desk",
+  "name": "ThreatIntel Desk (CLI)",
+  "slug": "threatintel-desk-cli",
   "shortDescription": "Indicator normalisation, local enrichment and opt-in provider adapters with provenance and honest verdicts.",
   "tags": [
     "security",

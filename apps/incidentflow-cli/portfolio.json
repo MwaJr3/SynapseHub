@@ -1,6 +1,6 @@
 {
-  "name": "IncidentFlow",
-  "slug": "incidentflow",
+  "name": "IncidentFlow (CLI)",
+  "slug": "incidentflow-cli",
   "shortDescription": "Forensics evidence intake, chain of custody, hash verification and honest timelines.",
   "tags": [
     "security",

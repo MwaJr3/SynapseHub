@@ -124,9 +124,9 @@ tests both sides, `.env.example`, README with setup + known limitations):
 - **SecureCode Workbench** → `projects/securecode-workbench/` (14 backend + 2 frontend tests green)
 - **CyberAware Lab** → `projects/cyberaware-lab/` (11 backend + 2 frontend tests green)
 
-The four CLI-backed products (PhishLens → `apps/phishlens`, NetScope →
-`apps/netscope`, IncidentFlow → `apps/incidentflow`, ThreatIntel Desk →
-`apps/threatintel-desk`) remain as previously built and tested CLIs; their
+The four CLI-backed products (PhishLens → `apps/phishlens-cli`, NetScope →
+`apps/netscope-cli`, IncidentFlow → `apps/incidentflow-cli`, ThreatIntel Desk →
+`apps/threatintel-desk-cli`) remain as previously built and tested CLIs; their
 portfolio case-study records now say so explicitly. TranscriptWise
 (`projects/transcriptwise/`, PR #16) is unchanged.
 

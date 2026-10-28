@@ -82,17 +82,17 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | GuessMaster | number guessing game (CLI) | `apps/guessmaster` | python-cli | 11 | yes | — |
 | HeaderCheck | HTTP security headers checker (CLI) | `apps/headercheck` | python-cli | 7 | yes | — |
 | HostWatch | endpoint security monitoring (CLI) | `apps/hostwatch` | python-cli | 6 | yes | — |
-| IncidentFlow | digital forensics evidence analyzer (CLI + SQLite) | `apps/incidentflow` | python-cli | 6 | yes | — |
+| IncidentFlow | digital forensics evidence analyzer (CLI + SQLite) | `apps/incidentflow-cli` | python-cli | 6 | yes | — |
 | LearnBridge | Offline-First E-Learning Platform | `apps/learnbridge` | react-spa | 17 | yes | — |
 | LearnPulse | Learning Analytics and Teacher Support Dashboard | `apps/learnpulse` | react-spa | 10 | yes | — |
 | LoginSense | suspicious login detection (CLI) | `apps/loginsense` | python-cli | 7 | yes | — |
-| NetScope | network traffic analyzer (CLI) | `apps/netscope` | python-cli | 7 | yes | — |
+| NetScope | network traffic analyzer (CLI) | `apps/netscope-cli` | python-cli | 7 | yes | — |
 | NoteKit | personal knowledge management (CLI + SQLite) | `apps/notekit` | python-cli | 10 | yes | — |
 | OpenLearn Commons | Open Educational Resource and Localization Hub | `apps/openlearn-commons` | react-spa | 13 | yes | — |
 | PassForge | secure password & passphrase generator (CLI) | `apps/passforge` | python-cli | 13 | yes | — |
 | PassMeter | password strength analyzer (CLI) | `apps/passmeter` | python-cli | 8 | yes | — |
 | PathWise | Diagnostic Assessment and Adaptive Learning Paths | `apps/pathwise` | react-spa | 14 | yes | — |
-| PhishLens | phishing email analyzer (CLI) | `apps/phishlens` | python-cli | 5 | yes | — |
+| PhishLens | phishing email analyzer (CLI) | `apps/phishlens-cli` | python-cli | 5 | yes | — |
 | PrepWise | interview preparation platform (FastAPI + SQLite) | `apps/prepwise` | python-api | 6 | yes | — |
 | QuizArena | collaborative quiz platform (FastAPI + SQLite) | `apps/quizarena` | python-api | 7 | yes | — |
 | QuizBox | quiz application (CLI) | `apps/quizbox` | python-cli | 10 | yes | — |
@@ -110,7 +110,7 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | TaskDeck | personal task manager (CLI) | `apps/taskdeck` | python-cli | 11 | yes | — |
 | TeachCraft | Teacher Content and Assessment Studio | `apps/teachcraft` | react-spa | 11 | yes | — |
 | Tessera | adaptive learning engine | `apps/tessera` | react-spa | 524 | yes | 7 |
-| ThreatIntel Desk | threat intelligence lookup & enrichment (CLI) | `apps/threatintel-desk` | python-cli | 6 | yes | — |
+| ThreatIntel Desk | threat intelligence lookup & enrichment (CLI) | `apps/threatintel-desk-cli` | python-cli | 6 | yes | — |
 | TidyFiles | file organizer (CLI) | `apps/tidyfiles` | python-cli | 12 | yes | — |
 | TutorSpring | AI Learning Companion | `apps/tutorspring` | react-spa | 13 | yes | — |
 | UniCore | university management system (CLI + SQLite) | `apps/unicore` | python-cli | 10 | yes | — |

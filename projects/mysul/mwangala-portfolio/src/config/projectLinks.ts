@@ -33,10 +33,10 @@ const explicit: Record<string, Partial<ProjectLinks>> = {
  * tree at build time of this portfolio data).
  */
 const repoPaths: Record<string, string> = {
-  phishlens: 'apps/phishlens',
-  netscope: 'apps/netscope',
-  'threatintel-desk': 'apps/threatintel-desk',
-  incidentflow: 'apps/incidentflow',
+  phishlens: 'apps/phishlens-cli',
+  netscope: 'apps/netscope-cli',
+  'threatintel-desk': 'apps/threatintel-desk-cli',
+  incidentflow: 'apps/incidentflow-cli',
   hashsight: 'projects/hashsight',
   assetwatch: 'projects/assetwatch',
   'securecode-workbench': 'projects/securecode-workbench',

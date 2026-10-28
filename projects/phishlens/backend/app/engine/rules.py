@@ -1,4 +1,4 @@
-# Engine module reused from apps/phishlens (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/phishlens-cli (tested CLI engine) — behavior preserved.
 """Rule engine. Findings are SUSPICIOUS PATTERNS for review — never proof."""
 from __future__ import annotations
 

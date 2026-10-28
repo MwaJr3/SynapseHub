@@ -15,7 +15,7 @@ describe('external URL validation', () => {
   });
 
   it('allows HTTP only for local development hosts', () => {
-    expect(resolveExternalUrl('http://localhost:5173/demo')).toBe('http://localhost:5173/demo');
+    expect(resolveExternalUrl('http://localhost:5400/demo')).toBe('http://localhost:5400/demo');
     expect(resolveExternalUrl('http://127.0.0.1:8000/demo')).toBe('http://127.0.0.1:8000/demo');
   });
 
