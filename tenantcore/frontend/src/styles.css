@@ -41,3 +41,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes shimmer { 100% { transform: translateX(100%); } }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .animate-rise { animation: rise .3s ease-out both; }
+
+/* Focus must be visible. Added by the Northstar UX engine: this stylesheet
+   styled its controls and never said what they look like when reached by
+   keyboard, which leaves the browser default as the only indicator. */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Motion is decoration; removing it must never remove information.
+   Added by the Northstar UX engine. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
