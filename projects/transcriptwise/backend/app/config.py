@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     app_env: Literal["development", "test", "production"] = "development"
     database_url: str = "sqlite:///./data/transcriptwise.db"
     cookie_secure: bool = False
-    allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    allowed_origins: str = "http://localhost:5308,http://127.0.0.1:5308"
     allowed_hosts: str = "localhost,127.0.0.1,testserver,*.e2b.app"
     guest_retention_days: int = Field(7, ge=1, le=30)
     unsaved_retention_days: int = Field(30, ge=1, le=365)

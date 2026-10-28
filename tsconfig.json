@@ -22,8 +22,10 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@challenges": ["./challenges/src"],
+      "@challenges/*": ["./challenges/src/*"]
     }
   },
-  "include": ["src", "vite.config.ts", "scripts", "e2e", "playwright.config.ts"]
+  "include": ["src", "challenges", "vite.config.ts", "scripts", "e2e", "playwright.config.ts", "tools"]
 }

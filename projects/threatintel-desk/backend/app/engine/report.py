@@ -1,4 +1,4 @@
-# Engine module reused from apps/threatintel-desk (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/threatintel-desk-cli (tested CLI engine) — behavior preserved.
 """Consolidated JSON reports; inconclusive results are explicit."""
 from __future__ import annotations
 

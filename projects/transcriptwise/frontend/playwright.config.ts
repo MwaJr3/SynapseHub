@@ -12,7 +12,7 @@ export default defineConfig({
   reporter: [['list'], ['json', { outputFile: 'test-results/results.json' }]],
   use: {
     actionTimeout: 15000,
-    baseURL: 'http://127.0.0.1:5174',
+    baseURL: 'http://127.0.0.1:5311',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     permissions: ['clipboard-read', 'clipboard-write'],
@@ -32,8 +32,8 @@ export default defineConfig({
       timeout: 60000,
     },
     {
-      command: 'npm run dev -- --port 5174',
-      url: 'http://127.0.0.1:5174',
+      command: 'npm run dev -- --port 5311',
+      url: 'http://127.0.0.1:5311',
       reuseExistingServer: false,
       timeout: 60000,
       env: { VITE_API_TARGET: 'http://127.0.0.1:8001' },

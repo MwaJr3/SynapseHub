@@ -1,0 +1,30 @@
+{
+  "name": "ThreatIntel Desk (CLI)",
+  "slug": "threatintel-desk-cli",
+  "shortDescription": "Indicator normalisation, local enrichment and opt-in provider adapters with provenance and honest verdicts.",
+  "tags": [
+    "security",
+    "cli",
+    "threat-intelligence"
+  ],
+  "stack": [
+    "Python",
+    "sqlite-free cache",
+    "urllib"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "IP/domain/URL/hash parsing and validation",
+    "Bundled synthetic dataset (labelled), cached with provenance + retrieval time",
+    "Provider adapter interface; external lookups strictly opt-in",
+    "Private indicators refused for external submission (tested)",
+    "Unavailable providers reported explicitly; 'no-data' is never a clearance"
+  ],
+  "knownLimitations": [
+    "Synthetic dataset is fictional demo data",
+    "Provider responses are unverified third-party claims (stated in-product)",
+    "Screenshots pending capture"
+  ]
+}

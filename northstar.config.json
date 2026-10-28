@@ -1,5 +1,5 @@
 {
-  "$schema": "./northstar-ux-engine/schema.json",
+  "$schema": "./tools/northstar/schema.json",
   "gate": "P1",
   "ignore": [],
   "report": "docs/ux/audit-repository.md"

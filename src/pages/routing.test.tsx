@@ -3,7 +3,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '@/App';
 import { renderWithProviders } from '@/test/render-app';
-import { challengeManifest, validateChallengeManifest } from '@/data/challengeManifest';
+import { challengeManifest, validateChallengeManifest } from '@challenges';
 
 describe('verified challenge collection', () => {
   it('contains exactly 60 unique records with source URLs', () => {

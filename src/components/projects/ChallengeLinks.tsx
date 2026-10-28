@@ -1,4 +1,4 @@
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '@challenges';
 import { resolveExternalUrl } from '@/config/site';
 
 export function ChallengeLinks({ project, compact = false }: { project: ChallengeRecord; compact?: boolean }) {

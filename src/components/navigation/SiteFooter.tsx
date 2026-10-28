@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { contactConfig, links, profileConfig } from '@/config/site';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 const footerNav = [
   { to: '/about', label: 'About' },
@@ -8,7 +8,6 @@ const footerNav = [
   { to: '/apps', label: 'Apps' },
   { to: '/system', label: 'Personal system' },
   { to: '/operations', label: 'Operations' },
-  { to: '/ux-engine', label: 'UX engine' },
   { to: '/skills', label: 'Skills' },
   { to: '/journey', label: 'Journey' },
   { to: '/approach', label: 'Approach' },

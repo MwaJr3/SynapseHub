@@ -1,4 +1,4 @@
-# Engine module reused from apps/netscope (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/netscope-cli (tested CLI engine) — behavior preserved.
 """JSON and human-readable reporting (metadata only; payloads never included)."""
 from __future__ import annotations
 

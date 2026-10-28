@@ -1,1 +1,1 @@
-# ThreatIntel Desk indicator engine (reused from apps/threatintel-desk).
+# ThreatIntel Desk indicator engine (reused from apps/threatintel-desk-cli).

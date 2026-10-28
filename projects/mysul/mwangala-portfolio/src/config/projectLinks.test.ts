@@ -24,7 +24,7 @@ describe('projectLinks', () => {
       'https://github.com/MwaJr3/SynapseHub/tree/main/projects/hashsight',
     );
     expect(projectLinks('phishlens').repo).toBe(
-      'https://github.com/MwaJr3/SynapseHub/tree/main/apps/phishlens',
+      'https://github.com/MwaJr3/SynapseHub/tree/main/apps/phishlens-cli',
     );
   });
 
@@ -46,7 +46,7 @@ describe('projectLinks', () => {
   it('trims slashes from the configured owner', async () => {
     const { projectLinks } = await loadWithOwner('/MwaJr3/');
     expect(projectLinks('netscope').repo).toBe(
-      'https://github.com/MwaJr3/SynapseHub/tree/main/apps/netscope',
+      'https://github.com/MwaJr3/SynapseHub/tree/main/apps/netscope-cli',
     );
   });
 });

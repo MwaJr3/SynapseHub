@@ -19,7 +19,6 @@ const routes: Array<[string, string]> = [
   ['/apps/poll-creator-app', 'poll creator prototype'],
   ['/apps/tic-tac-toe-game', 'tic tac toe prototype'],
   ['/skills', 'skills'],
-  ['/ux-engine', 'UX engine studio'],
   ['/contact', 'contact'],
   ['/system', 'personal operating system'],
   ['/unknown-route', '404'],

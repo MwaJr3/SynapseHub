@@ -15,7 +15,6 @@ const navItems = [
   { to: '/journey', label: 'Journey' },
   { to: '/approach', label: 'Approach' },
   { to: '/operations', label: 'Operations' },
-  { to: '/ux-engine', label: 'UX engine' },
   { to: '/contact', label: 'Contact' },
 ];
 

@@ -88,7 +88,7 @@ No UI kit, no animation library, no CMS, no analytics, no tracking.
 
 ```bash
 npm install          # install dependencies
-npm run dev          # start the dev server on http://localhost:5173
+npm run dev          # start the dev server on http://localhost:5401
 ```
 
 Optional but recommended before deploying:
@@ -111,7 +111,7 @@ inventing values.
 
 | Command | What it does |
 | --- | --- |
-| `npm run dev` | Vite dev server (host `0.0.0.0`, port 5173) |
+| `npm run dev` | Vite dev server (host `0.0.0.0`, port 5401) |
 | `npm run build` | Regenerates `sitemap.xml`/`robots.txt`, type-checks (`tsc -b`) and builds to `dist/` |
 | `npm run preview` | Serves `dist/` on port 4173, including SPA fallback for deep links |
 | `npm run typecheck` | `tsc -b --pretty` |

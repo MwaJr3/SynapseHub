@@ -1,0 +1,31 @@
+{
+  "name": "PhishLens (CLI)",
+  "slug": "phishlens-cli",
+  "shortDescription": "Explainable phishing email analysis: header, URL and attachment signals with honest framing.",
+  "tags": [
+    "security",
+    "cli",
+    "email",
+    "threat-detection"
+  ],
+  "stack": [
+    "Python",
+    "email",
+    "urllib.parse"
+  ],
+  "repositoryUrl": "",
+  "demoUrl": "",
+  "coverImage": "",
+  "features": [
+    "Header analysis (From/Reply-To mismatches), URL structure signals, attachment risks",
+    "Every warning carries a plain-language explanation and evidence",
+    "URLs defanged in reports and never visited",
+    "Synthetic fixtures (legitimate + phishy samples)",
+    "Structured JSON report with disclaimer"
+  ],
+  "knownLimitations": [
+    "Suspicious patterns are warnings, never proof of maliciousness",
+    "No ML classifier (rules only)",
+    "Screenshots pending capture"
+  ]
+}

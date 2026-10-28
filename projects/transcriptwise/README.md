@@ -31,7 +31,7 @@ cd ..
 python scripts/dev.py
 ```
 
-Open **http://localhost:5173**. The real API runs at **http://localhost:8000**, with development docs at `/docs`. The runner applies migrations, starts both services, and shuts down both on Ctrl+C. Add `--reload` for Python auto-reload; Vite already supports frontend HMR. Alternate ports: `python scripts/dev.py --api-port 8010 --web-port 5180`.
+Open **http://localhost:5308**. The real API runs at **http://localhost:8000**, with development docs at `/docs`. The runner applies migrations, starts both services, and shuts down both on Ctrl+C. Add `--reload` for Python auto-reload; Vite already supports frontend HMR. Alternate ports: `python scripts/dev.py --api-port 8010 --web-port 5312`.
 
 Windows PowerShell, without requiring script activation:
 
@@ -123,7 +123,7 @@ cd ..
 python scripts/test.py --e2e
 ```
 
-E2E starts an isolated API/worker on **8001** and Vite on **5174**, migrates a fresh `.e2e/browser-tests.db`, and never uses the developer database. Those ports must be free. Set `TW_PYTHON` if your virtual environment is elsewhere. Browser tests use the real local engine/API/database; the unavailable YouTube response is a deterministic browser fixture. External adapters use deterministic HTTP transports.
+E2E starts an isolated API/worker on **8001** and Vite on **5311**, migrates a fresh `.e2e/browser-tests.db`, and never uses the developer database. Those ports must be free. Set `TW_PYTHON` if your virtual environment is elsewhere. Browser tests use the real local engine/API/database; the unavailable YouTube response is a deterministic browser fixture. External adapters use deterministic HTTP transports.
 
 PostgreSQL tests (this **erases that disposable test database**):
 

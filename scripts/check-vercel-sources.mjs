@@ -4,7 +4,8 @@
 import { accessSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 const files = [
-  'src/apps/appRegistry.ts',
+  'challenges/src/apps/appRegistry.ts',
+  'challenges/src/index.ts',
   'src/components/projects/ChallengeCard.tsx',
   'src/features/synapsehub/WorkspaceRoute.tsx',
   'packages/synapse-client/index.ts',

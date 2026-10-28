@@ -31,7 +31,7 @@ SynapseHub/
 ├── company-platform/      Next.js — Velaqori Systems & Tamuzi Learning
 ├── workniche/             Next.js
 ├── vocal-separator/       AI music/vocal separation
-├── northstar-ux-engine/   the UX/UI fixer: audit, check, fix, watch, hooks
+├── tools/northstar/       the UX/UI engine: audit, scan, fix, watch, hooks
 ├── docs/                  stage records, deployment, audits, a11y report, feature matrix
 ├── prototypes/, tools/, scripts/, public/, src/   the root portfolio site and its build
 └── stock-price-*          two analysis notebooks/experiments
@@ -82,17 +82,17 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | GuessMaster | number guessing game (CLI) | `apps/guessmaster` | python-cli | 11 | yes | — |
 | HeaderCheck | HTTP security headers checker (CLI) | `apps/headercheck` | python-cli | 7 | yes | — |
 | HostWatch | endpoint security monitoring (CLI) | `apps/hostwatch` | python-cli | 6 | yes | — |
-| IncidentFlow | digital forensics evidence analyzer (CLI + SQLite) | `apps/incidentflow` | python-cli | 6 | yes | — |
+| IncidentFlow | digital forensics evidence analyzer (CLI + SQLite) | `apps/incidentflow-cli` | python-cli | 6 | yes | — |
 | LearnBridge | Offline-First E-Learning Platform | `apps/learnbridge` | react-spa | 17 | yes | — |
 | LearnPulse | Learning Analytics and Teacher Support Dashboard | `apps/learnpulse` | react-spa | 10 | yes | — |
 | LoginSense | suspicious login detection (CLI) | `apps/loginsense` | python-cli | 7 | yes | — |
-| NetScope | network traffic analyzer (CLI) | `apps/netscope` | python-cli | 7 | yes | — |
+| NetScope | network traffic analyzer (CLI) | `apps/netscope-cli` | python-cli | 7 | yes | — |
 | NoteKit | personal knowledge management (CLI + SQLite) | `apps/notekit` | python-cli | 10 | yes | — |
 | OpenLearn Commons | Open Educational Resource and Localization Hub | `apps/openlearn-commons` | react-spa | 13 | yes | — |
 | PassForge | secure password & passphrase generator (CLI) | `apps/passforge` | python-cli | 13 | yes | — |
 | PassMeter | password strength analyzer (CLI) | `apps/passmeter` | python-cli | 8 | yes | — |
 | PathWise | Diagnostic Assessment and Adaptive Learning Paths | `apps/pathwise` | react-spa | 14 | yes | — |
-| PhishLens | phishing email analyzer (CLI) | `apps/phishlens` | python-cli | 5 | yes | — |
+| PhishLens | phishing email analyzer (CLI) | `apps/phishlens-cli` | python-cli | 5 | yes | — |
 | PrepWise | interview preparation platform (FastAPI + SQLite) | `apps/prepwise` | python-api | 6 | yes | — |
 | QuizArena | collaborative quiz platform (FastAPI + SQLite) | `apps/quizarena` | python-api | 7 | yes | — |
 | QuizBox | quiz application (CLI) | `apps/quizbox` | python-cli | 10 | yes | — |
@@ -110,7 +110,7 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | TaskDeck | personal task manager (CLI) | `apps/taskdeck` | python-cli | 11 | yes | — |
 | TeachCraft | Teacher Content and Assessment Studio | `apps/teachcraft` | react-spa | 11 | yes | — |
 | Tessera | adaptive learning engine | `apps/tessera` | react-spa | 524 | yes | 7 |
-| ThreatIntel Desk | threat intelligence lookup & enrichment (CLI) | `apps/threatintel-desk` | python-cli | 6 | yes | — |
+| ThreatIntel Desk | threat intelligence lookup & enrichment (CLI) | `apps/threatintel-desk-cli` | python-cli | 6 | yes | — |
 | TidyFiles | file organizer (CLI) | `apps/tidyfiles` | python-cli | 12 | yes | — |
 | TutorSpring | AI Learning Companion | `apps/tutorspring` | react-spa | 13 | yes | — |
 | UniCore | university management system (CLI + SQLite) | `apps/unicore` | python-cli | 10 | yes | — |
@@ -167,7 +167,7 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | Root portfolio site | `npm test` | **696 passed** across 25 files |
 | Lint | `npm run lint` (root, all workspaces) | **0 errors**, 2 pre-existing `react-hooks/exhaustive-deps` warnings in `apps/frontpage` |
 | UX gate | `northstar check .` | **0 defects at P1 or above across 41 projects** |
-| UX audit (Northstar) | `node northstar-ux-engine/bin/northstar.mjs audit . --out docs/ux/audit-repository.md` | 41 projects · **22 defects · 99 occurrences** — all P3 (0 P0/P1/P2) |
+| UX audit (Northstar) | `northstar audit . --out docs/ux/audit-repository.md` | 41 projects · **22 defects · 99 occurrences** — all P3 (0 P0/P1/P2) |
 | UX scan (`ux-quality` CI step) | `npm run ux:scan -- --strict` | 22 frontends · 457 source files · **75 findings**, all minor `TOKEN-SPACING-01` in `vocal-separator`; 0 critical, 0 major |
 
 The five projects with their own suites were run where they have one: `apps/tessera`,

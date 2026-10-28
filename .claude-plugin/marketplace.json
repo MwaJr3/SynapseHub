@@ -12,7 +12,7 @@
       "author": {
         "name": "Mwangala / SynapseHub"
       },
-      "source": "./northstar-ux-engine",
+      "source": "./tools/northstar",
       "category": "design"
     }
   ]

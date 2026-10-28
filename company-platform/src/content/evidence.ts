@@ -37,9 +37,9 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/MySul/pull/1',
     subject: 'The cybersecurity projects (working apps)',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/mysul/mwangala',
+    inRepoPath: 'projects/mysul/mwangala-portfolio',
     detail:
-      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/), each with case-study pages (projects/<slug>/), plus a Python circuit-math reference with tests. Source now resides in this repository at projects/mysul/mwangala/.',
+      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/), with case-study pages, plus a Python circuit-math reference with tests. Merged 2026-10-28 into the single portfolio site at projects/mysul/mwangala-portfolio/ (apps served from public/demos/<slug>/).',
   },
   mySulReactPortfolio: {
     label: 'MySul PR #2 — Mwangala React portfolio site (Vite + TypeScript)',
@@ -55,18 +55,18 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/SynapseHub/pull/3',
     subject: 'The 60 challenge records',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'src/apps',
+    inRepoPath: 'challenges',
     detail:
-      'MERGED 2026-10-23. Adds the React/TypeScript portfolio catalogue for all 60 supplied Frontend Mentor challenges with /apps routes and local-first interactions. Lives in this repository (src/apps, src/data/challengeManifest.ts).',
+      'MERGED 2026-10-23. Adds the React/TypeScript catalogue for all 60 supplied Frontend Mentor challenges, with /apps routes and local-first interactions. Lives in this repository at challenges/ (moved from src/apps and src/data/challengeManifest.ts on 2026-10-28, unchanged in behaviour).',
   },
   stockPriceAnalysis: {
     label: 'SynapseHub PR #4 — stock time-series analysis v1 and v2',
     url: 'https://github.com/MwaJr3/SynapseHub/pull/4',
     subject: 'Stock Price Analysis — comparative financial time-series analytics',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'stock-price-analysis, stock-price-time-series-analysis',
+    inRepoPath: 'stock-price-analysis',
     detail:
-      'MERGED 2026-10-19 (69 files). Notebook-based v1 plus modular v2 with retrieval, validation, preprocessing, resampling, metrics, visualization, and reporting. Lives in this repository (stock-price-analysis/, stock-price-time-series-analysis/).',
+      'MERGED 2026-10-19 (69 files). Notebook-based v1 plus modular v2 with retrieval, validation, preprocessing, resampling, metrics, visualization, and reporting. Lives in this repository under stock-price-analysis/ and stock-price-time-series-analysis/.',
   },
   tenantCore: {
     label: 'CBU_Assignments PR #5 — TenantCore multi-tenant SaaS database',
@@ -119,7 +119,7 @@ function appAddendum(slug: string): string {
     `Working full-stack application built and verified in this repository at apps/${slug} (backend + frontend + tests), ` +
     'with demo and case-study pages vendored from the owner-supplied MySul source ' +
     '(https://github.com/MwaJr3/MySul/pull/1, merged 2026-10-23) at ' +
-    `projects/mysul/mwangala/apps/${slug} and projects/mysul/mwangala/projects/${slug}. ` +
+    `projects/mysul/mwangala-portfolio/public/demos/${slug}/ and projects/mysul/mwangala-portfolio/src/data/earlierWork.ts. ` +
     'Not publicly deployed; no hosted demo is claimed.'
   );
 }

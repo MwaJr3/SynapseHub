@@ -1,4 +1,4 @@
-# Engine module reused from apps/netscope (tested CLI engine) — behavior preserved.
+# Engine module reused from apps/netscope-cli (tested CLI engine) — behavior preserved.
 """Minimal libpcap-format reader (offline files only).
 
 Parses just enough structure for analysis: link-layer/IP/TCP/UDP/ICMP headers

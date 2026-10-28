@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react"
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: "0.0.0.0", port: 5177, strictPort: true,
+    host: "0.0.0.0", port: 5301, strictPort: true,
     allowedHosts: [".e2b.app", "localhost", "127.0.0.1"],
     proxy: Object.fromEntries(
       ["/api", "/docs", "/openapi.json"].map((path) => [
@@ -12,5 +12,5 @@ export default defineConfig({
       ]),
     ),
   },
-  preview: { host: "0.0.0.0", port: 5177, allowedHosts: [".e2b.app", "localhost"] },
+  preview: { host: "0.0.0.0", port: 5301, allowedHosts: [".e2b.app", "localhost"] },
 })

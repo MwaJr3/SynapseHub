@@ -13,7 +13,6 @@ const SkillsPage = lazy(() => import('@/pages/SkillsPage'));
 const JourneyPage = lazy(() => import('@/pages/JourneyPage'));
 const ApproachPage = lazy(() => import('@/pages/ApproachPage'));
 const OperationsPage = lazy(() => import('@/pages/OperationsPage'));
-const UXEnginePage = lazy(() => import('@/pages/UXEnginePage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 const SynapseHubPage = lazy(
@@ -45,7 +44,6 @@ export function AppRoutes() {
         <Route path="journey" element={<JourneyPage />} />
         <Route path="approach" element={<ApproachPage />} />
         <Route path="operations" element={<OperationsPage />} />
-        <Route path="ux-engine" element={<UXEnginePage />} />
         <Route path="contact" element={<ContactPage />} />
         <Route path="system" element={<SystemPage />} />
         <Route path="*" element={<NotFoundPage />} />

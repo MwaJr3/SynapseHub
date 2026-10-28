@@ -6,11 +6,14 @@ import type { ReactNode } from 'react';
 import { CompanyTokenSync } from '@/components/company-token-sync';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import type { Actor } from '@/lib/auth';
+import { externalAnchorProps } from '@/lib/links';
+import { portfolioLink } from '@/lib/portfolio-link';
 
 const PUBLIC_NAV = [
   { href: '/companies', label: 'Companies' },
   { href: '/solutions', label: 'Solutions' },
   { href: '/products', label: 'Products' },
+  { href: '/catalogue', label: 'Catalogue' },
   { href: '/ecosystem', label: 'Learning systems' },
   { href: '/support', label: 'IT triage' },
   { href: '/study-plan', label: 'Study planning' },
@@ -61,6 +64,7 @@ export function SiteHeader({ actor }: { actor: Actor | null }) {
 }
 
 export function SiteFooter() {
+  const portfolio = portfolioLink();
   return (
     <footer className="surface mt-16 border-t border-line">
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 text-sm text-muted sm:grid-cols-3">
@@ -81,6 +85,16 @@ export function SiteFooter() {
             <li><Link href="/case-studies" className="hover:underline">Case studies</Link></li>
             <li><Link href="/people" className="hover:underline">People</Link></li>
             <li><Link href="/about" className="hover:underline">About the platform</Link></li>
+            {/* The personal portfolio is a separate site reached from here, not a
+                section of this one. Unset means the link is simply absent, so
+                nothing points at a destination that does not exist. */}
+            {portfolio ? (
+              <li>
+                <a href={portfolio.href} {...externalAnchorProps} className="hover:underline">
+                  {portfolio.label}
+                </a>
+              </li>
+            ) : null}
           </ul>
         </div>
         <div>

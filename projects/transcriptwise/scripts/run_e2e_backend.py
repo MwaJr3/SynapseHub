@@ -21,7 +21,7 @@ os.environ.update(
         "EXPENSIVE_REQUESTS_PER_HOUR": "10000",
         "DAILY_ANALYSIS_LIMIT": "1000",
         "ALLOWED_HOSTS": "localhost,127.0.0.1",
-        "ALLOWED_ORIGINS": "http://127.0.0.1:5174,http://localhost:5174",
+        "ALLOWED_ORIGINS": "http://127.0.0.1:5311,http://localhost:5311",
         "YOUTUBE_ACCESS_TOKEN": "",
         "YOUTUBE_REFRESH_TOKEN": "",
         "YOUTUBE_ALLOWED_VIDEO_IDS": "",
