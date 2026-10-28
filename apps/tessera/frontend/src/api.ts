@@ -996,6 +996,74 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ uci, plies_played: pliesPlayed }),
     }),
+  // ------------------------------------------------- learner development, stage 7
+  developmentModel: () => request<DevelopmentModel>('/api/development/model'),
+  writeHypothesis: (body: {
+    scope: 'dimension' | 'process';
+    key: string;
+    claim: string;
+    rationale?: string;
+    support?: string[];
+    contradict?: string[];
+  }) =>
+    request<DevelopmentHypothesis & { confidence_because: string }>(
+      '/api/development/model/hypotheses',
+      { method: 'POST', body: JSON.stringify(body) },
+    ),
+  reviewHypothesis: (id: string, status: string, note: string) =>
+    request<DevelopmentHypothesis>(
+      `/api/development/model/hypotheses/${encodeURIComponent(id)}/review`,
+      { method: 'POST', body: JSON.stringify({ status, note }) },
+    ),
+  developmentCurriculum: () => request<Curriculum>('/api/development/curriculum'),
+  studyLesson: (slug: string) =>
+    request<{ slug: string; state: Lesson['state'] }>(
+      `/api/development/curriculum/${encodeURIComponent(slug)}/study`,
+      { method: 'POST' },
+    ),
+  practiseLesson: (slug: string, note = '') =>
+    request<{ slug: string; state: Lesson['state'] }>(
+      `/api/development/curriculum/${encodeURIComponent(slug)}/practice`,
+      { method: 'POST', body: JSON.stringify({ note }) },
+    ),
+  submitRetrieval: (slug: string, answer: string, criteriaMet: number[]) =>
+    request<RetrievalResult>(`/api/development/curriculum/${encodeURIComponent(slug)}/retrieval`, {
+      method: 'POST',
+      body: JSON.stringify({ answer, criteria_met: criteriaMet }),
+    }),
+  developmentBaseline: () => request<BaselineResponse>('/api/development/baseline'),
+  recordBaseline: (items: { key: string; answer: string }[], observation: Record<string, unknown>) =>
+    request<Baseline>('/api/development/baseline', {
+      method: 'POST',
+      body: JSON.stringify({ items, observation }),
+    }),
+  developmentProtocol: () => request<Protocol>('/api/development/protocol'),
+  saveProtocol: (sections: Record<string, string>, materialExamples: Record<string, string>) =>
+    request<Protocol>('/api/development/protocol', {
+      method: 'POST',
+      body: JSON.stringify({ sections, material_examples: materialExamples }),
+    }),
+  developmentExperiments: () =>
+    request<{ experiments: Experiment[]; min_sample: number; rule: string }>(
+      '/api/development/experiments',
+    ),
+  createExperiment: (body: {
+    technique: string;
+    hypothesis: string;
+    predicted?: string;
+    measure: string;
+  }) =>
+    request<Experiment>('/api/development/experiments', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  observeExperiment: (id: string, observed: string, outcome: string, sampleSize: number) =>
+    request<Experiment>(`/api/development/experiments/${encodeURIComponent(id)}/observe`, {
+      method: 'POST',
+      body: JSON.stringify({ observed, outcome, sample_size: sampleSize }),
+    }),
+  developmentGate: () => request<DevelopmentGate>('/api/development/gate'),
+
   // ------------------------------------------------- the learner's own material
   library: () => request<LibraryResponse>('/api/library'),
   createConcept: (body: {
@@ -1203,4 +1271,177 @@ export interface DeletionResult {
   rows: Record<string, number>;
   total: number;
   message: string;
+}
+
+/* ------------------------------------------------ learner development (stage 7) */
+
+export type Confidence = 'none' | 'low' | 'moderate' | 'high';
+
+export interface DevelopmentSuggestion {
+  scope: 'dimension' | 'process';
+  key: string;
+  claim: string;
+  rationale: string;
+  support: string[];
+  contradict: string[];
+  kind: 'claim' | 'question';
+}
+
+export interface DevelopmentHypothesis {
+  id: string;
+  scope: 'dimension' | 'process';
+  key: string;
+  claim: string;
+  rationale: string;
+  confidence: Confidence;
+  support: string[];
+  contradict: string[];
+  evidence: { kind: string; count: number }[];
+  status: 'open' | 'supported' | 'contradicted';
+  review_note: string;
+  reviewed_at: string | null;
+  created_at: string | null;
+}
+
+export interface DevelopmentArea {
+  scope: 'dimension' | 'process';
+  key: string;
+  name: string;
+  reported: number | null;
+  goal: string;
+  //: Null when the instrument never supplied a score. Never zero.
+  score: { value: number | null; instrument_label: string; reported_by: string } | null;
+  missing: boolean;
+  suggestion: DevelopmentSuggestion;
+  hypothesis: DevelopmentHypothesis | null;
+}
+
+export interface DevelopmentModel {
+  caveats: string[];
+  confidence_policy: Record<Confidence, string>;
+  evidence: Record<string, number>;
+  areas: DevelopmentArea[];
+}
+
+export interface BaselineItem {
+  key: string;
+  prompt: string;
+  options: string[];
+}
+
+export interface Baseline {
+  id: string;
+  items: { key: string; prompt: string; answer: string }[];
+  observation: Record<string, string | number | boolean>;
+  summary: string;
+  //: Always null. The type says so rather than leaving it to the reader.
+  score: null;
+  score_note: string;
+  created_at: string | null;
+}
+
+export interface BaselineResponse {
+  baseline: Baseline | null;
+  items: BaselineItem[];
+  observation_fields: { key: string; label: string }[];
+  why_no_score: string;
+}
+
+export interface Lesson {
+  slug: string;
+  title: string;
+  group: string;
+  group_title: string;
+  topics: { key: string; title: string }[];
+  model: string;
+  when_to_use: string;
+  when_not_to_use: string;
+  worked_example: string;
+  exercise: string;
+  judging_results: string;
+  traps: string;
+  retrieval_check: { question: string; criteria: string[] };
+  state: 'not_started' | 'studied' | 'practised' | 'retrieval_passed';
+  criteria_met: number[];
+  studied_at: string | null;
+  practised_at: string | null;
+}
+
+export interface NamedMethod {
+  name: string;
+  status: 'undefined';
+  problem: string;
+  open_alternative: string;
+  note: string;
+}
+
+export interface Curriculum {
+  lessons: Lesson[];
+  progress: {
+    total: number;
+    practised: number;
+    retrieval_passed: number;
+    groups: Record<string, { title: string; topics: string[]; lessons: number }>;
+  };
+  named_methods: NamedMethod[];
+  dimensions: { key: string; name: string; reported: number | null; goal: string; practices: string[]; drill: string; caution: string }[];
+  processes: { key: string; name: string; reported: number | null; trains: string; drill: string; fails_when: string }[];
+}
+
+export interface RetrievalResult {
+  slug: string;
+  state: Lesson['state'];
+  passed: boolean;
+  criteria_met: number[];
+  criteria_total: number;
+  self_assessed: boolean;
+  note: string;
+  still_open: string[];
+}
+
+export interface ProtocolSection {
+  key: string;
+  label: string;
+  text: string;
+  missing: boolean;
+}
+
+export interface Protocol {
+  id: string | null;
+  version: number;
+  sections: ProtocolSection[];
+  material_examples: (ProtocolSection & { guidance: string })[];
+  complete: boolean;
+  missing: string[];
+  updated_at: string | null;
+}
+
+export interface Experiment {
+  id: string;
+  technique: string;
+  hypothesis: string;
+  predicted: string;
+  measure: string;
+  sample_size: number;
+  observed: string;
+  outcome: 'pending' | 'weak_signal' | 'no_change' | 'supported' | 'abandoned';
+  created_at: string | null;
+  observed_at: string | null;
+  caveat: string;
+}
+
+export interface GateRequirement {
+  key: string;
+  label: string;
+  done: boolean;
+  detail: string;
+  missing: string[];
+}
+
+export interface DevelopmentGate {
+  requirements: GateRequirement[];
+  done: number;
+  total: number;
+  ready: boolean;
+  note: string;
 }

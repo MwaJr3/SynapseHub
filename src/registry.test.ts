@@ -166,9 +166,14 @@ describe('the registry and the tree agree', () => {
     const registered = new Set(registry.projects.map((entry) => entry.path));
     const excluded = new Set(registry.excluded.map((entry) => entry.path));
     const unregistered: string[] = [];
+    // Installed dependencies are never projects. A workspace inside `apps/`
+    // hoists its `node_modules` here, and without this the check reports a
+    // hundred directories that nobody registered because nobody could.
+    const IGNORED = new Set(['node_modules', '__pycache__', '.venv', 'dist', 'build', '.next']);
 
     const walk = (relative: string, depth: number): void => {
       for (const name of readdirSync(join(REPO, relative))) {
+        if (IGNORED.has(name)) continue;
         const child = `${relative}/${name}`;
         if (!statSync(join(REPO, child)).isDirectory()) continue;
         if (registered.has(child) || excluded.has(child)) continue;

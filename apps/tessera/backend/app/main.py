@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import config
 from .account_routes import router as account_router
+from .development_routes import router as development_router
 from .database import Base, SessionLocal, engine
 from .gamification import ensure_quests
 from .integration import ensure_configured_client
@@ -79,6 +80,7 @@ app.include_router(router)
 app.include_router(integration_router)
 app.include_router(quest_router)
 app.include_router(account_router)
+app.include_router(development_router)
 
 # After every API router, so the catch-all only sees paths the API did not claim.
 if config.FRONTEND_DIR:

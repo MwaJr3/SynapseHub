@@ -4,6 +4,7 @@ import { api, ApiError } from './api';
 import { ChessPage, ConceptPage, KnowledgePage, MapPage, SignInPage, SourcesPage, TodayPage } from './pages';
 import { CompetencyPage } from './competency';
 import { DataControls } from './data';
+import { DevelopmentPage } from './development';
 import { ConnectedApps, ConsentPage, readConsentParams } from './integration';
 import { LibraryPage } from './library';
 import { ProfilePage } from './profile';
@@ -18,6 +19,7 @@ type Route =
   | { name: 'today' }
   | { name: 'profile' }
   | { name: 'quests' }
+  | { name: 'development' }
   | { name: 'library' }
   | { name: 'review' }
   | { name: 'competency' }
@@ -34,6 +36,7 @@ const SECTION: Record<Route['name'], string> = {
   today: 'Today',
   profile: 'Profile',
   quests: 'Quests',
+  development: 'Development',
   library: 'Library',
   review: 'Review',
   competency: 'Competency',
@@ -51,6 +54,7 @@ const NAV: { label: string; route: Route }[] = [
   { label: 'Library', route: { name: 'library' } },
   { label: 'Review', route: { name: 'review' } },
   { label: 'Quests', route: { name: 'quests' } },
+  { label: 'Development', route: { name: 'development' } },
   { label: 'Competency', route: { name: 'competency' } },
   { label: 'Knowledge', route: { name: 'knowledge' } },
   { label: 'Map', route: { name: 'map' } },
@@ -212,6 +216,7 @@ export default function App() {
               <ReviewPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}
             {route.name === 'quests' && <QuestsPage />}
+            {route.name === 'development' && <DevelopmentPage />}
             {route.name === 'competency' && (
               <CompetencyPage onOpenConcept={(id) => setRoute({ name: 'concept', id })} />
             )}
