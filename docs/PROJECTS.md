@@ -420,28 +420,43 @@ The aim is not tidiness for its own sake. It is four properties:
 
 ### 8.1 The registry (do this regardless of everything else)
 
-A single `projects.json` at the repository root, generated from the tree and
-committed, listing every project:
+**Done — S1.** `projects.json` is generated from the tree and committed: 75 entries
+covering every directory under `apps/` and `projects/` plus the three root products,
+with the four non-project directories listed under `excluded` and a reason each. The
+guard is `src/registry.test.ts` (16 tests): it fails on a duplicate slug, a duplicate
+`devPort`, a duplicate npm package name, a port outside the block recorded for that
+project, a directory that is neither registered nor excluded, a registry path that no
+longer exists, a CLI variant whose product slug is unknown, and a deployment without a
+Vercel project name. The duplicate checks are pure functions, so the failure paths are
+asserted on synthetic data instead of only being asserted absent.
+
+The shape:
 
 ```json
 {
   "slug": "phishlens",
+  "name": "PhishLens",
   "path": "projects/phishlens",
   "owner": "velaqori",
-  "kind": "product",
+  "kind": "project",
+  "block": "companies",
   "interface": ["react", "fastapi"],
-  "deploys": ["vercel-api"],
-  "devPort": 5178,
+  "deploys": [{ "target": "vercel-api", "project": "synapsehub-phishlens-api" }],
+  "devPort": 5305,
   "package": "phishlens-frontend",
-  "pythonPackage": "app",
-  "variants": [{ "path": "apps/phishlens-cli", "interface": ["cli"], "kind": "catalogue" }]
+  "pythonPackage": "app"
 }
 ```
 
-with a test that fails on: a duplicate slug, a duplicate `devPort`, a duplicate npm
-package name, a directory under `apps/` or `projects/` that is missing from the
-registry, or a registry entry whose path does not exist. That single test is what
-prevents every future collision of these kinds — including ones not in this list.
+The CLI counterpart is its own entry, and `variantOf` names the product it belongs to:
+
+```json
+{ "slug": "phishlens-cli", "path": "apps/phishlens-cli", "kind": "catalogue",
+  "block": "catalogue", "interface": ["python", "cli"], "variantOf": "phishlens" }
+```
+
+That test is what prevents every future collision of these kinds — including ones not
+in this list.
 
 ### 8.2 The four duplicate slugs
 
@@ -504,7 +519,7 @@ staged change with a gate at each step, not one commit.
 
 | Stage | Change | Reversible? | Gate |
 | --- | --- | --- | --- |
-| **S1** | Add `projects.json` + the registry test. No files move. | Yes, delete one file | `npm test` green; duplicate detection demonstrated on a deliberate duplicate |
+| **S1** | Add `projects.json` + the registry test. No files move. | Yes, delete one file | **Done.** 16 tests in `src/registry.test.ts`; a duplicate port injected into `projects.json` fails the suite |
 | **S2** | Fix the collisions that need no move: rename the four CLI slugs, disambiguate the two `mwangala-portfolio` packages, renumber `projects/` ports to 5300+ | Partly (renames are in history) | Every slug unique; every port unique; site still builds — **done, see §7.5** |
 | **S3** | Add a CI matrix so each project's own suite runs | Yes | CI green, and a deliberately broken test in one project fails CI |
 | **S4** | Move `apps/` → `catalogue/` + `companies/`; update workspaces, Docker context, docs | No, but mechanical | Every workspace `npm ci && npm test`; Tessera image context updated |
