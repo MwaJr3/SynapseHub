@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 import { ChallengeCard } from '@/components/projects/ChallengeCard';
 import { profileConfig, links } from '@/config/site';
 

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
-import { getAppDefinition } from '@/apps/appRegistry';
+import type { ChallengeRecord } from '../manifest';
+import { getAppDefinition } from '../apps/appRegistry';
 
 interface BookHit { key: string; title: string; author_name?: string[]; first_publish_year?: number }
 

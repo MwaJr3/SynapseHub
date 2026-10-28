@@ -55,18 +55,18 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/SynapseHub/pull/3',
     subject: 'The 60 challenge records',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'src/apps',
+    inRepoPath: 'challenges',
     detail:
-      'MERGED 2026-10-23. Adds the React/TypeScript portfolio catalogue for all 60 supplied Frontend Mentor challenges with /apps routes and local-first interactions. Lives in this repository (src/apps, src/data/challengeManifest.ts).',
+      'MERGED 2026-10-23. Adds the React/TypeScript catalogue for all 60 supplied Frontend Mentor challenges, with /apps routes and local-first interactions. Lives in this repository at challenges/ (moved from src/apps and src/data/challengeManifest.ts on 2026-10-28, unchanged in behaviour).',
   },
   stockPriceAnalysis: {
     label: 'SynapseHub PR #4 — stock time-series analysis v1 and v2',
     url: 'https://github.com/MwaJr3/SynapseHub/pull/4',
     subject: 'Stock Price Analysis — comparative financial time-series analytics',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'stock-price-analysis, stock-price-time-series-analysis',
+    inRepoPath: 'stock-price-analysis',
     detail:
-      'MERGED 2026-10-19 (69 files). Notebook-based v1 plus modular v2 with retrieval, validation, preprocessing, resampling, metrics, visualization, and reporting. Lives in this repository (stock-price-analysis/, stock-price-time-series-analysis/).',
+      'MERGED 2026-10-19 (69 files). Notebook-based v1 plus modular v2 with retrieval, validation, preprocessing, resampling, metrics, visualization, and reporting. Lives in this repository under stock-price-analysis/ and stock-price-time-series-analysis/.',
   },
   tenantCore: {
     label: 'CBU_Assignments PR #5 — TenantCore multi-tenant SaaS database',

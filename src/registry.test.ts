@@ -307,6 +307,7 @@ describe('the failure modes are real, not merely absent', () => {
     owner: null,
     kind: 'catalogue',
     interface: ['cli'],
+    deployment: 'catalogue',
     deploys: [],
     devPort: 5200,
     package: 'alpha',

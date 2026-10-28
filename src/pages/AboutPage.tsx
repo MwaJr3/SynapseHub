@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 export default function AboutPage() {
   usePageMeta({ title: 'About Mwangala', description: 'About Mwangala and a portfolio catalogue of frontend challenge briefs prepared for future implementation.', path: '/about' });

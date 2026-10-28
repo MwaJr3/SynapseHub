@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
-import { connectFourWinner, shuffled, ticTacToeResult, type Disc, type Mark } from '@/apps/gameLogic';
+import type { ChallengeRecord } from '../manifest';
+import { connectFourWinner, shuffled, ticTacToeResult, type Disc, type Mark } from '../apps/gameLogic';
 
 const sampleWords = ['ACCESSIBILITY', 'RESPONSIVE', 'JAVASCRIPT', 'COMPONENT', 'INTERACTION'];
 const quizQuestions = [

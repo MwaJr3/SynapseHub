@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { appRouteCount, appSlugs, getAppDefinition } from './appRegistry';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '../manifest';
 
 describe('interactive prototype registry', () => {
   it('provides one explicit app mode for every challenge slug', () => {

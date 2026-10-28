@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 interface Task { id: string; title: string; column: string; done: boolean }
 const columns = ['Todo', 'Doing', 'Done'];

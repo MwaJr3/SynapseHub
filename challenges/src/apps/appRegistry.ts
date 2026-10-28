@@ -1,4 +1,4 @@
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 export type AppMode =
   | 'collection' | 'calculator' | 'game' | 'api' | 'editor' | 'kanban'

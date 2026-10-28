@@ -27,6 +27,9 @@ const strict = process.argv.includes('--strict');
 async function discoverTargets(): Promise<ScanTarget[]> {
   const targets: ScanTarget[] = [
     { label: 'Portfolio website', root: join(repoRoot, 'src') },
+    // The challenge collection is its own directory but still ships in the site,
+    // so it stays in scope for the detectors after the 2026-10-28 move.
+    { label: 'Challenge collection', root: join(repoRoot, 'challenges/src') },
     {
       label: 'Company platform (Next.js)',
       root: join(repoRoot, 'company-platform/src'),

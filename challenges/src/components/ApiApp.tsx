@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 interface ApiResult { title: string; subtitle?: string; href?: string; image?: string }
 interface GitHubUser { login: string; name: string | null; public_repos: number; followers: number; html_url: string; avatar_url: string; bio: string | null; location: string | null; blog: string }

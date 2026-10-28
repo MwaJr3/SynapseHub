@@ -4,7 +4,7 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { ChallengeCard } from '@/components/projects/ChallengeCard';
 import { Button } from '@/components/ui/Button';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 const pageSize = 12;
 const categories = [...new Set(challengeManifest.map((project) => project.category))].sort();

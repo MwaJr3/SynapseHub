@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { isConfigured, resolveExternalUrl } from './site';
-import { challengeManifest, validateChallengeManifest } from '@/data/challengeManifest';
+import { challengeManifest, validateChallengeManifest } from '@challenges';
 
 describe('external URL validation', () => {
   it('accepts HTTPS URLs and normalises them', () => {

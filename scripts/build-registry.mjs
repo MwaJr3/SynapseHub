@@ -306,6 +306,8 @@ function build() {
       deployment:
         'Nothing deploys: hosting configuration was removed on 2026-10-28. pausedDeployment records what used to be live, for the redeployment; it is not configuration.',
       generatedBy: 'node scripts/build-registry.mjs — edit REGISTRY_META there, not this file.',
+      challenges:
+        'The 60 interactive prototypes live in challenges/, a self-contained collection with its own package boundary and one @challenges alias. Not a deployable project: it is content the portfolio site renders. Prepared for extraction to its own branch (docs/branch-splits.md).',
     },
     projects,
   };

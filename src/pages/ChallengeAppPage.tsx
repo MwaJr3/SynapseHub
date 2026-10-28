@@ -1,16 +1,16 @@
 import { Link, useParams } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
-import { getAppDefinition } from '@/apps/appRegistry';
-import { CollectionApp } from '@/components/apps/CollectionApp';
-import { GameApp } from '@/components/apps/GameApp';
-import { CalculatorApp, TextEditorApp } from '@/components/apps/UtilityApp';
-import { ApiApp } from '@/components/apps/ApiApp';
-import { KanbanApp } from '@/components/apps/KanbanApp';
-import { TimerApp, ClockApp } from '@/components/apps/TimerApp';
-import { LocalDemoForm, StoreApp } from '@/components/apps/FormAndStoreApps';
-import { EditorialApp } from '@/components/apps/EditorialApp';
-import { GalleryApp } from '@/components/apps/GalleryApp';
+import { challengeManifest } from '@challenges';
+import { getAppDefinition } from '@challenges';
+import { CollectionApp } from '@challenges/components/CollectionApp';
+import { GameApp } from '@challenges/components/GameApp';
+import { CalculatorApp, TextEditorApp } from '@challenges/components/UtilityApp';
+import { ApiApp } from '@challenges/components/ApiApp';
+import { KanbanApp } from '@challenges/components/KanbanApp';
+import { TimerApp, ClockApp } from '@challenges/components/TimerApp';
+import { LocalDemoForm, StoreApp } from '@challenges/components/FormAndStoreApps';
+import { EditorialApp } from '@challenges/components/EditorialApp';
+import { GalleryApp } from '@challenges/components/GalleryApp';
 
 export default function ChallengeAppPage() {
   const { slug } = useParams();

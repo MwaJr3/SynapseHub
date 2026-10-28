@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 import { ChallengeVisual } from '@/components/projects/ChallengeVisual';
 import { ChallengeLinks } from '@/components/projects/ChallengeLinks';
 import { CopyLinkButton } from '@/components/projects/CopyLinkButton';

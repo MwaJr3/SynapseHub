@@ -9,7 +9,7 @@ import './styles/apps.css';
 
 import App from './App';
 import { ThemeProvider } from '@/providers/ThemeProvider';
-import { validateChallengeManifest } from '@/data/challengeManifest';
+import { validateChallengeManifest } from '@challenges';
 
 const manifestIssues = validateChallengeManifest();
 if (import.meta.env.DEV && manifestIssues.length) {

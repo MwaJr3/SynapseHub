@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
+import { challengeManifest } from '@challenges';
 
 const capabilities = [
   { title: 'Responsive interface design', detail: 'Reading a brief, translating hierarchy into page structure, and considering how layout adapts from compact to wide screens.', categories: ['Landing pages', 'Multi-page websites', 'Responsive UI components'] },

@@ -503,11 +503,12 @@ SynapseHub/
 ├── catalogue/                  38 educational builds: the 34 unowned apps plus the
 │                               four CLIs whose slug was taken by a web product
 ├── sites/
-│   ├── portfolio/              the root React site (current)
-│   ├── portfolio-case-studies/ projects/mysul/mwangala-portfolio
-│   └── archive/                projects/mysul/mwangala, Cpp Projects, WebstormProjects
+│   └── portfolio/              projects/mysul/mwangala-portfolio — the single
+│                               portfolio (the legacy one merged into it 2026-10-28)
+├── challenges/                 60 interactive prototypes, self-contained and
+│                               prepared for its own branch (docs/branch-splits.md)
 ├── coursework/
-│   └── cbu-assignments/
+│   └── cbu-assignments/        prepared for its own branch (docs/branch-splits.md)
 ├── products/
 │   ├── company-platform/       the Next.js site that publishes the catalogue
 │   ├── workniche/

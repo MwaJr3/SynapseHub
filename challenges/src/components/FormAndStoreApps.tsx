@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 export function LocalDemoForm({ project }: { project: ChallengeRecord }) {
   const [email, setEmail] = useState('');

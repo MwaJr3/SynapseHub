@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      // The challenge collection is its own unit, extractable to a repository of
+      // its own; the site reaches it through this one alias and nothing else.
+      '@challenges': fileURLToPath(new URL('./challenges/src', import.meta.url)),
     },
   },
   server: {
@@ -39,6 +42,10 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     css: false,
-    include: ['src/**/*.test.{ts,tsx}', 'tools/northstar/engine/**/*.test.ts'],
+    include: [
+      'src/**/*.test.{ts,tsx}',
+      'challenges/src/**/*.test.{ts,tsx}',
+      'tools/northstar/engine/**/*.test.ts',
+    ],
   },
 });

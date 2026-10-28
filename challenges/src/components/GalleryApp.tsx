@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 interface Artwork { id: string; title: string; artist: string; preview: string }
 export function GalleryApp({ project }: { project: ChallengeRecord }) {

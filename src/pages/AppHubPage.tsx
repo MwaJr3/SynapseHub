@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
-import { challengeManifest } from '@/data/challengeManifest';
-import { getAppDefinition } from '@/apps/appRegistry';
+import { challengeManifest } from '@challenges';
+import { getAppDefinition } from '@challenges';
 
 export default function AppHubPage() {
   const [query, setQuery] = useState('');

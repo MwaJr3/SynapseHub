@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 const scrollToSection = (id: string) => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

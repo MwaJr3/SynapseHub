@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { ChallengeRecord } from '@/data/challengeManifest';
+import type { ChallengeRecord } from '../manifest';
 
 export function CalculatorApp({ project }: { project: ChallengeRecord }) {
   if (project.slug === 'password-generator-app') return <PasswordGenerator />;
