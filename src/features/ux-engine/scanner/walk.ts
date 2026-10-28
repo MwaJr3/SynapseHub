@@ -11,7 +11,7 @@ import { DETECTORS } from './detectors';
 import { resetScanIds } from './builder';
 import type { Confidence, ScanReport, Severity } from './types';
 
-const SOURCE_EXTENSIONS = new Set(['.tsx', '.ts', '.css']);
+const SOURCE_EXTENSIONS = new Set(['.tsx', '.ts', '.css', '.html']);
 const IGNORED_SEGMENTS = new Set([
   'node_modules',
   '.next',
@@ -48,6 +48,11 @@ async function walk(root: string): Promise<string[]> {
 export interface ScanTarget {
   label: string;
   root: string;
+  /**
+   * Individual files outside `root` that still belong to the target, e.g. the
+   * package's `index.html` entry document one level above `src`.
+   */
+  extraFiles?: string[];
 }
 
 export async function scanRoot(
@@ -55,7 +60,15 @@ export async function scanRoot(
   repoRoot: string,
 ): Promise<ScanReport> {
   resetScanIds();
-  const paths = await walk(target.root);
+  const walked = await walk(target.root);
+  const seen = new Set(walked);
+  const paths = walked;
+  for (const extra of target.extraFiles ?? []) {
+    if (!seen.has(extra)) {
+      seen.add(extra);
+      paths.push(extra);
+    }
+  }
   const findings = [];
   let filesScanned = 0;
 

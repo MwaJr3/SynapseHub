@@ -10,6 +10,8 @@
   --accent: #3b6fd4;
   --accent-strong: #2f5ab0;
   --accent-soft: #eef4ff;
+  /* Foreground on accent fills; passes 4.5:1 on --accent and --accent-strong in each theme. */
+  --accent-contrast: #ffffff;
   --danger: #b42318;
 }
 
@@ -22,6 +24,7 @@ html.dark {
   --accent: #7ea6f0;
   --accent-strong: #9dbaf5;
   --accent-soft: #1b2740;
+  --accent-contrast: #0b0f16;
   --danger: #f0887d;
 }
 
@@ -29,21 +32,25 @@ html[data-company='velaqori-systems'] {
   --accent: #3b6fd4;
   --accent-strong: #2f5ab0;
   --accent-soft: #eef4ff;
+  --accent-contrast: #ffffff;
 }
 html.dark[data-company='velaqori-systems'] {
   --accent: #7ea6f0;
   --accent-strong: #9dbaf5;
   --accent-soft: #1b2740;
+  --accent-contrast: #0b0f16;
 }
 html[data-company='tamuzi-learning'] {
   --accent: #e07b28;
   --accent-strong: #c26213;
   --accent-soft: #fff6ed;
+  --accent-contrast: #0b0f16;
 }
 html.dark[data-company='tamuzi-learning'] {
   --accent: #f0a566;
   --accent-strong: #f5b985;
   --accent-soft: #2f2012;
+  --accent-contrast: #0b0f16;
 }
 
 html,
@@ -84,7 +91,7 @@ body {
   }
   .btn-primary {
     background: var(--accent);
-    color: #ffffff;
+    color: var(--accent-contrast);
   }
   .btn-primary:hover {
     background: var(--accent-strong);

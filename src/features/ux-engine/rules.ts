@@ -66,6 +66,38 @@ export const RULES: EngineRule[] = [
     defaultSeverity: 'major',
     patternIds: ['P62', 'P41', 'P39'],
   },
+  {
+    id: 'A11Y-HEADING-01',
+    family: 'A11Y',
+    statement:
+      'Headings descend without skipping levels (h1 to h2 to h3) so the document outline stays navigable for screen-reader users.',
+    defaultSeverity: 'minor',
+    patternIds: ['P62', 'P41'],
+  },
+  {
+    id: 'A11Y-LANG-01',
+    family: 'A11Y',
+    statement:
+      'The root html element declares a non-empty lang attribute so assistive technology pronounces content with the correct voice.',
+    defaultSeverity: 'major',
+    patternIds: ['P62', 'P66'],
+  },
+  {
+    id: 'A11Y-KEYBOARD-02',
+    family: 'A11Y',
+    statement:
+      'Key handlers are attached to native interactive elements or elements carrying an interactive widget role, never to generic containers.',
+    defaultSeverity: 'major',
+    patternIds: ['P46', 'P10', 'P20'],
+  },
+  {
+    id: 'A11Y-SCROLL-01',
+    family: 'A11Y',
+    statement:
+      'Scrollable regions are keyboard reachable (native scroll containers, tabindex or a roving-tabindex widget) and never trap focus.',
+    defaultSeverity: 'minor',
+    patternIds: ['P46', 'P10'],
+  },
 
   // --- State completeness --------------------------------------------------
   {

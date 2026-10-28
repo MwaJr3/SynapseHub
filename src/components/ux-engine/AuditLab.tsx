@@ -533,7 +533,7 @@ function ColorField({
   return (
     <label className="text-xs text-ink-muted">
       {label}
-      <span className="mt-1 flex items-center gap-2 rounded-lg border border-line-strong bg-surface-raised px-2 py-1.5">
+      <span className="mt-1 flex h-10 items-center gap-2 rounded-lg border border-line-strong bg-surface-raised px-3">
         <input
           type="color"
           value={value}

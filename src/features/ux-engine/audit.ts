@@ -95,6 +95,35 @@ export const RULE_GUIDANCE: Record<
     verification:
       'Inspect the accessibility tree; the control exposes a non-empty accessible name.',
   },
+  'A11Y-HEADING-01': {
+    impactedUsers: 'screen-reader users navigating by heading',
+    remediation:
+      'Insert the missing heading level or restructure the outline so levels descend by one; never skip a level for visual sizing — style headings with CSS instead.',
+    verification:
+      'Inspect the composed page outline (axe heading-order or the browser accessibility tree); levels descend without gaps.',
+  },
+  'A11Y-LANG-01': {
+    impactedUsers:
+      'screen-reader users and anyone listening to content read aloud',
+    remediation:
+      'Add a non-empty lang attribute to the html element (e.g. lang="en"); use lang attributes on inline passages in other languages.',
+    verification:
+      'Inspect the document element; html carries the correct BCP-47 language tag and axe document-title/lang rules pass.',
+  },
+  'A11Y-KEYBOARD-02': {
+    impactedUsers: 'keyboard and switch-device users',
+    remediation:
+      'Move the handler onto a native interactive element (button, a, input) or give the element the matching interactive role plus tabindex and full key handling (Enter/Space).',
+    verification:
+      'Complete the action using only the keyboard; confirm the role and key support in the accessibility tree.',
+  },
+  'A11Y-SCROLL-01': {
+    impactedUsers: 'keyboard and screen-reader users',
+    remediation:
+      'Make the scroll container keyboard reachable with tabindex="0" and an accessible name when appropriate, or use a native scrollable control; verify focus can leave the region.',
+    verification:
+      'Tab to the region and scroll it with arrow/Page keys; axe scrollable-region-focusable passes in a real browser and focus is not trapped.',
+  },
   'STATE-COMPLETENESS-01': {
     impactedUsers: 'all users when the component enters an undesigned state',
     remediation:

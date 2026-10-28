@@ -575,6 +575,187 @@ function hexes(declaration: string | undefined): string[] {
   return [...declaration.matchAll(HEX_CAPTURE)].map((match) => match[0]);
 }
 
+// ---------------------------------------------------------------------------
+// CSS custom-property resolution — turn var(--token) colour references back
+// into concrete hex values so contrast math covers token-driven stylesheets.
+// ---------------------------------------------------------------------------
+
+/**
+ * A custom-property scope: every `:root` or themed block
+ * (`html.dark`, `html[data-company=…]`) becomes one context so colour pairs
+ * are always evaluated inside the theme that defines them, never as an
+ * impossible cross-theme combination.
+ */
+interface ThemeContext {
+  selector: string;
+  props: Map<string, string>;
+}
+
+function collectThemeContexts(source: string): ThemeContext[] {
+  const contexts: ThemeContext[] = [];
+  for (const rule of parseCssRules(source)) {
+    const props = new Map<string, string>();
+    for (const match of rule.body.matchAll(
+      /(--[\w-]+)\s*:\s*([^;]+?)\s*(?:;|$)/gm,
+    )) {
+      props.set(match[1]!, match[2]!.trim());
+    }
+    if (props.size > 0) contexts.push({ selector: rule.selector, props });
+  }
+  return contexts;
+}
+
+/** Split a selector into compound tokens, dropping combinators. */
+function selectorTokens(selector: string): Set<string> {
+  return new Set(
+    selector
+      .split(/[\s>+~]+/)
+      .map((token) => token.trim())
+      .filter(Boolean),
+  );
+}
+
+/**
+ * Base (`:root`) properties with every ancestor theme block layered in source
+ * order and the context's own declarations last. A block counts as an
+ * ancestor when every compound token it declares also appears in the current
+ * selector — so `.dark` contributes its tokens to
+ * `.dark [data-tone='contrast']` (matching real custom-property inheritance)
+ * but never to the light `[data-tone='contrast']` block.
+ */
+function propertiesForContext(
+  contexts: ThemeContext[],
+  context: ThemeContext,
+): Map<string, string> {
+  const base = contexts.find((entry) => entry.selector === ':root');
+  const merged = new Map<string, string>(base?.props ?? []);
+  if (context === base) return merged;
+  const ownTokens = selectorTokens(context.selector);
+  for (const candidate of contexts) {
+    if (candidate === base || candidate === context) continue;
+    const candidateTokens = selectorTokens(candidate.selector);
+    const isAncestor = [...candidateTokens].every((token) =>
+      ownTokens.has(token),
+    );
+    if (!isAncestor) continue;
+    for (const [name, value] of candidate.props) merged.set(name, value);
+  }
+  for (const [name, value] of context.props) merged.set(name, value);
+  return merged;
+}
+
+function tripletToHex(value: string): string | null {
+  const channels = value
+    .trim()
+    .split(/[\s,]+/)
+    .filter(Boolean)
+    .map(Number);
+  if (
+    channels.length !== 3 ||
+    channels.some((channel) => !Number.isInteger(channel) || channel < 0 || channel > 255)
+  ) {
+    return null;
+  }
+  return (
+    '#' +
+    channels.map((channel) => channel.toString(16).padStart(2, '0')).join('')
+  );
+}
+
+/**
+ * Resolve one CSS colour expression inside a single theme context. Returns
+ * null when the value cannot be computed honestly (alpha over an unknown
+ * backdrop, hsl/named colours, undefined or circular variables).
+ */
+function resolveColor(
+  expression: string,
+  props: Map<string, string>,
+  seen: ReadonlySet<string> = new Set(),
+  depth = 0,
+): string | null {
+  if (depth > 5) return null;
+  const expr = expression.trim();
+  const literal = expr.match(new RegExp(`^${HEX}$`));
+  if (literal) return literal[0];
+
+  const varRef = expr.match(/^var\(\s*(--[\w-]+)\s*(?:,\s*(.+?))?\s*\)$/);
+  if (varRef) {
+    const name = varRef[1]!;
+    if (seen.has(name)) return null;
+    const next = new Set(seen).add(name);
+    const raw = props.get(name);
+    if (raw !== undefined) return resolveColor(raw, props, next, depth + 1);
+    return varRef[2]
+      ? resolveColor(varRef[2], props, next, depth + 1)
+      : null;
+  }
+
+  const rgb = expr.match(/^rgba?\(\s*(.+?)\s*\)$/);
+  if (rgb) {
+    const inner = rgb[1]!;
+    // Alpha composes over an unknown backdrop; the ratio is not knowable.
+    if (inner.includes('/') || inner.split(',').length === 4) return null;
+    const innerVar = inner.match(
+      /^var\(\s*(--[\w-]+)\s*(?:,\s*([^)]*))?\)$/,
+    );
+    if (innerVar) {
+      const name = innerVar[1]!;
+      if (seen.has(name)) return null;
+      const raw = props.get(name) ?? innerVar[2];
+      if (raw === undefined) return null;
+      return tripletToHex(raw);
+    }
+    return tripletToHex(inner);
+  }
+  return null;
+}
+
+/**
+ * Split a declaration into whole colour expressions, walking balanced
+ * parentheses so `rgb(var(--token))` stays one expression instead of being
+ * torn into a nested `var(...)` fragment.
+ */
+function* iterateColorExpressions(
+  declaration: string,
+): Generator<string> {
+  const re = /#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b|(?:rgba?|var)\s*\(/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(declaration)) !== null) {
+    if (!match[0].endsWith('(')) {
+      yield match[0];
+      continue;
+    }
+    let depth = 0;
+    let i = re.lastIndex - 1;
+    for (; i < declaration.length; i += 1) {
+      if (declaration[i] === '(') depth += 1;
+      else if (declaration[i] === ')') {
+        depth -= 1;
+        if (depth === 0) {
+          i += 1;
+          break;
+        }
+      }
+    }
+    yield declaration.slice(match.index, i);
+    re.lastIndex = i;
+  }
+}
+
+/** Every resolvable solid colour mentioned in a declaration, literals included. */
+function colorsIn(
+  declaration: string | undefined,
+  props: Map<string, string>,
+): string[] {
+  if (!declaration) return [];
+  const colors: string[] = [];
+  for (const expression of iterateColorExpressions(declaration)) {
+    const resolved = resolveColor(expression, props);
+    if (resolved) colors.push(resolved);
+  }
+  return [...new Set(colors)];
+}
+
 function worstFailingPair(foregrounds: string[], backgrounds: string[]) {
   let worst: {
     ratio: number;
@@ -600,26 +781,53 @@ const detectContrastPairs: Detector = ({ filePath, lines, source }) => {
   const findings: ScanFinding[] = [];
 
   if (filePath.endsWith('.css')) {
+    const contexts = collectThemeContexts(source);
+    const scopes: ThemeContext[] =
+      contexts.length > 0
+        ? contexts
+        : [{ selector: ':root', props: new Map() }];
+    const reportedPairs = new Set<string>();
     for (const rule of parseCssRules(source)) {
       // :root blocks define token variables, not a rendered color pair.
       if (/:root|@media|@keyframes/.test(rule.selector)) continue;
-      const foregrounds = hexes(
-        rule.body.match(/(?:^|;)\s*color\s*:\s*([^;}]+)/)?.[1],
-      );
-      const backgrounds = hexes(
-        rule.body.match(/background(?:-color)?\s*:\s*([^;}]+)/)?.[1],
-      );
-      const worst = worstFailingPair(foregrounds, backgrounds);
-      if (!worst) continue;
-      findings.push(
-        buildScanFinding({
-          ruleId: 'A11Y-CONTRAST-01',
-          evidence: `Rule "${rule.selector.split('\n').pop()}" hardcodes ${worst.fg} on ${worst.bg}: ${worst.ratio}:1 against a ${worst.required}:1 AA requirement.`,
-          filePath,
-          line: rule.headerLine,
-          snippet: `${rule.selector} { … }`.slice(0, 160),
-        }),
-      );
+      let backgroundDeclaration = rule.body.match(
+        /(?:^|;)\s*background-color\s*:\s*([^;}]+)/,
+      )?.[1];
+      if (backgroundDeclaration === undefined) {
+        const shorthand = rule.body.match(
+          /(?:^|;)\s*background\s*:\s*([^;}]+)/,
+        )?.[1];
+        // Gradients, images and urls do not resolve to a single backdrop colour.
+        if (shorthand && !/gradient|url\(|image\(/.test(shorthand)) {
+          backgroundDeclaration = shorthand;
+        }
+      }
+      const foregroundDeclaration = rule.body.match(
+        /(?:^|;)\s*color\s*:\s*([^;}]+)/,
+      )?.[1];
+      for (const context of scopes) {
+        const props = propertiesForContext(contexts, context);
+        const foregrounds = colorsIn(foregroundDeclaration, props);
+        const backgrounds = colorsIn(backgroundDeclaration, props);
+        const worst = worstFailingPair(foregrounds, backgrounds);
+        if (!worst) continue;
+        const pairKey = `${rule.headerLine}|${worst.fg}|${worst.bg}`;
+        if (reportedPairs.has(pairKey)) continue;
+        reportedPairs.add(pairKey);
+        const theme =
+          context.selector === ':root'
+            ? ''
+            : ` (theme \`${context.selector.trim()}\`)`;
+        findings.push(
+          buildScanFinding({
+            ruleId: 'A11Y-CONTRAST-01',
+            evidence: `Rule "${rule.selector.split('\n').pop()}"${theme} pairs ${worst.fg} on ${worst.bg}: ${worst.ratio}:1 against a ${worst.required}:1 AA requirement.`,
+            filePath,
+            line: rule.headerLine,
+            snippet: `${rule.selector} { … }`.slice(0, 160),
+          }),
+        );
+      }
     }
     return findings;
   }
@@ -726,6 +934,174 @@ const detectAutofocus: Detector = ({ filePath, source }) => {
   return findings;
 };
 
+// ---------------------------------------------------------------------------
+// A11Y-HEADING-01 — heading levels must not skip (h1 then h3)
+// ---------------------------------------------------------------------------
+
+const HEADING_TAG = /^h([1-6])$/;
+
+const detectHeadingOrder: Detector = ({ filePath, source }) => {
+  if (!/\.[jt]sx$/.test(filePath)) return [];
+  const findings: ScanFinding[] = [];
+  let previous = 0;
+  for (const tag of extractTags(source)) {
+    if (tag.isClose) continue;
+    const match = HEADING_TAG.exec(tag.tag);
+    if (!match) continue;
+    const level = Number(match[1]);
+    // Components may legitimately start at any level; only downward skips are
+    // defects, and per-file analysis cannot see headings composed elsewhere.
+    if (previous > 0 && level > previous + 1) {
+      findings.push(
+        buildScanFinding({
+          ruleId: 'A11Y-HEADING-01',
+          evidence: `Heading level jumps from h${previous} to h${level}; insert the missing level or restructure the outline (per-file analysis — verify the composed page).`,
+          filePath,
+          line: tag.line,
+          snippet: tag.text.replaceAll('\n', ' ').trim().slice(0, 160),
+          severity: 'minor',
+          confidence: 'medium',
+        }),
+      );
+    }
+    previous = level;
+  }
+  return findings;
+};
+
+// ---------------------------------------------------------------------------
+// A11Y-LANG-01 — html entry documents must declare a language
+// ---------------------------------------------------------------------------
+
+const detectDocumentLanguage: Detector = ({ filePath, source }) => {
+  if (!filePath.endsWith('.html')) return [];
+  const htmlTag = source.match(/<html\b[^>]*>/i);
+  if (!htmlTag || /\blang\s*=\s*["'][^"']+["']/.test(htmlTag[0])) return [];
+  const line = source.slice(0, htmlTag.index).split('\n').length;
+  return [
+    buildScanFinding({
+      ruleId: 'A11Y-LANG-01',
+      evidence:
+        'The <html> element carries no non-empty lang attribute; assistive technology needs it to select the correct pronunciation.',
+      filePath,
+      line,
+      snippet: htmlTag[0].trim().slice(0, 160),
+      severity: 'major',
+      confidence: 'high',
+    }),
+  ];
+};
+
+// ---------------------------------------------------------------------------
+// A11Y-KEYBOARD-02 — key handlers on non-interactive elements
+// ---------------------------------------------------------------------------
+
+const NATIVE_INTERACTIVE_TAGS = new Set([
+  'button',
+  'a',
+  'input',
+  'select',
+  'textarea',
+  'summary',
+  'details',
+]);
+
+const INTERACTIVE_WIDGET_ROLES = new Set([
+  'button',
+  'link',
+  'checkbox',
+  'menuitem',
+  'menuitemcheckbox',
+  'menuitemradio',
+  'option',
+  'radio',
+  'tab',
+  'combobox',
+  'textbox',
+  'searchbox',
+  'switch',
+  'treeitem',
+  'slider',
+  'spinbutton',
+  'gridcell',
+  'radiogroup',
+  'listbox',
+  'menu',
+  'menubar',
+  'tablist',
+  'grid',
+  'tree',
+  'dialog',
+  'alertdialog',
+]);
+
+const detectNonInteractiveKeyHandlers: Detector = ({ filePath, source }) => {
+  if (!/\.[jt]sx$/.test(filePath)) return [];
+  const findings: ScanFinding[] = [];
+  for (const tag of extractTags(source)) {
+    if (tag.isClose || !/\bonKey(?:Down|Up|Press)\b/.test(tag.text)) continue;
+    if (NATIVE_INTERACTIVE_TAGS.has(tag.tag)) continue;
+    const role = tag.text.match(/\brole\s*=\s*["']([^"']+)["']/)?.[1];
+    if (role && INTERACTIVE_WIDGET_ROLES.has(role)) continue;
+    // A presentational element cannot itself be focused: a key listener on it
+    // only ever receives bubbled events (e.g. overlay Escape-to-close), which
+    // is not an interactive-widget claim.
+    if (role === 'presentation' || role === 'none') continue;
+    // Escape-only listeners are overlay-dismissal gestures, not widget claims.
+    if (/["'`]Escape["'`]/.test(tag.text)) continue;
+    findings.push(
+      buildScanFinding({
+        ruleId: 'A11Y-KEYBOARD-02',
+        evidence: `Key handler is attached to a non-interactive <${tag.tag}> with no interactive widget role; move it to a native control or add the matching role and tabindex with full Enter/Space handling.`,
+        filePath,
+        line: tag.line,
+        snippet: tag.text.replaceAll('\n', ' ').trim().slice(0, 160),
+        severity: 'major',
+        confidence: 'medium',
+      }),
+    );
+  }
+  return findings;
+};
+
+// ---------------------------------------------------------------------------
+// A11Y-SCROLL-01 — scrollable regions that may not be keyboard reachable.
+// CSS cannot see rendered overflow or tab order, so this stays a low-confidence
+// review cue; the Playwright axe run confirms or clears it against the DOM.
+// ---------------------------------------------------------------------------
+
+const NATIVE_SCROLL_SELECTOR =
+  /(^|[\s>+~,])(?:html|body|textarea|input)(?:$|[\s:.[#:+~>,])/;
+
+const detectScrollableRegions: Detector = ({ filePath, source, lines }) => {
+  if (!filePath.endsWith('.css')) return [];
+  // Minified/bundled stylesheets are build output, not hand-authored rules.
+  if (lines.some((line) => line.length > 500)) return [];
+  const findings: ScanFinding[] = [];
+  for (const rule of parseCssRules(source)) {
+    const scrollable = [
+      ...rule.body.matchAll(
+        /(?:^|;)\s*overflow(?:-[xy])?\s*:\s*(auto|scroll)\b/g,
+      ),
+    ];
+    if (scrollable.length === 0) continue;
+    if (NATIVE_SCROLL_SELECTOR.test(rule.selector)) continue;
+    const axes = [...new Set(scrollable.map((match) => match[1]))].join('/');
+    findings.push(
+      buildScanFinding({
+        ruleId: 'A11Y-SCROLL-01',
+        evidence: `Rule "${rule.selector.split('\n').pop()}" creates an ${axes}-scrollable region; verify the rendered element is keyboard reachable (native control, tabindex=0 or a roving-tabindex widget) and that focus can leave it.`,
+        filePath,
+        line: rule.headerLine,
+        snippet: `${rule.selector} { … }`.slice(0, 160),
+        severity: 'minor',
+        confidence: 'low',
+      }),
+    );
+  }
+  return findings;
+};
+
 export const DETECTORS: Detector[] = [
   detectFocusRemoval,
   detectSmallTargets,
@@ -734,6 +1110,10 @@ export const DETECTORS: Detector[] = [
   detectNamelessInteractive,
   detectMissingImageAlt,
   detectAutofocus,
+  detectHeadingOrder,
+  detectDocumentLanguage,
+  detectNonInteractiveKeyHandlers,
+  detectScrollableRegions,
   detectZIndexEscalation,
   detectOffScaleSpacing,
   detectMotionDuration,
