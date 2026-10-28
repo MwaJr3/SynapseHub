@@ -2,7 +2,7 @@
 
 Generated 2026-10-28 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
 
-Scope: **23 frontends**, **456 source files**, **84 findings**.
+Scope: **23 frontends**, **462 source files**, **84 findings**.
 
 ## Method and limitations
 
@@ -17,7 +17,7 @@ Scope: **23 frontends**, **456 source files**, **84 findings**.
 
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Portfolio website | 65 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Portfolio website | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Challenge collection | 13 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Company platform (Next.js) | 106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -1,4 +1,4 @@
-# Deployment is paused — nothing in this repository deploys
+# Deployment is paused — no project in this repository deploys
 
 **State as of 2026-10-28: no project deploys.** The nine Vercel projects were removed
 from the repository on the owner's instruction — *"Remove them from Vercel first, we'll
@@ -22,6 +22,18 @@ only the machine-readable link between a folder and a hosted project.
 > settings pointed at `projects/…`, any move broke a live build silently. With nothing
 > deployed, folders can be reorganised and each project repointed once, deliberately,
 > when it is redeployed.
+
+## The one root config
+
+A single `vercel.json` at the repository root was added on 2026-10-28, after the strip,
+by the connected-workspace work (`api/index.py`, `backend/synapsehub`, `packages/synapse-client`).
+It deploys **the repository root site and its API as one unit** — it is not a
+reinstatement of the nine project deployments, and no paused project gained a config
+back. The registry test therefore checks the manifests *inside projects*, not at the root.
+
+If the connected workspace is taken down too, delete the root config and the
+`.vercelignore` alongside it; `scripts/check-vercel-sources.mjs` is the regression that
+keeps that file list honest, and it fails loudly if a required source is excluded.
 
 ## What still exists, deliberately
 

@@ -16,6 +16,8 @@ export default defineConfig({
   server: {
     // 0.0.0.0 so the sandboxed preview proxy can reach the dev server.
     host: true,
+    // The connected workspace's backend (backend/synapsehub) listens on 8000.
+    proxy: { '/api': 'http://127.0.0.1:8000' },
     port: 5400,
     strictPort: false,
     // The preview is served through a proxy host (e.g. https://5400-<id>.e2b.app).

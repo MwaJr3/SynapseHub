@@ -24,3 +24,13 @@ __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
 .coverage
+
+# SynapseHub tooling and native build caches
+.cache/
+.pytest_cache/
+.expo/
+native/desktop/src-tauri/target/
+.vercel/
+# Generated Expo platform projects; CI regenerates these from app.json.
+native/mobile/android/
+native/mobile/ios/

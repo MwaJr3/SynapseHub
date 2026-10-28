@@ -219,7 +219,7 @@ describe('the registry and the tree agree', () => {
     }
   });
 
-  it('ships no hosting configuration anywhere', () => {
+  it('ships no hosting configuration inside a project', () => {
     // Nothing may re-add a deploy manifest while deployment is paused. A project that is
     // being redeployed moves its entry from pausedDeployment to deploys in the same
     // change, which is what keeps this test honest rather than merely strict.
@@ -227,6 +227,11 @@ describe('the registry and the tree agree', () => {
     // The manifests are searched for anywhere inside a project, not just at its root:
     // the ones that existed were at `<project>/backend/vercel.json`, and a root-only
     // check passed while a manifest was present.
+    //
+    // The repository root is deliberately out of scope. A root config was added after
+    // the strip (2026-10-28) for the connected workspace, which deploys the portfolio
+    // and backend/synapsehub as one unit rather than repointing a paused project. See
+    // docs/deployment/README.md.
     const MANIFESTS = new Set(['vercel.json', 'netlify.toml', 'wrangler.toml', 'now.json']);
     const found: string[] = [];
 
@@ -240,7 +245,6 @@ describe('the registry and the tree agree', () => {
     };
 
     for (const entry of registry.projects) visit(entry.path);
-    if (existsSync(join(REPO, 'vercel.json'))) found.push('vercel.json');
     expect(found).toEqual([]);
   });});
 
