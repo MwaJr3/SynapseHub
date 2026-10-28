@@ -1,0 +1,14 @@
+{
+  "name": "@synapsehub/challenges",
+  "private": true,
+  "type": "module",
+  "description": "Sixty interactive challenge prototypes, built from a shared set of interface modes. Self-contained: React is the only runtime dependency.",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./components/*": "./src/components/*"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}
