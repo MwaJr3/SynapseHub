@@ -78,3 +78,89 @@ here as instructions.
 - **The nine hosted deployments were not deleted from the hosting account** — that is a
   dashboard action no repository change can make. They continue to serve their last
   successful build until the owner removes them.
+
+---
+
+## The hosting plan (decided 2026-10-28)
+
+The question was whether to deploy the remaining projects **under the company
+website** to stay inside the free tier, or to keep one hosting project each.
+
+### What the free tier actually allows
+
+Vercel Hobby, as published on <https://vercel.com/docs/limits> (read 2026-10-28):
+
+| Limit | Hobby | Pro |
+| --- | ---: | ---: |
+| Projects | 200 | Unlimited |
+| **Deployments created per day** | **100** | 6,000 |
+| Builds per hour | 100 | — |
+| Concurrent builds | **1** | 12+ |
+| Build time per deployment | 45 min | 45 min |
+| Cost | free, **personal and non-commercial use only** | $20/mo per seat |
+
+Two mechanics matter more than the headline number:
+
+1. **Every project connected to the repo builds on every push.** A push that
+   touches nothing in project *B* still creates a deployment for *B* unless the
+   build is skipped. Under the previous layout — one site plus eight API
+   projects — a single push could create **nine deployments**, so the day's
+   budget ran out after about eleven pushes. That is the rate limit this
+   repository already hit, and it was recorded at the time as a billing message
+   rather than a code defect.
+2. **Billed builds are per deployment, not per file.** One project serving forty
+   static apps costs one deployment. Forty projects cost forty.
+
+### The decision
+
+**One deployment unit per tier, not one per project.**
+
+| Tier | What deploys | How | Deployments per push |
+| --- | --- | --- | ---: |
+| Umbrella | `company-platform/` (Next.js) — the company site and catalogue | one Vercel project | 1 |
+| Catalogue apps | the 18 catalogue projects that have a React frontend | built into the umbrella at `public/apps/<slug>/` and served statically from it | 0 |
+| Backends | only products that genuinely hold data | one API project mounting each backend under `/api/<slug>`, **not** nine projects | 1 |
+
+So a push costs **two deployments, not nine** — and a push that only changes
+documentation can cost zero if the umbrella's ignore step is configured.
+
+This is the owner's instinct, and it is the right one for the frontends. It does
+not extend to the Python backends unchanged, which is why that tier is separate.
+
+### What this costs in the repository
+
+- **18 catalogue frontends need a build base.** None sets one today, so every app
+  expects its assets at `/assets/*`. Serving them under `/apps/<slug>/` requires
+  `base: '/apps/<slug>/'` in each `vite.config.ts` — mechanical, but it changes
+  18 build configs and the router basename in each.
+- **36 of the 54 catalogue apps have no frontend at all.** They are Python
+  CLIs. There is nothing to host and nothing to mount; they belong in the
+  catalogue as source, with the local run command, not as live sites.
+- **The nine backends are independent FastAPI apps** with their own Alembic
+  migrations and app factories. Mounting them in one project is a real refactor,
+  not a routing change, and it weakens the "each project stands alone" property
+  the repository holds elsewhere. Recommendation: deploy **two** of them — the
+  ones the company site actually calls — and leave the other seven as source.
+
+### The alternative worth stating plainly
+
+**Hobby is for personal, non-commercial use.** These projects are the products of
+two named companies. If this is going to be a real business front door, $20/month
+removes the deployment limit, the concurrency limit and the licence problem in one
+step — and it is cheaper than the engineering time needed to contort eighteen
+build configs and a router basename around a 100-per-day cap.
+
+That is a decision for the owner, not for the repository. Nothing here has been
+built to assume either answer: the hosting configuration is still removed, and
+`projects.json` still records `deploys: []` for every project.
+
+### Order of work, when deployment starts
+
+1. Decide Hobby-with-one-project or Pro-with-several. Everything below is cheaper
+   under Pro.
+2. Deploy the umbrella first, alone, and confirm `/` answers.
+3. Add the catalogue frontends to its build, one at a time, starting with one app
+   to prove the base-path rewrite.
+4. Add a single API project only for the products the site calls.
+5. Move each entry in `projects.json` from `pausedDeployment` to `deploys` in the
+   same change that makes it live — the registry test fails until it is correct.
