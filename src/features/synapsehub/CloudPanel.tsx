@@ -292,7 +292,7 @@ export function CloudPanel({
           </p>
           <h3>Private PDF library</h3>
           <p>
-            Text PDFs only · 5 MiB · 100 pages · no OCR. Originals and extracted
+            Text PDFs only · 4 MiB · 100 pages · no OCR. Originals and extracted
             page passages are stored in your authenticated cloud library.
           </p>
           <label>
@@ -305,8 +305,8 @@ export function CloudPanel({
                 const file = e.target.files?.[0];
                 e.target.value = '';
                 if (!file) return;
-                if (file.size > 5 * 1024 * 1024) {
-                  setMessage('PDF exceeds 5 MiB.');
+                if (file.size > 4 * 1024 * 1024) {
+                  setMessage('PDF exceeds 4 MiB.');
                   return;
                 }
                 if (

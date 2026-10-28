@@ -207,8 +207,8 @@ function WorkspaceScreen({ session }: { session: Session | null }) {
       return;
     }
     const asset = file.assets[0];
-    if (!asset || (asset.size ?? 0) > 5 * 1024 * 1024)
-      throw new Error('Choose a PDF up to 5 MiB.');
+    if (!asset || (asset.size ?? 0) > 4 * 1024 * 1024)
+      throw new Error('Choose a PDF up to 4 MiB.');
     // React Native FormData accepts native URI file descriptors, not browser File objects.
     const form = new FormData();
     form.append('file', {
@@ -383,7 +383,7 @@ function WorkspaceScreen({ session }: { session: Session | null }) {
         onPress={() =>
           Alert.alert(
             'Upload private PDF?',
-            'The original and extracted text will be stored in your account. 5 MiB, 100 pages, text PDFs only.',
+            'The original and extracted text will be stored in your account. 4 MiB, 100 pages, text PDFs only.',
             [
               { text: 'Cancel', style: 'cancel' },
               { text: 'Choose file', onPress: () => void run(upload) },

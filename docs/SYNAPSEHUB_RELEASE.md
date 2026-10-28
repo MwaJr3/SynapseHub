@@ -96,3 +96,49 @@ Native platform tools are still absent locally. A workflow definition and JS bun
 exports are **not compiled/tested installers**. Signing/notarization, physical-device
 checks, recovery deep links, privacy review and store submissions remain separate
 operator-controlled work. CI artifacts expire after 14 days and are not public releases.
+
+## Outcome of the deployment attempt
+
+- Commit `37da83f` was pushed to this session's branch and submitted to Vercel.
+- Deployment `dpl_Gsfv77ighQzs57oz2H1WkSDLxwfq` failed the frontend build because
+  unanchored `.vercelignore` entries also removed `src/apps` and
+  `src/components/projects`. Commit `2f3571c` anchors exclusions at the repository
+  root. A deployment-source regression check now protects those paths in CI.
+- The corrected deployment request was denied with **402 Payment Required**, code
+  **`api-deployments-free-per-day`**, "more than 100"; Vercel instructed retrying
+  after **24 hours**. No additional project/deployment/CLI route was used to bypass
+  that quota. The new project exists but **there is no successful release deployment**.
+- Supabase Site URL remains `http://localhost:3000`; its allow-list is unchanged.
+  Once a corrected build is READY and its actual URL works, set the Site URL and
+  exact `/synapsehub` confirmation/recovery redirect there. Do not point user emails
+  at the failed deployment. Email login/delivery are still unverified.
+- The intended stable alias reported by Vercel is
+  `synapsehub-workspace-m-corp2.vercel.app`, but it was **not assigned by the failed
+  build** and must not be described as a working application URL.
+- GitHub CI run [40643649394](https://github.com/MwaJr3/SynapseHub/actions/runs/40643649394)
+  **passed** all three jobs: backend tests, web tests/build/scoped lint, and mobile
+  security tests/audit threshold/Android+iOS bundle exports. This is separate from
+  the failed Vercel deployment and is not a native installer run.
+
+The web and native file pickers now conservatively cap files at **4 MiB** to fit
+Vercel's request envelope. The container API still accepts up to 5 MiB; serverless
+accepts 4 MiB. No client-side cap is a substitute for the server's enforced limit.
+
+### Remaining operator sequence
+
+1. After Vercel's deployment quota resets, deploy the **latest commit on
+   `arena/a840b561-synapsehub`** into the existing new workspace project. Do not
+   redeploy `37da83f`, whose payload exclusions were broken.
+2. Verify `/api/health`, the actual frontend, authenticated cloud sync, PDF upload
+   and PDF reading on that host. Review platform subprocess/function limits; switch
+   to the container profile if the serverless PDF parser cannot run safely.
+3. Only after the URL works, configure exact Supabase confirmation/recovery redirects
+   and test real email delivery with an authorized account. Confirmation stays on.
+4. Set the three documented public GitHub variables through the repository UI;
+   review/merge the workflows through the normal PR process and dispatch the native
+   artifact workflow. No merge to main was performed by the agent.
+5. Provide the existing Ollama URL and installed model through server settings;
+   put credentials in protected settings. Run the availability and synthetic
+   generation probes. Until then, leave generation disabled.
+6. Download internal native artifacts, perform simulator/device tests, then separately
+   configure signing/notarization/store publication if those releases are desired.

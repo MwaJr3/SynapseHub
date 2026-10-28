@@ -4,6 +4,8 @@
 > are included. See [setup, verification status, native build limits and security](docs/SYNAPSEHUB_CONNECTED.md).
 > Cloud API connectivity and email redirects require deployment configuration;
 > native bundle exports are not signed or device-tested applications.
+> [Release execution log and remaining setup](docs/SYNAPSEHUB_RELEASE.md): high-severity
+> mobile audit findings remediated; corrected deployment awaits Vercel quota reset.
 
 # Mwangala — Education Technology Portfolio
 
