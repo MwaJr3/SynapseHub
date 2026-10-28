@@ -1,3 +1,12 @@
+> **SynapseHub connected beta:** open `/synapsehub` for local knowledge-to-action
+> workflows plus managed-auth, PDF library, selected-source retrieval, opt-in Ollama
+> generation and explicit cloud sync. Expo mobile and Tauri desktop client projects
+> are included. See [setup, verification status, native build limits and security](docs/SYNAPSEHUB_CONNECTED.md).
+> Cloud API connectivity and email redirects require deployment configuration;
+> native bundle exports are not signed or device-tested applications.
+> [Release execution log and remaining setup](docs/SYNAPSEHUB_RELEASE.md): high-severity
+> mobile audit findings remediated; corrected deployment awaits Vercel quota reset.
+
 # Mwangala — Education Technology Portfolio
 
 A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.
@@ -291,3 +300,10 @@ measured in this environment.
 - No learning-outcome, adoption or performance metrics are claimed because none have been measured.
 - The contact form requires a configured real endpoint; email delivery and spam protection are that endpoint's responsibility.
 - Automated visual regression and end-to-end browser testing are not configured for this portfolio.
+
+### Ollama Cloud setup
+
+The workspace now offers Ollama Cloud (`gemma4:31b`) alongside the existing local
+adapter. See [server-only key setup, UI selection and real-request smoke command](docs/OLLAMA_CLOUD.md).
+The live smoke attempt was network-blocked in this sandbox; no real model reply
+has been received or fabricated.

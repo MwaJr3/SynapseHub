@@ -1,0 +1,36 @@
+name: SynapseHub configured runtime checks
+on:
+  workflow_dispatch:
+    inputs:
+      check_ollama:
+        type: boolean
+        default: false
+        description: Query the configured Ollama model inventory
+      generate_synthetic:
+        type: boolean
+        default: false
+        description: Consent to generate from a fixed non-private evidence fixture
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ vars.SYNAPSE_SUPABASE_URL }}
+      SUPABASE_PUBLISHABLE_KEY: ${{ vars.SYNAPSE_SUPABASE_PUBLISHABLE_KEY }}
+      OLLAMA_URL: ${{ vars.SYNAPSE_OLLAMA_URL }}
+      OLLAMA_MODEL: ${{ vars.SYNAPSE_OLLAMA_MODEL }}
+      OLLAMA_API_KEY: ${{ secrets.SYNAPSE_OLLAMA_API_KEY }}
+      CHECK_OLLAMA: ${{ inputs.check_ollama }}
+      GENERATE_SYNTHETIC: ${{ inputs.generate_synthetic }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install -r backend/requirements.lock
+      - shell: bash
+        run: |
+          args=(--cloud)
+          if [ "$CHECK_OLLAMA" = true ]; then args+=(--ollama); fi
+          if [ "$GENERATE_SYNTHETIC" = true ]; then args+=(--generate); fi
+          python backend/scripts/check_runtime.py "${args[@]}"
