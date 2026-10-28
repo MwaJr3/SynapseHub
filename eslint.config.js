@@ -50,9 +50,14 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**/*.mjs', '*.config.js'],
+    files: [
+      'scripts/**/*.mjs',
+      '*.config.js',
+      'native/mobile/**/*.cjs',
+      'tools/synapsehub-smoke/*.mjs',
+    ],
     languageOptions: {
-      globals: { ...globals.node },
+      globals: { ...globals.node, ...globals.browser },
     },
     rules: {
       '@typescript-eslint/no-require-imports': 'off',

@@ -1,3 +1,10 @@
+> **SynapseHub connected beta:** open `/synapsehub` for local knowledge-to-action
+> workflows plus managed-auth, PDF library, selected-source retrieval, opt-in Ollama
+> generation and explicit cloud sync. Expo mobile and Tauri desktop client projects
+> are included. See [setup, verification status, native build limits and security](docs/SYNAPSEHUB_CONNECTED.md).
+> Cloud API connectivity and email redirects require deployment configuration;
+> native bundle exports are not signed or device-tested applications.
+
 # Mwangala — Education Technology Portfolio
 
 A React, TypeScript and Vite portfolio featuring 60 Frontend Mentor challenge briefs and 60 local-first interactive prototypes. The source challenge names and links are attributed to Frontend Mentor; the prototypes are independent explorations and are not presented as verified completions or endorsed work.

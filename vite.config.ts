@@ -13,6 +13,7 @@ export default defineConfig({
   server: {
     // 0.0.0.0 so the sandboxed preview proxy can reach the dev server.
     host: true,
+    proxy: { '/api': 'http://127.0.0.1:8000' },
     port: 5173,
     strictPort: false,
     // The preview is served through a proxy host (e.g. https://5173-<id>.e2b.app).

@@ -1,0 +1,2 @@
+# Vercel's Python function installer reads this root entrypoint.
+-r backend/requirements.lock

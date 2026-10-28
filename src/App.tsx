@@ -15,6 +15,9 @@ const ApproachPage = lazy(() => import('@/pages/ApproachPage'));
 const OperationsPage = lazy(() => import('@/pages/OperationsPage'));
 const ContactPage = lazy(() => import('@/pages/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
+const SynapseHubPage = lazy(
+  () => import('@/features/synapsehub/WorkspaceRoute'),
+);
 const SystemPage = lazy(() => import('@/pages/SystemPage'));
 
 function RouteFallback() {
@@ -29,6 +32,7 @@ function RouteFallback() {
 export function AppRoutes() {
   return (
     <Routes>
+      <Route path="synapsehub" element={<SynapseHubPage />} />
       <Route element={<RootLayout />}>
         <Route index element={<HomePage />} />
         <Route path="about" element={<AboutPage />} />
