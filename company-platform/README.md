@@ -184,35 +184,35 @@ Copy `.env.example` to `.env.local`. Everything optional stays empty until
 supplied — nothing is invented. See `docs/LAUNCH_CHECKLIST.md` for the full
 pre-launch list and `DELIVERY_REPORT.md` for the final delivery report.
 
-## Deploying on Vercel
+## Deploying
+
+**Nothing is deployed at the time of writing.** The hosting configuration was
+removed on 2026-10-28 so this repository can be restructured and redeployed
+deliberately; see `docs/deployment/README.md`. This section describes what a
+future deployment of the company website would need — it is not currently
+wired up, and no file in the repository configures it.
 
 This repository holds **every** project: the company website
-(`company-platform/`) plus all consolidated project source (`projects/`,
-`workniche/`, `stock-price-*/`, the root portfolio). The company website is
-the Next.js app in `company-platform/` — import this repository into Vercel
-and set:
+(`company-platform/`) plus all consolidated project source. The company
+website is the Next.js app in `company-platform/`, and it is the umbrella:
+visitors enter here and reach the other applications through it.
 
-| Setting | Value |
-| --- | --- |
-| Root Directory | `company-platform` |
-| Framework preset | Next.js (auto-detected) |
-| Build / Install command | defaults (`next build`, `npm install`) |
-
-Environment variables (set in Vercel → Project → Settings → Environment
-Variables; the same names as `.env.example`):
+A host needs: the root directory `company-platform`, the Next.js preset, and
+the default build commands. Environment variables (same names as
+`.env.example`):
 
 | Variable | What to supply |
 | --- | --- |
 | `AUTH_SECRET` | A long random secret (e.g. `openssl rand -base64 32`) |
 | `AUTH_TRUST_HOST` | `true` |
-| `DATABASE_URL` | PostgreSQL 14+ connection string (e.g. a Supabase project). Unset in development falls back to embedded PGlite (`./data/`) — PGlite is development-only |
-| `NEXT_PUBLIC_SITE_URL` | The public origin once it exists (Vercel URL or custom domain) — drives canonical URLs and the sitemap |
+| `DATABASE_URL` | PostgreSQL 14+ connection string. Unset in development falls back to embedded PGlite (`./data/`) — PGlite is development-only |
+| `NEXT_PUBLIC_SITE_URL` | The public origin once it exists — drives canonical URLs and the sitemap |
 | Storage / contact variables | Optional; stay empty until supplied (see `.env.example`) |
 | `ASSISTANT_BASE_URL`, `ASSISTANT_MODEL`, `ASSISTANT_API_KEY` | Optional. Without them both assistants are switched off and say so. A Hugging Face token (`https://router.huggingface.co/v1`) is the intended default; `ASSISTANT_API_KEY` may also be `HUGGINGFACE_API_KEY` or `HF_TOKEN` |
 
-Only `company-platform/` is built and served — `projects/` ships the
-consolidated project source in the repository but is not part of the
-deployment. Before public launch, complete `docs/LAUNCH_CHECKLIST.md`.
+Only `company-platform/` is built and served — the individual projects ship
+as source in this repository but are not part of that deployment. Before
+public launch, complete `docs/LAUNCH_CHECKLIST.md`.
 
 ## Tests
 

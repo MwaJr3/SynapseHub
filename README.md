@@ -241,15 +241,15 @@ Challenge titles and source links are recorded in `src/data/challengeManifest.ts
 
 The build output is a static SPA in `dist/`.
 
-- **Company website:** `company-platform/` is a separate Next.js app, deployed
-  on Vercel from this repository with Root Directory `company-platform/` —
-  see `company-platform/README.md`. Every project's source is in this same
-  repository (`projects/`, `workniche/`, `stock-price-*/`), so the hosted
-  company site and all project code share one home.
+- **Nothing is deployed.** Deployment was removed on 2026-10-28 so the
+  repository can be restructured and redeployed deliberately — see
+  `docs/deployment/README.md`. Every project's source and folder layout is
+  unchanged.
 
 - **Any static host / CDN:** upload `dist/`. Configure a single-page fallback to `index.html` so direct navigation
   and refresh work on `/projects/:slug`. `public/_redirects` already provides the Netlify form of this rule;
-  Vercel needs a `vercel.json` rewrite, and Nginx/Apache need an equivalent `try_files`/`.htaccess` rule.
+  a static host that needs an explicit rewrite takes one platform-specific file added
+  next to the build; Nginx/Apache need an equivalent `try_files`/`.htaccess` rule.
 - **Sitemap:** set `VITE_SITE_URL` and run `npm run sitemap` before uploading (the file is generated, not committed).
 - **Contact form:** point `VITE_CONTACT_ENDPOINT` at your form service or endpoint. Without it, no form is rendered.
 - **Social preview image:** `public/og-image.png` is referenced through `VITE_SITE_URL`; add a genuine image before

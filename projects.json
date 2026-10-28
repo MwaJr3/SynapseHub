@@ -35,12 +35,14 @@
   "notes": {
     "tessera": "Part of Tamuzi learning systems. Deliberately absent from the company catalogue until it is fully built and functional.",
     "slugRule": "A slug names exactly one directory. A CLI catalogue build of a deployed product takes the '-cli' suffix and records 'variantOf'.",
-    "blocks": "A port is allocated once, by the block of its kind. Never reuse a number, even after a project is archived."
+    "blocks": "A port is allocated once, by the block of its kind. Never reuse a number, even after a project is archived.",
+    "deployment": "Nothing deploys: hosting configuration was removed on 2026-10-28. pausedDeployment records what used to be live, for the redeployment; it is not configuration.",
+    "generatedBy": "node scripts/build-registry.mjs — edit REGISTRY_META there, not this file."
   },
   "projects": [
     {
       "slug": "authgate",
-      "name": "AuthGate",
+      "name": "Authgate",
       "path": "apps/authgate",
       "owner": null,
       "kind": "catalogue",
@@ -54,7 +56,7 @@
     },
     {
       "slug": "budgetbook",
-      "name": "BudgetBook",
+      "name": "Budgetbook",
       "path": "apps/budgetbook",
       "owner": null,
       "kind": "catalogue",
@@ -68,7 +70,7 @@
     },
     {
       "slug": "campusflow",
-      "name": "CampusFlow",
+      "name": "Campusflow",
       "path": "apps/campusflow",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -84,7 +86,7 @@
     },
     {
       "slug": "chessscope",
-      "name": "ChessScope",
+      "name": "Chessscope",
       "path": "apps/chessscope",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -100,7 +102,7 @@
     },
     {
       "slug": "circuitlab-calc",
-      "name": "CircuitLab Calc",
+      "name": "Circuitlab Calc",
       "path": "apps/circuitlab-calc",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -116,7 +118,7 @@
     },
     {
       "slug": "classconnect",
-      "name": "ClassConnect",
+      "name": "Classconnect",
       "path": "apps/classconnect",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -132,7 +134,7 @@
     },
     {
       "slug": "creadesk",
-      "name": "CreateDesk",
+      "name": "Creadesk",
       "path": "apps/creadesk",
       "owner": null,
       "kind": "catalogue",
@@ -146,7 +148,7 @@
     },
     {
       "slug": "datadesk",
-      "name": "DataDesk",
+      "name": "Datadesk",
       "path": "apps/datadesk",
       "owner": null,
       "kind": "catalogue",
@@ -160,7 +162,7 @@
     },
     {
       "slug": "dependsecure",
-      "name": "DependSecure",
+      "name": "Dependsecure",
       "path": "apps/dependsecure",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -176,7 +178,7 @@
     },
     {
       "slug": "docsage",
-      "name": "DocSage",
+      "name": "Docsage",
       "path": "apps/docsage",
       "owner": null,
       "kind": "catalogue",
@@ -190,7 +192,7 @@
     },
     {
       "slug": "eduaccess",
-      "name": "EduAccess",
+      "name": "Eduaccess",
       "path": "apps/eduaccess",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -206,7 +208,7 @@
     },
     {
       "slug": "fileguard",
-      "name": "FileGuard",
+      "name": "Fileguard",
       "path": "apps/fileguard",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -222,7 +224,7 @@
     },
     {
       "slug": "fileseal",
-      "name": "FileSeal",
+      "name": "Fileseal",
       "path": "apps/fileseal",
       "owner": null,
       "kind": "catalogue",
@@ -236,7 +238,7 @@
     },
     {
       "slug": "flashkit",
-      "name": "FlashKit",
+      "name": "Flashkit",
       "path": "apps/flashkit",
       "owner": null,
       "kind": "catalogue",
@@ -266,7 +268,7 @@
     },
     {
       "slug": "gradeflow",
-      "name": "GradeFlow",
+      "name": "Gradeflow",
       "path": "apps/gradeflow",
       "owner": null,
       "kind": "catalogue",
@@ -280,7 +282,7 @@
     },
     {
       "slug": "guessmaster",
-      "name": "GuessMaster",
+      "name": "Guessmaster",
       "path": "apps/guessmaster",
       "owner": null,
       "kind": "catalogue",
@@ -294,7 +296,7 @@
     },
     {
       "slug": "headercheck",
-      "name": "HeaderCheck",
+      "name": "Headercheck",
       "path": "apps/headercheck",
       "owner": null,
       "kind": "catalogue",
@@ -308,7 +310,7 @@
     },
     {
       "slug": "hostwatch",
-      "name": "HostWatch",
+      "name": "Hostwatch",
       "path": "apps/hostwatch",
       "owner": null,
       "kind": "catalogue",
@@ -322,7 +324,7 @@
     },
     {
       "slug": "incidentflow-cli",
-      "name": "IncidentFlow",
+      "name": "IncidentFlow (CLI)",
       "path": "apps/incidentflow-cli",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -337,7 +339,7 @@
     },
     {
       "slug": "learnbridge",
-      "name": "LearnBridge",
+      "name": "Learnbridge",
       "path": "apps/learnbridge",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -353,7 +355,7 @@
     },
     {
       "slug": "learnpulse",
-      "name": "LearnPulse",
+      "name": "Learnpulse",
       "path": "apps/learnpulse",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -369,7 +371,7 @@
     },
     {
       "slug": "loginsense",
-      "name": "LoginSense",
+      "name": "Loginsense",
       "path": "apps/loginsense",
       "owner": null,
       "kind": "catalogue",
@@ -383,7 +385,7 @@
     },
     {
       "slug": "netscope-cli",
-      "name": "NetScope",
+      "name": "NetScope (CLI)",
       "path": "apps/netscope-cli",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -398,7 +400,7 @@
     },
     {
       "slug": "notekit",
-      "name": "NoteKit",
+      "name": "Notekit",
       "path": "apps/notekit",
       "owner": null,
       "kind": "catalogue",
@@ -412,7 +414,7 @@
     },
     {
       "slug": "openlearn-commons",
-      "name": "OpenLearn Commons",
+      "name": "Openlearn Commons",
       "path": "apps/openlearn-commons",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -428,7 +430,7 @@
     },
     {
       "slug": "passforge",
-      "name": "PassForge",
+      "name": "Passforge",
       "path": "apps/passforge",
       "owner": null,
       "kind": "catalogue",
@@ -442,7 +444,7 @@
     },
     {
       "slug": "passmeter",
-      "name": "PassMeter",
+      "name": "Passmeter",
       "path": "apps/passmeter",
       "owner": null,
       "kind": "catalogue",
@@ -456,7 +458,7 @@
     },
     {
       "slug": "pathwise",
-      "name": "PathWise",
+      "name": "Pathwise",
       "path": "apps/pathwise",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -472,7 +474,7 @@
     },
     {
       "slug": "phishlens-cli",
-      "name": "PhishLens",
+      "name": "PhishLens (CLI)",
       "path": "apps/phishlens-cli",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -487,7 +489,7 @@
     },
     {
       "slug": "prepwise",
-      "name": "PrepWise",
+      "name": "Prepwise",
       "path": "apps/prepwise",
       "owner": null,
       "kind": "catalogue",
@@ -501,7 +503,7 @@
     },
     {
       "slug": "quizarena",
-      "name": "QuizArena",
+      "name": "Quizarena",
       "path": "apps/quizarena",
       "owner": null,
       "kind": "catalogue",
@@ -515,7 +517,7 @@
     },
     {
       "slug": "quizbox",
-      "name": "QuizBox",
+      "name": "Quizbox",
       "path": "apps/quizbox",
       "owner": null,
       "kind": "catalogue",
@@ -529,7 +531,7 @@
     },
     {
       "slug": "reachlearn",
-      "name": "ReachLearn",
+      "name": "Reachlearn",
       "path": "apps/reachlearn",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -545,7 +547,7 @@
     },
     {
       "slug": "secops-dash",
-      "name": "SecOps Dash",
+      "name": "Secops Dash",
       "path": "apps/secops-dash",
       "owner": null,
       "kind": "catalogue",
@@ -559,7 +561,7 @@
     },
     {
       "slug": "secretscan",
-      "name": "SecretScan",
+      "name": "Secretscan",
       "path": "apps/secretscan",
       "owner": null,
       "kind": "catalogue",
@@ -573,7 +575,7 @@
     },
     {
       "slug": "secweblab",
-      "name": "SecWebLab",
+      "name": "Secweblab",
       "path": "apps/secweblab",
       "owner": null,
       "kind": "catalogue",
@@ -587,7 +589,7 @@
     },
     {
       "slug": "sentinelcore",
-      "name": "SentinelCore",
+      "name": "Sentinelcore",
       "path": "apps/sentinelcore",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -603,7 +605,7 @@
     },
     {
       "slug": "sentinellog",
-      "name": "SentinelLog",
+      "name": "Sentinellog",
       "path": "apps/sentinellog",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -619,7 +621,7 @@
     },
     {
       "slug": "shelfwise",
-      "name": "ShelfWise",
+      "name": "Shelfwise",
       "path": "apps/shelfwise",
       "owner": null,
       "kind": "catalogue",
@@ -633,7 +635,7 @@
     },
     {
       "slug": "shopdeck",
-      "name": "ShopDeck",
+      "name": "Shopdeck",
       "path": "apps/shopdeck",
       "owner": null,
       "kind": "catalogue",
@@ -647,7 +649,7 @@
     },
     {
       "slug": "simforge",
-      "name": "SimForge",
+      "name": "Simforge",
       "path": "apps/simforge",
       "owner": null,
       "kind": "catalogue",
@@ -661,7 +663,7 @@
     },
     {
       "slug": "skycast",
-      "name": "SkyCast",
+      "name": "Skycast",
       "path": "apps/skycast",
       "owner": null,
       "kind": "catalogue",
@@ -675,7 +677,7 @@
     },
     {
       "slug": "stockmate",
-      "name": "StockMate",
+      "name": "Stockmate",
       "path": "apps/stockmate",
       "owner": null,
       "kind": "catalogue",
@@ -689,7 +691,7 @@
     },
     {
       "slug": "taskdeck",
-      "name": "TaskDeck",
+      "name": "Taskdeck",
       "path": "apps/taskdeck",
       "owner": null,
       "kind": "catalogue",
@@ -703,7 +705,7 @@
     },
     {
       "slug": "teachcraft",
-      "name": "TeachCraft",
+      "name": "Teachcraft",
       "path": "apps/teachcraft",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -736,7 +738,7 @@
     },
     {
       "slug": "threatintel-desk-cli",
-      "name": "ThreatIntel Desk",
+      "name": "ThreatIntel Desk (CLI)",
       "path": "apps/threatintel-desk-cli",
       "owner": "velaqori",
       "kind": "catalogue",
@@ -751,7 +753,7 @@
     },
     {
       "slug": "tidyfiles",
-      "name": "TidyFiles",
+      "name": "Tidyfiles",
       "path": "apps/tidyfiles",
       "owner": null,
       "kind": "catalogue",
@@ -765,7 +767,7 @@
     },
     {
       "slug": "tutorspring",
-      "name": "TutorSpring",
+      "name": "Tutorspring",
       "path": "apps/tutorspring",
       "owner": "tamuzi",
       "kind": "catalogue",
@@ -781,7 +783,7 @@
     },
     {
       "slug": "unicore",
-      "name": "UniCore",
+      "name": "Unicore",
       "path": "apps/unicore",
       "owner": null,
       "kind": "catalogue",
@@ -795,7 +797,7 @@
     },
     {
       "slug": "urlshield",
-      "name": "URLShield",
+      "name": "Urlshield",
       "path": "apps/urlshield",
       "owner": null,
       "kind": "catalogue",
@@ -809,7 +811,7 @@
     },
     {
       "slug": "wattwise",
-      "name": "WattWise",
+      "name": "Wattwise",
       "path": "apps/wattwise",
       "owner": null,
       "kind": "catalogue",
@@ -823,7 +825,7 @@
     },
     {
       "slug": "webwatch",
-      "name": "WebWatch",
+      "name": "Webwatch",
       "path": "apps/webwatch",
       "owner": null,
       "kind": "catalogue",
@@ -850,7 +852,7 @@
     },
     {
       "slug": "assetwatch",
-      "name": "AssetWatch",
+      "name": "Assetwatch",
       "path": "projects/assetwatch",
       "owner": "velaqori",
       "kind": "project",
@@ -859,15 +861,15 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-assetwatch-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5300,
       "package": "assetwatch-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-assetwatch-api",
+        "rootDirectory": "projects/assetwatch/backend"
+      }
     },
     {
       "slug": ".github",
@@ -883,7 +885,7 @@
     },
     {
       "slug": "bank_system",
-      "name": "bank_system",
+      "name": "Bank_system",
       "path": "projects/cbu-assignments/bank_system",
       "owner": null,
       "kind": "coursework",
@@ -895,7 +897,7 @@
     },
     {
       "slug": "library_management",
-      "name": "library_management",
+      "name": "Library_management",
       "path": "projects/cbu-assignments/library_management",
       "owner": null,
       "kind": "coursework",
@@ -907,7 +909,7 @@
     },
     {
       "slug": "tenantcore",
-      "name": "TenantCore",
+      "name": "Tenantcore",
       "path": "projects/cbu-assignments/tenantcore",
       "owner": null,
       "kind": "coursework",
@@ -924,7 +926,7 @@
     },
     {
       "slug": "video_downloader_app",
-      "name": "VDownloader OS",
+      "name": "Video_downloader_app",
       "path": "projects/cbu-assignments/video_downloader_app",
       "owner": null,
       "kind": "coursework",
@@ -936,7 +938,7 @@
     },
     {
       "slug": "cyberaware-lab",
-      "name": "CyberAware Lab",
+      "name": "Cyberaware Lab",
       "path": "projects/cyberaware-lab",
       "owner": "tamuzi",
       "kind": "project",
@@ -945,19 +947,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-cyberaware-lab-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5301,
       "package": "cyberaware-lab-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-cyberaware-lab-api",
+        "rootDirectory": "projects/cyberaware-lab/backend"
+      }
     },
     {
       "slug": "hashsight",
-      "name": "HashSight",
+      "name": "Hashsight",
       "path": "projects/hashsight",
       "owner": "velaqori",
       "kind": "project",
@@ -966,19 +968,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-hashsight-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5302,
       "package": "hashsight-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-hashsight-api",
+        "rootDirectory": "projects/hashsight/backend"
+      }
     },
     {
       "slug": "incidentflow",
-      "name": "IncidentFlow",
+      "name": "Incidentflow",
       "path": "projects/incidentflow",
       "owner": "velaqori",
       "kind": "project",
@@ -987,32 +989,20 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-incidentflow-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5303,
       "package": "incidentflow-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-incidentflow-api",
+        "rootDirectory": "projects/incidentflow/backend"
+      }
     },
     {
       "slug": "Cpp Projects",
       "name": "Cpp Projects",
       "path": "projects/mysul/Cpp Projects",
-      "owner": null,
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "other"
-      ],
-      "deploys": []
-    },
-    {
-      "slug": "WebstormProjects",
-      "name": "WebstormProjects",
-      "path": "projects/mysul/WebstormProjects",
       "owner": null,
       "kind": "project",
       "block": "companies",
@@ -1043,18 +1033,30 @@
       "interface": [
         "react"
       ],
-      "deploys": [
-        {
-          "target": "vercel-site",
-          "project": "mwangala-portfolio"
-        }
-      ],
+      "deploys": [],
       "devPort": 5401,
-      "package": "mwangala-portfolio"
+      "package": "mwangala-portfolio",
+      "pausedDeployment": {
+        "target": "vercel-site",
+        "project": "mwangala-portfolio",
+        "rootDirectory": "projects/mysul/mwangala-portfolio"
+      }
+    },
+    {
+      "slug": "WebstormProjects",
+      "name": "WebstormProjects",
+      "path": "projects/mysul/WebstormProjects",
+      "owner": null,
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "other"
+      ],
+      "deploys": []
     },
     {
       "slug": "netscope",
-      "name": "NetScope",
+      "name": "Netscope",
       "path": "projects/netscope",
       "owner": "velaqori",
       "kind": "project",
@@ -1063,19 +1065,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-netscope-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5304,
       "package": "netscope-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-netscope-api",
+        "rootDirectory": "projects/netscope/backend"
+      }
     },
     {
       "slug": "phishlens",
-      "name": "PhishLens",
+      "name": "Phishlens",
       "path": "projects/phishlens",
       "owner": "velaqori",
       "kind": "project",
@@ -1084,19 +1086,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-phishlens-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5305,
       "package": "phishlens-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-phishlens-api",
+        "rootDirectory": "projects/phishlens/backend"
+      }
     },
     {
       "slug": "securecode-workbench",
-      "name": "SecureCode Workbench",
+      "name": "Securecode Workbench",
       "path": "projects/securecode-workbench",
       "owner": "velaqori",
       "kind": "project",
@@ -1105,19 +1107,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-securecode-workbench-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5306,
       "package": "securecode-workbench-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-securecode-workbench-api",
+        "rootDirectory": "projects/securecode-workbench/backend"
+      }
     },
     {
       "slug": "threatintel-desk",
-      "name": "ThreatIntel Desk",
+      "name": "Threatintel Desk",
       "path": "projects/threatintel-desk",
       "owner": "velaqori",
       "kind": "project",
@@ -1126,19 +1128,19 @@
         "react",
         "fastapi"
       ],
-      "deploys": [
-        {
-          "target": "vercel-api",
-          "project": "synapsehub-threatintel-api"
-        }
-      ],
+      "deploys": [],
       "devPort": 5307,
       "package": "threatintel-desk-frontend",
-      "pythonPackage": "app"
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-threatintel-api",
+        "rootDirectory": "projects/threatintel-desk/backend"
+      }
     },
     {
       "slug": "transcriptwise",
-      "name": "TranscriptWise",
+      "name": "Transcriptwise",
       "path": "projects/transcriptwise",
       "owner": "tamuzi",
       "kind": "project",
@@ -1154,7 +1156,7 @@
     },
     {
       "slug": "vocal-separator",
-      "name": "AI Music & Vocal Part Separator",
+      "name": "Vocal Separator",
       "path": "vocal-separator",
       "owner": null,
       "kind": "product",
@@ -1170,7 +1172,7 @@
     },
     {
       "slug": "workniche",
-      "name": "WorkNiche",
+      "name": "Workniche",
       "path": "workniche",
       "owner": null,
       "kind": "product",

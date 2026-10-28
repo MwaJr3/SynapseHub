@@ -16,9 +16,15 @@ import { describe, expect, it } from 'vitest';
  * rather than only being asserted absent on the real registry.
  */
 
-interface Deploy {
+/**
+ * Deployment is paused: hosting configuration was removed on 2026-10-28 and the
+ * nine projects that used to be hosted record it as history instead. See
+ * `docs/deployment/README.md`.
+ */
+interface PausedDeployment {
   target: 'vercel-api' | 'vercel-site';
   project: string;
+  rootDirectory: string;
 }
 
 interface ProjectEntry {
@@ -30,7 +36,8 @@ interface ProjectEntry {
   /** Port block this project's port was allocated from — recorded, not inferred. */
   block: string;
   interface: string[];
-  deploys: Deploy[];
+  deploys: PausedDeployment[];
+  pausedDeployment?: PausedDeployment;
   devPort?: number;
   package?: string;
   pythonPackage?: string;
@@ -188,16 +195,48 @@ describe('the registry and the tree agree', () => {
     }
   });
 
-  it('names the Vercel project for everything that deploys', () => {
-    const deployed = registry.projects.filter((entry) => entry.deploys.length > 0);
-    expect(deployed.length).toBe(9);
-    for (const entry of deployed) {
-      for (const deploy of entry.deploys) {
-        expect(deploy.project.length).toBeGreaterThan(3);
-      }
+  it('deploys nothing, because deployment is paused', () => {
+    const stillDeploying = registry.projects.filter((entry) => entry.deploys.length > 0);
+    expect(stillDeploying.map((entry) => entry.path)).toEqual([]);
+  });
+
+  it('keeps the nine former deployments as history, with a root directory', () => {
+    const paused = registry.projects.filter((entry) => entry.pausedDeployment !== undefined);
+    expect(paused).toHaveLength(9);
+    for (const entry of paused) {
+      const record = entry.pausedDeployment;
+      if (!record) throw new Error(`${entry.slug}: unreachable`);
+      expect(record.project.length).toBeGreaterThan(3);
+      // The recorded root directory must still be the one in the tree, or the note lies.
+      expect(existsSync(join(REPO, record.rootDirectory))).toBe(true);
+      expect(record.rootDirectory.startsWith(entry.path)).toBe(true);
     }
   });
-});
+
+  it('ships no hosting configuration anywhere', () => {
+    // Nothing may re-add a deploy manifest while deployment is paused. A project that is
+    // being redeployed moves its entry from pausedDeployment to deploys in the same
+    // change, which is what keeps this test honest rather than merely strict.
+    //
+    // The manifests are searched for anywhere inside a project, not just at its root:
+    // the ones that existed were at `<project>/backend/vercel.json`, and a root-only
+    // check passed while a manifest was present.
+    const MANIFESTS = new Set(['vercel.json', 'netlify.toml', 'wrangler.toml', 'now.json']);
+    const found: string[] = [];
+
+    const visit = (relative: string): void => {
+      for (const name of readdirSync(join(REPO, relative))) {
+        if (name === 'node_modules' || name === '.next' || name === 'dist') continue;
+        const child = `${relative}/${name}`;
+        if (statSync(join(REPO, child)).isDirectory()) visit(child);
+        else if (MANIFESTS.has(name)) found.push(child);
+      }
+    };
+
+    for (const entry of registry.projects) visit(entry.path);
+    if (existsSync(join(REPO, 'vercel.json'))) found.push('vercel.json');
+    expect(found).toEqual([]);
+  });});
 
 describe('the failure modes are real, not merely absent', () => {
   const base: ProjectEntry = {
