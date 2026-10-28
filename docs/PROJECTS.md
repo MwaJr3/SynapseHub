@@ -49,7 +49,7 @@ SynapseHub/
 ├── company-platform/                Next.js, publishes 25 products for two companies
 ├── workniche/                       Next.js
 ├── vocal-separator/                 FastAPI + React
-├── northstar-ux-engine/             the UX/UI fixer
+├── tools/northstar/                 the UX/UI engine: audit, scan, fix, plugin
 └── docs/, e2e/, scripts/, tools/, prototypes/, stock-price-*
 ```
 
@@ -406,6 +406,26 @@ each. That is defensible for teaching projects, which should stand alone — and
 questionable where twenty of them are products of the same two companies, because a
 fix to one does not reach the other nineteen.
 
+## 7.9 Status of these findings (2026-10-28)
+
+Fixed in place since this inventory was written, without moving anything:
+
+| Finding | State |
+| --- | --- |
+| §7.2 the four duplicate slugs | **Fixed.** The `apps/` builds are `phishlens-cli`, `netscope-cli`, `incidentflow-cli`, `threatintel-desk-cli`; the deployed projects keep their slug and path. |
+| §7.3 the duplicate `mwangala-portfolio` package name | **Fixed.** The repository root is `synapsehub-portfolio`. |
+| §7.5 nine colliding dev ports | **Fixed.** 31 apps, 31 distinct ports, allocated by block. |
+| §7.4 62 `app` packages, 29 `security.py` | **Open.** Requires the S4 move and then shared code. |
+| Collisions in general | **Guarded.** `projects.json` + 18 tests in `src/registry.test.ts` fail on a duplicate slug, port, package name, or a port outside its block. |
+
+Two later changes that this document predates:
+
+- **Deployment was removed (2026-10-28).** All nine hosting configurations are gone and
+  nothing deploys; see `docs/deployment/README.md`. Moving folders no longer risks a live
+  build, which is what makes S4 and S5 safe to perform.
+- **The two UX engines were merged** into one standalone project, `tools/northstar/`
+  (`tools/northstar/README.md`). No website embeds it any more.
+
 ## 8. What I propose
 
 The aim is not tidiness for its own sake. It is four properties:
@@ -493,7 +513,7 @@ SynapseHub/
 │   ├── workniche/
 │   └── vocal-separator/
 ├── tools/
-│   └── northstar-ux-engine/
+│   └── northstar/
 ├── docs/
 └── projects.json
 ```

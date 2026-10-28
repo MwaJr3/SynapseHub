@@ -31,7 +31,7 @@ SynapseHub/
 ├── company-platform/      Next.js — Velaqori Systems & Tamuzi Learning
 ├── workniche/             Next.js
 ├── vocal-separator/       AI music/vocal separation
-├── northstar-ux-engine/   the UX/UI fixer: audit, check, fix, watch, hooks
+├── tools/northstar/       the UX/UI engine: audit, scan, fix, watch, hooks
 ├── docs/                  stage records, deployment, audits, a11y report, feature matrix
 ├── prototypes/, tools/, scripts/, public/, src/   the root portfolio site and its build
 └── stock-price-*          two analysis notebooks/experiments
@@ -167,7 +167,7 @@ folder: `react-spa` (Vite + React frontend, FastAPI backend where marked), `pyth
 | Root portfolio site | `npm test` | **696 passed** across 25 files |
 | Lint | `npm run lint` (root, all workspaces) | **0 errors**, 2 pre-existing `react-hooks/exhaustive-deps` warnings in `apps/frontpage` |
 | UX gate | `northstar check .` | **0 defects at P1 or above across 41 projects** |
-| UX audit (Northstar) | `node northstar-ux-engine/bin/northstar.mjs audit . --out docs/ux/audit-repository.md` | 41 projects · **22 defects · 99 occurrences** — all P3 (0 P0/P1/P2) |
+| UX audit (Northstar) | `northstar audit . --out docs/ux/audit-repository.md` | 41 projects · **22 defects · 99 occurrences** — all P3 (0 P0/P1/P2) |
 | UX scan (`ux-quality` CI step) | `npm run ux:scan -- --strict` | 22 frontends · 457 source files · **75 findings**, all minor `TOKEN-SPACING-01` in `vocal-separator`; 0 critical, 0 major |
 
 The five projects with their own suites were run where they have one: `apps/tessera`,
