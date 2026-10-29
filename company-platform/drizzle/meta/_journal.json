@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1792738100968,
-      "tag": "0000_yummy_mister_fear",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1792738200000,
-      "tag": "0001_product_status_case_study_only",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1792931201187,
-      "tag": "0002_previous_puff_adder",
+      "when": 1793282642783,
+      "tag": "0000_platform_initial",
       "breakpoints": true
     }
   ]

@@ -8,7 +8,7 @@ import { eq } from 'drizzle-orm';
 
 import { caseStudies as caseStudyContent, content } from './seed-data';
 import { runMigrations } from '../src/lib/db/migrate';
-import { getDb, waitDbReady } from '../src/lib/db';
+import { getDb, waitDbReady, type Db } from '../src/lib/db';
 import {
   caseStudies,
   certifications,
@@ -24,10 +24,37 @@ import {
 } from '../src/lib/db/schema';
 import { hashPassword } from '../src/lib/auth/password';
 
-async function main(): Promise<void> {
-  await runMigrations();
-  await waitDbReady();
-  const db = getDb();
+/** What to write. */
+export interface SeedOptions {
+  /**
+   * Create the three synthetic demo accounts and their profiles.
+   *
+   * Off in production: the accounts have published passwords (`demo-password-123`)
+   * and an EDITOR can change company content, so a public deployment that seeds
+   * them hands editing rights to anyone who reads the README. The public pages do
+   * not need them — they read companies, products and case studies, all of which
+   * are seeded either way.
+   */
+  includeDemoAccounts?: boolean;
+  /** Reuse an open transaction instead of `getDb()`. */
+  db?: Db;
+}
+
+/**
+ * Create the catalogue. Exported rather than run at import time, so the same code
+ * can be called from `npm run db:seed`, from the first-request bootstrap, or from
+ * a script that needs a seeded database without spawning a process.
+ */
+export async function seedDatabase(options: SeedOptions = {}): Promise<void> {
+  const { includeDemoAccounts = true } = options;
+  // A caller that passes a transaction has already created the schema and waited
+  // for the connection. Running the migrations again here would open a *second*
+  // transaction on a single-connection database (PGlite) and deadlock.
+  if (options.db === undefined) {
+    await runMigrations();
+    await waitDbReady();
+  }
+  const db = options.db ?? getDb();
 
   // Companies
   for (const company of content.companies) {
@@ -176,8 +203,8 @@ async function main(): Promise<void> {
     }
   }
 
-  // Demo users + memberships + profiles
-  for (const person of content.demoPeople) {
+  // Demo users + memberships + profiles (local only — see SeedOptions).
+  for (const person of includeDemoAccounts ? content.demoPeople : []) {
     const passwordHash = await hashPassword(person.password);
     const userId = `user-${person.profile.slug}`;
     const userValues = {
@@ -290,21 +317,32 @@ async function main(): Promise<void> {
     }
   }
 
-  console.log('Seed complete:');
-  console.log(`  companies: ${content.companies.length}`);
-  console.log(`  solution areas: ${content.solutionAreas.length}`);
-  console.log(`  products: ${content.products.length}`);
-  console.log(`  case studies: ${caseStudyContent.length}`);
-  console.log(`  demo people: ${content.demoPeople.length}`);
-  console.log('');
-  console.log('Demo accounts (SYNTHETIC — fictional demo data, demo-password-123):');
-  for (const person of content.demoPeople) {
-    console.log(`  ${person.email} — ${person.role}`);
-  }
-  process.exit(0);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+/** What the seed put in, and the synthetic accounts it created. */
+export function seedSummary(): string {
+  return [
+    'Seed complete:',
+    `  companies: ${content.companies.length}`,
+    `  solution areas: ${content.solutionAreas.length}`,
+    `  products: ${content.products.length}`,
+    `  case studies: ${caseStudyContent.length}`,
+    `  demo people: ${content.demoPeople.length}`,
+    '',
+    'Demo accounts (SYNTHETIC — fictional demo data, demo-password-123):',
+    ...content.demoPeople.map((person) => `  ${person.email} — ${person.role}`),
+  ].join('\n');
+}
+
+// Only run when invoked directly (`npm run db:seed`), never when imported.
+if (process.argv[1]?.endsWith('seed.ts') || process.argv[1]?.endsWith('seed.js')) {
+  seedDatabase()
+    .then(() => {
+      console.log(seedSummary());
+      process.exit(0);
+    })
+    .catch((error: unknown) => {
+      console.error(error);
+      process.exit(1);
+    });
+}

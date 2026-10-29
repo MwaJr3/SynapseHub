@@ -1,12 +1,12 @@
 {
-  "id": "088e7689-ee3c-491d-8f3b-f0e8a30f1dbe",
+  "id": "e2c82de1-e774-4bc0-889d-1b8b4e01168b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.audit_events": {
+    "platform.audit_events": {
       "name": "audit_events",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -59,6 +59,7 @@
           "name": "audit_events_actor_id_users_id_fk",
           "tableFrom": "audit_events",
           "tableTo": "users",
+          "schemaTo": "platform",
           "columnsFrom": [
             "actor_id"
           ],
@@ -75,9 +76,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.case_studies": {
+    "platform.case_studies": {
       "name": "case_studies",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -200,7 +201,7 @@
         "publication_state": {
           "name": "publication_state",
           "type": "publication_state",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'DRAFT'"
@@ -226,6 +227,7 @@
           "name": "case_studies_product_id_products_id_fk",
           "tableFrom": "case_studies",
           "tableTo": "products",
+          "schemaTo": "platform",
           "columnsFrom": [
             "product_id"
           ],
@@ -250,9 +252,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.certifications": {
+    "platform.certifications": {
       "name": "certifications",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -307,6 +309,7 @@
           "name": "certifications_person_profile_id_person_profiles_id_fk",
           "tableFrom": "certifications",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -323,9 +326,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.companies": {
+    "platform.companies": {
       "name": "companies",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -474,9 +477,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.company_memberships": {
+    "platform.company_memberships": {
       "name": "company_memberships",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -499,7 +502,7 @@
         "role": {
           "name": "role",
           "type": "membership_role",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'MEMBER'"
@@ -540,6 +543,7 @@
           "name": "company_memberships_user_id_users_id_fk",
           "tableFrom": "company_memberships",
           "tableTo": "users",
+          "schemaTo": "platform",
           "columnsFrom": [
             "user_id"
           ],
@@ -553,6 +557,7 @@
           "name": "company_memberships_company_id_companies_id_fk",
           "tableFrom": "company_memberships",
           "tableTo": "companies",
+          "schemaTo": "platform",
           "columnsFrom": [
             "company_id"
           ],
@@ -569,9 +574,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.contact_submissions": {
+    "platform.contact_submissions": {
       "name": "contact_submissions",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -612,7 +617,7 @@
         "delivery": {
           "name": "delivery",
           "type": "contact_delivery",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'RECEIVED'"
@@ -631,6 +636,7 @@
           "name": "contact_submissions_company_id_companies_id_fk",
           "tableFrom": "contact_submissions",
           "tableTo": "companies",
+          "schemaTo": "platform",
           "columnsFrom": [
             "company_id"
           ],
@@ -647,9 +653,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.education_entries": {
+    "platform.education_entries": {
       "name": "education_entries",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -710,6 +716,7 @@
           "name": "education_entries_person_profile_id_person_profiles_id_fk",
           "tableFrom": "education_entries",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -726,9 +733,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.experience_entries": {
+    "platform.experience_entries": {
       "name": "experience_entries",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -789,6 +796,7 @@
           "name": "experience_entries_person_profile_id_person_profiles_id_fk",
           "tableFrom": "experience_entries",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -805,9 +813,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.person_profiles": {
+    "platform.person_profiles": {
       "name": "person_profiles",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -913,7 +921,7 @@
         "publication_state": {
           "name": "publication_state",
           "type": "publication_state",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'DRAFT'"
@@ -958,6 +966,7 @@
           "name": "person_profiles_user_id_users_id_fk",
           "tableFrom": "person_profiles",
           "tableTo": "users",
+          "schemaTo": "platform",
           "columnsFrom": [
             "user_id"
           ],
@@ -989,9 +998,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.portfolio_links": {
+    "platform.portfolio_links": {
       "name": "portfolio_links",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1031,6 +1040,7 @@
           "name": "portfolio_links_person_profile_id_person_profiles_id_fk",
           "tableFrom": "portfolio_links",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -1047,9 +1057,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.products": {
+    "platform.products": {
       "name": "products",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1103,7 +1113,7 @@
         "status": {
           "name": "status",
           "type": "product_status",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'BUILT'"
@@ -1174,7 +1184,7 @@
         "publication_state": {
           "name": "publication_state",
           "type": "publication_state",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'DRAFT'"
@@ -1200,6 +1210,7 @@
           "name": "products_company_id_companies_id_fk",
           "tableFrom": "products",
           "tableTo": "companies",
+          "schemaTo": "platform",
           "columnsFrom": [
             "company_id"
           ],
@@ -1224,9 +1235,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.project_contributions": {
+    "platform.project_contributions": {
       "name": "project_contributions",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1273,6 +1284,7 @@
           "name": "project_contributions_person_profile_id_person_profiles_id_fk",
           "tableFrom": "project_contributions",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -1286,6 +1298,7 @@
           "name": "project_contributions_product_id_products_id_fk",
           "tableFrom": "project_contributions",
           "tableTo": "products",
+          "schemaTo": "platform",
           "columnsFrom": [
             "product_id"
           ],
@@ -1302,9 +1315,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.publication_reviews": {
+    "platform.publication_reviews": {
       "name": "publication_reviews",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1351,6 +1364,7 @@
           "name": "publication_reviews_person_profile_id_person_profiles_id_fk",
           "tableFrom": "publication_reviews",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -1364,6 +1378,7 @@
           "name": "publication_reviews_reviewer_id_users_id_fk",
           "tableFrom": "publication_reviews",
           "tableTo": "users",
+          "schemaTo": "platform",
           "columnsFrom": [
             "reviewer_id"
           ],
@@ -1380,9 +1395,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.resume_assets": {
+    "platform.resume_assets": {
       "name": "resume_assets",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1441,6 +1456,7 @@
           "name": "resume_assets_person_profile_id_person_profiles_id_fk",
           "tableFrom": "resume_assets",
           "tableTo": "person_profiles",
+          "schemaTo": "platform",
           "columnsFrom": [
             "person_profile_id"
           ],
@@ -1457,9 +1473,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.solution_areas": {
+    "platform.solution_areas": {
       "name": "solution_areas",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1507,7 +1523,7 @@
         "publication_state": {
           "name": "publication_state",
           "type": "publication_state",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'DRAFT'"
@@ -1533,6 +1549,7 @@
           "name": "solution_areas_company_id_companies_id_fk",
           "tableFrom": "solution_areas",
           "tableTo": "companies",
+          "schemaTo": "platform",
           "columnsFrom": [
             "company_id"
           ],
@@ -1557,9 +1574,116 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.users": {
+    "platform.support_requests": {
+      "name": "support_requests",
+      "schema": "platform",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "reference": {
+          "name": "reference",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assistant": {
+          "name": "assistant",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "message": {
+          "name": "message",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "transcript": {
+          "name": "transcript",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::json"
+        },
+        "status": {
+          "name": "status",
+          "type": "support_request_status",
+          "typeSchema": "platform",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'OPEN'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "support_requests_company_id_companies_id_fk": {
+          "name": "support_requests_company_id_companies_id_fk",
+          "tableFrom": "support_requests",
+          "tableTo": "companies",
+          "schemaTo": "platform",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "support_requests_reference_unique": {
+          "name": "support_requests_reference_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "reference"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "platform.users": {
       "name": "users",
-      "schema": "",
+      "schema": "platform",
       "columns": {
         "id": {
           "name": "id",
@@ -1588,7 +1712,7 @@
         "role": {
           "name": "role",
           "type": "platform_role",
-          "typeSchema": "public",
+          "typeSchema": "platform",
           "primaryKey": false,
           "notNull": true,
           "default": "'MEMBER'"
@@ -1632,9 +1756,9 @@
     }
   },
   "enums": {
-    "public.contact_delivery": {
+    "platform.contact_delivery": {
       "name": "contact_delivery",
-      "schema": "public",
+      "schema": "platform",
       "values": [
         "RECEIVED",
         "DELIVERY_NOT_CONFIGURED",
@@ -1642,18 +1766,18 @@
         "FAILED"
       ]
     },
-    "public.membership_role": {
+    "platform.membership_role": {
       "name": "membership_role",
-      "schema": "public",
+      "schema": "platform",
       "values": [
         "MEMBER",
         "EDITOR",
         "ADMIN"
       ]
     },
-    "public.platform_role": {
+    "platform.platform_role": {
       "name": "platform_role",
-      "schema": "public",
+      "schema": "platform",
       "values": [
         "MEMBER",
         "EDITOR",
@@ -1661,21 +1785,22 @@
         "PLATFORM_OPERATOR"
       ]
     },
-    "public.product_status": {
+    "platform.product_status": {
       "name": "product_status",
-      "schema": "public",
+      "schema": "platform",
       "values": [
         "PROTOTYPE",
         "BUILT",
+        "CASE_STUDY_ONLY",
         "PILOT",
         "LIVE",
         "MAINTENANCE",
         "ARCHIVED"
       ]
     },
-    "public.publication_state": {
+    "platform.publication_state": {
       "name": "publication_state",
-      "schema": "public",
+      "schema": "platform",
       "values": [
         "DRAFT",
         "PENDING_REVIEW",
@@ -1683,9 +1808,20 @@
         "UNPUBLISHED",
         "REJECTED"
       ]
+    },
+    "platform.support_request_status": {
+      "name": "support_request_status",
+      "schema": "platform",
+      "values": [
+        "OPEN",
+        "ACKED",
+        "CLOSED"
+      ]
     }
   },
-  "schemas": {},
+  "schemas": {
+    "platform": "platform"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},
