@@ -440,7 +440,8 @@ turned this bug into a code and a log line instead of a 500 nobody could read.
 | 2 | `dpl_E2F6phbX61695QLAvhR8pkwCpeJk` | `54e9d1e` (PR #47 merged) | READY — same 500 |
 | 3 | `dpl_9ggHsGASVa7tM6fDVKUBU2JyCkD5` | `b6f32ce` | **ERROR** after 12 s — `SELF_SIGNED_CERT_IN_CHAIN` |
 | 4 | `dpl_Cw9WmTEHB2iv4aRx7nfV4jeXBvwz` | `fc8636d` (PR #48) | READY — `[db] schema created, catalogue seeded` |
-| 5 | `dpl_Bz2xgjLVNvpXXonYc89VBahi1ZUq` | `f438ee4` (merge of #48) | READY, PROMOTED — the production alias |
+| 5 | `dpl_Bz2xgjLVNvpXXonYc89VBahi1ZUq` | `f438ee4` (merge of #48) | READY, PROMOTED — held the alias for a minute |
+| 6 | `dpl_5cntiGGzWoofN3mLiG9dwaxc2Dpg` | `f438ee4` (merge of #48) | READY, PROMOTED — **the production alias now**; same commit, built twice |
 
 Deployment 4 is the one that answered the question this file could not answer before:
 a Vercel build container reached Supabase, created nothing new, seeded the catalogue
