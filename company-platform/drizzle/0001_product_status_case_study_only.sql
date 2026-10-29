@@ -1,1 +1,0 @@
-ALTER TYPE "product_status" ADD VALUE 'CASE_STUDY_ONLY';

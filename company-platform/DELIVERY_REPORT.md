@@ -204,3 +204,26 @@ no Lighthouse scores are claimed anywhere.
 - **The CMS is code-and-admin driven** rather than a drag-and-drop editor;
   content edits go through `src/content/` + seed + admin publication.
 - **PGlite is development-only**; production requires PostgreSQL 14+.
+
+## 10. Deployment state (2026-10-29)
+
+The company site is deployed on Vercel from `company-platform/`
+(`https://company-platform-ivory.vercel.app`). It reads PostgreSQL; the embedded
+PGlite database is local-only and the app now refuses it in a deployment.
+
+| Item | State |
+| --- | --- |
+| Database | PostgreSQL 16 on Supabase, schema `platform`, 18 tables |
+| Schema management | `drizzle/0000_platform_initial.sql`, embedded into the bundle, applied by a transactional runner with an advisory lock and a `platform._migrations` ledger |
+| Content | Seeded on first run against an empty catalogue: 2 companies, 4 solution areas, 25 products, 25 case studies — no demo users, no person profiles, no memberships |
+| Deploy step | Vercel build command `npm run db:bootstrap && npm run build`; a deploy fails if the database cannot be reached |
+| Runtime fallback | `instrumentation.ts` runs the same bootstrap once per server instance |
+| `AUTH_SECRET` | Set (sensitive) on production and preview |
+
+**Verified** against a local PostgreSQL 16 server rather than PGlite: bootstrap
+creates the 18 tables, seeds the catalogue, writes no users, and is a no-op on a
+second run; `next start` in production mode then returned 200 for fifteen routes,
+including `/products/[slug]` and `/case-studies/[slug]`, with seeded names in the
+HTML. **Not verified:** no request has been made to the Vercel deployment from the
+development sandbox, which has no network route to `*.vercel.app`. The record,
+including both remaining risks, is in `docs/deployment/README.md`.

@@ -1,11 +1,12 @@
 # Deployment: one project, on request
 
-> **2026-10-29 — `company-platform` is deployed.** The owner asked for the company
-> website to be deployed if it was ready, and it was: it builds on Vercel from
-> `company-platform/` and every one of its 149 tests passes. The deployment is
-> recorded at the end of this file, including what is **not** working yet. Every
-> other project in the repository still has no deployment, and the rest of this
-> document still applies to them.
+> **2026-10-29 — `company-platform` is deployed, and the deployment now has a database.**
+> The owner asked for the company website to be deployed if it was ready, and it was:
+> it builds on Vercel from `company-platform/`. The first deployment then served a 500
+> on every page (`relation "companies" does not exist`); the diagnosis and the fix are
+> the last two sections of this file, and they supersede the "what the site will and
+> will not do today" table above them. Every other project in the repository still has
+> no deployment, and the rest of this document still applies to them.
 
 # Historically: deployment is paused
 
@@ -334,3 +335,99 @@ still read `projects/cyberaware-lab/backend` and so on. Those paths were deleted
 registry records them as `pausedDeployment` — but the dashboard entries are stale.
 When each is redeployed, set its Root Directory to
 `companies/<company>/<product>/backend`.
+
+---
+
+## 2026-10-29 — every page 500'd. What it was
+
+The deployed site answered `GET /` with a 500. The server log carried one line:
+
+```
+PostgresError: relation "companies" does not exist   (42P01)
+```
+
+### The cause, corrected
+
+The record above said the app "falls back to embedded PGlite" because `DATABASE_URL`
+was missing. That is half of it, and the half that mattered was wrong in a way worth
+writing down: **no migration had ever run against any database.** The Vercel project
+had exactly one environment variable, `PGLITE_DATA_DIR=/tmp/platform.db`, so every
+instance started an embedded PGlite database in a fresh `/tmp`, found no tables, and
+threw on the first query. The `DATABASE_URL` this session assumed it had was on a
+*different* Vercel project (`synapsehub-cyberaware-lab-api`), left over from the
+deleted `projects/` tree.
+
+So the failure was not "the database is empty". It was "there is no deployed step that
+can create a schema, and the runtime silently substituted a database that starts empty
+every time".
+
+### The fix
+
+| Change | Why |
+| --- | --- |
+| `src/lib/db/schema.ts` pinned to `pgSchema('platform')` | The tables are in their own schema, so this app never shares a namespace with anything else in the same PostgreSQL instance |
+| `drizzle/0000_platform_initial.sql` — one generated migration, 42 statements | The previous three were never applied anywhere; there is no history to preserve, so there is one file that describes the whole schema |
+| `scripts/embed-migrations.mjs` → `src/lib/db/migrations.generated.ts` | The runtime needs the SQL without drizzle-kit; `db:check` fails the build if the two drift |
+| `src/lib/db/migrate.ts` — transactional runner | Drizzle's own migrator opens its own bookkeeping schema, which this project does not want; this one takes `pg_advisory_xact_lock(8412006)` and records each file in `platform._migrations` |
+| `src/lib/db/bootstrap.ts` | Schema, then content, exactly once: `count(*)` on `platform.companies`, and a second check under `pg_advisory_xact_lock(8412007)` so two cold starts cannot both seed |
+| `instrumentation.ts` | Runs the bootstrap once per server instance before the first request. It logs a failure and lets the page-level boundary explain it instead of taking the whole deployment down |
+| `npm run db:bootstrap` as the build command prefix | A deploy now fails, visibly, if the database is unreachable — rather than shipping a green deployment that 500s |
+| `DatabaseNotConfiguredError` | In a deployment with no `DATABASE_URL`, the app refuses to start PGlite at all |
+| `src/app/error.tsx`, `src/app/global-error.tsx` | A database failure reads as a sentence, not a digest number |
+
+`next build` is untouched; the bootstrap is a separate script the Vercel build command
+runs before it (`npm run db:bootstrap && npm run build`, a dashboard setting).
+
+### The database
+
+| Item | Value |
+| --- | --- |
+| Host | Supabase project `jpwbkdwxloxtmxnrykcq`, session pooler `aws-0-eu-west-1.pooler.supabase.com:5432` |
+| Schema | `platform` — 18 tables, migration `0000_platform_initial.sql` recorded in `platform._migrations` |
+| Vercel env | `DATABASE_URL` (encrypted), `AUTH_SECRET` (sensitive), `PGLITE_DATA_DIR` **deleted** |
+
+The catalogue seeds itself on the first run that finds `platform.companies` empty:
+2 companies, 4 solution areas, 25 products, 25 case studies. It does not create users,
+person profiles or memberships — the demo logins have published passwords and an
+`EDITOR` can edit company content, so a public deployment does not get them.
+
+### What is verified, and what still is not
+
+**Verified, against real PostgreSQL 16** (not PGlite) in this sandbox: `npm run
+db:bootstrap` creates 18 tables and seeds 2 companies / 4 solution areas / 25 products /
+25 case studies, writes nothing to `users`, `person_profiles` or `company_memberships`,
+and a second run reports *"schema and catalogue already current"*. Then, with that
+database behind it, `next start` in production mode served **200** for `/`, `/companies`,
+`/companies/velaqori-systems`, `/companies/tamuzi-learning`,
+`/companies/velaqori-systems/about`, `/catalogue`, `/ecosystem`, `/products`,
+`/products/sentinelcore`, `/case-studies`, a case-study detail page, `/people`, `/about`,
+`/contact` and `/privacy/velaqori-systems` — 15 routes, with the seeded company names and
+product names in the HTML. With `DATABASE_URL` removed, the same build in production mode
+logs `DatabaseNotConfiguredError` rather than starting PGlite.
+
+**Still not verified: any request to the Vercel deployment.** This sandbox has no network
+path to `*.vercel.app` (GitHub, npm and PyPI only), so the deployment's own behaviour is
+only observable through its build log and its state. The build now runs the bootstrap,
+which means a successful deploy is itself evidence that Vercel reached Supabase and that
+the migration and seed succeeded there.
+
+**The TLS risk did not stay hypothetical.** The first deployment with the new build
+step failed in twelve seconds with
+
+```
+[db] bootstrap failed Error: self-signed certificate in certificate chain
+  code: 'SELF_SIGNED_CERT_IN_CHAIN'
+```
+
+Supabase's pooler presents a chain Node does not trust, so `sslFor` now asks for what
+libpq calls `require`: encrypted, chain not verified. `?sslmode=verify-full` still gets a
+verifying connection, and pinning the provider's CA (`ssl.ca`, from `PGSSLROOTCERT`) is
+what would let that switch be turned on permanently — the URL is the only thing that
+would have to change. Until then the connection is confidential against a passive
+observer and not authenticated against an active one; that is stated here rather than
+left implicit in a `rejectUnauthorized: false`. Four unit tests in
+`tests/database-config.test.ts` pin the behaviour.
+
+**The other consequence, kept on purpose.** The seed runs from the build container, so a
+build that cannot reach Supabase fails before it produces a deployment. That is what
+turned this bug into a code and a log line instead of a 500 nobody could read.

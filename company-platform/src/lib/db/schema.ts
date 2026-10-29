@@ -11,12 +11,23 @@ import {
   boolean,
   integer,
   json,
-  pgEnum,
-  pgTable,
+  pgSchema,
   text,
   timestamp,
   uniqueIndex,
 } from 'drizzle-orm/pg-core';
+
+/**
+ * Every table in this application lives in its own PostgreSQL schema.
+ *
+ * The database this deploys against is shared with the other products' APIs, and
+ * each of those owns a schema of its own (`assetwatch`, `cyberaware`, …). Naming
+ * the schema here rather than relying on `search_path` means the qualification is
+ * in the generated SQL: a connection pooler that resets session state, or a
+ * `public` schema that grows an unrelated `users` table, cannot change which table
+ * a query touches.
+ */
+export const platformSchema = pgSchema('platform');
 
 const id = () =>
   text('id')
@@ -29,18 +40,18 @@ const createdAt = () =>
 const updatedAt = () =>
   timestamp('updated_at', { mode: 'date' }).notNull().defaultNow();
 
-export const platformRoleEnum = pgEnum('platform_role', [
+export const platformRoleEnum = platformSchema.enum('platform_role', [
   'MEMBER',
   'EDITOR',
   'ADMIN',
   'PLATFORM_OPERATOR',
 ]);
-export const membershipRoleEnum = pgEnum('membership_role', [
+export const membershipRoleEnum = platformSchema.enum('membership_role', [
   'MEMBER',
   'EDITOR',
   'ADMIN',
 ]);
-export const productStatusEnum = pgEnum('product_status', [
+export const productStatusEnum = platformSchema.enum('product_status', [
   'PROTOTYPE',
   'BUILT',
   'CASE_STUDY_ONLY',
@@ -49,21 +60,21 @@ export const productStatusEnum = pgEnum('product_status', [
   'MAINTENANCE',
   'ARCHIVED',
 ]);
-export const publicationStateEnum = pgEnum('publication_state', [
+export const publicationStateEnum = platformSchema.enum('publication_state', [
   'DRAFT',
   'PENDING_REVIEW',
   'PUBLISHED',
   'UNPUBLISHED',
   'REJECTED',
 ]);
-export const contactDeliveryEnum = pgEnum('contact_delivery', [
+export const contactDeliveryEnum = platformSchema.enum('contact_delivery', [
   'RECEIVED',
   'DELIVERY_NOT_CONFIGURED',
   'DELIVERED',
   'FAILED',
 ]);
 
-export const users = pgTable('users', {
+export const users = platformSchema.table('users', {
   id: id(),
   email: text('email').notNull().unique(),
   name: text('name').notNull(),
@@ -74,7 +85,7 @@ export const users = pgTable('users', {
   updatedAt: updatedAt(),
 });
 
-export const companies = pgTable('companies', {
+export const companies = platformSchema.table('companies', {
   id: id(),
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
@@ -104,7 +115,7 @@ export const companies = pgTable('companies', {
 });
 
 /** Explicit membership: a person's company association is never inferred. */
-export const companyMemberships = pgTable(
+export const companyMemberships = platformSchema.table(
   'company_memberships',
   {
     id: id(),
@@ -122,7 +133,7 @@ export const companyMemberships = pgTable(
   ],
 );
 
-export const solutionAreas = pgTable('solution_areas', {
+export const solutionAreas = platformSchema.table('solution_areas', {
   id: id(),
   slug: text('slug').notNull().unique(),
   title: text('title').notNull(),
@@ -139,7 +150,7 @@ export const solutionAreas = pgTable('solution_areas', {
   updatedAt: updatedAt(),
 });
 
-export const products = pgTable('products', {
+export const products = platformSchema.table('products', {
   id: id(),
   slug: text('slug').notNull().unique(),
   name: text('name').notNull(),
@@ -176,7 +187,7 @@ export const products = pgTable('products', {
  * product — no shared filler paragraphs. Sections the brief cannot support
  * are explicitly marked as requiring verification before publication.
  */
-export const caseStudies = pgTable('case_studies', {
+export const caseStudies = platformSchema.table('case_studies', {
   id: id(),
   slug: text('slug').notNull().unique(),
   productId: text('product_id')
@@ -213,7 +224,7 @@ export const caseStudies = pgTable('case_studies', {
   updatedAt: updatedAt(),
 });
 
-export const personProfiles = pgTable('person_profiles', {
+export const personProfiles = platformSchema.table('person_profiles', {
   id: id(),
   userId: text('user_id')
     .notNull()
@@ -248,7 +259,7 @@ export const personProfiles = pgTable('person_profiles', {
   updatedAt: updatedAt(),
 });
 
-export const educationEntries = pgTable('education_entries', {
+export const educationEntries = platformSchema.table('education_entries', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -261,7 +272,7 @@ export const educationEntries = pgTable('education_entries', {
   position: integer('position').notNull().default(0),
 });
 
-export const experienceEntries = pgTable('experience_entries', {
+export const experienceEntries = platformSchema.table('experience_entries', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -274,7 +285,7 @@ export const experienceEntries = pgTable('experience_entries', {
   position: integer('position').notNull().default(0),
 });
 
-export const certifications = pgTable('certifications', {
+export const certifications = platformSchema.table('certifications', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -286,7 +297,7 @@ export const certifications = pgTable('certifications', {
   position: integer('position').notNull().default(0),
 });
 
-export const portfolioLinks = pgTable('portfolio_links', {
+export const portfolioLinks = platformSchema.table('portfolio_links', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -296,7 +307,7 @@ export const portfolioLinks = pgTable('portfolio_links', {
   position: integer('position').notNull().default(0),
 });
 
-export const resumeAssets = pgTable('resume_assets', {
+export const resumeAssets = platformSchema.table('resume_assets', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -311,7 +322,7 @@ export const resumeAssets = pgTable('resume_assets', {
 });
 
 /** A person's documented work on a product/case study — never inferred. */
-export const projectContributions = pgTable('project_contributions', {
+export const projectContributions = platformSchema.table('project_contributions', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -324,7 +335,7 @@ export const projectContributions = pgTable('project_contributions', {
   position: integer('position').notNull().default(0),
 });
 
-export const publicationReviews = pgTable('publication_reviews', {
+export const publicationReviews = platformSchema.table('publication_reviews', {
   id: id(),
   personProfileId: text('person_profile_id')
     .notNull()
@@ -335,7 +346,7 @@ export const publicationReviews = pgTable('publication_reviews', {
   createdAt: createdAt(),
 });
 
-export const contactSubmissions = pgTable('contact_submissions', {
+export const contactSubmissions = platformSchema.table('contact_submissions', {
   id: id(),
   companyId: text('company_id')
     .notNull()
@@ -356,12 +367,12 @@ export const contactSubmissions = pgTable('contact_submissions', {
  * `contact_submissions` — that is the general enquiry form and goes through
  * Brevo, whereas this records a conversation that already happened on the site.
  */
-export const supportRequestStatusEnum = pgEnum('support_request_status', [
+export const supportRequestStatusEnum = platformSchema.enum('support_request_status', [
   'OPEN',
   'ACKED',
   'CLOSED',
 ]);
-export const supportRequests = pgTable('support_requests', {
+export const supportRequests = platformSchema.table('support_requests', {
   id: id(),
   /** Short code a visitor can quote: VLQ-4F8K2A. */
   reference: text('reference').notNull().unique(),
@@ -381,7 +392,7 @@ export const supportRequests = pgTable('support_requests', {
   updatedAt: updatedAt(),
 });
 
-export const auditEvents = pgTable('audit_events', {
+export const auditEvents = platformSchema.table('audit_events', {
   id: id(),
   actorId: text('actor_id').references(() => users.id),
   action: text('action').notNull(),
