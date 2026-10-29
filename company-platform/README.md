@@ -241,7 +241,7 @@ security posture, and are instructed to say so. No model quality has been
 verified in this environment — no provider is reachable from it, so the streaming
 path is tested against a fake provider, not a live one. Source Code buttons appear
 only for the seven products with working apps —
-vendored in this repository at `projects/mysul/mwangala-portfolio/public/demos/<slug>/`, with the
+vendored in this repository at `sites/portfolio/public/demos/<slug>/`, with the
 buttons linking to those in-repo folders
 (`docs/PROJECT_EVIDENCE.md` records every provenance link and its verification
 status). No metrics, dates, user

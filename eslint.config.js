@@ -7,9 +7,10 @@ import jsxA11y from 'eslint-plugin-jsx-a11y';
 export default tseslint.config(
   {
     // workniche/, contextvault/ and vocal-separator/ are self-contained apps with their own
-    // tooling. projects/ holds consolidated copies of other repositories'
-    // projects, each self-contained with its own tooling (see
-    // projects/README.md).
+    // tooling. sites/portfolio and coursework/ are the same: each has its own
+    // config or none, and neither is part of the root site this config exists for.
+    // companies/ is *not* ignored — its frontends were linted as `apps/` before
+    // the 2026-10-29 move and are linted as `companies/` after it.
     ignores: [
       'dist',
       '**/dist/**',
@@ -19,7 +20,8 @@ export default tseslint.config(
       'workniche',
       'contextvault',
       'vocal-separator',
-      'projects',
+      'sites',
+      'coursework',
       '**/.next/**',
       '**/.venv/**',
       'company-platform/next-env.d.ts',

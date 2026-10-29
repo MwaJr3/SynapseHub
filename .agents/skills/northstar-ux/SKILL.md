@@ -33,7 +33,7 @@ task before writing code; each names the patterns it owns.
 npm run ux:audit              # whole repository → stdout + docs/ux/audit-repository.md
 npm run ux:check              # exit 1 if anything P1 or worse exists (CI)
 npm run ux:test               # the engine's own 41 tests
-node tools/northstar/bin/northstar.mjs audit apps/tessera --out docs/ux/audit-tessera.md
+node tools/northstar/bin/northstar.mjs audit companies/tamuzi/tessera --out docs/ux/audit-tessera.md
 ```
 
 Every finding carries a file, a line, a snippet and — for contrast — the measured

@@ -3,6 +3,10 @@
  * products (13 Velaqori + 12 Tamuzi), one case study each, complete case-study
  * sections, and no invented external URLs anywhere.
  */
+import { existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -19,6 +23,27 @@ import {
   SUPPLIED_EVIDENCE_LINKS,
   appSourceUrl,
 } from '@/content';
+
+/** Repository root, for the check that a source link resolves to a real folder. */
+const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+/**
+ * The twelve products Tamuzi publishes. Every other product with a working app is
+ * Velaqori's. Stated here rather than read off `companySlug`, so the test fails if
+ * a slug is filed under the wrong company.
+ */
+const TAMUZI = new Set([
+  'campusflow',
+  'classconnect',
+  'eduaccess',
+  'learnbridge',
+  'learnpulse',
+  'openlearn-commons',
+  'pathwise',
+  'reachlearn',
+  'teachcraft',
+  'tutorspring',
+]);
 
 describe('seed catalogue integrity', () => {
   it('contains exactly the specified product counts', () => {
@@ -160,13 +185,22 @@ describe('seed catalogue integrity', () => {
       'tutorspring',
     ]);
     for (const product of withSource) {
-      // Source links point into THIS repository — all project code is vendored
-      // in projects/ (owner instruction, 2026-10-23); none points at another
-      // repository's code.
-      expect(product.repositoryUrl).toBe(appSourceUrl(product.slug));
-      expect(product.repositoryUrl?.startsWith(
-        'https://github.com/MwaJr3/SynapseHub/tree/main/apps/',
-      )).toBe(true);
+      // Source links point into THIS repository — all product code lives here,
+      // filed under the company that publishes it (2026-10-29). None points at
+      // another repository's code.
+      expect(product.repositoryUrl).toBe(
+        appSourceUrl(TAMUZI.has(product.slug) ? 'tamuzi' : 'velaqori', product.slug),
+      );
+      expect(product.repositoryUrl).toMatch(
+        /^https:\/\/github\.com\/MwaJr3\/SynapseHub\/tree\/main\/companies\/(velaqori|tamuzi)\//,
+      );
+      // The linked directory must exist in this checkout, so the Source Code
+      // button never opens a 404.
+      const inRepo = (product.repositoryUrl ?? '').replace(
+        'https://github.com/MwaJr3/SynapseHub/tree/main/',
+        '',
+      );
+      expect(existsSync(join(REPO, inRepo))).toBe(true);
     }
     // Every one of the 25 carries its evidence record.
     for (const product of products) {

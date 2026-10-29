@@ -65,7 +65,8 @@ function parseArguments(argv) {
 /**
  * Resolve a target to the projects it names.
  *
- * `audit apps/tessera` is one project; `audit apps` is every project underneath it,
+ * `audit companies/tamuzi/tessera` is one project; `audit companies` is every
+ * project underneath it,
  * not the repository that contains them. Matching the longest project root that is
  * an ancestor of the target keeps those two cases honest.
  */

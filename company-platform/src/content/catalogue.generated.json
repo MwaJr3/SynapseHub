@@ -2,9 +2,9 @@
   {
     "slug": "authgate",
     "name": "AuthGate",
-    "path": "apps/authgate",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/authgate",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Authentication and authorization dashboard with MFA, lockout and security headers.",
     "title": "AuthGate",
     "tags": [
@@ -22,9 +22,9 @@
   {
     "slug": "budgetbook",
     "name": "BudgetBook",
-    "path": "apps/budgetbook",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/budgetbook",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Personal expense tracker: exact decimal money math, refunds, audited corrections, period summaries.",
     "title": "BudgetBook",
     "tags": [
@@ -41,9 +41,9 @@
   {
     "slug": "creadesk",
     "name": "CreateDesk",
-    "path": "apps/creadesk",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/creadesk",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Content pipeline: editorial states, role rights, version history, scheduling and link allowlist.",
     "title": "CreateDesk",
     "tags": [
@@ -61,9 +61,9 @@
   {
     "slug": "datadesk",
     "name": "DataDesk",
-    "path": "apps/datadesk",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/datadesk",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "CSV analysis with explicit cleaning decisions, descriptive statistics, trends and accessible reports.",
     "title": "DataDesk",
     "tags": [
@@ -81,9 +81,9 @@
   {
     "slug": "docsage",
     "name": "DocSage",
-    "path": "apps/docsage",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/docsage",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Team knowledge base with citations, review status, version diffs and offline ranked search.",
     "title": "DocSage",
     "tags": [
@@ -101,9 +101,9 @@
   {
     "slug": "fileseal",
     "name": "FileSeal",
-    "path": "apps/fileseal",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/fileseal",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "File encryption/decryption with AES-256-GCM and scrypt key derivation; safe, documented container format.",
     "title": "FileSeal",
     "tags": [
@@ -120,9 +120,9 @@
   {
     "slug": "flashkit",
     "name": "FlashKit",
-    "path": "apps/flashkit",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/flashkit",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Flashcard learning: decks, documented review scheduling, and confidence tracked apart from recall.",
     "title": "FlashKit",
     "tags": [
@@ -140,9 +140,9 @@
   {
     "slug": "gradeflow",
     "name": "GradeFlow",
-    "path": "apps/gradeflow",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/gradeflow",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Student grade management: registration, marks, configurable grading bands, results and ranking.",
     "title": "GradeFlow",
     "tags": [
@@ -159,9 +159,9 @@
   {
     "slug": "guessmaster",
     "name": "GuessMaster",
-    "path": "apps/guessmaster",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/guessmaster",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Number guessing game with configurable difficulty, attempt tracking and persistent high scores.",
     "title": "GuessMaster",
     "tags": [
@@ -178,9 +178,9 @@
   {
     "slug": "headercheck",
     "name": "HeaderCheck",
-    "path": "apps/headercheck",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/headercheck",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "HTTP security header evaluation with context-aware severities and scoped targets.",
     "title": "HeaderCheck",
     "tags": [
@@ -197,9 +197,9 @@
   {
     "slug": "hostwatch",
     "name": "HostWatch",
-    "path": "apps/hostwatch",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/hostwatch",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Read-only endpoint observation: scoped file facts, process metadata, evidence-backed review alerts.",
     "title": "HostWatch",
     "tags": [
@@ -217,7 +217,7 @@
   {
     "slug": "incidentflow-cli",
     "name": "IncidentFlow (CLI)",
-    "path": "apps/incidentflow-cli",
+    "path": "companies/velaqori/incidentflow-cli",
     "companySlug": "velaqori-systems",
     "companyName": "Velaqori Systems",
     "summary": "Forensics evidence intake, chain of custody, hash verification and honest timelines.",
@@ -237,9 +237,9 @@
   {
     "slug": "loginsense",
     "name": "LoginSense",
-    "path": "apps/loginsense",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/loginsense",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Suspicious login detection: normalised auth events, documented rules, transparent risk scores.",
     "title": "LoginSense",
     "tags": [
@@ -257,7 +257,7 @@
   {
     "slug": "netscope-cli",
     "name": "NetScope (CLI)",
-    "path": "apps/netscope-cli",
+    "path": "companies/velaqori/netscope-cli",
     "companySlug": "velaqori-systems",
     "companyName": "Velaqori Systems",
     "summary": "Offline packet-capture analysis: protocol summaries, talkers, volume heuristics — payloads never inspected.",
@@ -277,9 +277,9 @@
   {
     "slug": "notekit",
     "name": "NoteKit",
-    "path": "apps/notekit",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/notekit",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Personal knowledge management with versioned edits, tags, note links, sources and lesson summaries.",
     "title": "NoteKit",
     "tags": [
@@ -297,9 +297,9 @@
   {
     "slug": "passforge",
     "name": "PassForge",
-    "path": "apps/passforge",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/passforge",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Secure password and passphrase generator built on Python's secrets module, with honest strength guidance.",
     "title": "PassForge",
     "tags": [
@@ -317,9 +317,9 @@
   {
     "slug": "passmeter",
     "name": "PassMeter",
-    "path": "apps/passmeter",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/passmeter",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Local password strength analysis with transparent signals and honest limitations.",
     "title": "PassMeter",
     "tags": [
@@ -336,7 +336,7 @@
   {
     "slug": "phishlens-cli",
     "name": "PhishLens (CLI)",
-    "path": "apps/phishlens-cli",
+    "path": "companies/velaqori/phishlens-cli",
     "companySlug": "velaqori-systems",
     "companyName": "Velaqori Systems",
     "summary": "Explainable phishing email analysis: header, URL and attachment signals with honest framing.",
@@ -356,9 +356,9 @@
   {
     "slug": "prepwise",
     "name": "PrepWise",
-    "path": "apps/prepwise",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/prepwise",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Interview prep with question filters, mock sessions, timer and spaced review.",
     "title": "PrepWise",
     "tags": [
@@ -376,9 +376,9 @@
   {
     "slug": "quizarena",
     "name": "QuizArena",
-    "path": "apps/quizarena",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/quizarena",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Collaborative quiz platform with seeded shuffling, leaderboards and quiz-bank import/export.",
     "title": "QuizArena",
     "tags": [
@@ -396,9 +396,9 @@
   {
     "slug": "quizbox",
     "name": "QuizBox",
-    "path": "apps/quizbox",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/quizbox",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Categorized, difficulty-tagged multiple-choice quizzes with explanations and scored results.",
     "title": "QuizBox",
     "tags": [
@@ -415,9 +415,9 @@
   {
     "slug": "secops-dash",
     "name": "SecOps Dash",
-    "path": "apps/secops-dash",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/secops-dash",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Offline security-operations triage: events, incidents, timelines and manual response playbooks.",
     "title": "SecOps Dash",
     "tags": [
@@ -436,9 +436,9 @@
   {
     "slug": "secretscan",
     "name": "SecretScan",
-    "path": "apps/secretscan",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/secretscan",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Scoped scanner for candidate secrets in source code, with redacted reports and remediation guidance.",
     "title": "SecretScan",
     "tags": [
@@ -456,9 +456,9 @@
   {
     "slug": "secweblab",
     "name": "SecWebLab",
-    "path": "apps/secweblab",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/secweblab",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Web-security training lab with seeded vulnerable samples and fix-oriented findings.",
     "title": "SecWebLab",
     "tags": [
@@ -476,9 +476,9 @@
   {
     "slug": "shelfwise",
     "name": "ShelfWise",
-    "path": "apps/shelfwise",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/shelfwise",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Library management distinguishing titles from physical copies, with loans, overdue rules and inventory.",
     "title": "ShelfWise",
     "tags": [
@@ -495,9 +495,9 @@
   {
     "slug": "shopdeck",
     "name": "ShopDeck",
-    "path": "apps/shopdeck",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/shopdeck",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "E-commerce operations admin: order/inventory state machines, pricing audit, data-quality-flagged reports.",
     "title": "ShopDeck",
     "tags": [
@@ -515,9 +515,9 @@
   {
     "slug": "simforge",
     "name": "SimForge",
-    "path": "apps/simforge",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/simforge",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Engineering simulations with explicit units, bounded solvers and reproducible reports.",
     "title": "SimForge",
     "tags": [
@@ -535,9 +535,9 @@
   {
     "slug": "skycast",
     "name": "SkyCast",
-    "path": "apps/skycast",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/skycast",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Weather application with pluggable providers, explicit units/timezones and honest data labelling.",
     "title": "SkyCast",
     "tags": [
@@ -554,9 +554,9 @@
   {
     "slug": "stockmate",
     "name": "StockMate",
-    "path": "apps/stockmate",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/stockmate",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Inventory management with immutable movement ledger, role permissions and labelled demand estimates.",
     "title": "StockMate",
     "tags": [
@@ -574,9 +574,9 @@
   {
     "slug": "taskdeck",
     "name": "TaskDeck",
-    "path": "apps/taskdeck",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/taskdeck",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Personal task manager: priorities, deadlines, filters, and honest handling of malformed data.",
     "title": "TaskDeck",
     "tags": [
@@ -593,7 +593,7 @@
   {
     "slug": "threatintel-desk-cli",
     "name": "ThreatIntel Desk (CLI)",
-    "path": "apps/threatintel-desk-cli",
+    "path": "companies/velaqori/threatintel-desk-cli",
     "companySlug": "velaqori-systems",
     "companyName": "Velaqori Systems",
     "summary": "Indicator normalisation, local enrichment and opt-in provider adapters with provenance and honest verdicts.",
@@ -612,9 +612,9 @@
   {
     "slug": "tidyfiles",
     "name": "TidyFiles",
-    "path": "apps/tidyfiles",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/tidyfiles",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "File organizer that moves files by content-aware rules with dry-run safety and honest reports.",
     "title": "TidyFiles",
     "tags": [
@@ -632,9 +632,9 @@
   {
     "slug": "unicore",
     "name": "UniCore",
-    "path": "apps/unicore",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/tamuzi/unicore",
+    "companySlug": "tamuzi-learning",
+    "companyName": "Tamuzi Learning",
     "summary": "Modular university management: students, lecturers, courses, enrolments, grades and transcripts.",
     "title": "UniCore",
     "tags": [
@@ -652,9 +652,9 @@
   {
     "slug": "urlshield",
     "name": "URLShield",
-    "path": "apps/urlshield",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/urlshield",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Explainable phishing-URL classification with offline structural features and honest estimates.",
     "title": "URLShield",
     "tags": [
@@ -672,9 +672,9 @@
   {
     "slug": "wattwise",
     "name": "WattWise",
-    "path": "apps/wattwise",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/wattwise",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Home energy analysis: meter imports, configurable tariffs, transparent anomalies, labelled estimates.",
     "title": "WattWise",
     "tags": [
@@ -692,9 +692,9 @@
   {
     "slug": "webwatch",
     "name": "WebWatch",
-    "path": "apps/webwatch",
-    "companySlug": null,
-    "companyName": null,
+    "path": "companies/velaqori/webwatch",
+    "companySlug": "velaqori-systems",
+    "companyName": "Velaqori Systems",
     "summary": "Web data collection from explicitly permitted sources with change detection and provenance.",
     "title": "WebWatch",
     "tags": [

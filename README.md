@@ -204,7 +204,10 @@ src/
 workniche/              Separate Next.js job-marketplace application
 vocal-separator/        Separate FastAPI + React AI music/vocal-part separator
 company-platform/       Separate Next.js company-discovery application
-projects/               All other projects, consolidated here (mysul/, cbu-assignments/) — see projects/README.md
+companies/velaqori/     Velaqori Systems products and builds, one folder each
+companies/tamuzi/       Tamuzi Learning products and builds, one folder each
+sites/portfolio/        The personal portfolio, published by neither company
+coursework/             CBU assignments, kept apart from products
 stock-price-analysis/   Guided stock-analysis notebook edition
 docs/                   Build prompts, implementation notes and project documentation
 scripts/                Sitemap and asset utilities

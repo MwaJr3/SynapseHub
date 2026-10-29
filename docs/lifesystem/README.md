@@ -791,10 +791,10 @@ are none.
 two ports on the same machine, no Vercel, no domain, no DNS.
 
 ```bash
-cd apps/tessera/backend  && python3 -m pip install -r requirements-dev.txt \
+cd companies/tamuzi/tessera/backend  && python3 -m pip install -r requirements-dev.txt \
   && python3 -m alembic upgrade head && python3 -m app.seed \
   && python3 -m uvicorn app.main:app --port 8024
-cd apps/tessera/frontend && npm install && npm run dev     # http://localhost:5197
+cd companies/tamuzi/tessera/frontend && npm install && npm run dev     # http://localhost:5197
 ```
 
 Register any address and password (12+ characters) — it is a local database.

@@ -145,20 +145,28 @@ export function discoverProjects(repoRoot) {
     projects.push({ name, root: directory, kind, exclude, surface: surfaceFor(directory) });
   };
 
-  // 1. Apps with a React frontend.
-  const appsDirectory = path.join(repoRoot, 'apps');
-  if (fs.existsSync(appsDirectory)) {
-    for (const entry of fs.readdirSync(appsDirectory, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const frontend = path.join(appsDirectory, entry.name, 'frontend');
-      if (has(frontend, 'src', ['App.tsx', 'main.tsx', 'pages.tsx'])) {
-        add(`apps/${entry.name}`, frontend, 'react-spa');
-        continue;
+  // 1. Company products with a React frontend, and 2. server-rendered ones.
+  // Since 2026-10-29 every product is filed under the company that publishes it,
+  // so the walk is `companies/<company>/<product>` rather than a flat `apps/`.
+  const companiesDirectory = path.join(repoRoot, 'companies');
+  if (fs.existsSync(companiesDirectory)) {
+    for (const company of fs.readdirSync(companiesDirectory, { withFileTypes: true })) {
+      if (!company.isDirectory()) continue;
+      const companyDirectory = path.join(companiesDirectory, company.name);
+      for (const entry of fs.readdirSync(companyDirectory, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        const product = path.join(companyDirectory, entry.name);
+        const name = `companies/${company.name}/${entry.name}`;
+        const frontend = path.join(product, 'frontend');
+        if (has(frontend, 'src', ['App.tsx', 'main.tsx', 'pages.tsx'])) {
+          add(name, frontend, 'react-spa');
+          continue;
+        }
+        // Server-rendered apps: the HTML lives in the Python module as a string.
+        const appDirectory = path.join(product, 'app');
+        const files = fs.existsSync(appDirectory) ? fs.readdirSync(appDirectory) : [];
+        if (files.includes('main.py')) add(name, appDirectory, 'server-rendered');
       }
-      // 2. Server-rendered apps: HTML lives in the Python module as a string.
-      const appDirectory = path.join(appsDirectory, entry.name, 'app');
-      const files = fs.existsSync(appDirectory) ? fs.readdirSync(appDirectory) : [];
-      if (files.includes('main.py')) add(`apps/${entry.name}`, appDirectory, 'server-rendered');
     }
   }
 
@@ -168,7 +176,14 @@ export function discoverProjects(repoRoot) {
   if (has(repoRoot, 'src', ['App.tsx', 'main.tsx'])) {
     // The engine's own fixtures are test data with defects planted on purpose;
     // counting them as product defects would be a false positive by construction.
-    add('.', repoRoot, 'react-spa', ['apps', 'projects', 'company-platform', 'workniche', 'tools/northstar']);
+    add('.', repoRoot, [
+      'companies',
+      'coursework',
+      'sites',
+      'company-platform',
+      'workniche',
+      'tools/northstar',
+    ]);
   }
 
   // 4. Next.js products.
@@ -177,16 +192,10 @@ export function discoverProjects(repoRoot) {
     if (has(directory, 'src/app', ['page.tsx', 'layout.tsx'])) add(name, directory, 'next-app');
   }
 
-  // 5. Consolidated project copies under projects/.
-  const projectsDirectory = path.join(repoRoot, 'projects');
-  if (fs.existsSync(projectsDirectory)) {
-    for (const entry of fs.readdirSync(projectsDirectory, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const frontend = path.join(projectsDirectory, entry.name, 'frontend');
-      if (has(frontend, 'src', ['App.tsx', 'main.tsx'])) {
-        add(`projects/${entry.name}`, frontend, 'react-spa');
-      }
-    }
+  // 5. Properties that are not company products: the personal portfolio.
+  const portfolio = path.join(repoRoot, 'sites', 'portfolio', 'frontend');
+  if (has(portfolio, 'src', ['App.tsx', 'main.tsx'])) {
+    add('sites/portfolio', portfolio, 'react-spa');
   }
 
   // 6. Everything else that renders, discovered by shape rather than by name.

@@ -1,68 +1,76 @@
 # Project inventory, ownership, and structure
 
-**Status:** findings and proposal. Nothing was moved. This document exists so the
-structure can be changed deliberately rather than by habit, and so the same slug
-never means two things again.
+**Status: the move happened.** This document began on 2026-10-28 as a survey of a
+repository whose products lived in two sibling folders, `apps/` and `projects/`,
+with ownership recorded nowhere. On 2026-10-29 the tree was restructured — every
+registered product is now filed under the company that publishes it — and §9
+records what changed. The findings in §7 are kept because they are why the move
+was made, and because most of them are still open.
 
-Date: 2026-10-28. Branch `arena/eb2e33a1-synapsehub`, from `main` at `d0f7dc6`.
+Originally written 2026-10-28 on branch `arena/eb2e33a1-synapsehub`, from `main` at
+`d0f7dc6`. Restructured 2026-10-29 on `arena/d6bfd8ef-synapsehub`.
 
 ## The short version
 
-- **71 product directories** in the tree, plus 4 directories that are not products
-  (a test folder and three archives). **1,813 test cases are declared across those
-  directories** — and the only suite CI runs is the root site's 705.
-- The repository has **three populations living in two directory trees**:
-  25 company products, 34 catalogue apps, 3 standalone products. `apps/` and
-  `projects/` are not "one thing each" — both contain company products.
-- **Four product slugs point at two different codebases each** (`phishlens`,
-  `netscope`, `incidentflow`, `threatintel-desk`): a Python CLI in `apps/` and a
-  React + FastAPI product in `projects/`. The company website publishes those four
-  slugs, so today "phishlens" is ambiguous.
-- **Three portfolio sites** exist, two of them with the same npm package name
-  (`mwangala-portfolio`), and only one is deployed.
+- **71 project directories**, plus 4 directories that are not projects (a shared
+  test folder and three archives). **1,813 test cases are declared across those
+  directories** — and the only suite CI runs is the root site's 731.
+- Every project is now filed under the company that publishes it, or under
+  `sites/` / `coursework/` if no company publishes it. Ownership is a property of
+  the path, so it cannot disagree with the tree.
+- **Four product slugs still point at two directories each** (`phishlens`,
+  `netscope`, `incidentflow`, `threatintel-desk`): a Python CLI and a React +
+  FastAPI product. The CLI takes the `-cli` suffix and the registry records
+  `variantOf`, so a slug names exactly one directory.
+- **One portfolio site.** The two `mwangala-portfolio` packages became one on
+  2026-10-28; the static archive is content inside it, not a third site.
 - **62 Python projects call their package `app`.** Only one can be imported in a
   process at a time.
-- **Nine dev ports collided**, systematically: `apps/` owns 5173–5197 and `projects/`
-  re-used 5173–5181. **Fixed in S2** — the 31 apps now claim 31 distinct ports (§7.5).
-- **CI covers one project.** No workflow mentions `apps/` or `projects/`.
+- **Nine dev ports collided**, systematically: `apps/` claimed 5173–5197 and
+  `projects/` re-used 5173–5181. **Fixed in S2**, and re-blocked on 2026-10-29:
+  company products own 5300–5399, sites 5400–5499, standalone products 5500–5599,
+  coursework 5600–5699.
+- **CI covers one project.** No workflow runs any product's own suite.
 
 None of this is a bug in any single project. It is what two years of adding
-projects to two sibling folders produces, and it will get worse the moment stage 7
-adds another surface to Tessera.
+projects to two sibling folders produces.
 
-## 1. How the tree is organised today
+## 1. How the tree is organised
 
 ```
 SynapseHub/
 ├── src/, public/, index.html        the root portfolio site (60 Frontend Mentor
 │                                    challenges + 60 prototypes) — package name
 │                                    "mwangala-portfolio"
-├── apps/                            54 directories, npm workspace "*/frontend"
-│   ├── <product>/frontend           React (22 of them, workspace members)
-│   ├── <product>/backend            FastAPI + SQLite
-│   ├── <product>/app                CLI or FastAPI, package always named `app`
-│   └── <product>/portfolio.json     45 of the 54 have this card
-├── projects/                        11 directories, no workspace
-│   ├── <product>/                   React + FastAPI + Alembic, deployed to Vercel
-│   ├── cbu-assignments/             coursework
-│   └── mysul/                       three portfolio sites (two React, one static)
+├── companies/
+│   ├── velaqori/                    40 directories: 13 products (17 dirs, four
+│   │                                with a CLI twin) + 26 catalogue builds
+│   ├── tamuzi/                      20 directories: 12 products + 8 catalogue
+│   │                                builds
+│   ├── package.json                 npm workspace "*/*/frontend"
+│   ├── package-lock.json            one lockfile for every company frontend
+│   └── README.md                    why the catalogue builds sit under a company
+├── sites/portfolio/                 the personal portfolio, published by neither
+│                                    company; package name "mwangala-portfolio"
+├── sites/archive/                   Cpp Projects, WebstormProjects — scratch
+├── coursework/cbu-assignments/       four assignments, incl. TenantCore
 ├── company-platform/                Next.js, publishes 25 products for two companies
 ├── workniche/                       Next.js
 ├── vocal-separator/                 FastAPI + React
 ├── tools/northstar/                 the UX/UI engine: audit, scan, fix, plugin
-└── docs/, e2e/, scripts/, tools/, prototypes/, stock-price-*
+└── docs/, e2e/, scripts/, tools/, prototypes/, challenges/, stock-price-*
 ```
 
-The split that matters is not `apps` versus `projects`. It is **ownership**:
+The split that matters is **ownership**, and it is now the first path segment:
 
 | Population | Count | Where it lives |
 | --- | ---: | --- |
-| Velaqori Systems products | 13 | 10 in `apps/`, 7 in `projects/` (4 duplicated) |
-| Tamuzi Learning products | 12 | 10 in `apps/`, 2 in `projects/` |
-| Catalogue apps (not published by either company) | 34 | `apps/` only |
+| Velaqori Systems products | 13 | `companies/velaqori/` — 17 directories |
+| Tamuzi Learning products | 12 | `companies/tamuzi/` — 12 directories |
+| Catalogue builds | 34 | split by subject: 26 under `companies/velaqori/`, 8 under `companies/tamuzi/` |
 | Standalone products | 3 | repository root |
-| Coursework and archives | 9 | `projects/cbu-assignments/`, `projects/mysul/` |
-| Portfolio sites | 3 | root, `projects/mysul/mwangala-portfolio`, `projects/mysul/mwangala` |
+| Coursework and archives | 4 | `coursework/cbu-assignments/` (plus 3 excluded archives) |
+| Portfolio site | 1 | `sites/portfolio/` |
 
 Note the arithmetic on the company rows: 13 Velaqori products occupy 17
 directories because four of them have two implementations. That is collision #1.
@@ -77,88 +85,96 @@ a case-study route on the company site.
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `apps/chessscope` | ChessScope | Velaqori | React + FastAPI | 19 | yes | — | 5178 | — |
-| `apps/circuitlab-calc` | CircuitLab Calc | Velaqori | React + FastAPI | 19 | **no** | — | 5177 | — |
-| `apps/dependsecure` | DependSecure | Velaqori | React + FastAPI | 22 | **no** | — | 5175 | — |
-| `apps/fileguard` | FileGuard | Velaqori | React + FastAPI | 19 | **no** | — | 5174 | — |
-| `apps/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
-| `apps/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
-| `apps/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
-| `apps/sentinelcore` | SentinelCore | Velaqori | React + FastAPI | 20 | **no** | — | 5179 | — |
-| `apps/sentinellog` | SentinelLog | Velaqori | React + FastAPI | 34 | **no** | — | 5173 | — |
-| `apps/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
-| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
-| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
-| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
-| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
-| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
-| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
-| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
+| `companies/velaqori/chessscope` | ChessScope | Velaqori | React + FastAPI | 19 | yes | — | 5311 | — |
+| `companies/velaqori/circuitlab-calc` | CircuitLab Calc | Velaqori | React + FastAPI | 19 | **no** | — | 5312 | — |
+| `companies/velaqori/dependsecure` | DependSecure | Velaqori | React + FastAPI | 22 | **no** | — | 5314 | — |
+| `companies/velaqori/fileguard` | FileGuard | Velaqori | React + FastAPI | 19 | **no** | — | 5316 | — |
+| `companies/velaqori/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
+| `companies/velaqori/sentinelcore` | SentinelCore | Velaqori | React + FastAPI | 20 | **no** | — | 5323 | — |
+| `companies/velaqori/sentinellog` | SentinelLog | Velaqori | React + FastAPI | 34 | **no** | — | 5324 | — |
+| `companies/velaqori/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
+| `companies/velaqori/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
+| `companies/velaqori/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
+| `companies/velaqori/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
+| `companies/velaqori/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
+| `companies/velaqori/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
+| `companies/velaqori/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
 
 ### Tamuzi Learning (12 products, 12 directories)
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `apps/campusflow` | CampusFlow | Tamuzi | React + FastAPI | 25 | **no** | — | 5176 | — |
-| `apps/classconnect` | ClassConnect | Tamuzi | React + FastAPI | 12 | yes | — | 5185 | — |
-| `apps/eduaccess` | EduAccess | Tamuzi | React + FastAPI | 12 | yes | — | 5188 | — |
-| `apps/learnbridge` | LearnBridge | Tamuzi | React + FastAPI | 17 | yes | — | 5180 | — |
-| `apps/learnpulse` | LearnPulse | Tamuzi | React + FastAPI | 10 | yes | — | 5184 | — |
-| `apps/openlearn-commons` | OpenLearn Commons | Tamuzi | React + FastAPI | 13 | yes | — | 5186 | — |
-| `apps/pathwise` | PathWise | Tamuzi | React + FastAPI | 14 | yes | — | 5181 | — |
-| `apps/reachlearn` | ReachLearn | Tamuzi | React + FastAPI | 14 | yes | — | 5187 | — |
-| `apps/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5183 | — |
-| `apps/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5182 | — |
-| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
-| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
+| `companies/tamuzi/campusflow` | CampusFlow | Tamuzi | React + FastAPI | 25 | **no** | — | 5310 | — |
+| `companies/tamuzi/classconnect` | ClassConnect | Tamuzi | React + FastAPI | 12 | yes | — | 5313 | — |
+| `companies/tamuzi/eduaccess` | EduAccess | Tamuzi | React + FastAPI | 12 | yes | — | 5315 | — |
+| `companies/tamuzi/learnbridge` | LearnBridge | Tamuzi | React + FastAPI | 17 | yes | — | 5318 | — |
+| `companies/tamuzi/learnpulse` | LearnPulse | Tamuzi | React + FastAPI | 10 | yes | — | 5319 | — |
+| `companies/tamuzi/openlearn-commons` | OpenLearn Commons | Tamuzi | React + FastAPI | 13 | yes | — | 5320 | — |
+| `companies/tamuzi/pathwise` | PathWise | Tamuzi | React + FastAPI | 14 | yes | — | 5321 | — |
+| `companies/tamuzi/reachlearn` | ReachLearn | Tamuzi | React + FastAPI | 14 | yes | — | 5322 | — |
+| `companies/tamuzi/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5325 | — |
+| `companies/tamuzi/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5327 | — |
+| `companies/tamuzi/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
+| `companies/tamuzi/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
 
-**Tessera is not in this catalogue.** It is the largest product in the repository
-(30k lines, 524 test cases, 7 migrations), it says "a Tamuzi Learning product" on
-screen, and the company site does not list it. Either it should be added, or the
-omission should be deliberate and written down.
+**Tessera is filed under Tamuzi but is deliberately not in the published
+catalogue.** It is the largest product in the repository (30k lines, 7
+migrations), it says "a Tamuzi Learning product" on screen, and the company site
+does not list it. That omission is now deliberate and written down: the owner's
+instruction is that it stays out of the catalogue until it is fully built. In the
+registry it is therefore `kind: project`, `deployment: separate`, owned by Tamuzi,
+under `companies/tamuzi/tessera`.
 
-## 3. The catalogue apps — 34 directories, no company
+## 3. The catalogue builds — 34 directories, split by company
 
 These are the two master catalogues mapped to working code (`docs/portfolio-catalogue-plan.md`).
-They are educational builds; they carry a `portfolio.json` card instead of a
-company case study.
+They carry a `portfolio.json` card instead of a company case study, so they are
+published as catalogue entries rather than case studies.
+
+They were unowned until 2026-10-29, when the owner split them by subject: the
+seven builds whose primary user is a learner, a teacher or an institution went to
+Tamuzi; security tooling and general utilities went to Velaqori. `companies/README.md`
+lists the judgement calls worth re-checking.
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `apps/authgate` | AuthGate | — | FastAPI + HTML | 8 | yes | — | — | — |
-| `apps/budgetbook` | BudgetBook | — | CLI | 14 | yes | — | — | — |
-| `apps/creadesk` | CreateDesk | — | FastAPI + HTML | 5 | yes | — | — | — |
-| `apps/datadesk` | DataDesk | — | CLI | 8 | yes | — | — | — |
-| `apps/docsage` | DocSage | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/fileseal` | FileSeal | — | CLI | 9 | yes | — | — | — |
-| `apps/flashkit` | FlashKit | — | CLI | 9 | yes | — | — | — |
-| `apps/frontpage` | Frontpage | — | React + FastAPI | 66 | **no** | — | 5189 | — |
-| `apps/gradeflow` | GradeFlow | — | CLI | 16 | yes | — | — | — |
-| `apps/guessmaster` | GuessMaster | — | CLI | 11 | yes | — | — | — |
-| `apps/headercheck` | HeaderCheck | — | CLI | 7 | yes | — | — | — |
-| `apps/hostwatch` | HostWatch | — | CLI | 6 | yes | — | — | — |
-| `apps/loginsense` | LoginSense | — | CLI | 7 | yes | — | — | — |
-| `apps/notekit` | NoteKit | — | CLI | 10 | yes | — | — | — |
-| `apps/passforge` | PassForge | — | CLI | 13 | yes | — | — | — |
-| `apps/passmeter` | PassMeter | — | CLI | 8 | yes | — | — | — |
-| `apps/prepwise` | PrepWise | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/quizarena` | QuizArena | — | FastAPI + HTML | 7 | yes | — | — | — |
-| `apps/quizbox` | QuizBox | — | CLI | 10 | yes | — | — | — |
-| `apps/secops-dash` | SecOps Dash | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/secretscan` | SecretScan | — | CLI | 6 | yes | — | — | — |
-| `apps/secweblab` | SecWebLab | — | CLI | 4 | yes | — | — | — |
-| `apps/shelfwise` | ShelfWise | — | CLI | 12 | yes | — | — | — |
-| `apps/shopdeck` | ShopDeck | — | FastAPI + HTML | 5 | yes | — | — | — |
-| `apps/simforge` | SimForge | — | CLI | 7 | yes | — | — | — |
-| `apps/skycast` | SkyCast | — | CLI | 9 | yes | — | — | — |
-| `apps/stockmate` | StockMate | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/taskdeck` | TaskDeck | — | CLI | 11 | yes | — | — | — |
-| `apps/tessera` | Tessera | — | React + FastAPI | 524 | yes | 7 | 5197 | — |
-| `apps/tidyfiles` | TidyFiles | — | CLI | 12 | yes | — | — | — |
-| `apps/unicore` | UniCore | — | CLI | 10 | yes | — | — | — |
-| `apps/urlshield` | URLShield | — | CLI | 7 | yes | — | — | — |
-| `apps/wattwise` | WattWise | — | CLI | 8 | yes | — | — | — |
-| `apps/webwatch` | WebWatch | — | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/authgate` | AuthGate | Velaqori | FastAPI + HTML | 8 | yes | — | — | — |
+| `companies/velaqori/budgetbook` | BudgetBook | Velaqori | CLI | 14 | yes | — | — | — |
+| `companies/velaqori/creadesk` | CreateDesk | Velaqori | FastAPI + HTML | 5 | yes | — | — | — |
+| `companies/velaqori/datadesk` | DataDesk | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/velaqori/docsage` | DocSage | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/velaqori/fileseal` | FileSeal | Velaqori | CLI | 9 | yes | — | — | — |
+| `companies/tamuzi/flashkit` | FlashKit | Tamuzi | CLI | 9 | yes | — | — | — |
+| `companies/velaqori/frontpage` | Frontpage | Velaqori | React + FastAPI | 66 | **no** | — | 5317 | — |
+| `companies/tamuzi/gradeflow` | GradeFlow | Tamuzi | CLI | 16 | yes | — | — | — |
+| `companies/velaqori/guessmaster` | GuessMaster | Velaqori | CLI | 11 | yes | — | — | — |
+| `companies/velaqori/headercheck` | HeaderCheck | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/hostwatch` | HostWatch | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/loginsense` | LoginSense | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/notekit` | NoteKit | Velaqori | CLI | 10 | yes | — | — | — |
+| `companies/velaqori/passforge` | PassForge | Velaqori | CLI | 13 | yes | — | — | — |
+| `companies/velaqori/passmeter` | PassMeter | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/tamuzi/prepwise` | PrepWise | Tamuzi | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/tamuzi/quizarena` | QuizArena | Tamuzi | FastAPI + HTML | 7 | yes | — | — | — |
+| `companies/tamuzi/quizbox` | QuizBox | Tamuzi | CLI | 10 | yes | — | — | — |
+| `companies/velaqori/secops-dash` | SecOps Dash | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/velaqori/secretscan` | SecretScan | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/secweblab` | SecWebLab | Velaqori | CLI | 4 | yes | — | — | — |
+| `companies/tamuzi/shelfwise` | ShelfWise | Tamuzi | CLI | 12 | yes | — | — | — |
+| `companies/velaqori/shopdeck` | ShopDeck | Velaqori | FastAPI + HTML | 5 | yes | — | — | — |
+| `companies/velaqori/simforge` | SimForge | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/skycast` | SkyCast | Velaqori | CLI | 9 | yes | — | — | — |
+| `companies/velaqori/stockmate` | StockMate | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/velaqori/taskdeck` | TaskDeck | Velaqori | CLI | 11 | yes | — | — | — |
+| `companies/tamuzi/tessera` | Tessera | Tamuzi | React + FastAPI | 524 | yes | 7 | 5326 | — |
+| `companies/velaqori/tidyfiles` | TidyFiles | Velaqori | CLI | 12 | yes | — | — | — |
+| `companies/tamuzi/unicore` | UniCore | Tamuzi | CLI | 10 | yes | — | — | — |
+| `companies/velaqori/urlshield` | URLShield | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/wattwise` | WattWise | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/velaqori/webwatch` | WebWatch | Velaqori | CLI | 6 | yes | — | — | — |
 
 ## 4. Standalone products
 
@@ -170,103 +186,110 @@ company case study.
 
 ## 5. Coursework and archives
 
-`projects/cbu-assignments/` is coursework, not product. It contains its own pytest
+`coursework/cbu-assignments/` is coursework, not product. It contains its own pytest
 suite at the top level, which is why the folder "has tests" but no single project
 owns them.
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `projects/cbu-assignments/bank_system` | bank_system | — | other | — | **no** | — | — | — |
-| `projects/cbu-assignments/library_management` | library_management | — | other | — | **no** | — | — | — |
-| `projects/cbu-assignments/tenantcore` | TenantCore | — | React + FastAPI | 43 | yes | — | 5309 | — |
-| `projects/cbu-assignments/tests` | tests | — | other | 13 | **no** | — | — | — |
-| `projects/cbu-assignments/video_downloader_app` | VDownloader OS | — | other | 21 | **no** | — | — | — |
+| `coursework/cbu-assignments/bank_system` | bank_system | — | other | — | **no** | — | — | — |
+| `coursework/cbu-assignments/library_management` | library_management | — | other | — | **no** | — | — | — |
+| `coursework/cbu-assignments/tenantcore` | TenantCore | — | React + FastAPI | 43 | yes | — | 5600 | — |
+| `coursework/cbu-assignments/tests` | tests | — | other | 13 | **no** | — | — | — |
+| `coursework/cbu-assignments/video_downloader_app` | VDownloader OS | — | other | 21 | **no** | — | — | — |
 
-`projects/mysul/` is the personal archive. Three of the four directories are
-earlier portfolio sites or class exercises:
-
-| Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
-| --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `projects/mysul/Cpp Projects` | Cpp Projects | — | other | — | **no** | — | — | — |
-| `projects/mysul/WebstormProjects` | WebstormProjects | — | other | — | **no** | — | — | — |
-| `projects/mysul/mwangala-portfolio` | Mwangala | — | React (static) | 149 | yes | — | 5401 | — |
-
-## 6. Every directory under `apps/` and `projects/`
-
-For completeness, the two main trees as they stand.
-
-### `apps/`
+`sites/` holds what neither company publishes: the portfolio and two scratch
+folders from the old MySul tree. The static portfolio that used to sit beside these
+was merged into `sites/portfolio` on 2026-10-28 and is its "Earlier work" section,
+not a third site.
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `apps/authgate` | AuthGate | — | FastAPI + HTML | 8 | yes | — | — | — |
-| `apps/budgetbook` | BudgetBook | — | CLI | 14 | yes | — | — | — |
-| `apps/campusflow` | CampusFlow | Tamuzi | React + FastAPI | 25 | **no** | — | 5176 | — |
-| `apps/chessscope` | ChessScope | Velaqori | React + FastAPI | 19 | yes | — | 5178 | — |
-| `apps/circuitlab-calc` | CircuitLab Calc | Velaqori | React + FastAPI | 19 | **no** | — | 5177 | — |
-| `apps/classconnect` | ClassConnect | Tamuzi | React + FastAPI | 12 | yes | — | 5185 | — |
-| `apps/creadesk` | CreateDesk | — | FastAPI + HTML | 5 | yes | — | — | — |
-| `apps/datadesk` | DataDesk | — | CLI | 8 | yes | — | — | — |
-| `apps/dependsecure` | DependSecure | Velaqori | React + FastAPI | 22 | **no** | — | 5175 | — |
-| `apps/docsage` | DocSage | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/eduaccess` | EduAccess | Tamuzi | React + FastAPI | 12 | yes | — | 5188 | — |
-| `apps/fileguard` | FileGuard | Velaqori | React + FastAPI | 19 | **no** | — | 5174 | — |
-| `apps/fileseal` | FileSeal | — | CLI | 9 | yes | — | — | — |
-| `apps/flashkit` | FlashKit | — | CLI | 9 | yes | — | — | — |
-| `apps/frontpage` | Frontpage | — | React + FastAPI | 66 | **no** | — | 5189 | — |
-| `apps/gradeflow` | GradeFlow | — | CLI | 16 | yes | — | — | — |
-| `apps/guessmaster` | GuessMaster | — | CLI | 11 | yes | — | — | — |
-| `apps/headercheck` | HeaderCheck | — | CLI | 7 | yes | — | — | — |
-| `apps/hostwatch` | HostWatch | — | CLI | 6 | yes | — | — | — |
-| `apps/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
-| `apps/learnbridge` | LearnBridge | Tamuzi | React + FastAPI | 17 | yes | — | 5180 | — |
-| `apps/learnpulse` | LearnPulse | Tamuzi | React + FastAPI | 10 | yes | — | 5184 | — |
-| `apps/loginsense` | LoginSense | — | CLI | 7 | yes | — | — | — |
-| `apps/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
-| `apps/notekit` | NoteKit | — | CLI | 10 | yes | — | — | — |
-| `apps/openlearn-commons` | OpenLearn Commons | Tamuzi | React + FastAPI | 13 | yes | — | 5186 | — |
-| `apps/passforge` | PassForge | — | CLI | 13 | yes | — | — | — |
-| `apps/passmeter` | PassMeter | — | CLI | 8 | yes | — | — | — |
-| `apps/pathwise` | PathWise | Tamuzi | React + FastAPI | 14 | yes | — | 5181 | — |
-| `apps/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
-| `apps/prepwise` | PrepWise | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/quizarena` | QuizArena | — | FastAPI + HTML | 7 | yes | — | — | — |
-| `apps/quizbox` | QuizBox | — | CLI | 10 | yes | — | — | — |
-| `apps/reachlearn` | ReachLearn | Tamuzi | React + FastAPI | 14 | yes | — | 5187 | — |
-| `apps/secops-dash` | SecOps Dash | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/secretscan` | SecretScan | — | CLI | 6 | yes | — | — | — |
-| `apps/secweblab` | SecWebLab | — | CLI | 4 | yes | — | — | — |
-| `apps/sentinelcore` | SentinelCore | Velaqori | React + FastAPI | 20 | **no** | — | 5179 | — |
-| `apps/sentinellog` | SentinelLog | Velaqori | React + FastAPI | 34 | **no** | — | 5173 | — |
-| `apps/shelfwise` | ShelfWise | — | CLI | 12 | yes | — | — | — |
-| `apps/shopdeck` | ShopDeck | — | FastAPI + HTML | 5 | yes | — | — | — |
-| `apps/simforge` | SimForge | — | CLI | 7 | yes | — | — | — |
-| `apps/skycast` | SkyCast | — | CLI | 9 | yes | — | — | — |
-| `apps/stockmate` | StockMate | — | FastAPI + HTML | 6 | yes | — | — | — |
-| `apps/taskdeck` | TaskDeck | — | CLI | 11 | yes | — | — | — |
-| `apps/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5183 | — |
-| `apps/tessera` | Tessera | — | React + FastAPI | 524 | yes | 7 | 5197 | — |
-| `apps/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
-| `apps/tidyfiles` | TidyFiles | — | CLI | 12 | yes | — | — | — |
-| `apps/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5182 | — |
-| `apps/unicore` | UniCore | — | CLI | 10 | yes | — | — | — |
-| `apps/urlshield` | URLShield | — | CLI | 7 | yes | — | — | — |
-| `apps/wattwise` | WattWise | — | CLI | 8 | yes | — | — | — |
-| `apps/webwatch` | WebWatch | — | CLI | 6 | yes | — | — | — |
+| `sites/portfolio` | Mwangala | — | React (static) | 149 | yes | — | 5401 | — |
+| `sites/archive/Cpp Projects` | Cpp Projects | — | other | — | **no** | — | — | — |
+| `sites/archive/WebstormProjects` | WebstormProjects | — | other | — | **no** | — | — | — |
 
-### `projects/`
+The two archive folders are in `projects.json` under `excluded`, each with a reason,
+rather than deleted: removing the owner's work is the owner's decision.
+
+## 6. Every directory under `companies/`
+
+For completeness, both companies as they stand. Since 2026-10-29 there is no
+`apps/` or `projects/` folder; the two lists below are the same 57 directories,
+split by owner.
+
+### `companies/velaqori/`
 
 | Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
 | --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
-| `projects/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
-| `projects/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
-| `projects/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
-| `projects/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
-| `projects/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
-| `projects/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
-| `projects/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
-| `projects/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
-| `projects/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
+| `companies/velaqori/authgate` | AuthGate | Velaqori | FastAPI + HTML | 8 | yes | — | — | — |
+| `companies/velaqori/budgetbook` | BudgetBook | Velaqori | CLI | 14 | yes | — | — | — |
+| `companies/tamuzi/campusflow` | CampusFlow | Tamuzi | React + FastAPI | 25 | **no** | — | 5310 | — |
+| `companies/velaqori/chessscope` | ChessScope | Velaqori | React + FastAPI | 19 | yes | — | 5311 | — |
+| `companies/velaqori/circuitlab-calc` | CircuitLab Calc | Velaqori | React + FastAPI | 19 | **no** | — | 5312 | — |
+| `companies/tamuzi/classconnect` | ClassConnect | Tamuzi | React + FastAPI | 12 | yes | — | 5313 | — |
+| `companies/velaqori/creadesk` | CreateDesk | Velaqori | FastAPI + HTML | 5 | yes | — | — | — |
+| `companies/velaqori/datadesk` | DataDesk | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/velaqori/dependsecure` | DependSecure | Velaqori | React + FastAPI | 22 | **no** | — | 5314 | — |
+| `companies/velaqori/docsage` | DocSage | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/tamuzi/eduaccess` | EduAccess | Tamuzi | React + FastAPI | 12 | yes | — | 5315 | — |
+| `companies/velaqori/fileguard` | FileGuard | Velaqori | React + FastAPI | 19 | **no** | — | 5316 | — |
+| `companies/velaqori/fileseal` | FileSeal | Velaqori | CLI | 9 | yes | — | — | — |
+| `companies/tamuzi/flashkit` | FlashKit | Tamuzi | CLI | 9 | yes | — | — | — |
+| `companies/velaqori/frontpage` | Frontpage | Velaqori | React + FastAPI | 66 | **no** | — | 5317 | — |
+| `companies/tamuzi/gradeflow` | GradeFlow | Tamuzi | CLI | 16 | yes | — | — | — |
+| `companies/velaqori/guessmaster` | GuessMaster | Velaqori | CLI | 11 | yes | — | — | — |
+| `companies/velaqori/headercheck` | HeaderCheck | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/hostwatch` | HostWatch | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/incidentflow-cli` | IncidentFlow | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/tamuzi/learnbridge` | LearnBridge | Tamuzi | React + FastAPI | 17 | yes | — | 5318 | — |
+| `companies/tamuzi/learnpulse` | LearnPulse | Tamuzi | React + FastAPI | 10 | yes | — | 5319 | — |
+| `companies/velaqori/loginsense` | LoginSense | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/netscope-cli` | NetScope | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/notekit` | NoteKit | Velaqori | CLI | 10 | yes | — | — | — |
+| `companies/tamuzi/openlearn-commons` | OpenLearn Commons | Tamuzi | React + FastAPI | 13 | yes | — | 5320 | — |
+| `companies/velaqori/passforge` | PassForge | Velaqori | CLI | 13 | yes | — | — | — |
+| `companies/velaqori/passmeter` | PassMeter | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/tamuzi/pathwise` | PathWise | Tamuzi | React + FastAPI | 14 | yes | — | 5321 | — |
+| `companies/velaqori/phishlens-cli` | PhishLens | Velaqori | CLI | 5 | yes | — | — | — |
+| `companies/tamuzi/prepwise` | PrepWise | Tamuzi | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/tamuzi/quizarena` | QuizArena | Tamuzi | FastAPI + HTML | 7 | yes | — | — | — |
+| `companies/tamuzi/quizbox` | QuizBox | Tamuzi | CLI | 10 | yes | — | — | — |
+| `companies/tamuzi/reachlearn` | ReachLearn | Tamuzi | React + FastAPI | 14 | yes | — | 5322 | — |
+| `companies/velaqori/secops-dash` | SecOps Dash | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/velaqori/secretscan` | SecretScan | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/secweblab` | SecWebLab | Velaqori | CLI | 4 | yes | — | — | — |
+| `companies/velaqori/sentinelcore` | SentinelCore | Velaqori | React + FastAPI | 20 | **no** | — | 5323 | — |
+| `companies/velaqori/sentinellog` | SentinelLog | Velaqori | React + FastAPI | 34 | **no** | — | 5324 | — |
+| `companies/tamuzi/shelfwise` | ShelfWise | Tamuzi | CLI | 12 | yes | — | — | — |
+| `companies/velaqori/shopdeck` | ShopDeck | Velaqori | FastAPI + HTML | 5 | yes | — | — | — |
+| `companies/velaqori/simforge` | SimForge | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/skycast` | SkyCast | Velaqori | CLI | 9 | yes | — | — | — |
+| `companies/velaqori/stockmate` | StockMate | Velaqori | FastAPI + HTML | 6 | yes | — | — | — |
+| `companies/velaqori/taskdeck` | TaskDeck | Velaqori | CLI | 11 | yes | — | — | — |
+| `companies/tamuzi/teachcraft` | TeachCraft | Tamuzi | React + FastAPI | 11 | yes | — | 5325 | — |
+| `companies/tamuzi/tessera` | Tessera | Tamuzi | React + FastAPI | 524 | yes | 7 | 5326 | — |
+| `companies/velaqori/threatintel-desk-cli` | ThreatIntel Desk | Velaqori | CLI | 6 | yes | — | — | — |
+| `companies/velaqori/tidyfiles` | TidyFiles | Velaqori | CLI | 12 | yes | — | — | — |
+| `companies/tamuzi/tutorspring` | TutorSpring | Tamuzi | React + FastAPI | 13 | yes | — | 5327 | — |
+| `companies/tamuzi/unicore` | UniCore | Tamuzi | CLI | 10 | yes | — | — | — |
+| `companies/velaqori/urlshield` | URLShield | Velaqori | CLI | 7 | yes | — | — | — |
+| `companies/velaqori/wattwise` | WattWise | Velaqori | CLI | 8 | yes | — | — | — |
+| `companies/velaqori/webwatch` | WebWatch | Velaqori | CLI | 6 | yes | — | — | — |
+
+### `companies/tamuzi/`, second table — the products that used to live in `projects/`
+
+| Path | Name | Owner | Interface | Tests | `.env.example` | Migrations | Dev port | Deployed |
+| --- | --- | --- | --- | ---: | :---: | :---: | ---: | --- |
+| `companies/velaqori/assetwatch` | AssetWatch | Velaqori | React + FastAPI | 21 | yes | 1 | 5300 | Vercel API |
+| `companies/tamuzi/cyberaware-lab` | CyberAware Lab | Tamuzi | React + FastAPI | 20 | yes | 1 | 5301 | Vercel API |
+| `companies/velaqori/hashsight` | HashSight | Velaqori | React + FastAPI | 24 | yes | 1 | 5302 | Vercel API |
+| `companies/velaqori/incidentflow` | IncidentFlow | Velaqori | React + FastAPI | 14 | yes | 1 | 5303 | Vercel API |
+| `companies/velaqori/netscope` | NetScope | Velaqori | React + FastAPI | 16 | yes | 1 | 5304 | Vercel API |
+| `companies/velaqori/phishlens` | PhishLens | Velaqori | React + FastAPI | 17 | yes | 1 | 5305 | Vercel API |
+| `companies/velaqori/securecode-workbench` | SecureCode Workbench | Velaqori | React + FastAPI | 23 | yes | 1 | 5306 | Vercel API |
+| `companies/velaqori/threatintel-desk` | ThreatIntel Desk | Velaqori | React + FastAPI | 15 | yes | 1 | 5307 | Vercel API |
+| `companies/tamuzi/transcriptwise` | TranscriptWise | Tamuzi | React + FastAPI | 77 | yes | 2 | 5308 | — |
 
 ## 7. Collisions
 
@@ -298,10 +321,10 @@ silently point at whichever implementation the tooling happened to read first.
 | Package name | Path | Deployed |
 | --- | --- | --- |
 | `mwangala-portfolio` | `/` (repository root, `package.json`) | — |
-| `mwangala-portfolio` | `projects/mysul/mwangala-portfolio` | `mwangala-portfolio.vercel.app` |
+| `mwangala-portfolio` | `sites/portfolio` | `mwangala-portfolio.vercel.app` |
 
 `docs/DEPLOYMENT_TARGETS.md` records the Vercel project's root directory as
-`projects/mysul/mwangala-portfolio`. The root of the repository is also a complete,
+`sites/portfolio`. The root of the repository is also a complete,
 different portfolio site with its own build, its own 705 tests, its own Playwright
 suite and its own UX engine. Running `npm ci` at the root installs *that*; nothing
 tells a newcomer which of the two is the live site.
@@ -311,7 +334,7 @@ tells a newcomer which of the two is the live site.
 | Site | Path | Stack | Tests |
 | --- | --- | --- | ---: |
 | Portfolio (current) | `/` | React + Vite, 60 challenges | 705 |
-| Portfolio + case studies | `projects/mysul/mwangala-portfolio` | React + Vite, 9 case studies | 149 |
+| Portfolio + case studies | `sites/portfolio` | React + Vite, 9 case studies | 149 |
 | Earliest portfolio | *(removed 2026-10-28 — merged into `mwangala-portfolio`)* | static HTML/JS + `server.py` | 10 |
 
 Three generations of the same idea. Two are still present; the earliest was merged
@@ -320,8 +343,8 @@ into the second on 2026-10-28 (demos to `public/demos/`, case studies already in
 
 ### 7.4 `app` is the package name in 62 projects
 
-Every backend and CLI uses `app/` as its importable package: `apps/phishlens-cli/app`,
-`projects/assetwatch/backend/app`, `apps/tessera/backend/app`, and so on. Sixty-two
+Every backend and CLI uses `app/` as its importable package: `companies/velaqori/phishlens-cli/app`,
+`companies/velaqori/assetwatch/backend/app`, `companies/tamuzi/tessera/backend/app`, and so on. Sixty-two
 of the 75 directories contain one.
 
 **Consequence:** `import app` resolves to whichever directory happens to be first on
@@ -350,17 +373,17 @@ Ports are now allocated once, by target location, and never reused:
 
 | Directory | Was | Now |
 | --- | ---: | ---: |
-| `projects/assetwatch` | 5175 | 5300 |
-| `projects/cyberaware-lab` | 5177 | 5301 |
-| `projects/hashsight` | 5174 | 5302 |
-| `projects/incidentflow` | 5180 | 5303 |
-| `projects/netscope` | 5179 | 5304 |
-| `projects/phishlens` | 5178 | 5305 |
-| `projects/securecode-workbench` | 5176 | 5306 |
-| `projects/threatintel-desk` | 5181 | 5307 |
-| `projects/transcriptwise` | 5173 | 5308 |
-| `projects/cbu-assignments/tenantcore` | 5173 | 5309 |
-| `projects/mysul/mwangala-portfolio` | 5173 | 5401 |
+| `companies/velaqori/assetwatch` | 5175 | 5300 |
+| `companies/tamuzi/cyberaware-lab` | 5177 | 5301 |
+| `companies/velaqori/hashsight` | 5174 | 5302 |
+| `companies/velaqori/incidentflow` | 5180 | 5303 |
+| `companies/velaqori/netscope` | 5179 | 5304 |
+| `companies/velaqori/phishlens` | 5178 | 5305 |
+| `companies/velaqori/securecode-workbench` | 5176 | 5306 |
+| `companies/velaqori/threatintel-desk` | 5181 | 5307 |
+| `companies/tamuzi/transcriptwise` | 5173 | 5308 |
+| `coursework/cbu-assignments/tenantcore` | 5173 | 5309 |
+| `sites/portfolio` | 5173 | 5401 |
 | `vocal-separator/web` | 5174 | 5500 |
 | repository root (portfolio site) | 5173 | 5400 |
 
@@ -400,7 +423,7 @@ until release.
 ### 7.8 `security.py` exists 29 times
 
 Twenty-nine projects ship an `app/security.py`: every deployed API, every React app
-with a backend, `apps/authgate`, `vocal-separator` and Tessera. Password hashing,
+with a backend, `companies/velaqori/authgate`, `vocal-separator` and Tessera. Password hashing,
 session cookies, CORS setup and the same six security headers are reimplemented in
 each. That is defensible for teaching projects, which should stand alone — and
 questionable where twenty of them are products of the same two companies, because a
@@ -456,7 +479,7 @@ The shape:
 {
   "slug": "phishlens",
   "name": "PhishLens",
-  "path": "projects/phishlens",
+  "path": "companies/velaqori/phishlens",
   "owner": "velaqori",
   "kind": "project",
   "block": "companies",
@@ -471,7 +494,7 @@ The shape:
 The CLI counterpart is its own entry, and `variantOf` names the product it belongs to:
 
 ```json
-{ "slug": "phishlens-cli", "path": "apps/phishlens-cli", "kind": "catalogue",
+{ "slug": "phishlens-cli", "path": "companies/velaqori/phishlens-cli", "kind": "catalogue",
   "block": "catalogue", "interface": ["python", "cli"], "variantOf": "phishlens" }
 ```
 
@@ -491,74 +514,105 @@ have different audiences and different release cadence.
 | --- | --- | --- |
 | Keep both, registry records both as variants | No move; the site keeps pointing at the web app, the CLI keeps its own docs | Cheapest, and honest — but the slug still names two programs in conversation |
 | Rename the CLI projects (`phishlens-cli`, …) | The web product owns the slug; the CLI keeps the catalogue entry under a derived name | Touches 4 folders, 4 READMEs, 4 `portfolio.json`, `docs/portfolio-catalogue-plan.md`, and the UX audit paths |
-| Merge each pair into one folder with two interfaces | `projects/phishlens/` gains a `cli/` alongside `backend/` and `frontend/` | Largest change; breaks the Vercel root directory, so it needs dashboard edits |
+| Merge each pair into one folder with two interfaces | `companies/velaqori/phishlens/` gains a `cli/` alongside `backend/` and `frontend/` | Largest change; breaks the Vercel root directory, so it needs dashboard edits |
 
-### 8.3 The target tree
+### 8.3 The tree as built
+
+This is what §8.3 originally proposed, and what was actually done on 2026-10-29.
+The differences are noted because they were decisions, not slips.
 
 ```
 SynapseHub/
 ├── companies/
-│   ├── velaqori/               13 products, one folder each, deployed where applicable
-│   └── tamuzi/                 12 products (+ Tessera, if it joins the catalogue)
-├── catalogue/                  38 educational builds: the 34 unowned apps plus the
-│                               four CLIs whose slug was taken by a web product
+│   ├── velaqori/               43 directories: 17 product directories (13 products,
+│   │                           four with a CLI twin) + 26 catalogue builds
+│   ├── tamuzi/                 20 directories: 12 products (Tessera among them) +
+│   │                           8 catalogue builds
+│   ├── package.json            workspace "*/*/frontend" (was apps/package.json)
+│   ├── package-lock.json
+│   └── README.md               why the catalogue builds sit under a company
 ├── sites/
-│   └── portfolio/              projects/mysul/mwangala-portfolio — the single
-│                               portfolio (the legacy one merged into it 2026-10-28)
-├── challenges/                 60 interactive prototypes, self-contained; also on
-│                               split/challenges (docs/branch-splits.md)
+│   ├── portfolio/              the single portfolio (the legacy one merged in
+│   │                           2026-10-28); not published by either company
+│   └── archive/                Cpp Projects, WebstormProjects — excluded, kept
 ├── coursework/
 │   └── cbu-assignments/        also on split/cbu-assignments (docs/branch-splits.md)
-├── products/
-│   ├── company-platform/       the Next.js site that publishes the catalogue
-│   ├── workniche/
-│   └── vocal-separator/
-├── tools/
-│   └── northstar/
+├── company-platform/           the Next.js site that publishes the catalogue
+├── workniche/
+├── vocal-separator/
+├── tools/northstar/
 ├── docs/
 └── projects.json
 ```
 
-Port blocks, allocated once: `catalogue/` 5200–5299, `companies/` 5300–5399,
-`sites/` 5400–5499, `products/` 5500–5599.
+The three decisions that differ from the proposal:
 
-### 8.4 What that move costs
+1. **No `catalogue/` folder.** The proposal put the 34 unowned builds in a third
+   tree, which would have left them owned by nobody — the exact problem §1 names.
+   They were split by subject and filed under the company that publishes them, so
+   every directory has an owner and `projects.json` records `kind` for the ones
+   presented as catalogue entries rather than case studies.
+2. **No `products/` folder.** `company-platform`, `workniche` and
+   `vocal-separator` stayed at the repository root. Moving them was not asked for,
+   and `company-platform` publishes a live site whose Vercel root directory is a
+   dashboard setting, not a file.
+3. **The root site stayed at the root.** It is the site that serves the 60
+   challenges and prototypes, its `npm run` scripts are the entry point for the
+   repository's checks, and moving it changes nothing about ownership. The
+   *personal portfolio* — a separate React app — moved to `sites/portfolio/`.
 
-| Change | Knock-on work |
-| --- | --- |
-| `apps/*` → `catalogue/` or `companies/*` | `apps/package.json` workspaces `*/frontend` breaks; `apps/package-lock.json`; every `npm ci` in a Dockerfile or README; the Tessera image context (`apps/`) |
-| `apps/<product>/backend` → `companies/<c>/<product>/` | Nothing at runtime, but Vercel root directories are **dashboard settings, not files** — moving a deployed project silently breaks its deploy |
-| `projects/*` → `companies/*` | Same problem, eight times: the eight API projects in `docs/DEPLOYMENT_TARGETS.md` |
-| Root site → `sites/portfolio/` | Root `package.json`, `package-lock.json`, `vite.config.ts`, `tsconfig.json`, `eslint.config.js`, `playwright.config.ts`, `e2e/`, `northstar.config.json`, and the `ux:scan` target list |
-| Anything → anywhere | Relative links (`apps/tessera/README.md` → `../../docs/…`), and 9 UX-audit paths in committed reports |
+Port blocks, allocated once and never renumbered on a move:
 
-This is a two- to three-hour change with a real chance of breaking a deployment, and
-it touches 71 directories that CI does not test. That is why I am proposing it as a
-staged change with a gate at each step, not one commit.
+| Block | Range | Used by |
+| --- | --- | --- |
+| `catalogue` | 5173–5299 | retired: nothing is filed here any more; kept so old numbers are never reused |
+| `companies` | 5300–5399 | 5300–5308 (the eight API products), 5310–5327 (the twelve React apps), 5326 Tessera |
+| `sites` | 5400–5499 | 5401 the portfolio |
+| `products` | 5500–5599 | 5500 vocal-separator |
+| `coursework` | 5600–5699 | 5600 TenantCore |
 
-### 8.5 Recommended sequence
+The frontend ports had to move, because a directory's *kind* no longer follows from
+its path prefix and the block is what says which population a project belongs to.
+Every React frontend that was in the catalogue block was renumbered into the
+company block in the same commit as the move.
 
-| Stage | Change | Reversible? | Gate |
-| --- | --- | --- | --- |
-| **S1** | Add `projects.json` + the registry test. No files move. | Yes, delete one file | **Done.** 16 tests in `src/registry.test.ts`; a duplicate port injected into `projects.json` fails the suite |
-| **S2** | Fix the collisions that need no move: rename the four CLI slugs, disambiguate the two `mwangala-portfolio` packages, renumber `projects/` ports to 5300+ | Partly (renames are in history) | Every slug unique; every port unique; site still builds — **done, see §7.5** |
-| **S3** | Add a CI matrix so each project's own suite runs | Yes | CI green, and a deliberately broken test in one project fails CI |
-| **S4** | Move `apps/` → `catalogue/` + `companies/`; update workspaces, Docker context, docs | No, but mechanical | Every workspace `npm ci && npm test`; Tessera image context updated |
-| **S5** | Move `projects/` → `companies/`, update the eight Vercel root directories in the dashboard | No | Each API redeploys and answers `/health` |
-| **S6** | Move the three sites and the coursework | No | Root site builds and the Playwright suite passes |
+### 8.4 What the move actually cost
 
-S1–S3 make the repository safer and need no deployment changes. S4–S6 are the
-physical restructure and need Vercel access at the time they run.
+| Change | Knock-on work | How it was handled |
+| --- | --- | --- |
+| `apps/*` → `companies/*` | workspace `*/frontend` breaks; lockfile orphaned | `apps/package.json` → `companies/package.json` with `workspaces: ["*/*/frontend"]`; lockfile moved with it |
+| Tessera's Docker context | `docs` and comments named `apps/` | context is now `companies/`; `docker build -f companies/tamuzi/tessera/Dockerfile companies/` |
+| `apps/<product>` vs `projects/<product>` classification | `deploymentFor`, `blockFor`, `kindFor`, `ownerFor` all keyed off `path.startsWith('apps/')` | rewritten to key off `companies/`, an explicit `CATALOGUE_BUILDS` set, and the path segment for ownership |
+| Root-level `.gitignore` for a hoisted workspace | ignored `frontpage/data/` exemption pointed at `apps/` | re-pointed inside `companies/.gitignore` |
+| Source links in the company site | `appSourceUrl(slug)` built `apps/<slug>` | now takes the company; the integrity test also asserts the linked directory exists |
+| Portfolio case-study statuses | prose named `apps/<slug>` and `projects/<slug>` | 9 paths repointed |
+| UX engine | `discoverProjects` walked `apps/` and `projects/` | walks `companies/<company>/<product>`; the pinned scroll-cue baseline moved with `frontpage` |
+| Branch-split script | `split/cbu-assignments:projects/cbu-assignments` | now `coursework/cbu-assignments` |
+
+Two things the move did **not** do: it did not touch the Vercel dashboard, and it
+did not renumber anything. No project is deployed by CI, so a path change cannot
+break a deployment that no file describes.
+
+### 8.5 The sequence, and where it got to
+
+| Stage | Change | State |
+| --- | --- | --- |
+| **S1** | `projects.json` + the registry test. No files move. | **Done** (§7.9) |
+| **S2** | Fix the collisions that need no move: `-cli` slugs, one portfolio package name, renumber `projects/` ports | **Done** |
+| **S3** | CI matrix so each project's own suite runs | **Not done** — still the largest gap (§7.7) |
+| **S4** | Move `apps/` into `companies/`, update workspaces, Docker context, docs | **Done 2026-10-29** |
+| **S5** | Move `projects/` into `companies/` | **Done 2026-10-29** — and no dashboard edit was needed, because nothing in the tree describes a Vercel project any more |
+| **S6** | Move the portfolio and the coursework | **Done 2026-10-29** |
 
 ## 9. What I need from you
 
-1. **Which option for the four duplicate slugs** (§8.2) — keep both as variants,
-   rename the CLIs, or merge each pair into one folder.
-2. **How far to go now** — S1 only, S1–S3, or the whole S1–S6.
-3. **Whether the three portfolio sites all stay.** One is deployed, one is the
-   current root site, one is an HTML archive. Keeping three is fine if it is
-   deliberate; the registry can record which supersedes which.
-4. **Whether Tessera joins the company catalogue** as a Tamuzi product.
+Nothing from this document is unanswered any more. The four questions it ended
+with were answered: the four duplicate slugs keep both variants with the CLI
+suffixed; the restructure went the whole way (S1–S2, S4–S6); the three portfolio
+sites became one; and Tessera stays out of the published catalogue until it is
+fully built.
 
-Answer those and I will start at the stage you pick. Until then, nothing in this
-document has been applied.
+The open item is **S3**. Every one of these 71 directories has its own test suite,
+and CI runs the root site's 731 tests plus the registry gate — nothing else. A
+matrix that runs each project's suite is the change that keeps the rest of this
+document true.

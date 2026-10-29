@@ -4,7 +4,7 @@ Stage 6 adds the production build: one container serving the API, the compiled
 frontend and the migrations, with a preflight that refuses an unsafe configuration.
 
 **What has been executed here:** the image's *contents* are checked by tests
-(`apps/tessera/backend/tests/test_deployment.py`), the migrations have been run
+(`companies/tamuzi/tessera/backend/tests/test_deployment.py`), the migrations have been run
 against a real PostgreSQL server, and the whole test suite passes on both engines.
 **What has not:** `docker build` and `docker compose up`, because this environment
 has no Docker daemon. Nothing below is claimed to have been observed running except
@@ -14,17 +14,17 @@ where a command was actually run.
 
 | Piece | Where | Notes |
 | --- | --- | --- |
-| Image | `apps/tessera/Dockerfile` | Two stages: Node builds the frontend, Python runs the API and serves the build |
-| Compose | `apps/tessera/docker-compose.yml` | `db` (PostgreSQL 16) + `app`, app waits for the database healthcheck |
-| Configuration | `apps/tessera/.env.example`, `apps/tessera/backend/.env.example` | Every variable the backend reads is documented; a test fails if that drifts |
+| Image | `companies/tamuzi/tessera/Dockerfile` | Two stages: Node builds the frontend, Python runs the API and serves the build |
+| Compose | `companies/tamuzi/tessera/docker-compose.yml` | `db` (PostgreSQL 16) + `app`, app waits for the database healthcheck |
+| Configuration | `companies/tamuzi/tessera/.env.example`, `companies/tamuzi/tessera/backend/.env.example` | Every variable the backend reads is documented; a test fails if that drifts |
 | Preflight | `backend/app/preflight.py` | `python3 -m app.preflight [--json]`, exit 1 on any failure |
 | Migrations | `backend/alembic/` | 7 revisions, head `b7d3e14f2c80` |
 
-Build context is `apps/`, not the repository root, because the frontend is a
-workspace of `apps/package.json`:
+Build context is `companies/`, not the repository root, because the frontend is a
+workspace of `companies/package.json`:
 
 ```bash
-docker build -f apps/tessera/Dockerfile -t tessera apps/
+docker build -f companies/tamuzi/tessera/Dockerfile -t tessera companies/
 ```
 
 ## What the container does, in order
@@ -59,7 +59,7 @@ Secrets are never written into these files. `TESSERA_TUTOR_API_KEY` and
 ## The check an operator runs before announcing anything
 
 ```bash
-cd apps/tessera/backend
+cd companies/tamuzi/tessera/backend
 DATABASE_URL=postgresql://… python -m app.preflight
 ```
 

@@ -9,8 +9,8 @@
  *   1. the six PR links supplied verbatim by the owner (provenance — the merge
  *      records that evidence the work), and
  *   2. GitHub tree links into THIS repository, constructed only from paths
- *      that verifiably exist in this checkout (projects/… see
- *      projects/README.md).
+ *      that verifiably exist in this checkout (see
+ *      docs/PROJECTS.md for the full map).
  * Neither is inferred from names, usernames, companies, or hosting
  * conventions. Verification status per link is recorded honestly in
  * docs/PROJECT_EVIDENCE.md and rendered into product `verificationNote` text —
@@ -37,18 +37,18 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/MySul/pull/1',
     subject: 'The cybersecurity projects (working apps)',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/mysul/mwangala-portfolio',
+    inRepoPath: 'sites/portfolio',
     detail:
-      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/), with case-study pages, plus a Python circuit-math reference with tests. Merged 2026-10-28 into the single portfolio site at projects/mysul/mwangala-portfolio/ (apps served from public/demos/<slug>/).',
+      'MERGED 2026-10-23 (be39a9e). Contains working apps for sentinelcore, sentinellog, fileguard, dependsecure, chessscope, circuitlab-calc, and campusflow (apps/<slug>/, since 2026-10-29 under companies/<company>/), with case-study pages, plus a Python circuit-math reference with tests. Merged 2026-10-28 into the single portfolio site at sites/portfolio/ (apps served from public/demos/<slug>/).',
   },
   mySulReactPortfolio: {
     label: 'MySul PR #2 — Mwangala React portfolio site (Vite + TypeScript)',
     url: 'https://github.com/MwaJr3/MySul/pull/2',
     subject: 'Mwangala React portfolio site (Vite + TypeScript)',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/mysul/mwangala-portfolio',
+    inRepoPath: 'sites/portfolio',
     detail:
-      'MERGED 2026-10-23 (7a01e8b). Vite/React/TypeScript portfolio with nine project case-study records (assetwatch, hashsight, incidentflow, netscope, phishlens, securecode-workbench, threatintel-desk, cyberaware-lab, transcriptwise), Vitest suite, and QA screenshots. Source now resides in this repository at projects/mysul/mwangala-portfolio/.',
+      'MERGED 2026-10-23 (7a01e8b). Vite/React/TypeScript portfolio with nine project case-study records (assetwatch, hashsight, incidentflow, netscope, phishlens, securecode-workbench, threatintel-desk, cyberaware-lab, transcriptwise), Vitest suite, and QA screenshots. Source now resides in this repository at sites/portfolio/.',
   },
   sixtyChallenges: {
     label: 'SynapseHub PR #3 — 60 interactive prototypes',
@@ -73,18 +73,18 @@ export const SUPPLIED_EVIDENCE_LINKS = {
     url: 'https://github.com/MwaJr3/CBU_Assignments/pull/5',
     subject: 'TenantCore — Multi-Tenant SaaS Database',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/cbu-assignments/tenantcore',
+    inRepoPath: 'coursework/cbu-assignments/tenantcore',
     detail:
-      'MERGED 2026-10-22 (ee58d11). Inspected via the public origin repository and now vendored here: tenantcore/ ships a FastAPI + SQLAlchemy + Alembic backend with a React/TypeScript/Tailwind dashboard; PostgreSQL Row-Level Security tenant isolation behind a restricted runtime role, composite tenant-safe foreign keys and immutable audit events; tenant lifecycle, memberships/roles, rotating sessions, invitations, API-key auth, usage metrics, tenant-aware Celery jobs and observability; Docker/Compose stack, deterministic demo tenants (Acme/Globex/NovaTech), an isolation lab and schema-per-tenant tooling. PR-reported checks: 36 backend tests including adversarial RLS checks, 5 frontend tests, Alembic downgrade/re-upgrade/reseed, typecheck/lint/build and dependency audits. Docker Compose, Playwright and live Redis/Celery were not run in the PR environment. Source now resides in this repository at projects/cbu-assignments/tenantcore/.',
+      'MERGED 2026-10-22 (ee58d11). Inspected via the public origin repository and now vendored here: tenantcore/ ships a FastAPI + SQLAlchemy + Alembic backend with a React/TypeScript/Tailwind dashboard; PostgreSQL Row-Level Security tenant isolation behind a restricted runtime role, composite tenant-safe foreign keys and immutable audit events; tenant lifecycle, memberships/roles, rotating sessions, invitations, API-key auth, usage metrics, tenant-aware Celery jobs and observability; Docker/Compose stack, deterministic demo tenants (Acme/Globex/NovaTech), an isolation lab and schema-per-tenant tooling. PR-reported checks: 36 backend tests including adversarial RLS checks, 5 frontend tests, Alembic downgrade/re-upgrade/reseed, typecheck/lint/build and dependency audits. Docker Compose, Playwright and live Redis/Celery were not run in the PR environment. Source now resides in this repository at coursework/cbu-assignments/tenantcore/.',
   },
   vdownloader: {
     label: 'CBU_Assignments PR #6 — VDownloader OS desktop video downloader',
     url: 'https://github.com/MwaJr3/CBU_Assignments/pull/6',
     subject: 'VDownloader OS desktop video downloader',
     verification: 'verified-merged-inspected',
-    inRepoPath: 'projects/cbu-assignments/video_downloader_app',
+    inRepoPath: 'coursework/cbu-assignments/video_downloader_app',
     detail:
-      'MERGED 2026-10-23 (ccc9700). Inspected via the public origin repository and now vendored here: video_downloader_app/ is a Python 3.10+ / PyQt6 / yt-dlp / FFmpeg / WebSockets desktop suite — downloader (144p–8K video, MP3 320k/M4A audio, queued jobs with retry backoff), Instant Transcript Studio (VTT/SRT parse, dedupe, timestamps), IDM-style mini taskbar with Chrome/Edge MV3 and Firefox MV2 extension bridges over a local WebSocket, clipboard monitor, tray alerts, six analytical dashboards (PyQt6 + aiohttp web control centre), six engineering docs and PyInstaller packaging. PR-reported checks: 21/21 tests including a real FFmpeg subtitle burn, WebSocket roundtrip and extension-manifest integrity; build dry-run verified. Source now resides in this repository at projects/cbu-assignments/video_downloader_app/.',
+      'MERGED 2026-10-23 (ccc9700). Inspected via the public origin repository and now vendored here: video_downloader_app/ is a Python 3.10+ / PyQt6 / yt-dlp / FFmpeg / WebSockets desktop suite — downloader (144p–8K video, MP3 320k/M4A audio, queued jobs with retry backoff), Instant Transcript Studio (VTT/SRT parse, dedupe, timestamps), IDM-style mini taskbar with Chrome/Edge MV3 and Firefox MV2 extension bridges over a local WebSocket, clipboard monitor, tray alerts, six analytical dashboards (PyQt6 + aiohttp web control centre), six engineering docs and PyInstaller packaging. PR-reported checks: 21/21 tests including a real FFmpeg subtitle burn, WebSocket roundtrip and extension-manifest integrity; build dry-run verified. Source now resides in this repository at coursework/cbu-assignments/video_downloader_app/.',
   },
 } as const satisfies Record<string, SuppliedEvidenceLink>;
 
@@ -96,9 +96,18 @@ export function inRepoUrl(inRepoPath: string): string {
   return `${IN_REPO_BASE}${inRepoPath}`;
 }
 
-/** Source location of one full working app (apps/<slug>, built 2026-10-23). */
-export function appSourceUrl(slug: string): string {
-  return inRepoUrl(`apps/${slug}`);
+/**
+ * Source location of one full working app, built 2026-10-23. Apps moved on
+ * 2026-10-29: each one is filed under the company that publishes it, so the
+ * company is part of the path and there is no single `apps/` folder any more.
+ */
+export function appSourceUrl(company: 'velaqori' | 'tamuzi', slug: string): string {
+  return inRepoUrl(`companies/${company}/${slug}`);
+}
+
+/** The in-repo directory a source link points at, for tests that check it exists. */
+export function appSourcePath(company: 'velaqori' | 'tamuzi', slug: string): string {
+  return `companies/${company}/${slug}`;
 }
 
 export interface ProductEvidence {
@@ -111,33 +120,33 @@ export interface ProductEvidence {
 const CASE_STUDY_ADDENDUM =
   'Project case-study record verified in the owner-supplied Mwangala React portfolio (' +
   'https://github.com/MwaJr3/MySul/pull/2, merged 2026-10-23); the record source resides in this ' +
-  'repository at projects/mysul/mwangala-portfolio/src/data/projects/. Product source code is not ' +
+  'repository at sites/portfolio/src/data/projects/. Product source code is not ' +
   'linked yet — the Source Code button stays hidden.';
 
-function appAddendum(slug: string): string {
+function appAddendum(company: 'velaqori' | 'tamuzi', slug: string): string {
   return (
-    `Working full-stack application built and verified in this repository at apps/${slug} (backend + frontend + tests), ` +
+    `Working full-stack application built and verified in this repository at companies/${company}/${slug} (backend + frontend + tests), ` +
     'with demo and case-study pages vendored from the owner-supplied MySul source ' +
     '(https://github.com/MwaJr3/MySul/pull/1, merged 2026-10-23) at ' +
-    `projects/mysul/mwangala-portfolio/public/demos/${slug}/ and projects/mysul/mwangala-portfolio/src/data/earlierWork.ts. ` +
+    `sites/portfolio/public/demos/${slug}/ and sites/portfolio/src/data/earlierWork.ts. ` +
     'Not publicly deployed; no hosted demo is claimed.'
   );
 }
 
 function educationAppEvidence(slug: string): ProductEvidence {
   return {
-    repositoryUrl: appSourceUrl(slug),
+    repositoryUrl: appSourceUrl('tamuzi', slug),
     verificationAddendum:
-      `Working full-stack application built and verified in this repository at apps/${slug} ` +
+      `Working full-stack application built and verified in this repository at companies/tamuzi/${slug} ` +
       '(backend + frontend + tests, including seeded demo data and documented limitations). ' +
       'Not publicly deployed; no hosted demo is claimed.',
   };
 }
 
-function appEvidence(slug: string): ProductEvidence {
+function appEvidence(company: 'velaqori' | 'tamuzi', slug: string): ProductEvidence {
   return {
-    repositoryUrl: appSourceUrl(slug),
-    verificationAddendum: appAddendum(slug),
+    repositoryUrl: appSourceUrl(company, slug),
+    verificationAddendum: appAddendum(company, slug),
   };
 }
 
@@ -149,17 +158,18 @@ function caseStudyEvidence(): ProductEvidence {
  * Per-product evidence, keyed by product slug. The 25 catalogue products are
  * covered by exactly one of three verified record sets; source links exist
  * only for products with working apps — pointing into this repository, where
- * the code now lives (seven portfolio apps plus nine education-suite apps).
+ * the code now lives (seven portfolio apps plus nine education-suite apps,
+ * each filed under its company since 2026-10-29).
  */
 export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
   // Working apps (vendored from MySul PR #1) — Source Code configured.
-  sentinelcore: appEvidence('sentinelcore'),
-  sentinellog: appEvidence('sentinellog'),
-  fileguard: appEvidence('fileguard'),
-  dependsecure: appEvidence('dependsecure'),
-  chessscope: appEvidence('chessscope'),
-  'circuitlab-calc': appEvidence('circuitlab-calc'),
-  campusflow: appEvidence('campusflow'),
+  sentinelcore: appEvidence('velaqori', 'sentinelcore'),
+  sentinellog: appEvidence('velaqori', 'sentinellog'),
+  fileguard: appEvidence('velaqori', 'fileguard'),
+  dependsecure: appEvidence('velaqori', 'dependsecure'),
+  chessscope: appEvidence('velaqori', 'chessscope'),
+  'circuitlab-calc': appEvidence('velaqori', 'circuitlab-calc'),
+  campusflow: appEvidence('tamuzi', 'campusflow'),
   // Case-study records (vendored from MySul PR #2) — no product source linked.
   assetwatch: caseStudyEvidence(),
   hashsight: caseStudyEvidence(),
@@ -170,7 +180,7 @@ export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
   'threatintel-desk': caseStudyEvidence(),
   'cyberaware-lab': caseStudyEvidence(),
   transcriptwise: caseStudyEvidence(),
-  // Education suite (built in this workspace, apps/<slug>) — Source Code configured.
+  // Education suite (built in this workspace, companies/tamuzi/<slug>) — Source Code configured.
   learnbridge: educationAppEvidence('learnbridge'),
   classconnect: educationAppEvidence('classconnect'),
   tutorspring: educationAppEvidence('tutorspring'),

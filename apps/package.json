@@ -1,8 +1,0 @@
-{
-  "name": "synapsehub-apps",
-  "private": true,
-  "description": "Workspace for the full applications (one folder per product). Each app is self-contained; this workspace hoists the shared frontend toolchain.",
-  "workspaces": [
-    "*/frontend"
-  ]
-}

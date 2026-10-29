@@ -8,7 +8,7 @@ Two evidence classes, per owner instructions of 2026-10-23:
    this repository (owner instruction: every project lives in SynapseHub, not
    in other repositories) so the company website, hosted on Vercel from this
    repository, has every project physically within it. See
-   [`projects/README.md`](../../projects/README.md) for the full map.
+   [`docs/PROJECTS.md`](../../docs/PROJECTS.md) for the full map.
 
 **Evidence of source code is not evidence of deployment** — no product is
 claimed live.
@@ -17,12 +17,12 @@ claimed live.
 
 | Project (owner's framing) | Provenance link | Verified here | Where it lives now |
 | --- | --- | --- | --- |
-| TenantCore — Multi-Tenant SaaS Database | [CBU_Assignments#5](https://github.com/MwaJr3/CBU_Assignments/pull/5) | **Yes** — MERGED 2026-10-22 (`ee58d11`), inspected after the repo became public | `projects/cbu-assignments/tenantcore/` |
-| VDownloader OS desktop video downloader | [CBU_Assignments#6](https://github.com/MwaJr3/CBU_Assignments/pull/6) | **Yes** — MERGED 2026-10-23 (`ccc9700`), inspected after the repo became public | `projects/cbu-assignments/video_downloader_app/` |
+| TenantCore — Multi-Tenant SaaS Database | [CBU_Assignments#5](https://github.com/MwaJr3/CBU_Assignments/pull/5) | **Yes** — MERGED 2026-10-22 (`ee58d11`), inspected after the repo became public | `coursework/cbu-assignments/tenantcore/` |
+| VDownloader OS desktop video downloader | [CBU_Assignments#6](https://github.com/MwaJr3/CBU_Assignments/pull/6) | **Yes** — MERGED 2026-10-23 (`ccc9700`), inspected after the repo became public | `coursework/cbu-assignments/video_downloader_app/` |
 | Stock Price Analysis — comparative financial time-series analytics | [SynapseHub#4](https://github.com/MwaJr3/SynapseHub/pull/4) | **Yes** — MERGED 2026-10-19, 69 files | `stock-price-analysis/`, `stock-price-time-series-analysis/` |
 | The 60 challenge records | [SynapseHub#3](https://github.com/MwaJr3/SynapseHub/pull/3) | **Yes** — MERGED 2026-10-23, 100 files | this repository's portfolio app (`src/apps`, `/apps` routes) |
-| The cybersecurity projects | [MySul#1](https://github.com/MwaJr3/MySul/pull/1) | **Yes** — MERGED 2026-10-23 (`be39a9e`), 24 files | `projects/mysul/mwangala-portfolio/` |
-| Mwangala React portfolio site (Vite + TypeScript) | [MySul#2](https://github.com/MwaJr3/MySul/pull/2) | **Yes** — MERGED 2026-10-23 (`7a01e8b`), 100 files | `projects/mysul/mwangala-portfolio/` |
+| The cybersecurity projects | [MySul#1](https://github.com/MwaJr3/MySul/pull/1) | **Yes** — MERGED 2026-10-23 (`be39a9e`), 24 files | `sites/portfolio/` |
+| Mwangala React portfolio site (Vite + TypeScript) | [MySul#2](https://github.com/MwaJr3/MySul/pull/2) | **Yes** — MERGED 2026-10-23 (`7a01e8b`), 100 files | `sites/portfolio/` |
 
 ## How the evidence maps to the 25 catalogue products
 
@@ -35,8 +35,8 @@ working application source. Source Code buttons appear only for the sixteen.
 `circuitlab-calc`, `campusflow` — **full working full-stack applications
 built into this repository at `apps/<slug>/`** (backend + frontend + tests,
 built 2026-10-23), with demo and case-study pages vendored at
-`projects/mysul/mwangala-portfolio/public/demos/<slug>/` and
-`projects/mysul/mwangala-portfolio/src/data/earlierWork.ts`, provenance
+`sites/portfolio/public/demos/<slug>/` and
+`sites/portfolio/src/data/earlierWork.ts`, provenance
 [MySul#1](https://github.com/MwaJr3/MySul/pull/1). Each product's Source Code
 button links to its `apps/<slug>/` folder **inside this repository**. Status
 stays **Built (not publicly deployed)**: source exists and runs; no hosted
@@ -47,7 +47,7 @@ deployment is claimed.
 `assetwatch`, `hashsight`, `incidentflow`, `netscope`, `phishlens`,
 `securecode-workbench`, `threatintel-desk`, `cyberaware-lab`,
 `transcriptwise` — project case-study records vendored at
-`projects/mysul/mwangala-portfolio/src/data/projects/`, provenance
+`sites/portfolio/src/data/projects/`, provenance
 [MySul#2](https://github.com/MwaJr3/MySul/pull/2). Product source is **not
 linked**, so the Source Code button stays hidden.
 
@@ -71,7 +71,7 @@ described above.
 Real, evidenced projects that are not platform catalogue entries (the
 catalogue is the specified 25):
 
-- **TenantCore** — `projects/cbu-assignments/tenantcore/`. FastAPI + SQLAlchemy
+- **TenantCore** — `coursework/cbu-assignments/tenantcore/`. FastAPI + SQLAlchemy
   + Alembic backend with a React/TypeScript/Tailwind dashboard: PostgreSQL
   Row-Level Security tenant isolation behind a restricted runtime role,
   composite tenant-safe foreign keys, immutable audit events; tenant lifecycle,
@@ -83,7 +83,7 @@ catalogue is the specified 25):
   build, dependency audits. Docker Compose, Playwright and live Redis/Celery
   were not run in the PR environment. *Not a catalogue product; case-study
   framing would require verification of details before publication.*
-- **VDownloader OS** — `projects/cbu-assignments/video_downloader_app/`.
+- **VDownloader OS** — `coursework/cbu-assignments/video_downloader_app/`.
   Python 3.10+ / PyQt6 / yt-dlp / FFmpeg / WebSockets desktop suite: downloader
   (144p–8K, MP3 320k/M4A, queued jobs with retry backoff), Instant Transcript
   Studio (VTT/SRT parse, dedupe, timestamps), IDM-style mini taskbar with

@@ -213,7 +213,7 @@ planner server ──GET Bearer token──▶ Tessera /me/learning-summary
 
 ## 7. Configuration
 
-Tessera (`apps/tessera/backend`):
+Tessera (`companies/tamuzi/tessera/backend`):
 
 ```bash
 TESSERA_PLANNER_CLIENT_ID=tamuzi-study-planner

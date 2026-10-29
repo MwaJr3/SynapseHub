@@ -97,7 +97,7 @@ Two things came out of implementing those rather than out of the source repos:
 
 No other product in `apps/` has an AI surface implemented. Some have surfaces
 where AI is plausible later — the requirement is that each one would reuse
-`apps/tessera/backend/app/ai/` as a module with its own grounding corpus, not
+`companies/tamuzi/tessera/backend/app/ai/` as a module with its own grounding corpus, not
 that they would each grow a chatbot now. Nothing is stubbed: there is no button
 anywhere that claims to be AI and is not wired to something real.
 
@@ -152,7 +152,7 @@ looking finished, because "the model returned something" was the only success
 condition. `done` now carries `{ ok, problems[] }` and the interface labels the
 answer *incomplete* instead of presenting it as an answer.
 
-**LLMs from Scratch — the context window as a budget** (`apps/tessera/backend/app/ai/budget.py`).
+**LLMs from Scratch — the context window as a budget** (`companies/tamuzi/tessera/backend/app/ai/budget.py`).
 One idea, put where a learner can see it: a model reads a fixed window of tokens,
 and retrieval competes for it. The tutor now estimates what a turn spends and says
 so in its trace — *"Estimated 412 of 8192 tokens … 5% of the window"* — and warns
@@ -169,7 +169,7 @@ supposed to justify the answer.
   here, against our own storage and our own SSE protocol. Adopting it would mean a
   second abstraction over the same three ideas, plus a dependency whose licence is
   split across `ee/` directories. The *provider preset* idea was taken (see
-  `PROVIDER_PRESETS` in `apps/tessera/backend/app/ai/agent.py`): a name and a key
+  `PROVIDER_PRESETS` in `companies/tamuzi/tessera/backend/app/ai/agent.py`): a name and a key
   rather than a URL and a model id from memory.
 - **Multi-agent crews.** Two single-purpose assistants and one tutor do not need a
   planner/worker/reviewer hierarchy. The failure mode of adding one is a system

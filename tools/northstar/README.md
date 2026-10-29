@@ -47,7 +47,7 @@ To use the checker without the plugin:
 
 ```bash
 node tools/northstar/bin/northstar.mjs audit .            # whole repository, P0-P3
-node tools/northstar/bin/northstar.mjs audit apps/tessera # one project
+node tools/northstar/bin/northstar.mjs audit companies/tamuzi/tessera # one project
 node tools/northstar/bin/northstar.mjs scan               # the detector layer + report
 node tools/northstar/bin/northstar.mjs check . --min P1   # CI gate, exits 1
 node tools/northstar/bin/northstar.mjs fix .              # apply the mechanical fixes

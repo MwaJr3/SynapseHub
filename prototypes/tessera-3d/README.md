@@ -6,7 +6,7 @@ one question while that gate is closed:
 
 > Does depth help a learner understand the prerequisite structure, or is it decoration?
 
-It is deliberately separated from production screens: no imports from `apps/tessera`,
+It is deliberately separated from production screens: no imports from `companies/tamuzi/tessera`,
 no build step, no bundle, no route. Changing a stage-4 screen cannot invalidate it, and
 integrating it later is a copy of what proved useful rather than a refactor of what
 did not.

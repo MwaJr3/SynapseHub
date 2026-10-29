@@ -1,0 +1,8 @@
+{
+  "name": "synapsehub-apps",
+  "private": true,
+  "description": "Workspace for the company products and builds, one folder per product under companies/velaqori/ and companies/tamuzi/. Each is self-contained; this workspace hoists the shared frontend toolchain.",
+  "workspaces": [
+    "*/*/frontend"
+  ]
+}
