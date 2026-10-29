@@ -431,3 +431,29 @@ left implicit in a `rejectUnauthorized: false`. Four unit tests in
 **The other consequence, kept on purpose.** The seed runs from the build container, so a
 build that cannot reach Supabase fails before it produces a deployment. That is what
 turned this bug into a code and a log line instead of a 500 nobody could read.
+
+### The deployments, in order
+
+| # | Deployment | Commit | Result |
+| --- | --- | --- | --- |
+| 1 | `dpl_2qaLgr1F4hNxSmh5M3qnzzkjus9C` | `b92c200` | READY — the build that served a 500 on every page |
+| 2 | `dpl_E2F6phbX61695QLAvhR8pkwCpeJk` | `54e9d1e` (PR #47 merged) | READY — same 500 |
+| 3 | `dpl_9ggHsGASVa7tM6fDVKUBU2JyCkD5` | `b6f32ce` | **ERROR** after 12 s — `SELF_SIGNED_CERT_IN_CHAIN` |
+| 4 | `dpl_Cw9WmTEHB2iv4aRx7nfV4jeXBvwz` | `fc8636d` (PR #48) | READY — `[db] schema created, catalogue seeded` |
+| 5 | `dpl_Bz2xgjLVNvpXXonYc89VBahi1ZUq` | `f438ee4` (merge of #48) | READY, PROMOTED — held the alias for a minute |
+| 6 | `dpl_5cntiGGzWoofN3mLiG9dwaxc2Dpg` | `f438ee4` (merge of #48) | READY, PROMOTED — **the production alias now**; same commit, built twice |
+
+Deployment 4 is the one that answered the question this file could not answer before:
+a Vercel build container reached Supabase, created nothing new, seeded the catalogue
+and compiled the app in one run. Read back from Supabase with the database
+connector, independently of the application:
+
+| `companies` | `solution_areas` | `products` | `case_studies` | `users` | `person_profiles` | `company_memberships` | `_migrations` |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2 | 4 | 25 | 25 | 0 | 0 | 0 | 1 |
+
+**One caveat about reachability that has nothing to do with the code.** The project has
+`deploymentProtection: all_except_custom_domains`, so the `*.vercel.app` production URL
+can prompt for Vercel authentication for someone who is not signed in to the team. The
+owner reached it (that is where the 500 was seen), so it is reachable for the owner; a
+custom domain would be needed for anyone else, and that has not been set up.
