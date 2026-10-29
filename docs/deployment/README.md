@@ -1,4 +1,13 @@
-# Deployment is paused — no project in this repository deploys
+# Deployment: one project, on request
+
+> **2026-10-29 — `company-platform` is deployed.** The owner asked for the company
+> website to be deployed if it was ready, and it was: it builds on Vercel from
+> `company-platform/` and every one of its 149 tests passes. The deployment is
+> recorded at the end of this file, including what is **not** working yet. Every
+> other project in the repository still has no deployment, and the rest of this
+> document still applies to them.
+
+# Historically: deployment is paused
 
 **State as of 2026-10-28: nothing in this repository deploys.** The nine project-level
 Vercel configurations were removed on the owner's instruction — *"Remove them from Vercel
@@ -255,9 +264,73 @@ does not change it.
 
 ### What is actually built, pending that decision
 
-- `projects.json` now records `deployment` for all 73 projects: **32 `separate`,
-  36 `catalogue`, 5 `none`** (coursework and scratch folders with nothing to serve).
+- `projects.json` now records `deployment` for all 71 projects: **32 `separate`,
+  36 `catalogue`, 3 `none`** (the three coursework and archive directories with
+  nothing to serve).
 - The 36 catalogue builds are published on the company site at **`/catalogue`**,
   generated from the registry by `npm run catalogue`, with a test on each side that
   fails if the page and the registry disagree.
 - Nothing is deployed. No hosting config has been re-added.
+
+---
+
+## 2026-10-29 — `company-platform` deployed
+
+The owner asked for the company website to be deployed on Vercel if it was ready.
+It was, so it is. This is the only deployment in the repository, and it was made
+without re-adding a hosting configuration file.
+
+### What was done
+
+| Step | Value |
+| --- | --- |
+| Vercel project | `company-platform` (`prj_RLVvufqafwsSQogpNxrQAhwkosxR`), team `M Corp` |
+| Framework preset | Next.js — detected, not overridden |
+| **Root Directory** | `company-platform` (a dashboard setting, not a file) |
+| Deployment | `dpl_2qaLgr1F4hNxSmh5M3qnzzkjus9C`, commit `b92c200`, state **READY** |
+| Production URL | `https://company-platform-ivory.vercel.app` |
+| Branch URL | `https://company-platform-git-arena-d6bfd8ef-synapsehub-m-corp2.vercel.app` |
+| Environment variable set | `PGLITE_DATA_DIR=/tmp/platform.db` |
+
+No `vercel.json`, `.vercelignore` or root configuration was added. `src/registry.test.ts`
+asserts that no project and no root ships hosting configuration, and that assertion
+is still true: the Vercel project exists in the dashboard, and nothing in the tree
+describes it.
+
+### What is verified, and what is not
+
+**Verified:** the build runs on Vercel's builder — dependencies install (192
+packages), `next build` completes, four Node functions are emitted, and the
+deployment reaches `READY` with the production alias assigned. Locally the same
+commit passes `next build`, `tsc --noEmit`, `eslint` and its 149 tests.
+
+**Not verified:** *whether the pages render*. This session's sandbox has no network
+path to `*.vercel.app` (only GitHub, npm and PyPI are reachable), so no request was
+made to the deployment from here. Do not read `READY` as "the site works" — it means
+the build worked.
+
+### What the site will and will not do today
+
+The application reads every public page from PostgreSQL. There is no database:
+
+| Missing | Effect | What it takes |
+| --- | --- | --- |
+| `DATABASE_URL` | falls back to embedded PGlite. `PGLITE_DATA_DIR` points at `/tmp`, which is writable but **per-instance and ephemeral** — an empty catalogue, and whatever an instance writes disappears with it | a PostgreSQL 14+ database, then `npm run db:migrate` and `npm run db:seed` |
+| `AUTH_SECRET` | sign-in and every `/admin` route fail: NextAuth refuses to mint a session without a secret | `openssl rand -base64 32` into the Vercel project's environment |
+| `STORAGE_PROVIDER` / S3 keys | resume uploads fall back to local disk, which is read-only outside `/tmp` | leave local until uploads matter, or set the S3 variables |
+| Brevo keys | the contact form shows its setup-required state; it never claims a message was sent | `BREVO_API_KEY` and the `CONTACT_*` variables |
+
+So: **the deployment is real and the build is sound, but the company site has no
+content behind it yet.** The remaining work is a database and a secret, not a code
+change.
+
+### The nine legacy projects
+
+Nine Vercel projects still exist for the product APIs — `synapsehub-cyberaware-lab-api`,
+`synapsehub-incidentflow-api` and seven others. Their **Root Directory** settings
+still read `projects/cyberaware-lab/backend` and so on. Those paths were deleted on
+2026-10-29, so any build they attempt now fails at checkout: there is no
+`projects/` directory left to build. Nothing is lost — none of them is live, and the
+registry records them as `pausedDeployment` — but the dashboard entries are stale.
+When each is redeployed, set its Root Directory to
+`companies/<company>/<product>/backend`.
