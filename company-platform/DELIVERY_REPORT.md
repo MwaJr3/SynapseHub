@@ -188,8 +188,8 @@ no Lighthouse scores are claimed anywhere.
   personal portfolio project registry.
 - **Code consolidation (2026-10-23):** per owner instruction, all project
   code formerly kept in MySul and CBU_Assignments now lives in this
-  repository under `projects/` (`projects/mysul/`,
-  `projects/cbu-assignments/` — see `projects/README.md`), so the company
+  repository under `companies/` and `sites/` (`sites/portfolio`,
+  `coursework/cbu-assignments/` — see `companies/README.md`), so the company
   website hosted on Vercel from this repository has every project physically
   within it. Product Source Code links point into this repository's own tree;
   the origin PR URLs remain as provenance in verification notes.

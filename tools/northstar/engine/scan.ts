@@ -24,6 +24,32 @@ import type { ScanReport } from './scanner/types';
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const strict = process.argv.includes('--strict');
 
+/**
+ * Products that are not yet in the strict gate.
+ *
+ * Before the 2026-10-29 move these nine lived under `projects/`, which this scan
+ * never walked; the gate covered `apps/` and the root applications. The move filed
+ * them under companies/ with everything else, so naming them here keeps the gate
+ * meaning what it meant — rather than quietly passing because their paths changed,
+ * or failing the build on findings nobody has triaged.
+ *
+ * Measured on 2026-10-29, with the detectors as they stand: 631 findings in
+ * transcriptwise (29 critical), 10 in cyberaware-lab (1 critical), 5–6 each in the
+ * seven other products. The audit report still lists all of them — this list only
+ * decides what `--strict` fails on. Removing a name from this list is the work.
+ */
+const OUTSIDE_STRICT_GATE = new Set([
+  'companies/velaqori/assetwatch',
+  'companies/velaqori/hashsight',
+  'companies/velaqori/incidentflow',
+  'companies/velaqori/netscope',
+  'companies/velaqori/phishlens',
+  'companies/velaqori/securecode-workbench',
+  'companies/velaqori/threatintel-desk',
+  'companies/tamuzi/cyberaware-lab',
+  'companies/tamuzi/transcriptwise',
+]);
+
 async function discoverTargets(): Promise<ScanTarget[]> {
   const targets: ScanTarget[] = [
     { label: 'Portfolio website', root: join(repoRoot, 'src') },
@@ -41,13 +67,21 @@ async function discoverTargets(): Promise<ScanTarget[]> {
     },
   ];
 
-  const appsRoot = join(repoRoot, 'apps');
-  if (existsSync(appsRoot)) {
-    for (const name of await readdir(appsRoot)) {
-      for (const candidate of ['frontend/src', 'web/src']) {
-        const root = join(appsRoot, name, candidate);
-        if (existsSync(root)) {
-          targets.push({ label: `apps/${name}`, root });
+  // Since 2026-10-29 every company product is filed under the company that
+  // publishes it: `companies/<company>/<product>`.
+  const companiesRoot = join(repoRoot, 'companies');
+  if (existsSync(companiesRoot)) {
+    for (const company of (await readdir(companiesRoot, { withFileTypes: true })).sort((a, b) =>
+      a.name.localeCompare(b.name),
+    )) {
+      if (!company.isDirectory()) continue;
+      for (const name of (await readdir(join(companiesRoot, company.name))).sort()) {
+        const label = `companies/${company.name}/${name}`;
+        for (const candidate of ['frontend/src', 'web/src']) {
+          const root = join(companiesRoot, company.name, name, candidate);
+          if (existsSync(root)) {
+            targets.push({ label, root, gated: !OUTSIDE_STRICT_GATE.has(label) });
+          }
         }
       }
     }
@@ -184,10 +218,22 @@ async function main(): Promise<void> {
   await writeFile(reportPath, renderReport(reports), 'utf8');
   console.log(`\nReport written to ${reportPath.replace(repoRoot + '/', '')}`);
 
-  const critical = reports.reduce(
-    (sum, report) => sum + report.counts.critical,
-    0,
-  );
+  // A target can be reported without being gated: `gated: false` marks a surface
+  // whose findings are known, listed and not yet triaged (see OUTSIDE_STRICT_GATE).
+  const gatedLabels = new Set(targets.filter((t) => t.gated !== false).map((t) => t.label));
+  const critical = reports
+    .filter((report) => gatedLabels.has(report.label))
+    .reduce((sum, report) => sum + report.counts.critical, 0);
+  const ungated = reports
+    .filter((report) => !gatedLabels.has(report.label))
+    .reduce((sum, report) => sum + report.counts.critical, 0);
+
+  if (ungated > 0) {
+    console.log(
+      `\n${ungated} critical finding(s) in ${reports.filter((r) => !gatedLabels.has(r.label)).length} ` +
+        `target(s) outside the strict gate — reported, not yet triaged.`,
+    );
+  }
   if (strict && critical > 0) {
     console.error(
       `\nStrict scan failed: ${critical} critical finding(s) remain.`,

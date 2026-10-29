@@ -83,7 +83,7 @@ grid".
 ## Reproducing
 
 ```bash
-cd apps/tessera/frontend
+cd companies/tamuzi/tessera/frontend
 npm test -- src/screens.a11y.test.tsx src/app.a11y.test.tsx src/contrast.test.ts
 ```
 

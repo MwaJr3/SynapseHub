@@ -20,22 +20,22 @@ build says nothing about the API.
 ## 1. Suites (about 60 s)
 
 ```sh
-cd apps/tessera/backend  && python3 -m pytest -q          # 308 passed, 7 skipped
-cd apps/tessera/frontend && npm test && npm run build      # 85 passed in 7 files, tsc + vite
+cd companies/tamuzi/tessera/backend  && python3 -m pytest -q          # 308 passed, 7 skipped
+cd companies/tamuzi/tessera/frontend && npm test && npm run build      # 85 passed in 7 files, tsc + vite
 ```
 
 The 7 skips are `tests/test_postgres.py`, which refuses to pass without a server.
 That is the correct behaviour: layer 3 is where they run.
 
 `npm test` at `apps/` runs the whole workspace; run it from
-`apps/tessera/frontend` to keep it scoped.
+`companies/tamuzi/tessera/frontend` to keep it scoped.
 
 ## 2. Schema, SQLite (about 15 s)
 
 The migration history, not `create_all()`, is the source of truth.
 
 ```sh
-cd apps/tessera/backend
+cd companies/tamuzi/tessera/backend
 rm -f /tmp/verify.db
 DATABASE_URL=sqlite:////tmp/verify.db python3 -m alembic upgrade head   # 4 revisions
 DATABASE_URL=sqlite:////tmp/verify.db python3 -m alembic check          # "No new upgrade operations detected."
@@ -65,7 +65,7 @@ admin.set_isolation_level(0)
 admin.cursor().execute("create database tessera")   # fails harmlessly if it exists
 PY
 
-cd apps/tessera/backend
+cd companies/tamuzi/tessera/backend
 export DATABASE_URL='postgresql+psycopg2://postgres:@/tessera?host=/tmp/pgdata'
 python3 -m alembic upgrade head        # 4 revisions, PostgreSQL 16.2
 python3 -m alembic check               # "No new upgrade operations detected."
@@ -103,7 +103,7 @@ revision, and drops the database.
 ## 4. A real server and the product claims (about 90 s)
 
 ```sh
-cd apps/tessera/backend
+cd companies/tamuzi/tessera/backend
 rm -rf /tmp/verify-data && mkdir -p /tmp/verify-data
 DATABASE_URL=sqlite:////tmp/verify-data/t.db TESSERA_DATA_DIR=/tmp/verify-data \
   python3 -m alembic upgrade head
@@ -134,7 +134,7 @@ Then, with the cookie jar from registration:
 ## 5. The scheduler claim
 
 ```sh
-cd apps/tessera/backend && python3 -m app.evals.recall_eval
+cd companies/tamuzi/tessera/backend && python3 -m app.evals.recall_eval
 ```
 
 Expected, seed 7, 200 items, 90 days, 12 reviews per item allowed:

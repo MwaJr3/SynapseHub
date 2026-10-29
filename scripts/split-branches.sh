@@ -30,7 +30,7 @@ PUSH=0
 #   branch:prefix
 SPLITS=(
   "split/challenges:challenges"
-  "split/cbu-assignments:projects/cbu-assignments"
+  "split/cbu-assignments:coursework/cbu-assignments"
 )
 
 fail() { printf '\033[31m%s\033[0m\n' "$*" >&2; exit 1; }

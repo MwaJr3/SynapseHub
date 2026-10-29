@@ -19,30 +19,38 @@ function discoverTargets(): ScanTarget[] {
       root: join(repoRoot, 'vocal-separator/web/src'),
     },
   ];
-  const appsRoot = join(repoRoot, 'apps');
-  if (existsSync(appsRoot)) {
-    for (const name of [
-      'campusflow',
+  // Every product is filed under the company that publishes it (2026-10-29).
+  const companies: Record<string, string[]> = {
+    velaqori: [
       'chessscope',
       'circuitlab-calc',
-      'classconnect',
       'dependsecure',
-      'eduaccess',
       'fileguard',
       'frontpage',
+      'sentinelcore',
+      'sentinellog',
+    ],
+    tamuzi: [
+      'campusflow',
+      'classconnect',
+      'eduaccess',
       'learnbridge',
       'learnpulse',
       'openlearn-commons',
       'pathwise',
       'reachlearn',
-      'sentinelcore',
-      'sentinellog',
       'teachcraft',
       'tutorspring',
-    ]) {
-      for (const candidate of ['frontend/src', 'web/src']) {
-        const root = join(appsRoot, name, candidate);
-        if (existsSync(root)) targets.push({ label: `apps/${name}`, root });
+    ],
+  };
+  const companiesRoot = join(repoRoot, 'companies');
+  if (existsSync(companiesRoot)) {
+    for (const [company, names] of Object.entries(companies)) {
+      for (const name of names) {
+        for (const candidate of ['frontend/src', 'web/src']) {
+          const root = join(companiesRoot, company, name, candidate);
+          if (existsSync(root)) targets.push({ label: `companies/${company}/${name}`, root });
+        }
       }
     }
   }
@@ -96,14 +104,14 @@ describe('UX engine repository gate', () => {
       .sort();
     expect(scrollCues).toEqual(
       [
-        'apps/frontpage/frontend/src/styles/app.css:65',
-        'apps/frontpage/frontend/src/styles/app.css:104',
-        'apps/frontpage/frontend/src/styles/app.css:114',
-        'apps/frontpage/frontend/src/styles/app.css:132',
-        'apps/frontpage/frontend/src/styles/app.css:236',
-        'apps/frontpage/frontend/src/styles/app.css:252',
-        'apps/frontpage/frontend/src/styles/app.css:255',
-        'apps/frontpage/frontend/src/styles/app.css:331',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:65',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:104',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:114',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:132',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:236',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:252',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:255',
+        'companies/velaqori/frontpage/frontend/src/styles/app.css:331',
         'vocal-separator/web/src/styles.css:1618',
       ].sort(),
     );

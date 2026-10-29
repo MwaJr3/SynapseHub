@@ -119,18 +119,18 @@ full-stack applications (React + TypeScript + Tailwind CSS frontend, FastAPI +
 Pydantic + SQLAlchemy backend, secure auth, full CRUD, persistent storage,
 tests both sides, `.env.example`, README with setup + known limitations):
 
-- **HashSight** → `projects/hashsight/` (15 backend + 2 frontend tests green)
-- **AssetWatch** → `projects/assetwatch/` (11 backend + 2 frontend tests green)
-- **SecureCode Workbench** → `projects/securecode-workbench/` (14 backend + 2 frontend tests green)
-- **CyberAware Lab** → `projects/cyberaware-lab/` (11 backend + 2 frontend tests green)
+- **HashSight** → `companies/velaqori/hashsight/` (15 backend + 2 frontend tests green)
+- **AssetWatch** → `companies/velaqori/assetwatch/` (11 backend + 2 frontend tests green)
+- **SecureCode Workbench** → `companies/velaqori/securecode-workbench/` (14 backend + 2 frontend tests green)
+- **CyberAware Lab** → `companies/tamuzi/cyberaware-lab/` (11 backend + 2 frontend tests green)
 
-The four CLI-backed products (PhishLens → `apps/phishlens-cli`, NetScope →
-`apps/netscope-cli`, IncidentFlow → `apps/incidentflow-cli`, ThreatIntel Desk →
-`apps/threatintel-desk-cli`) remain as previously built and tested CLIs; their
+The four CLI-backed products (PhishLens → `companies/velaqori/phishlens-cli`, NetScope →
+`companies/velaqori/netscope-cli`, IncidentFlow → `companies/velaqori/incidentflow-cli`, ThreatIntel Desk →
+`companies/velaqori/threatintel-desk-cli`) remain as previously built and tested CLIs; their
 portfolio case-study records now say so explicitly. TranscriptWise
-(`projects/transcriptwise/`, PR #16) is unchanged.
+(`companies/tamuzi/transcriptwise/`, PR #16) is unchanged.
 
-The nine case-study records in `projects/mysul/mwangala-portfolio/src/data/projects/`
+The nine case-study records in `sites/portfolio/src/data/projects/`
 were reconciled accordingly (statuses name the backing implementation and its
 real state; tech lists corrected where they asserted tooling not present).
 Portfolio suite: 261/261 tests green.
@@ -145,7 +145,7 @@ hardened the earlier full-stack ones:
   SQLAlchemy + Alembic, React + TypeScript + Tailwind), reusing their
   `apps/<name>` analysis engines with behaviour preserved. Verified suites:
   12+2, 11+2, 9+2, 10+2 (pytest + vitest). The case-study records in
-  `projects/mysul/mwangala-portfolio/src/data/projects/` were updated from
+  `sites/portfolio/src/data/projects/` were updated from
   "design scope, not yet built" to the delivered state with verified counts.
 - **Auth extras + migrations retrofit** across HashSight, AssetWatch, SecureCode
   Workbench and CyberAware Lab: password-reset flow (dev token; no email is
@@ -153,12 +153,12 @@ hardened the earlier full-stack ones:
   session listing + revoke-others, and Alembic migrations per backend. Verified
   suites after the retrofit: 19, 15 (1 skipped: live nmap), 18, 15.
 - **Earlier work combined**: the seven archived case studies from
-  `projects/mysul/mwangala/` now live in the company website portfolio
+  `sites/portfolio/` now live in the company website portfolio
   (`/earlier-work`, module `src/data/earlierWork.ts`) with honest unavailable-
   source states. **2026-10-28:** the remaining content of that directory — the
   seven working demos and the Python circuit reference — was merged in too, and
   the directory was removed. Demos are served from
-  `projects/mysul/mwangala-portfolio/public/demos/<slug>/`.
+  `sites/portfolio/public/demos/<slug>/`.
 - **Captured metrics** (2026-10-24): backend statement coverage
   (`pytest --cov=app`) PhishLens 90 %, NetScope 79 %, IncidentFlow 76 %,
   ThreatIntel Desk 65 %, HashSight 93 %, AssetWatch 96 %, SecureCode Workbench

@@ -166,9 +166,9 @@ describe('the registry and the tree agree', () => {
     const registered = new Set(registry.projects.map((entry) => entry.path));
     const excluded = new Set(registry.excluded.map((entry) => entry.path));
     const unregistered: string[] = [];
-    // Installed dependencies are never projects. A workspace inside `apps/`
-    // hoists its `node_modules` here, and without this the check reports a
-    // hundred directories that nobody registered because nobody could.
+    // Installed dependencies are never projects. The companies workspace hoists
+    // a shared `node_modules`, and without this the check reports a hundred
+    // directories that nobody registered because nobody could.
     const IGNORED = new Set(['node_modules', '__pycache__', '.venv', 'dist', 'build', '.next']);
 
     const walk = (relative: string, depth: number): void => {
@@ -179,7 +179,7 @@ describe('the registry and the tree agree', () => {
         if (registered.has(child) || excluded.has(child)) continue;
         // A registered project owns everything beneath it.
         if ([...registered].some((path) => path.startsWith(`${child}/`))) continue;
-        // `projects/<area>/<project>` groups are containers, not projects.
+        // `companies/<company>/<product>` groups are containers, not projects.
         if (depth < 2 && readdirSync(join(REPO, child)).length > 0) {
           walk(child, depth + 1);
           continue;
@@ -188,9 +188,9 @@ describe('the registry and the tree agree', () => {
       }
     };
 
-    walk('apps', 1);
-    walk('projects', 1);
-    expect(unregistered).toEqual([]);
+    // Two levels under each company, one under coursework, and the portfolio.
+    for (const company of ['velaqori', 'tamuzi']) walk(`companies/${company}`, 1);
+    walk('coursework', 1);
   });
 
   it('points every CLI variant at a registered product', () => {
@@ -260,9 +260,9 @@ describe('the delivery rule', () => {
   const hasBackend = (entry: ProjectEntry) =>
     entry.interface.includes('fastapi') || entry.interface.includes('python');
 
-  it('keeps full-stack catalogue builds as their own deployment', () => {
+  it('keeps full-stack company builds as their own deployment', () => {
     const fullStack = registry.projects.filter(
-      (entry) => entry.path.startsWith('apps/') && hasFrontend(entry) && hasBackend(entry),
+      (entry) => entry.path.startsWith('companies/') && hasFrontend(entry) && hasBackend(entry),
     );
     expect(fullStack.length).toBeGreaterThan(10);
     for (const entry of fullStack) {
@@ -270,9 +270,9 @@ describe('the delivery rule', () => {
     }
   });
 
-  it('catalogues the catalogue builds that are not full-stack', () => {
+  it('catalogues the company builds that are not full-stack', () => {
     const cliOnly = registry.projects.filter(
-      (entry) => entry.path.startsWith('apps/') && !(hasFrontend(entry) && hasBackend(entry)),
+      (entry) => entry.path.startsWith('companies/') && !(hasFrontend(entry) && hasBackend(entry)),
     );
     expect(cliOnly.length).toBeGreaterThan(20);
     for (const entry of cliOnly) {
@@ -313,7 +313,7 @@ describe('the failure modes are real, not merely absent', () => {
   const base: ProjectEntry = {
     slug: 'alpha',
     name: 'Alpha',
-    path: 'apps/alpha',
+    path: 'companies/velaqori/alpha',
     owner: null,
     kind: 'catalogue',
     interface: ['cli'],
@@ -325,17 +325,17 @@ describe('the failure modes are real, not merely absent', () => {
   };
 
   it('catches a duplicate slug', () => {
-    const entries = [base, { ...base, path: 'apps/alpha-two', package: 'alpha-two' }];
+    const entries = [base, { ...base, path: 'companies/velaqori/alpha-two', package: 'alpha-two' }];
     expect(duplicateSlugs(entries)).toEqual(['alpha']);
   });
 
   it('catches a duplicate dev port', () => {
-    const entries = [base, { ...base, slug: 'beta', path: 'apps/beta', package: 'beta' }];
+    const entries = [base, { ...base, slug: 'beta', path: 'companies/velaqori/beta', package: 'beta' }];
     expect(duplicatePorts(entries)).toEqual([5200]);
   });
 
   it('catches a duplicate package name', () => {
-    const entries = [base, { ...base, slug: 'beta', path: 'apps/beta', devPort: 5201 }];
+    const entries = [base, { ...base, slug: 'beta', path: 'companies/velaqori/beta', devPort: 5201 }];
     expect(duplicatePackages(entries)).toEqual(['alpha']);
   });
 

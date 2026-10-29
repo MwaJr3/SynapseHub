@@ -1,0 +1,72 @@
+# Tessera with PostgreSQL — the multi-learner deployment.
+#
+# SQLite is fine for one person on one machine. It is the wrong choice for a
+# product where every learner's progress has to be isolated and durable, so this
+# file stands up the database the app is designed for.
+#
+# This is a DEVELOPMENT deployment: the database password is written here because
+# it is local, and TESSERA_PRODUCTION defaults to 0. For anything real, pass the
+# password through the environment and set TESSERA_PRODUCTION=1 — which turns on
+# the Secure cookie and HSTS, and makes the preflight refuse SQLite or a
+# localhost origin.
+#
+#   docker compose up -d --build
+#   docker compose exec app python -m app.seed     # once, for the curriculum
+#
+# The app container runs `alembic upgrade head` and `python -m app.preflight`
+# before uvicorn; if the preflight fails it exits instead of serving.
+#
+# Verified in this repository: the migrations render PostgreSQL DDL, and the whole
+# test suite passes against a real PostgreSQL server (see the README). NOT
+# verified: `docker compose up`, because the sandbox this was written in has no
+# Docker daemon.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tessera
+      POSTGRES_PASSWORD: tessera
+      POSTGRES_DB: tessera
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - tessera-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tessera -d tessera"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      # The frontend is a workspace of companies/, two levels up, so that
+      # directory is the context and the Dockerfile path is relative to it.
+      context: ../..
+      dockerfile: tamuzi/tessera/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://tessera:tessera@db:5432/tessera
+      TESSERA_PRODUCTION: "${TESSERA_PRODUCTION:-0}"
+      # Same-origin in the image, so the browser never needs CORS; this is what the
+      # origin check in the preflight reads.
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:8024}"
+      # Read by nothing unless the study planner is deployed; the callback is where
+      # the planner receives the authorization code.
+      TESSERA_PLANNER_REDIRECT_URIS: "${TESSERA_PLANNER_REDIRECT_URIS:-http://localhost:3000/api/tessera/callback}"
+      TESSERA_TUTOR_PROVIDER: "${TESSERA_TUTOR_PROVIDER:-}"
+      TESSERA_TUTOR_API_KEY: "${TESSERA_TUTOR_API_KEY:-}"
+    ports:
+      - "127.0.0.1:8024:8024"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8024/health', timeout=3).status == 200 else 1)\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 25s
+    restart: unless-stopped
+
+volumes:
+  tessera-pgdata:

@@ -4,7 +4,7 @@ Two collections were asked to live on their own branches:
 
 | Collection | Where it is now | Why it is being split |
 | --- | --- | --- |
-| **CBU assignments** | `projects/cbu-assignments/` | Four separate coursework projects with their own tests, build files and CI workflow. Nothing else in the repository imports them. |
+| **CBU assignments** | `coursework/cbu-assignments/` | Four separate coursework projects with their own tests, build files and CI workflow. Nothing else in the repository imports them. |
 | **Challenge prototypes** | `challenges/` | Sixty prototypes today, expected to pass sixty and gain real backends. A collection that grows that way should not live inside a website's source tree. |
 
 ## Status: cut and published (2026-10-28)
@@ -59,7 +59,7 @@ React, it imports only its own files:
   given a bare `package.json` and a six-line Vitest config, and its suite ran
   unchanged — 3 files, 9 tests, passing. It does not need this repository to build.
 
-**CBU (`projects/cbu-assignments/`).** Already self-contained: nothing outside the
+**CBU (`coursework/cbu-assignments/`).** Already self-contained: nothing outside the
 folder imports it. Two things were wrong and are fixed:
 
 - `bank_system/__init__.py` and `library_management/__init__.py` imported their Tk
@@ -109,7 +109,7 @@ fallback was proved against a throwaway clone before it was used here.
 ### Afterwards
 
 1. Remove the collection from `main` (`git rm -r challenges` or
-   `git rm -r projects/cbu-assignments`) in a separate commit.
+   `git rm -r coursework/cbu-assignments`) in a separate commit.
 2. Rewrite the two claims above to point at the new repository.
 3. Delete the `@challenges` alias and the pages that route to it, or repoint them
    at a published package.

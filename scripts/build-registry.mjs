@@ -20,21 +20,58 @@ import { fileURLToPath } from 'node:url';
 const REPO = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY = join(REPO, 'projects.json');
 
-/** Directories under apps/ and projects/ that are not projects, with the reason. */
+/** Directories inside a scanned root that are not projects, each with the reason. */
 const EXCLUDED = [
   {
-    path: 'projects/cbu-assignments/tests',
+    path: 'coursework/cbu-assignments/tests',
     reason: 'shared test suite for the coursework assignments',
   },
-  { path: 'projects/mysul/Cpp Projects', reason: 'scratch folder: no README, no tests, no build' },
+  { path: 'sites/archive/Cpp Projects', reason: 'scratch folder: no README, no tests, no build' },
   {
-    path: 'projects/mysul/WebstormProjects',
+    path: 'sites/archive/WebstormProjects',
     reason: 'scratch folder: no README, no tests, no build',
   },
 ];
 
-/** Root-level products that are projects but sit outside apps/ and projects/. */
+/**
+ * Root-level products: standalone builds that are not filed under a company.
+ * They keep their own deployment story and are not part of the companies split.
+ */
 const ROOT_PRODUCTS = ['company-platform', 'workniche', 'vocal-separator'];
+
+/**
+ * The two companies, and the roots each one's products are filed under. Ownership
+ * is read from the path — `companies/tamuzi/tessera` is Tamuzi's because of where
+ * it is — so no list can disagree with the tree.
+ */
+const COMPANIES = ['velaqori', 'tamuzi'];
+
+/** Properties that are not company products. */
+const SITES_ROOT = 'sites/portfolio';
+const COURSEWORK_ROOT = 'coursework/cbu-assignments';
+
+/**
+ * The catalogue builds: company work that has a `portfolio.json` card rather than a
+ * case study on the company site. Kept as an explicit list because it is a fact
+ * about how the work is *presented*, which no directory on disk records.
+ */
+/**
+ * Tessera is deliberately absent: it is a full-stack product with its own
+ * deployment, and the owner's instruction is that it stays out of the published
+ * catalogue until it is fully built. It is filed under Tamuzi because that is who
+ * publishes it, but its `kind` is `project`.
+ */
+const CATALOGUE_BUILDS = new Set([
+  'authgate', 'budgetbook', 'creadesk', 'datadesk', 'docsage', 'fileseal',
+  'flashkit', 'frontpage', 'gradeflow', 'guessmaster', 'headercheck', 'hostwatch',
+  'loginsense', 'notekit', 'passforge', 'passmeter', 'prepwise', 'quizarena',
+  'quizbox', 'secops-dash', 'secretscan', 'secweblab', 'shelfwise', 'shopdeck',
+  'simforge', 'skycast', 'stockmate', 'taskdeck', 'tidyfiles',
+  'unicore', 'urlshield', 'wattwise', 'webwatch',
+  // The four CLI builds of products that also ship a web application. The CLI is
+  // the catalogue entry; the deployed product is not.
+  'incidentflow-cli', 'netscope-cli', 'phishlens-cli', 'threatintel-desk-cli',
+]);
 
 /** Child folders of a grouping folder that are not projects themselves. */
 const NOT_A_PROJECT = new Set([
@@ -54,122 +91,93 @@ const NOT_A_PROJECT = new Set([
  * nothing deploys today, so this is history, not configuration.
  */
 const REGISTRY_META = {
-  'apps/phishlens-cli': { variantOf: 'phishlens' },
-  'apps/netscope-cli': { variantOf: 'netscope' },
-  'apps/incidentflow-cli': { variantOf: 'incidentflow' },
-  'apps/threatintel-desk-cli': { variantOf: 'threatintel-desk' },
-  'projects/phishlens': {
+  'companies/velaqori/phishlens-cli': { variantOf: 'phishlens' },
+  'companies/velaqori/netscope-cli': { variantOf: 'netscope' },
+  'companies/velaqori/incidentflow-cli': { variantOf: 'incidentflow' },
+  'companies/velaqori/threatintel-desk-cli': { variantOf: 'threatintel-desk' },
+  'companies/velaqori/phishlens': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-phishlens-api' },
   },
-  'projects/netscope': {
+  'companies/velaqori/netscope': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-netscope-api' },
   },
-  'projects/incidentflow': {
+  'companies/velaqori/incidentflow': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-incidentflow-api' },
   },
-  'projects/threatintel-desk': {
+  'companies/velaqori/threatintel-desk': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-threatintel-api' },
   },
-  'projects/hashsight': {
+  'companies/velaqori/hashsight': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-hashsight-api' },
   },
-  'projects/assetwatch': {
+  'companies/velaqori/assetwatch': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-assetwatch-api' },
   },
-  'projects/securecode-workbench': {
+  'companies/velaqori/securecode-workbench': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-securecode-workbench-api' },
   },
-  'projects/cyberaware-lab': {
+  'companies/tamuzi/cyberaware-lab': {
     pausedDeployment: { target: 'vercel-api', project: 'synapsehub-cyberaware-lab-api' },
   },
-  'projects/mysul/mwangala-portfolio': {
+  'sites/portfolio': {
     pausedDeployment: { target: 'vercel-site', project: 'mwangala-portfolio' },
   },
 };
 
-/** Products of the two companies, by directory. Anything absent has no owner. */
-const OWNER = {
-  velaqori: [
-    'chessscope',
-    'circuitlab-calc',
-    'dependsecure',
-    'fileguard',
-    'incidentflow-cli',
-    'netscope-cli',
-    'phishlens-cli',
-    'sentinelcore',
-    'sentinellog',
-    'threatintel-desk-cli',
-    'assetwatch',
-    'hashsight',
-    'incidentflow',
-    'netscope',
-    'phishlens',
-    'securecode-workbench',
-    'threatintel-desk',
-  ],
-  tamuzi: [
-    'campusflow',
-    'classconnect',
-    'eduaccess',
-    'learnbridge',
-    'learnpulse',
-    'openlearn-commons',
-    'pathwise',
-    'reachlearn',
-    'teachcraft',
-    'tutorspring',
-    'cyberaware-lab',
-    'transcriptwise',
-  ],
-};
-
 const DISPLAY_NAME = {
-  'apps/incidentflow-cli': 'IncidentFlow (CLI)',
-  'apps/netscope-cli': 'NetScope (CLI)',
-  'apps/phishlens-cli': 'PhishLens (CLI)',
-  'apps/threatintel-desk-cli': 'ThreatIntel Desk (CLI)',
-  'projects/mysul/mwangala-portfolio': 'Mwangala',
-  'projects/mysul/mwangala': 'MWANGALA',
+  'companies/velaqori/incidentflow-cli': 'IncidentFlow (CLI)',
+  'companies/velaqori/netscope-cli': 'NetScope (CLI)',
+  'companies/velaqori/phishlens-cli': 'PhishLens (CLI)',
+  'companies/velaqori/threatintel-desk-cli': 'ThreatIntel Desk (CLI)',
+  'sites/portfolio': 'Mwangala',
 };
 
+/**
+ * Port blocks, allocated once. `catalogue` is retired: nothing is filed there any
+ * more, and a retired block is kept in the list so an old number is never reused.
+ */
 const BLOCKS = {
   catalogue: [5173, 5299],
   companies: [5300, 5399],
   sites: [5400, 5499],
   products: [5500, 5599],
+  coursework: [5600, 5699],
 };
 
-const isProject = (dir) =>
-  ['frontend', 'backend', 'package.json', 'pyproject.toml'].some((name) =>
-    existsSync(join(REPO, dir, name)),
-  );
-
-/** Every project directory, in a stable order. */
+/**
+ * Every project directory, in a stable order.
+ *
+ * Three roots are walked: the two company folders (one level of company, one level
+ * of product), `sites/portfolio`, and the coursework folder. Root-level products
+ * are named because they sit outside all three.
+ */
 function walk() {
   const found = [...ROOT_PRODUCTS];
-  for (const base of ['apps', 'projects']) {
-    const root = join(REPO, base);
+
+  for (const company of COMPANIES) {
+    const root = join(REPO, 'companies', company);
     if (!existsSync(root)) continue;
     for (const name of readdirSync(root).sort()) {
-      const relative = `${base}/${name}`;
-      if (!statSync(join(REPO, relative)).isDirectory()) continue;
-      if (name === 'node_modules') continue;
-      if (base === 'apps' || isProject(relative)) {
-        found.push(relative);
-        continue;
-      }
-      for (const child of readdirSync(join(REPO, relative)).sort()) {
-        const nested = `${relative}/${child}`;
-        // `.github`, `.vscode`: repository furniture, never a project.
-        if (child.startsWith('.')) continue;
-        if (NOT_A_PROJECT.has(child)) continue;
-        if (!statSync(join(REPO, nested)).isDirectory()) continue;
-        found.push(nested);
-      }
+      if (name.startsWith('.') || NOT_A_PROJECT.has(name)) continue;
+      const relative = `companies/${company}/${name}`;
+      if (statSync(join(REPO, relative)).isDirectory()) found.push(relative);
     }
   }
-  return found;
+
+  found.push(SITES_ROOT);
+
+  const coursework = join(REPO, COURSEWORK_ROOT);
+  if (existsSync(coursework)) {
+    for (const name of readdirSync(coursework).sort()) {
+      // `.github`, `.vscode`: repository furniture, never a project.
+      if (name.startsWith('.') || NOT_A_PROJECT.has(name)) continue;
+      const relative = `${COURSEWORK_ROOT}/${name}`;
+      if (statSync(join(REPO, relative)).isDirectory()) found.push(relative);
+    }
+  }
+
+  const excluded = new Set(EXCLUDED.map((entry) => entry.path));
+  return found.filter((path) => !excluded.has(path));
 }
 
 const readJson = (path) => JSON.parse(readFileSync(join(REPO, path), 'utf8'));
@@ -203,16 +211,14 @@ function npmPackage(dir) {
  * own working frontend and backend stays a separate deployment; a CLI-only build is
  * catalogued on the company site instead.
  *
- * `none` is for things that are not deliverable at all — coursework, scratch
- * folders, anything with no detectable surface. They are recorded so the registry
- * still accounts for every directory, not so they can be deployed.
+ * `none` is for things that are not deliverable at all — scratch folders, anything
+ * with no detectable surface. They are recorded so the registry still accounts for
+ * every directory, not so they can be deployed.
  */
 function deploymentFor(path, surfaces) {
   const hasFrontend = surfaces.includes('react') || surfaces.includes('nextjs');
   const hasBackend = surfaces.includes('fastapi') || surfaces.includes('python');
-  if (path.startsWith('apps/')) {
-    // Catalogue builds: standalone only when they are a real full-stack app,
-    // otherwise a catalogue entry on the company site.
+  if (path.startsWith('companies/')) {
     return hasFrontend && hasBackend ? 'separate' : 'catalogue';
   }
   // TenantCore lives inside the coursework folder but is a real full-stack app,
@@ -221,16 +227,18 @@ function deploymentFor(path, surfaces) {
 }
 
 function blockFor(path) {
-  if (path.startsWith('apps/')) return 'catalogue';
-  if (path === 'projects/mysul/mwangala-portfolio') return 'sites';
+  if (path === SITES_ROOT) return 'sites';
+  if (path.startsWith('coursework/')) return 'coursework';
   if (ROOT_PRODUCTS.includes(path)) return 'products';
   return 'companies';
 }
 
 function kindFor(path) {
-  if (path.startsWith('apps/')) return 'catalogue';
   if (ROOT_PRODUCTS.includes(path)) return 'product';
-  if (path.startsWith('projects/cbu')) return 'coursework';
+  if (path.startsWith('coursework/')) return 'coursework';
+  if (path.startsWith('companies/') && CATALOGUE_BUILDS.has(path.split('/').pop())) {
+    return 'catalogue';
+  }
   return 'project';
 }
 
@@ -249,10 +257,17 @@ function interfaceFor(dir) {
   return surfaces;
 }
 
+/**
+ * The company that publishes this directory, read from its path.
+ *
+ * `companies/tamuzi/tessera` is Tamuzi's because of where it is filed. Keeping
+ * ownership in the tree means a `git mv` changes the owner, and no list can drift
+ * out of step with the folders.
+ */
 function ownerFor(path) {
-  const slug = path.split('/').pop();
-  for (const [company, slugs] of Object.entries(OWNER)) if (slugs.includes(slug)) return company;
-  return null;
+  const parts = path.split('/');
+  if (parts[0] !== 'companies') return null;
+  return COMPANIES.includes(parts[1]) ? parts[1] : null;
 }
 
 function build() {

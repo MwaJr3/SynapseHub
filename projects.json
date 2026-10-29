@@ -16,19 +16,23 @@
     "products": [
       5500,
       5599
+    ],
+    "coursework": [
+      5600,
+      5699
     ]
   },
   "excluded": [
     {
-      "path": "projects/cbu-assignments/tests",
+      "path": "coursework/cbu-assignments/tests",
       "reason": "shared test suite for the coursework assignments"
     },
     {
-      "path": "projects/mysul/Cpp Projects",
+      "path": "sites/archive/Cpp Projects",
       "reason": "scratch folder: no README, no tests, no build"
     },
     {
-      "path": "projects/mysul/WebstormProjects",
+      "path": "sites/archive/WebstormProjects",
       "reason": "scratch folder: no README, no tests, no build"
     }
   ],
@@ -42,12 +46,366 @@
   },
   "projects": [
     {
+      "slug": "campusflow",
+      "name": "Campusflow",
+      "path": "companies/tamuzi/campusflow",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5310,
+      "package": "campusflow-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "classconnect",
+      "name": "Classconnect",
+      "path": "companies/tamuzi/classconnect",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5313,
+      "package": "classconnect-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "cyberaware-lab",
+      "name": "Cyberaware Lab",
+      "path": "companies/tamuzi/cyberaware-lab",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5301,
+      "package": "cyberaware-lab-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-cyberaware-lab-api",
+        "rootDirectory": "companies/tamuzi/cyberaware-lab/backend"
+      }
+    },
+    {
+      "slug": "eduaccess",
+      "name": "Eduaccess",
+      "path": "companies/tamuzi/eduaccess",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5315,
+      "package": "eduaccess-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "flashkit",
+      "name": "Flashkit",
+      "path": "companies/tamuzi/flashkit",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "gradeflow",
+      "name": "Gradeflow",
+      "path": "companies/tamuzi/gradeflow",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "learnbridge",
+      "name": "Learnbridge",
+      "path": "companies/tamuzi/learnbridge",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5318,
+      "package": "learnbridge-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "learnpulse",
+      "name": "Learnpulse",
+      "path": "companies/tamuzi/learnpulse",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5319,
+      "package": "learnpulse-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "openlearn-commons",
+      "name": "Openlearn Commons",
+      "path": "companies/tamuzi/openlearn-commons",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5320,
+      "package": "openlearn-commons-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "pathwise",
+      "name": "Pathwise",
+      "path": "companies/tamuzi/pathwise",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5321,
+      "package": "pathwise-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "prepwise",
+      "name": "Prepwise",
+      "path": "companies/tamuzi/prepwise",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "quizarena",
+      "name": "Quizarena",
+      "path": "companies/tamuzi/quizarena",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "quizbox",
+      "name": "Quizbox",
+      "path": "companies/tamuzi/quizbox",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "reachlearn",
+      "name": "Reachlearn",
+      "path": "companies/tamuzi/reachlearn",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5322,
+      "package": "reachlearn-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "shelfwise",
+      "name": "Shelfwise",
+      "path": "companies/tamuzi/shelfwise",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "teachcraft",
+      "name": "Teachcraft",
+      "path": "companies/tamuzi/teachcraft",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5325,
+      "package": "teachcraft-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "tessera",
+      "name": "Tessera",
+      "path": "companies/tamuzi/tessera",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi",
+        "docker"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5326,
+      "package": "tessera-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "transcriptwise",
+      "name": "Transcriptwise",
+      "path": "companies/tamuzi/transcriptwise",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5308,
+      "package": "transcriptwise-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "tutorspring",
+      "name": "Tutorspring",
+      "path": "companies/tamuzi/tutorspring",
+      "owner": "tamuzi",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5327,
+      "package": "tutorspring-frontend",
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "unicore",
+      "name": "Unicore",
+      "path": "companies/tamuzi/unicore",
+      "owner": "tamuzi",
+      "kind": "catalogue",
+      "block": "companies",
+      "interface": [
+        "python",
+        "cli"
+      ],
+      "deployment": "catalogue",
+      "deploys": [],
+      "pythonPackage": "app"
+    },
+    {
+      "slug": "assetwatch",
+      "name": "Assetwatch",
+      "path": "companies/velaqori/assetwatch",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5300,
+      "package": "assetwatch-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-assetwatch-api",
+        "rootDirectory": "companies/velaqori/assetwatch/backend"
+      }
+    },
+    {
       "slug": "authgate",
       "name": "Authgate",
-      "path": "apps/authgate",
-      "owner": null,
+      "path": "companies/velaqori/authgate",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -59,10 +417,10 @@
     {
       "slug": "budgetbook",
       "name": "Budgetbook",
-      "path": "apps/budgetbook",
-      "owner": null,
+      "path": "companies/velaqori/budgetbook",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -72,80 +430,46 @@
       "pythonPackage": "app"
     },
     {
-      "slug": "campusflow",
-      "name": "Campusflow",
-      "path": "apps/campusflow",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5176,
-      "package": "campusflow-frontend",
-      "pythonPackage": "app"
-    },
-    {
       "slug": "chessscope",
       "name": "Chessscope",
-      "path": "apps/chessscope",
+      "path": "companies/velaqori/chessscope",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5178,
+      "devPort": 5311,
       "package": "chessscope-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "circuitlab-calc",
       "name": "Circuitlab Calc",
-      "path": "apps/circuitlab-calc",
+      "path": "companies/velaqori/circuitlab-calc",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5177,
+      "devPort": 5312,
       "package": "circuitlab-calc-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "classconnect",
-      "name": "Classconnect",
-      "path": "apps/classconnect",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5185,
-      "package": "classconnect-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "creadesk",
       "name": "Creadesk",
-      "path": "apps/creadesk",
-      "owner": null,
+      "path": "companies/velaqori/creadesk",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -157,10 +481,10 @@
     {
       "slug": "datadesk",
       "name": "Datadesk",
-      "path": "apps/datadesk",
-      "owner": null,
+      "path": "companies/velaqori/datadesk",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -172,27 +496,27 @@
     {
       "slug": "dependsecure",
       "name": "Dependsecure",
-      "path": "apps/dependsecure",
+      "path": "companies/velaqori/dependsecure",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5175,
+      "devPort": 5314,
       "package": "dependsecure-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "docsage",
       "name": "Docsage",
-      "path": "apps/docsage",
-      "owner": null,
+      "path": "companies/velaqori/docsage",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -202,61 +526,29 @@
       "pythonPackage": "app"
     },
     {
-      "slug": "eduaccess",
-      "name": "Eduaccess",
-      "path": "apps/eduaccess",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5188,
-      "package": "eduaccess-frontend",
-      "pythonPackage": "app"
-    },
-    {
       "slug": "fileguard",
       "name": "Fileguard",
-      "path": "apps/fileguard",
+      "path": "companies/velaqori/fileguard",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5174,
+      "devPort": 5316,
       "package": "fileguard-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "fileseal",
       "name": "Fileseal",
-      "path": "apps/fileseal",
-      "owner": null,
+      "path": "companies/velaqori/fileseal",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "flashkit",
-      "name": "Flashkit",
-      "path": "apps/flashkit",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -268,42 +560,27 @@
     {
       "slug": "frontpage",
       "name": "Frontpage",
-      "path": "apps/frontpage",
-      "owner": null,
+      "path": "companies/velaqori/frontpage",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5189,
+      "devPort": 5317,
       "package": "frontpage-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "gradeflow",
-      "name": "Gradeflow",
-      "path": "apps/gradeflow",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
       "pythonPackage": "app"
     },
     {
       "slug": "guessmaster",
       "name": "Guessmaster",
-      "path": "apps/guessmaster",
-      "owner": null,
+      "path": "companies/velaqori/guessmaster",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -313,12 +590,34 @@
       "pythonPackage": "app"
     },
     {
+      "slug": "hashsight",
+      "name": "Hashsight",
+      "path": "companies/velaqori/hashsight",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5302,
+      "package": "hashsight-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-hashsight-api",
+        "rootDirectory": "companies/velaqori/hashsight/backend"
+      }
+    },
+    {
       "slug": "headercheck",
       "name": "Headercheck",
-      "path": "apps/headercheck",
-      "owner": null,
+      "path": "companies/velaqori/headercheck",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -330,10 +629,10 @@
     {
       "slug": "hostwatch",
       "name": "Hostwatch",
-      "path": "apps/hostwatch",
-      "owner": null,
+      "path": "companies/velaqori/hostwatch",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -343,12 +642,34 @@
       "pythonPackage": "app"
     },
     {
+      "slug": "incidentflow",
+      "name": "Incidentflow",
+      "path": "companies/velaqori/incidentflow",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5303,
+      "package": "incidentflow-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-incidentflow-api",
+        "rootDirectory": "companies/velaqori/incidentflow/backend"
+      }
+    },
+    {
       "slug": "incidentflow-cli",
       "name": "IncidentFlow (CLI)",
-      "path": "apps/incidentflow-cli",
+      "path": "companies/velaqori/incidentflow-cli",
       "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -359,46 +680,12 @@
       "variantOf": "incidentflow"
     },
     {
-      "slug": "learnbridge",
-      "name": "Learnbridge",
-      "path": "apps/learnbridge",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5180,
-      "package": "learnbridge-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "learnpulse",
-      "name": "Learnpulse",
-      "path": "apps/learnpulse",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5184,
-      "package": "learnpulse-frontend",
-      "pythonPackage": "app"
-    },
-    {
       "slug": "loginsense",
       "name": "Loginsense",
-      "path": "apps/loginsense",
-      "owner": null,
+      "path": "companies/velaqori/loginsense",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -408,12 +695,34 @@
       "pythonPackage": "app"
     },
     {
+      "slug": "netscope",
+      "name": "Netscope",
+      "path": "companies/velaqori/netscope",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5304,
+      "package": "netscope-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-netscope-api",
+        "rootDirectory": "companies/velaqori/netscope/backend"
+      }
+    },
+    {
       "slug": "netscope-cli",
       "name": "NetScope (CLI)",
-      "path": "apps/netscope-cli",
+      "path": "companies/velaqori/netscope-cli",
       "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -426,10 +735,10 @@
     {
       "slug": "notekit",
       "name": "Notekit",
-      "path": "apps/notekit",
-      "owner": null,
+      "path": "companies/velaqori/notekit",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -439,29 +748,12 @@
       "pythonPackage": "app"
     },
     {
-      "slug": "openlearn-commons",
-      "name": "Openlearn Commons",
-      "path": "apps/openlearn-commons",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5186,
-      "package": "openlearn-commons-frontend",
-      "pythonPackage": "app"
-    },
-    {
       "slug": "passforge",
       "name": "Passforge",
-      "path": "apps/passforge",
-      "owner": null,
+      "path": "companies/velaqori/passforge",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -473,10 +765,10 @@
     {
       "slug": "passmeter",
       "name": "Passmeter",
-      "path": "apps/passmeter",
-      "owner": null,
+      "path": "companies/velaqori/passmeter",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -486,29 +778,34 @@
       "pythonPackage": "app"
     },
     {
-      "slug": "pathwise",
-      "name": "Pathwise",
-      "path": "apps/pathwise",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "slug": "phishlens",
+      "name": "Phishlens",
+      "path": "companies/velaqori/phishlens",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5181,
-      "package": "pathwise-frontend",
-      "pythonPackage": "app"
+      "devPort": 5305,
+      "package": "phishlens-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-phishlens-api",
+        "rootDirectory": "companies/velaqori/phishlens/backend"
+      }
     },
     {
       "slug": "phishlens-cli",
       "name": "PhishLens (CLI)",
-      "path": "apps/phishlens-cli",
+      "path": "companies/velaqori/phishlens-cli",
       "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -519,74 +816,12 @@
       "variantOf": "phishlens"
     },
     {
-      "slug": "prepwise",
-      "name": "Prepwise",
-      "path": "apps/prepwise",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "quizarena",
-      "name": "Quizarena",
-      "path": "apps/quizarena",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "quizbox",
-      "name": "Quizbox",
-      "path": "apps/quizbox",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "reachlearn",
-      "name": "Reachlearn",
-      "path": "apps/reachlearn",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5187,
-      "package": "reachlearn-frontend",
-      "pythonPackage": "app"
-    },
-    {
       "slug": "secops-dash",
       "name": "Secops Dash",
-      "path": "apps/secops-dash",
-      "owner": null,
+      "path": "companies/velaqori/secops-dash",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -598,10 +833,10 @@
     {
       "slug": "secretscan",
       "name": "Secretscan",
-      "path": "apps/secretscan",
-      "owner": null,
+      "path": "companies/velaqori/secretscan",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -611,12 +846,34 @@
       "pythonPackage": "app"
     },
     {
+      "slug": "securecode-workbench",
+      "name": "Securecode Workbench",
+      "path": "companies/velaqori/securecode-workbench",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
+      "interface": [
+        "react",
+        "fastapi"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "devPort": 5306,
+      "package": "securecode-workbench-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-securecode-workbench-api",
+        "rootDirectory": "companies/velaqori/securecode-workbench/backend"
+      }
+    },
+    {
       "slug": "secweblab",
       "name": "Secweblab",
-      "path": "apps/secweblab",
-      "owner": null,
+      "path": "companies/velaqori/secweblab",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -628,59 +885,44 @@
     {
       "slug": "sentinelcore",
       "name": "Sentinelcore",
-      "path": "apps/sentinelcore",
+      "path": "companies/velaqori/sentinelcore",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5179,
+      "devPort": 5323,
       "package": "sentinelcore-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "sentinellog",
       "name": "Sentinellog",
-      "path": "apps/sentinellog",
+      "path": "companies/velaqori/sentinellog",
       "owner": "velaqori",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5173,
+      "devPort": 5324,
       "package": "sentinellog-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "shelfwise",
-      "name": "Shelfwise",
-      "path": "apps/shelfwise",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
       "pythonPackage": "app"
     },
     {
       "slug": "shopdeck",
       "name": "Shopdeck",
-      "path": "apps/shopdeck",
-      "owner": null,
+      "path": "companies/velaqori/shopdeck",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -692,10 +934,10 @@
     {
       "slug": "simforge",
       "name": "Simforge",
-      "path": "apps/simforge",
-      "owner": null,
+      "path": "companies/velaqori/simforge",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -707,10 +949,10 @@
     {
       "slug": "skycast",
       "name": "Skycast",
-      "path": "apps/skycast",
-      "owner": null,
+      "path": "companies/velaqori/skycast",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -722,10 +964,10 @@
     {
       "slug": "stockmate",
       "name": "Stockmate",
-      "path": "apps/stockmate",
-      "owner": null,
+      "path": "companies/velaqori/stockmate",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -737,10 +979,10 @@
     {
       "slug": "taskdeck",
       "name": "Taskdeck",
-      "path": "apps/taskdeck",
-      "owner": null,
+      "path": "companies/velaqori/taskdeck",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -750,47 +992,34 @@
       "pythonPackage": "app"
     },
     {
-      "slug": "teachcraft",
-      "name": "Teachcraft",
-      "path": "apps/teachcraft",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
+      "slug": "threatintel-desk",
+      "name": "Threatintel Desk",
+      "path": "companies/velaqori/threatintel-desk",
+      "owner": "velaqori",
+      "kind": "project",
+      "block": "companies",
       "interface": [
         "react",
         "fastapi"
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5183,
-      "package": "teachcraft-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "tessera",
-      "name": "Tessera",
-      "path": "apps/tessera",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi",
-        "docker"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5197,
-      "package": "tessera-frontend",
-      "pythonPackage": "app"
+      "devPort": 5307,
+      "package": "threatintel-desk-frontend",
+      "pythonPackage": "app",
+      "pausedDeployment": {
+        "target": "vercel-api",
+        "project": "synapsehub-threatintel-api",
+        "rootDirectory": "companies/velaqori/threatintel-desk/backend"
+      }
     },
     {
       "slug": "threatintel-desk-cli",
       "name": "ThreatIntel Desk (CLI)",
-      "path": "apps/threatintel-desk-cli",
+      "path": "companies/velaqori/threatintel-desk-cli",
       "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -803,42 +1032,10 @@
     {
       "slug": "tidyfiles",
       "name": "Tidyfiles",
-      "path": "apps/tidyfiles",
-      "owner": null,
+      "path": "companies/velaqori/tidyfiles",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "python",
-        "cli"
-      ],
-      "deployment": "catalogue",
-      "deploys": [],
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "tutorspring",
-      "name": "Tutorspring",
-      "path": "apps/tutorspring",
-      "owner": "tamuzi",
-      "kind": "catalogue",
-      "block": "catalogue",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5182,
-      "package": "tutorspring-frontend",
-      "pythonPackage": "app"
-    },
-    {
-      "slug": "unicore",
-      "name": "Unicore",
-      "path": "apps/unicore",
-      "owner": null,
-      "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -850,10 +1047,10 @@
     {
       "slug": "urlshield",
       "name": "Urlshield",
-      "path": "apps/urlshield",
-      "owner": null,
+      "path": "companies/velaqori/urlshield",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -865,10 +1062,10 @@
     {
       "slug": "wattwise",
       "name": "Wattwise",
-      "path": "apps/wattwise",
-      "owner": null,
+      "path": "companies/velaqori/wattwise",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -880,10 +1077,10 @@
     {
       "slug": "webwatch",
       "name": "Webwatch",
-      "path": "apps/webwatch",
-      "owner": null,
+      "path": "companies/velaqori/webwatch",
+      "owner": "velaqori",
       "kind": "catalogue",
-      "block": "catalogue",
+      "block": "companies",
       "interface": [
         "python",
         "cli"
@@ -907,34 +1104,12 @@
       "package": "company-platform"
     },
     {
-      "slug": "assetwatch",
-      "name": "Assetwatch",
-      "path": "projects/assetwatch",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5300,
-      "package": "assetwatch-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-assetwatch-api",
-        "rootDirectory": "projects/assetwatch/backend"
-      }
-    },
-    {
       "slug": "bank_system",
       "name": "Bank_system",
-      "path": "projects/cbu-assignments/bank_system",
+      "path": "coursework/cbu-assignments/bank_system",
       "owner": null,
       "kind": "coursework",
-      "block": "companies",
+      "block": "coursework",
       "interface": [
         "other"
       ],
@@ -944,10 +1119,10 @@
     {
       "slug": "library_management",
       "name": "Library_management",
-      "path": "projects/cbu-assignments/library_management",
+      "path": "coursework/cbu-assignments/library_management",
       "owner": null,
       "kind": "coursework",
-      "block": "companies",
+      "block": "coursework",
       "interface": [
         "other"
       ],
@@ -957,10 +1132,10 @@
     {
       "slug": "tenantcore",
       "name": "Tenantcore",
-      "path": "projects/cbu-assignments/tenantcore",
+      "path": "coursework/cbu-assignments/tenantcore",
       "owner": null,
       "kind": "coursework",
-      "block": "companies",
+      "block": "coursework",
       "interface": [
         "react",
         "fastapi",
@@ -968,17 +1143,17 @@
       ],
       "deployment": "separate",
       "deploys": [],
-      "devPort": 5309,
+      "devPort": 5600,
       "package": "tenantcore-frontend",
       "pythonPackage": "app"
     },
     {
       "slug": "video_downloader_app",
       "name": "Video_downloader_app",
-      "path": "projects/cbu-assignments/video_downloader_app",
+      "path": "coursework/cbu-assignments/video_downloader_app",
       "owner": null,
       "kind": "coursework",
-      "block": "companies",
+      "block": "coursework",
       "interface": [
         "other"
       ],
@@ -986,88 +1161,9 @@
       "deploys": []
     },
     {
-      "slug": "cyberaware-lab",
-      "name": "Cyberaware Lab",
-      "path": "projects/cyberaware-lab",
-      "owner": "tamuzi",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5301,
-      "package": "cyberaware-lab-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-cyberaware-lab-api",
-        "rootDirectory": "projects/cyberaware-lab/backend"
-      }
-    },
-    {
-      "slug": "hashsight",
-      "name": "Hashsight",
-      "path": "projects/hashsight",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5302,
-      "package": "hashsight-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-hashsight-api",
-        "rootDirectory": "projects/hashsight/backend"
-      }
-    },
-    {
-      "slug": "incidentflow",
-      "name": "Incidentflow",
-      "path": "projects/incidentflow",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5303,
-      "package": "incidentflow-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-incidentflow-api",
-        "rootDirectory": "projects/incidentflow/backend"
-      }
-    },
-    {
-      "slug": "Cpp Projects",
-      "name": "Cpp Projects",
-      "path": "projects/mysul/Cpp Projects",
-      "owner": null,
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "other"
-      ],
-      "deployment": "none",
-      "deploys": []
-    },
-    {
-      "slug": "mwangala-portfolio",
+      "slug": "portfolio",
       "name": "Mwangala",
-      "path": "projects/mysul/mwangala-portfolio",
+      "path": "sites/portfolio",
       "owner": null,
       "kind": "project",
       "block": "sites",
@@ -1081,126 +1177,8 @@
       "pausedDeployment": {
         "target": "vercel-site",
         "project": "mwangala-portfolio",
-        "rootDirectory": "projects/mysul/mwangala-portfolio"
+        "rootDirectory": "sites/portfolio"
       }
-    },
-    {
-      "slug": "WebstormProjects",
-      "name": "WebstormProjects",
-      "path": "projects/mysul/WebstormProjects",
-      "owner": null,
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "other"
-      ],
-      "deployment": "none",
-      "deploys": []
-    },
-    {
-      "slug": "netscope",
-      "name": "Netscope",
-      "path": "projects/netscope",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5304,
-      "package": "netscope-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-netscope-api",
-        "rootDirectory": "projects/netscope/backend"
-      }
-    },
-    {
-      "slug": "phishlens",
-      "name": "Phishlens",
-      "path": "projects/phishlens",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5305,
-      "package": "phishlens-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-phishlens-api",
-        "rootDirectory": "projects/phishlens/backend"
-      }
-    },
-    {
-      "slug": "securecode-workbench",
-      "name": "Securecode Workbench",
-      "path": "projects/securecode-workbench",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5306,
-      "package": "securecode-workbench-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-securecode-workbench-api",
-        "rootDirectory": "projects/securecode-workbench/backend"
-      }
-    },
-    {
-      "slug": "threatintel-desk",
-      "name": "Threatintel Desk",
-      "path": "projects/threatintel-desk",
-      "owner": "velaqori",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5307,
-      "package": "threatintel-desk-frontend",
-      "pythonPackage": "app",
-      "pausedDeployment": {
-        "target": "vercel-api",
-        "project": "synapsehub-threatintel-api",
-        "rootDirectory": "projects/threatintel-desk/backend"
-      }
-    },
-    {
-      "slug": "transcriptwise",
-      "name": "Transcriptwise",
-      "path": "projects/transcriptwise",
-      "owner": "tamuzi",
-      "kind": "project",
-      "block": "companies",
-      "interface": [
-        "react",
-        "fastapi"
-      ],
-      "deployment": "separate",
-      "deploys": [],
-      "devPort": 5308,
-      "package": "transcriptwise-frontend",
-      "pythonPackage": "app"
     },
     {
       "slug": "vocal-separator",

@@ -53,6 +53,12 @@ export interface ScanTarget {
    * package's `index.html` entry document one level above `src`.
    */
   extraFiles?: string[];
+  /**
+   * Whether `--strict` fails on this target's critical findings. Absent means yes;
+   * `false` marks a surface that is scanned and reported but not yet triaged, so
+   * the gate keeps meaning what it meant while the report stays complete.
+   */
+  gated?: boolean;
 }
 
 export async function scanRoot(

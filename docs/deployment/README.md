@@ -11,7 +11,7 @@ what is gone is the deployment wiring that made any of it look shippable.
 | Removed | Count | Why |
 | --- | ---: | --- |
 | `projects/*/backend/vercel.json` | 8 | The Vercel Python runtime config for each product API |
-| `projects/mysul/mwangala-portfolio/vercel.json` | 1 | SPA fallback + rewrite for the site |
+| `sites/portfolio/vercel.json` | 1 | SPA fallback + rewrite for the site |
 | `docs/DEPLOYMENT_TARGETS.md` | 1 | Vercel project names, root directories, Supabase schemas, env table |
 | `vercel.json` (repository root) | 1 | Whole-repository deploy: `api/index.py` function, SPA rewrites, `/api` no-store |
 | `.vercelignore` | 1 | Upload exclusions for that deploy; its anchor bug once dropped site sources |
@@ -52,7 +52,7 @@ code it packaged still runs locally, which is where it is exercised.
 - **`docs/DEPLOYMENT.md`** — Tessera's container build. It is Docker and PostgreSQL, not
   Vercel, Tessera was never deployed, and the document already states that no image was
   ever built here. It is the only runnable end-to-end packaging in the repository.
-- **Provider-neutral notes.** `projects/mysul/mwangala-portfolio/START_HERE.md` still
+- **Provider-neutral notes.** `sites/portfolio/START_HERE.md` still
   lists *recipes* for Netlify, Cloudflare Pages, GitHub Pages, S3 and nginx. Those are
   instructions, not configuration: nothing in the tree acts on them.
 - **`vocal-separator`, `workniche`, TranscriptWise and TenantCore deployment docs**, which
@@ -77,19 +77,19 @@ active, and no file in the repository configures them.
 
 | Project | Former Vercel project | Former root directory | Former database schema |
 | --- | --- | --- | --- |
-| PhishLens | `synapsehub-phishlens-api` | `projects/phishlens/backend` | `phishlens` |
-| NetScope | `synapsehub-netscope-api` | `projects/netscope/backend` | `netscope` |
-| IncidentFlow | `synapsehub-incidentflow-api` | `projects/incidentflow/backend` | `incidentflow` |
-| ThreatIntel Desk | `synapsehub-threatintel-api` | `projects/threatintel-desk/backend` | `threatintel_desk` |
-| HashSight | `synapsehub-hashsight-api` | `projects/hashsight/backend` | `hashsight` |
-| AssetWatch | `synapsehub-assetwatch-api` | `projects/assetwatch/backend` | `assetwatch` |
-| SecureCode Workbench | `synapsehub-securecode-workbench-api` | `projects/securecode-workbench/backend` | `securecode` |
-| CyberAware Lab | `synapsehub-cyberaware-lab-api` | `projects/cyberaware-lab/backend` | `cyberaware` |
-| Website (company site + portfolio) | `mwangala-portfolio` | `projects/mysul/mwangala-portfolio` | — |
+| PhishLens | `synapsehub-phishlens-api` | `companies/velaqori/phishlens/backend` | `phishlens` |
+| NetScope | `synapsehub-netscope-api` | `companies/velaqori/netscope/backend` | `netscope` |
+| IncidentFlow | `synapsehub-incidentflow-api` | `companies/velaqori/incidentflow/backend` | `incidentflow` |
+| ThreatIntel Desk | `synapsehub-threatintel-api` | `companies/velaqori/threatintel-desk/backend` | `threatintel_desk` |
+| HashSight | `synapsehub-hashsight-api` | `companies/velaqori/hashsight/backend` | `hashsight` |
+| AssetWatch | `synapsehub-assetwatch-api` | `companies/velaqori/assetwatch/backend` | `assetwatch` |
+| SecureCode Workbench | `synapsehub-securecode-workbench-api` | `companies/velaqori/securecode-workbench/backend` | `securecode` |
+| CyberAware Lab | `synapsehub-cyberaware-lab-api` | `companies/tamuzi/cyberaware-lab/backend` | `cyberaware` |
+| Website (company site + portfolio) | `mwangala-portfolio` | `sites/portfolio` | — |
 
 The previous build settings — `npm run build`, `npm install --legacy-peer-deps`, output
 `dist` — and the SPA rewrite are recorded in git history and in
-`projects/mysul/mwangala-portfolio/docs/DEPLOYMENT.md` §Vercel. They are not repeated
+`sites/portfolio/docs/DEPLOYMENT.md` §Vercel. They are not repeated
 here as instructions.
 
 ## Honest limits
