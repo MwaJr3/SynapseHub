@@ -557,6 +557,10 @@ Supabase connector, both of which are off.
 **What is still not switched on.** Neither new capability is active on the
 deployment, because both are environment settings and neither is present:
 
+> Partly superseded later the same day, from the connectors — see *Switching
+> the deployment on* at the end of this file. `STORAGE_PROVIDER` has since been
+> set on the project; the Brevo variables have not.
+
 | Setting | Effect today | To switch on |
 | --- | --- | --- |
 | `STORAGE_PROVIDER=postgres` | resumes still go to the local directory, which loses them | add the variable to the Vercel project — no code change, no migration (it is already applied) |
@@ -568,3 +572,42 @@ configuration.** A serverless function cannot reach a laptop, so putting it on a
 deployment would point the assistants at nothing. The preset exists, is tested, and
 is the right answer for running the site and the model on one machine — which is the
 configuration OpenJarvis is designed for.
+
+## 2026-10-31 — switching the deployment on, from the connectors
+
+The Vercel and Supabase connectors are now available to this workspace, so the
+settings that were previously "for the owner to add" were added and checked
+directly rather than described. What that showed, and what it did not:
+
+**What the connectors verified.** The Supabase project (`jpwbkdwxloxtmxnrykcq`)
+holds **19 tables** and records both migrations, `0000_platform_initial.sql` and
+`0001_storage_blobs.sql` — so `storage_blobs` exists on the deployment, not only
+in the repository. Two companies and 25 products are in it, and `storage_blobs`
+has **0 rows**, which is the expected state before the first upload and the number
+to watch afterwards. On Vercel (`prj_RLVvufqafwsSQogpNxrQAhwkosxR`, team
+`m-corp2`), the project had exactly two variables, `AUTH_SECRET` and
+`DATABASE_URL`. Neither `STORAGE_PROVIDER` nor any Brevo variable existed.
+
+**What was changed.** `STORAGE_PROVIDER=postgres` was written to the Vercel
+project for `production` and `preview`. That is the whole of the resume-storage
+change on the deployment side: the table is already there, and the adapter is the
+one exercised against PostgreSQL 16 locally.
+
+**Two things were added so that "is it working?" does not need a browser.**
+
+- `GET /api/health` returns the same report as `/admin/settings` and
+  `npm run config:check`, as JSON and without a sign-in: `200` when every
+  required variable is present, `503` otherwise, and the missing **names** in
+  either case. Environment variables are read by the running instance, so a
+  build log cannot answer this question and this route can.
+- `npm run mail:verify` asks Brevo which addresses are verified senders, compares
+  them with `CONTACT_FROM_EMAIL`, and sends one real message only when given
+  `--send`. It reports the key's status and never the key.
+
+**What is not claimed.** Neither the health route nor the Brevo credential has
+been exercised against the live deployment from this workspace: the sandbox has
+no route to `*.vercel.app`, to `api.brevo.com`, or to the database's port, so
+everything here that concerns the running site rests on connector state, not on a
+request that succeeded. The first upload is the evidence that matters for
+storage — `storage_blobs` goes from 0 to 1 — and the first contact submission is
+the evidence that matters for email.

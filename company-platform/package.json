@@ -17,7 +17,8 @@
     "db:embed": "node scripts/embed-migrations.mjs",
     "db:check": "node scripts/embed-migrations.mjs --check",
     "db:bootstrap": "tsx scripts/bootstrap.ts",
-    "config:check": "tsx scripts/config-check.ts"
+    "config:check": "tsx scripts/config-check.ts",
+    "mail:verify": "tsx scripts/mail-verify.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
