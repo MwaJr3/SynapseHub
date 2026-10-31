@@ -106,17 +106,29 @@ needs a name and a key rather than a URL and a model id:
 
 | `ASSISTANT_PROVIDER` | Endpoint | Default model |
 | --- | --- | --- |
+| `openjarvis` | `http://127.0.0.1:8000/v1` | **none** — run `jarvis model`, then set `ASSISTANT_MODEL` |
+| `ollama-local` | `http://127.0.0.1:11434/v1` | `qwen2.5:3b` (no key) |
 | `huggingface` | `https://router.huggingface.co/v1` | `meta-llama/Llama-3.3-70B-Instruct` |
 | `ollama-cloud` | `https://ollama.com/v1` | `nemotron-3-nano:30b` |
-| `ollama-local` | `http://127.0.0.1:11434/v1` | `qwen2.5:3b` (no key) |
 | `groq` | `https://api.groq.com/openai/v1` | `openai/gpt-oss-20b` |
 | `gemini` | `https://generativelanguage.googleapis.com/v1beta/openai` | `gemini-flash-latest` |
 | `openrouter` | `https://openrouter.ai/api/v1` | `deepseek/deepseek-chat-v3:free` |
-| `openai` | (default) | `gpt-4o-mini` (no free tier) |
+| `openai` | `https://api.openai.com/v1` | `gpt-4o-mini` (no free tier) |
 
-Explicit `ASSISTANT_BASE_URL` / `ASSISTANT_MODEL` still override the preset. An
-unknown provider name does not fall back to anything: the assistant reports itself
-unconfigured and names the variable, so a typo is visible rather than billed.
+Explicit `ASSISTANT_BASE_URL` / `ASSISTANT_MODEL` still override the preset, field
+by field. A loopback endpoint needs no token, so the two local presets work without
+`ASSISTANT_API_KEY` — asking for one would report a working setup as misconfigured.
+The `openjarvis` preset has no default model on purpose: only `jarvis model` knows
+what is installed, and a guessed id fails at the first question.
+
+An unknown provider name does not fall back to anything: the assistant reports
+itself unconfigured, names `ASSISTANT_PROVIDER`, and lists the valid ids, so a typo
+is visible rather than billed.
+
+**This section previously described these presets before the code read the
+variable at all.** `ASSISTANT_PROVIDER` was documented and never looked up until it
+was implemented; the table above is now generated from the same list the code uses,
+and `tests/provider-presets.test.ts` fails if the two disagree.
 
 ## Connecting to Tessera (optional, read-only)
 

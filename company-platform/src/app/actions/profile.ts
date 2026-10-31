@@ -204,7 +204,11 @@ export async function uploadResumeAction(
       return { ok: false, error: 'Choose a PDF file to upload.' };
     }
     if (file.size > MAX_RESUME_BYTES) {
-      return { ok: false, error: 'Resume files must be 5 MB or smaller.' };
+      // Read off the constant so the message cannot drift from the check.
+      return {
+        ok: false,
+        error: `Resume files must be ${Math.floor(MAX_RESUME_BYTES / (1024 * 1024))} MB or smaller.`,
+      };
     }
     const bytes = new Uint8Array(await file.arrayBuffer());
     if (!looksLikePdf(bytes)) {

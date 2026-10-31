@@ -89,8 +89,16 @@ describe('generated migrations', () => {
     // The count is pinned rather than compared to the Drizzle object graph: a new
     // table that ships without a migration is exactly what this test exists to
     // catch, and it would still be "defined" in the schema module.
-    expect(tables).toHaveLength(18);
-    for (const name of ['companies', 'products', 'case_studies', 'users', 'person_profiles']) {
+    expect(tables).toHaveLength(19);
+    for (const name of [
+      'companies',
+      'products',
+      'case_studies',
+      'users',
+      'person_profiles',
+      // Added by 0001: resume bytes live here when STORAGE_PROVIDER=postgres.
+      'storage_blobs',
+    ]) {
       expect(tables, name).toContain(name);
     }
     expect(tables).toContain('_migrations');

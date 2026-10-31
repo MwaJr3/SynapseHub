@@ -22,6 +22,7 @@ import { citationsFrom, takeFrames, textField } from '@/lib/assistant/sse';
 
 const CONFIGURED = {
   configured: true,
+  provider: null,
   baseUrl: 'https://router.huggingface.co/v1',
   model: 'meta-llama/Llama-3.3-70B-Instruct',
   keySource: 'ASSISTANT_API_KEY' as const,
@@ -31,6 +32,7 @@ const CONFIGURED = {
 
 const NOT_CONFIGURED = {
   configured: false,
+  provider: null,
   baseUrl: '',
   model: '',
   keySource: null,

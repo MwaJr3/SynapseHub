@@ -15,6 +15,7 @@ const PUBLIC_NAV = [
   { href: '/products', label: 'Products' },
   { href: '/catalogue', label: 'Catalogue' },
   { href: '/ecosystem', label: 'Learning systems' },
+  { href: '/openjarvis', label: 'Model layer' },
   { href: '/support', label: 'IT triage' },
   { href: '/study-plan', label: 'Study planning' },
   { href: '/case-studies', label: 'Case Studies' },
@@ -81,6 +82,7 @@ export function SiteFooter() {
           <p className="font-semibold text-[var(--ink)]">Explore</p>
           <ul className="mt-2 space-y-1">
             <li><Link href="/ecosystem" className="hover:underline">The learning systems</Link></li>
+            <li><Link href="/openjarvis" className="hover:underline">The model layer (OpenJarvis)</Link></li>
             <li><Link href="/products" className="hover:underline">All products</Link></li>
             <li><Link href="/case-studies" className="hover:underline">Case studies</Link></li>
             <li><Link href="/people" className="hover:underline">People</Link></li>
