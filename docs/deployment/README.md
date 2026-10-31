@@ -541,11 +541,30 @@ this platform guards against everywhere else. No assistant is running on OpenJar
 the preset configures an endpoint, and nothing here has been exercised against a live
 model.
 
-### What still is not deployed
+### How it reached the deployment
 
-The Vercel connector was switched off for this session, so **this round has not been
-deployed**. The migration applies itself: the build command runs `npm run db:bootstrap`
-before `npm run build`, so the first deployment after this merge creates
-`storage_blobs` and leaves the catalogue alone. `STORAGE_PROVIDER=postgres` still has
-to be added to the project's environment for uploads to use it; until then a
-deployment keeps the local directory, which loses uploads.
+The Vercel connector was switched off for this session, so this round could not be
+deployed from here and no build log could be read. Merging PR #50 into `Dev` did
+deploy it — the project is linked to GitHub — and GitHub's commit status for
+`company-platform` reports `success · Deployment has completed`
+(`dpl_k3ujLH4eQa68DrQPmvTkdePNvYEP`). That status is only set when the whole build
+command succeeds, and the build command is `npm run db:bootstrap && npm run build` —
+so `0001_storage_blobs.sql` is applied on the deployment's database. That is an
+inference from a `&&` chain whose first half failed loudly the last time it could not
+reach the database, not a log I read. Confirming it directly needs the Vercel or
+Supabase connector, both of which are off.
+
+**What is still not switched on.** Neither new capability is active on the
+deployment, because both are environment settings and neither is present:
+
+| Setting | Effect today | To switch on |
+| --- | --- | --- |
+| `STORAGE_PROVIDER=postgres` | resumes still go to the local directory, which loses them | add the variable to the Vercel project — no code change, no migration (it is already applied) |
+| `BREVO_API_KEY` + `CONTACT_FROM_EMAIL` | the contact form tells visitors it did not send anything | a key and a sender verified in Brevo |
+| `ASSISTANT_PROVIDER` | the assistants are switched off | a preset that a Vercel function can reach — `openjarvis` points at `127.0.0.1`, which on Vercel is the function itself, so a deployment needs a hosted preset or an OpenJarvis server on a public address |
+
+That last row is worth saying plainly: **the OpenJarvis preset is a local-development
+configuration.** A serverless function cannot reach a laptop, so putting it on a
+deployment would point the assistants at nothing. The preset exists, is tested, and
+is the right answer for running the site and the model on one machine — which is the
+configuration OpenJarvis is designed for.
