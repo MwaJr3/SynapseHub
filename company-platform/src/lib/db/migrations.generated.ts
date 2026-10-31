@@ -62,4 +62,10 @@ export const MIGRATIONS: Migration[] = [
       "CREATE UNIQUE INDEX \"company_memberships_unique\" ON \"platform\".\"company_memberships\" USING btree (\"user_id\",\"company_id\");",
     ],
   },
+  {
+    name: "0001_storage_blobs.sql",
+    statements: [
+      "CREATE TABLE \"platform\".\"storage_blobs\" (\n\t\"key\" text PRIMARY KEY NOT NULL,\n\t\"bytes\" bytea NOT NULL,\n\t\"size_bytes\" integer NOT NULL,\n\t\"content_type\" text DEFAULT 'application/octet-stream' NOT NULL,\n\t\"created_at\" timestamp DEFAULT now() NOT NULL\n);",
+    ],
+  },
 ];

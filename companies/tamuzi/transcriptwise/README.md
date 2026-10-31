@@ -85,6 +85,12 @@ Copy `.env.example` to `.env` **at the project root**. The backend loads it; pro
 
 - `DATABASE_URL`: defaults to SQLite relative to the backend working directory. For PostgreSQL use `postgresql+psycopg://USER:URL_ENCODED_PASSWORD@HOST:5432/transcriptwise`.
 - `AI_PROVIDER=local` or `openai_compatible`. Real AI additionally needs `AI_API_KEY`, `AI_BASE_URL`, and `AI_MODEL`.
+  `AI_BASE_URL` may point at a **local** OpenAI-compatible server such as
+  [OpenJarvis](https://openjarvis.stanford.edu/) (`jarvis serve` on port 8000:
+  `AI_BASE_URL=http://127.0.0.1:8000/v1`). Two of this project's own rules then apply:
+  `AI_PROVIDER=openai_compatible` demands a non-empty `AI_API_KEY` (use a placeholder —
+  the local server ignores it), and `APP_ENV=production` rejects a non-HTTPS `AI_BASE_URL`,
+  so a local endpoint is a development configuration, not a production one.
 - `YOUTUBE_ALLOWED_VIDEO_IDS` plus an access token **or** OAuth refresh credentials enable caption attempts for authorized videos only.
 - `APP_ENV=production` requires `COOKIE_SECURE=true`, explicit hosts, and HTTPS origins; it disables CDN-dependent interactive API docs. `/openapi.json` remains available.
 - Defaults: 2 MB uploads, 300,000 transcript characters, 18,000-character AI chunks, 6,500 output tokens/chunk, 120-second AI timeout. Oversized input is rejected, not secretly shortened.

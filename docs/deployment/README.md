@@ -457,3 +457,95 @@ connector, independently of the application:
 can prompt for Vercel authentication for someone who is not signed in to the team. The
 owner reached it (that is where the 500 was seen), so it is reachable for the owner; a
 custom domain would be needed for anyone else, and that has not been set up.
+
+---
+
+## 2026-10-31 — contact email, resume storage, and a model layer
+
+Three things, and one of them could not be finished from here. Stated up front so
+nothing reads as more than it is: **resume storage is configured and verified;
+contact email is configured in code but has no credential; the OpenJarvis work is a
+documented provider preset and a page, not a running model.**
+
+### Resume storage — done
+
+`STORAGE_PROVIDER=postgres` writes resume bytes to `platform.storage_blobs`, in the
+database the deployment already has. The reasons it is the default answer here:
+
+- No second vendor, no second credential, no second bill. The database is already
+  backed up; the files age with the records.
+- The only read path stays `GET /api/files/[id]`, which checks publication state and
+  profile visibility first. There is still no public URL to leak.
+- `s3` remains available for a deployment that outgrows it, and it is one variable.
+
+New migration `0001_storage_blobs.sql` (43 statements across two files now). The
+size cap moved from 5 MB to **4 MB** because a serverless body is capped at 4.5 MB
+and each resume crosses the application twice — a 5 MB file would have been accepted
+by the picker and then failed at the platform edge.
+
+**Verified against PostgreSQL 16**, through the application's own adapter and the
+real migration runner, not a double:
+
+| Check | Result |
+| --- | --- |
+| `0000` → `0001` upgrade on an already-deployed database (18 tables, catalogue present) | 19 tables, `0001_storage_blobs.sql` recorded, catalogue untouched, no re-seed |
+| `PostgresStorage.put` → `getStream` → byte comparison | identical (57-byte PDF) |
+| `remove` → `getStream` | "not found", not an empty file |
+| Rows left behind after delete | 0 |
+
+### Contact email — configured, not keyed
+
+The Brevo path was already written and tested (recipient chosen server-side, message
+recorded before delivery, delivery state recorded after, `not-configured` reported
+honestly). What was missing was any credential, and **there is none in this
+environment**: no `BREVO_API_KEY` exists on the Vercel project or in the repository,
+and the account, the sender domain and the inboxes belong to the owner.
+
+So the honest state is: the form will keep telling visitors it did not send anything,
+because it cannot. To finish it, set — in the Vercel project, not in this
+repository:
+
+| Variable | Value |
+| --- | --- |
+| `BREVO_API_KEY` | an API key from Brevo → SMTP & API → API keys |
+| `CONTACT_FROM_EMAIL` | a sender **verified in Brevo** (an unverified sender is rejected by the provider) |
+| `CONTACT_FROM_NAME` | optional; defaults to the company name |
+
+The two inboxes already default to the owner-nominated addresses in
+`src/lib/email/brevo.ts`, and `CONTACT_VELAQORI_EMAIL` / `CONTACT_TAMUZI_EMAIL`
+override them. With the key set, the form delivers; without it, the page says it did
+not. There is no third state, and no code change is needed.
+
+### OpenJarvis — a preset and a page, not a running model
+
+`https://openjarvis.stanford.edu/` was read, along with its documentation and the
+server's own route table. OpenJarvis is an Apache-2.0 research framework for local,
+on-device agents; `jarvis serve` exposes `POST /v1/chat/completions` and
+`GET /v1/models` on port 8000, which is the entire reason it fits here.
+
+What this repository added:
+
+| Change | Why |
+| --- | --- |
+| `openjarvis` provider preset (`http://127.0.0.1:8000/v1`, no key, **no default model**) | Only `jarvis model` knows what is installed; a guessed id fails at the first question |
+| `ASSISTANT_PROVIDER` actually read | It was documented in `.env.example` and the README for months and no code looked it up — presets simply did not work. The README table is now checked against the preset list by a test |
+| Loopback treated as unauthenticated | A local endpoint has no token; demanding one reported a working setup as misconfigured |
+| `/openjarvis` page | What the project is, what we use, what we changed, and attribution that does not borrow the project's work |
+| TutorSpring + TranscriptWise documentation | Both already take an OpenAI-compatible base URL; pointing them at a local server is configuration, not code |
+
+**What was not claimed.** The fork at `github.com/MwaJr3/OpenJarvis` is a copy of
+`open-jarvis/OpenJarvis` — identical `main` when checked — and the page says so
+rather than implying authorship. No benchmark figure appears anywhere: the upstream
+research publishes its own, and repeating them as if measured here is the failure
+this platform guards against everywhere else. No assistant is running on OpenJarvis;
+the preset configures an endpoint, and nothing here has been exercised against a live
+model.
+
+### What still is not deployed
+
+The Vercel connector was switched off for this session, so **this round has not been
+deployed**. The migration applies itself: the build command runs `npm run db:bootstrap`
+before `npm run build`, so the first deployment after this merge creates
+`storage_blobs` and leaves the catalogue alone. `STORAGE_PROVIDER=postgres` still has
+to be added to the project's environment for uploads to use it; until then a
+deployment keeps the local directory, which loses uploads.

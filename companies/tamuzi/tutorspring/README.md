@@ -17,7 +17,14 @@ portfolio education suite (Tamuzi Learning).
   `[DEMO MODE — prepared example response, not live model output]` in every
   reply (tested). Live models require explicit server-side configuration
   (`TUTORSPRING_LLM_BASE_URL/API_KEY/MODEL`) through a provider adapter —
-  model choice is configuration, not business logic.
+  model choice is configuration, not business logic. Any endpoint that speaks
+  OpenAI's chat-completions protocol works, including a **local** one: run
+  [OpenJarvis](https://openjarvis.stanford.edu/) (`jarvis serve`, port 8000) and
+  set `TUTORSPRING_LLM_BASE_URL=http://127.0.0.1:8000/v1` with a model id from
+  `jarvis model`. The API key is then a placeholder the server ignores — this
+  adapter requires one to be non-empty, so set it to any non-empty string.
+  Not verified against a running model from this repository; the adapter and
+  its demo-mode fallback are what the tests cover.
 - **Review workflow:** learners flag confusing/incorrect explanations; flags
   route to a private teacher review queue (approve/hide with notes). Other
   learners never see flagged conversations (tested).

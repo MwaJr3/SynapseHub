@@ -9,6 +9,7 @@
 import { relations } from 'drizzle-orm';
 import {
   boolean,
+  customType,
   integer,
   json,
   pgSchema,
@@ -399,6 +400,31 @@ export const auditEvents = platformSchema.table('audit_events', {
   resourceType: text('resource_type').notNull(),
   resourceId: text('resource_id'),
   metadata: json('metadata').$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: createdAt(),
+});
+
+/**
+ * File bytes, for the storage provider that keeps uploads in the database.
+ *
+ * Resumes are small (a PDF, capped well below a megabyte in practice) and read
+ * rarely, so the database that already backs the rest of the record is a
+ * reasonable place to keep them: it is durable, it is backed up with everything
+ * else, it needs no second vendor, and the permission check in
+ * `GET /api/files/[id]` is the only way to read one. An object store is the
+ * right answer at a different scale — `STORAGE_PROVIDER=s3` stays available.
+ *
+ * The key is the opaque name the application already stores on the resume row,
+ * so which provider wrote a file is a deployment setting, not a schema change.
+ */
+const bytea = customType<{ data: Uint8Array; notNull: true; default: false }>({
+  dataType: () => 'bytea',
+});
+
+export const storageBlobs = platformSchema.table('storage_blobs', {
+  key: text('key').primaryKey().notNull(),
+  bytes: bytea('bytes').notNull(),
+  sizeBytes: integer('size_bytes').notNull(),
+  contentType: text('content_type').notNull().default('application/octet-stream'),
   createdAt: createdAt(),
 });
 

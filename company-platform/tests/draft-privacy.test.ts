@@ -140,6 +140,8 @@ describe('resume file validation', () => {
     expect(looksLikePdf(pdf)).toBe(true);
     expect(looksLikePdf(new TextEncoder().encode('<html>'))).toBe(false);
     expect(looksLikePdf(new Uint8Array(0))).toBe(false);
-    expect(MAX_RESUME_BYTES).toBe(5 * 1024 * 1024);
+    // 4 MB, not 5: a serverless request body is capped at 4.5 MB and the file
+    // crosses the application twice (upload, then the guarded download).
+    expect(MAX_RESUME_BYTES).toBe(4 * 1024 * 1024);
   });
 });

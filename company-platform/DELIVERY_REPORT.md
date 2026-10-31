@@ -227,3 +227,17 @@ including `/products/[slug]` and `/case-studies/[slug]`, with seeded names in th
 HTML. **Not verified:** no request has been made to the Vercel deployment from the
 development sandbox, which has no network route to `*.vercel.app`. The record,
 including both remaining risks, is in `docs/deployment/README.md`.
+
+## 11. Contact email, resume storage, and the model layer (2026-10-31)
+
+| Area | State |
+| --- | --- |
+| Resume storage | `STORAGE_PROVIDER=postgres` — bytes in `platform.storage_blobs`, migration `0001_storage_blobs.sql`, verified end-to-end against PostgreSQL 16 (write, byte-identical read, delete, not-found). 4 MB cap, down from 5, because a serverless body is 4.5 MB and each file crosses the app twice |
+| Contact email | Code complete and tested; **no Brevo credential exists in this environment**, so it remains `setup-required` and says so. Needs `BREVO_API_KEY` and a verified `CONTACT_FROM_EMAIL` in the deployment's environment — an owner action, not a code change |
+| Model configuration | `ASSISTANT_PROVIDER` is now read (it was documented and ignored). Presets: `openjarvis`, `ollama-local`, `huggingface`, `ollama-cloud`, `groq`, `gemini`, `openrouter`, `openai`. Loopback endpoints need no token; `openjarvis` ships no default model because only `jarvis model` knows what is installed |
+| OpenJarvis page | `/openjarvis` — what the project is, the six endpoints this platform depends on, the five changes made here, and attribution: Apache-2.0, a fork kept in sync, not our work |
+| Configuration report | `npm run config:check` and `/admin/settings` — variable names, never values; exits non-zero when a required item is missing |
+
+Nothing above is deployed: the Vercel connector was off for this session. The
+migration applies itself on the next deployment, because the build command runs the
+bootstrap first.

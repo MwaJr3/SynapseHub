@@ -9,6 +9,7 @@ import { Badge, EmptyState, Section } from '@/components/ui';
 import { requireUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { getPersonProfileByUserId, listPersonExtras } from '@/lib/queries';
+import { MAX_RESUME_BYTES } from '@/lib/storage';
 import { UploadResumeForm } from './upload-form';
 
 export const dynamic = 'force-dynamic';
@@ -32,8 +33,8 @@ export default async function ResumePage() {
         <p className="mt-2 max-w-prose text-muted">
           Resumes are private by default. Publishing a resume exposes its
           download on your public profile; un-publishing or withdrawing your
-          profile kills the download immediately. Only valid PDF files up to
-          5 MB are accepted.
+          profile kills the download immediately. Only valid PDF files up to{' '}
+          {Math.floor(MAX_RESUME_BYTES / (1024 * 1024))} MB are accepted.
         </p>
       </header>
 

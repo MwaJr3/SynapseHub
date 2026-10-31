@@ -12,6 +12,7 @@ import { requestBody } from '@/lib/assistant/stream';
 
 const CONFIGURED = {
   configured: true,
+  provider: null,
   baseUrl: 'https://router.huggingface.co/v1',
   model: 'meta-llama/Llama-3.3-70B-Instruct',
   keySource: 'ASSISTANT_API_KEY' as const,
