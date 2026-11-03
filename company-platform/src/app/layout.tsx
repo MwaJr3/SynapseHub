@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+import { Analytics } from '@vercel/analytics/next';
+
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import { getSessionActor } from '@/lib/auth';
 
@@ -32,6 +34,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           {children}
         </main>
         <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );
