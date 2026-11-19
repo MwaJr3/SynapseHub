@@ -9,6 +9,7 @@ import type {
   ProjectDetail,
   ProjectSummary,
   Session,
+  Stem,
   UploadResponse,
 } from './types';
 
@@ -139,6 +140,13 @@ export const api = {
     ),
   deleteStem: (token: string, stemId: number) =>
     request<{ deleted: boolean }>(`/api/stems/${stemId}`, { method: 'DELETE' }, token),
+  /** Practice mix: the song with one stem taken out. Idempotent per stem. */
+  createMinusOne: (token: string, jobId: number, without: string) =>
+    request<Stem>(
+      `/api/jobs/${jobId}/minus-one`,
+      { method: 'POST', body: JSON.stringify({ without }) },
+      token,
+    ),
   createExport: (token: string, jobId: number, format: ExportFormat) =>
     request<{ download_url: string }>(
       '/api/exports',

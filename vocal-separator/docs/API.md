@@ -250,6 +250,8 @@ Stem entries have the following conceptual shape:
 
 Only stems actually produced by the job are returned.
 
+**Lead / backing vocals.** When one line clearly dominates, the results include a `lead_vocal` stem (`kind: "voice_part"`, experimental; linked to its voice through `voice_id`) and a `backing_vocals` stem (`kind: "derived"`, exactly `vocals − lead_vocal`). The lead is exported even when its voice part stays `unknown`. `report.voice_outcome` and `report.lead_split_outcome` carry a stable `code` plus a fixed `message` explaining what the voice-part step did. Each voice has `is_lead`, `chart_fit` and an optional `stem_note`.
+
 ### `GET /api/jobs/{job_id}/pitch`
 
 Returns stored pitch-track analysis for visualization. The payload is either a voice-ID → pitch-points mapping or an object containing `pitch_tracks` with that mapping.
@@ -301,6 +303,16 @@ Either field may be supplied as supported by the client flow. A voice correction
 ### `DELETE /api/stems/{stem_id}`
 
 Deletes an owned stem and its stored representations.
+
+### `POST /api/jobs/{job_id}/minus-one`
+
+Builds a **practice mix**: the original recording with one stem taken out, for a singer or player who wants to supply that part themselves.
+
+```json
+{ "without": "lead_vocal" }
+```
+
+`without` is the name of any existing stem except `original` (a Level-1 stem such as `drums`, `lead_vocal`, or a voice part). The mix is the original minus that stem and is scaled down only if it would clip. The result is stored as a stem with `kind: "minus_one"` and `name: "minus_<stem>"`, returned in the same shape as the entries in `results.stems`, with signed `stream_url` / `download_url`. Asking again for the same stem returns the existing file. Errors: `409` while the job is not `COMPLETED`, `422` for an unknown stem name or `original`, `404` for another user's job.
 
 ## 9. ZIP exports
 

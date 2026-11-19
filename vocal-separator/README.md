@@ -28,7 +28,7 @@ When vocal analysis is enabled, the vocal stem is processed through:
 2. Pitch-track fragment linking using voice-leading/continuity rules
 3. Persistent voice-track formation
 4. Range, pitch-distribution, continuity and weak timbral evidence
-5. Probabilistic classification into Soprano, Alto, Contralto, Tenor, Baritone, Bass-baritone, Bass or Unknown
+5. Probabilistic classification into the six standard vocal ranges (Soprano, Mezzo-soprano, Alto, Tenor, Baritone, Bass) or Unknown
 6. Harmonic soft-mask reconstruction for lines that pass duration/confidence gates
 
 The UI displays estimated ranges, voiced seconds, class probabilities, confidence labels, pitch tracks and the reason a line was withheld when applicable.
@@ -233,7 +233,7 @@ For production, use HTTPS, strong secrets, managed PostgreSQL/Redis, private obj
 ## Known limitations
 
 - Dense choirs, unison singing, heavy reverb, distortion and overlapping harmonics can make individual-line recovery unreliable.
-- Alto, contralto and tenor ranges overlap; Unknown is often the correct product behaviour.
+- Alto, mezzo-soprano and tenor ranges overlap; Unknown is often the correct product behaviour.
 - DSP separation has more bleed than a properly deployed neural model.
 - Demucs/CREPE adapters require their packages **and model weights**; package installation alone does not make an ML engine available.
 - Browser pitch-preserving tempo support varies by browser.

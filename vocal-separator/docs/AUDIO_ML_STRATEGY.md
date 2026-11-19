@@ -142,14 +142,15 @@ For each track the system reports:
 
 The classifier produces probabilities over:
 
-- Soprano
-- Alto
-- Contralto
-- Tenor
-- Baritone
-- Bass-baritone
-- Bass
+- Soprano (C4–C6)
+- Mezzo-soprano (A3–A5)
+- Alto / contralto (F3–F5)
+- Tenor (C3–C5)
+- Baritone (G2–G4)
+- Bass (E2–E4)
 - Unknown when evidence is insufficient
+
+The ranges are the six standard vocal ranges from the project's reference chart ("The Standard 6 Vocal Ranges"), kept in `VOCAL_RANGE_CHART` in `backend/app/vocal.py`. They bound what a part may plausibly sing; the classifier still scores the *tessitura* of the whole line inside them. Results and corrections saved with the older labels still load: `contralto` is read as Alto and `bass_baritone` as Baritone. Each voice also reports `chart_fit`, the share of its notes inside every range, because the ranges overlap by design and "which ranges could sing this" is often the honest answer.
 
 It does **not** equate "currently highest note" with soprano or "currently lowest note" with bass. Classification uses the persistent line as a whole, including:
 
@@ -160,7 +161,7 @@ It does **not** equate "currently highest note" with soprano or "currently lowes
 - relationships among simultaneously detected tracks;
 - overlap between plausible voice categories.
 
-Alto, contralto and tenor overlap heavily in real music. If the highest-probability class is not reliable enough, the product displays **Unknown** while still showing the probability distribution. A user can save a correction, but it is stored separately and does not rewrite the system inference.
+Alto, mezzo-soprano and tenor overlap heavily in real music. If the highest-probability class is not reliable enough, the product displays **Unknown** while still showing the probability distribution. A user can save a correction, but it is stored separately and does not rewrite the system inference.
 
 ## 8. Voice-line reconstruction
 
@@ -223,7 +224,7 @@ These tests validate the signal-processing mechanics. They do not establish equa
 | Dense choir/unison | Fewer distinguishable lines; Unknown/withheld parts. |
 | Heavy reverb | Fragmented tracks, smeared boundaries, lower confidence. |
 | Strong accompaniment bleed in vocals | Piano/guitar harmonics may create spurious candidates; quality warnings should be heeded. |
-| Overlapping ranges | Wider class probabilities; alto/contralto/tenor ambiguity. |
+| Overlapping ranges | Wider class probabilities; alto/mezzo-soprano/tenor ambiguity; `chart_fit` shows every range that could sing the line. |
 | Vibrato/extended techniques | Pitch paths may wobble or split without adequate continuity. |
 | Consonant-heavy passages | Harmonic masks capture pitched vowels better than unvoiced speech sounds. |
 | Very short excerpts | Insufficient voiced seconds for responsible part export. |

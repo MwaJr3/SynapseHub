@@ -52,7 +52,7 @@ def test_vocal_analysis_finds_satb_lines(song):
     assert medians[-1] > 66, "highest line should sit in soprano territory"
     labels = {v["classification"] for v in a["voices"]}
     assert "soprano" in labels, labels
-    assert labels & {"bass", "bass_baritone", "baritone"}, labels
+    assert labels & {"bass", "baritone"}, labels
 
 
 def test_harmonic_reconstruction_improves_soprano_snr(song):
@@ -82,5 +82,5 @@ def test_unknown_is_a_valid_result_for_ambiguous_line():
                      midis=list(rng.normal(60.2, 3.5, 60)), strengths=[0.7] * 60)
     res = classify_voice(line)
     top2 = [p["class"] for p in res["predictions"][:2]]
-    assert set(top2) <= {"contralto", "tenor", "alto", "baritone"}   # genuinely ambiguous zone
+    assert set(top2) <= {"mezzo_soprano", "alto", "tenor", "baritone"}   # genuinely ambiguous zone
     assert res["predictions"][0]["probability"] < 0.6               # must not feign certainty

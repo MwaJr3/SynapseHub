@@ -104,7 +104,7 @@ export interface StemQuality {
 export interface Stem {
   id: number;
   name: string;
-  kind: 'original' | 'music' | 'derived' | 'voice_part' | string;
+  kind: 'original' | 'music' | 'derived' | 'voice_part' | 'minus_one' | string;
   voice_id: string;
   user_label: string;
   quality: StemQuality;
@@ -117,8 +117,19 @@ export interface VoicePrediction {
   probability: number;
 }
 
+/** How much of a line sits inside one of the six standard vocal ranges. */
+export interface ChartFit {
+  class: string;
+  lowest_note: string;
+  highest_note: string;
+  within_range_ratio: number;
+}
+
 export interface Voice {
   voice_id: string;
+  is_lead?: boolean;
+  stem_note?: string;
+  chart_fit?: ChartFit[];
   role: string;
   classification: string;
   user_classification: string;
@@ -149,6 +160,8 @@ export interface ProcessingReport {
   detected_sources?: string[];
   separation?: Record<string, unknown>;
   voice_analysis?: Record<string, unknown>;
+  voice_outcome?: { code: string; message: string };
+  lead_split_outcome?: { code: string; message: string };
   reconstruction?: {
     residual_db_below_mix?: number | null;
     sample_aligned?: boolean;

@@ -22,20 +22,91 @@ MIDI_MIN, MIDI_MAX = 36, 86            # C2 .. D6 candidate grid (0.5-semitone s
 MIN_VOICE_SECONDS = 1.2                # evidence required before a part stem may exist
 MIN_STEM_CONFIDENCE = 0.40             # below this: detected but "separation unavailable" (§73)
 
-# Musicological priors (§10): tessitura centre/width + typical range. Priors, not rules.
+# The six standard vocal ranges (reference chart "The Standard 6 Vocal Ranges").
+# These are the *published* extremes of each voice type, as MIDI note numbers
+# (C4 = 60). They bound what a part may plausibly sing; they are not tessituras.
+VOCAL_RANGE_CHART = {
+    "soprano":       dict(lo=60, hi=84),   # C4 - C6
+    "mezzo_soprano": dict(lo=57, hi=81),   # A3 - A5
+    "alto":          dict(lo=53, hi=77),   # F3 - F5   (the chart's "Alto (Contralto)")
+    "tenor":         dict(lo=48, hi=72),   # C3 - C5
+    "baritone":      dict(lo=43, hi=67),   # G2 - G4
+    "bass":          dict(lo=40, hi=64),   # E2 - E4
+}
+
+# Older results (and user corrections) used a seven-class scheme. The chart has
+# one Alto (Contralto) range and no Bass-baritone, so the old labels map onto it.
+LEGACY_PART_ALIASES = {"contralto": "alto", "bass_baritone": "baritone"}
+
+
+def canonical_part(label: str | None) -> str:
+    """Current class name for ``label`` (legacy names are mapped; unknown stays unknown)."""
+    if not label:
+        return "unknown"
+    return LEGACY_PART_ALIASES.get(label, label)
+
+
+# Musicological priors (§10): tessitura centre/width on top of the chart range.
 # "centroid" = expected spectral centroid of the voice's own harmonic series, in
 # semitones relative to its median pitch. This is deliberately WEAK evidence
 # (0.85–1.00 multiplier): formant/tract cues help at the margins but cannot turn
 # an ambiguous alto/tenor line into a certain one — that stays Unknown (§71).
+# Tessitura centres sit in the comfortable lower-middle of each chart range.
 VOICE_PARTS = {
-    "soprano":       dict(centre=69.0, width=4.5, lo=60, hi=84, centroid=26.0),
-    "alto":          dict(centre=63.0, width=4.0, lo=55, hi=74, centroid=25.0),
-    "contralto":     dict(centre=60.0, width=4.0, lo=52, hi=72, centroid=24.5),
-    "tenor":         dict(centre=60.5, width=4.0, lo=48, hi=72, centroid=24.0),
-    "baritone":      dict(centre=55.0, width=4.0, lo=45, hi=69, centroid=23.0),
-    "bass_baritone": dict(centre=52.5, width=3.8, lo=43, hi=67, centroid=22.5),
-    "bass":          dict(centre=50.0, width=3.8, lo=40, hi=64, centroid=22.0),
+    "soprano":       dict(centre=69.0, width=4.5, centroid=26.0, **VOCAL_RANGE_CHART["soprano"]),
+    "mezzo_soprano": dict(centre=66.0, width=3.4, centroid=25.5, **VOCAL_RANGE_CHART["mezzo_soprano"]),
+    "alto":          dict(centre=61.5, width=4.2, centroid=24.8, **VOCAL_RANGE_CHART["alto"]),
+    "tenor":         dict(centre=60.0, width=4.0, centroid=24.0, **VOCAL_RANGE_CHART["tenor"]),
+    "baritone":      dict(centre=54.5, width=3.8, centroid=23.0, **VOCAL_RANGE_CHART["baritone"]),
+    "bass":          dict(centre=49.5, width=3.6, centroid=22.0, **VOCAL_RANGE_CHART["bass"]),
 }
+
+MIN_LEAD_SECONDS = 4.0                 # a dominant line this long may be exported as the lead vocal
+
+
+def chart_range_notes(part: str) -> tuple[str, str]:
+    r = VOCAL_RANGE_CHART[canonical_part(part)]
+    return dsp.midi_to_note(float(r["lo"])), dsp.midi_to_note(float(r["hi"]))
+
+
+def chart_fit(midis) -> list[dict]:
+    """Share of a line's pitches that fall inside each chart range, best first.
+
+    Several ranges usually contain a line (the chart's ranges overlap by design),
+    so this is evidence about *which parts could sing it*, not a classification.
+    """
+    m = np.asarray(midis, dtype=float)
+    out = []
+    for part, r in VOCAL_RANGE_CHART.items():
+        lo_n, hi_n = chart_range_notes(part)
+        out.append({"class": part, "lowest_note": lo_n, "highest_note": hi_n,
+                    "within_range_ratio": round(float(np.mean((m >= r["lo"]) & (m <= r["hi"]))), 3) if m.size else 0.0})
+    return sorted(out, key=lambda d: -d["within_range_ratio"])
+
+
+def assign_voice_stem_names(voices: list[dict], reserved: set[str]) -> dict[str, str]:
+    """voice_id -> unique stem name for every exported voice.
+
+    ``reserved`` holds names already taken by Level-1 stems. A reconstructed
+    "bass" voice must never replace the real bass stem, so a clash becomes
+    ``bass_voice`` (or ``<name>_<voice_id>`` if that is taken too). The lead line
+    is always named ``lead_vocal``; unclassified lines use their voice id.
+    """
+    used = set(reserved)
+    names: dict[str, str] = {}
+    for v in voices:
+        if not v.get("stem_available"):
+            continue
+        cls = v.get("classification", "unknown")
+        base = "lead_vocal" if v.get("is_lead") else (cls if cls != "unknown" else v["voice_id"])
+        name = base
+        if name in used:
+            name = f"{base}_voice" if base in reserved else f"{base}_{v['voice_id']}"
+        if name in used:
+            name = f"{base}_{v['voice_id']}"
+        used.add(name)
+        names[v["voice_id"]] = name
+    return names
 
 
 def confidence_label(c: float) -> str:
@@ -326,6 +397,7 @@ def classify_voice(line: VoiceLine, rel_centroid_st: float | None = None) -> dic
                   "highest_note": dsp.midi_to_note(float(np.max(midis)))},
         "pitch_statistics": {"median_midi": round(median, 2), "mean_midi": round(float(np.mean(midis)), 2),
                              "p10_midi": round(p10, 2), "p90_midi": round(p90, 2)},
+        "chart_fit": chart_fit(midis),
     }
 
 
@@ -444,9 +516,20 @@ def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
             "_line": line,
         })
     # Lead heuristic: most voiced seconds + highest mean strength = probable lead (§14).
+    for v in voices:
+        v["is_lead"] = False
     if len(voices) > 1:
         lead = max(voices, key=lambda v: v["voiced_seconds"])
         lead["role"] = "possible_lead"
+        lead["is_lead"] = True
+        # The lead is chosen by dominance, not by part class, so a long lead line is
+        # exported as the lead vocal even when its class stays Unknown. The class
+        # itself is left as-is: only the stem is allowed, never a made-up label.
+        if not lead["stem_available"] and lead["voiced_seconds"] >= MIN_LEAD_SECONDS:
+            lead["stem_available"] = True
+            lead["stem_unavailable_reason"] = None
+            lead["stem_note"] = ("Exported as the lead vocal (longest, most persistent line); "
+                                 "its voice part is still reported as Unknown.")
     pitch_tracks = {v["voice_id"]: [
         {"time": round(float(t), 3), "midi": round(float(m), 2),
          "frequency": round(float(dsp.midi_to_freq(m)), 2), "note": dsp.midi_to_note(m),

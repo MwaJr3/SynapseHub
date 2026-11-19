@@ -133,7 +133,7 @@ function HonestyPanel({ health }: { health: Health | null }) {
           tracked line passes evidence and confidence gates.
         </li>
         <li>
-          <strong>Unknown is a valid result.</strong> Alto, contralto and tenor overlap heavily;
+          <strong>Unknown is a valid result.</strong> The standard vocal ranges overlap heavily (alto, mezzo-soprano and tenor most of all);
           the UI shows probabilities instead of inventing certainty or empty part files.
         </li>
         <li>
@@ -1092,7 +1092,7 @@ export default function App() {
                 <div className="summary-grid">
                   <article className="summary-card">
                     <span>Music / derived stems</span>
-                    <strong>{results.stems.filter((stem) => stem.kind !== 'voice_part').length}</strong>
+                    <strong>{results.stems.filter((stem) => stem.kind !== 'voice_part' && stem.kind !== 'minus_one').length}</strong>
                   </article>
                   <article className="summary-card">
                     <span>Exported voice parts</span>
@@ -1107,6 +1107,15 @@ export default function App() {
                     <strong className="summary-model">{results.model || '—'} {results.model_version}</strong>
                   </article>
                 </div>
+
+                {results.report.voice_outcome && (
+                  <p className="muted small-text" data-outcome={results.report.voice_outcome.code}>
+                    {results.report.voice_outcome.message}
+                    {results.report.lead_split_outcome?.code === 'lead_split_ready'
+                      ? ` ${results.report.lead_split_outcome.message}`
+                      : ''}
+                  </p>
+                )}
 
                 {resultWarnings.length > 0 && (
                   <ul className="warning-list">
@@ -1180,7 +1189,9 @@ export default function App() {
                         <article key={voice.voice_id} className="voice-card">
                           <div className="voice-card-heading">
                             <div>
-                              <p className="eyebrow">{voice.voice_id.replace('_', ' ')} · {prettyName(voice.role)}</p>
+                              <p className="eyebrow">
+                                {voice.voice_id.replace('_', ' ')} · {voice.is_lead ? 'Lead line' : prettyName(voice.role)}
+                              </p>
                               <h3>{prettyName(displayClass)}</h3>
                               {voice.user_classification && voice.user_classification !== voice.classification && (
                                 <p className="muted small-text">AI/DSP said: {prettyName(voice.classification)}</p>
@@ -1232,6 +1243,20 @@ export default function App() {
                             </div>
                           </dl>
 
+                          {voice.chart_fit?.length ? (
+                            <p className="muted small-text" title="Share of this line's notes inside each standard vocal range">
+                              Fits the standard ranges:{' '}
+                              {voice.chart_fit
+                                .filter((fit, index) => index === 0 || fit.within_range_ratio >= 0.9)
+                                .slice(0, 3)
+                                .map(
+                                  (fit) =>
+                                    `${prettyName(fit.class)} ${fit.lowest_note}–${fit.highest_note} (${percent(fit.within_range_ratio)})`,
+                                )
+                                .join(' · ')}
+                            </p>
+                          ) : null}
+
                           {voice.predictions?.length ? (
                             <div className="prediction-list">
                               {voice.predictions.slice(0, 4).map((prediction) => (
@@ -1241,6 +1266,10 @@ export default function App() {
                               ))}
                             </div>
                           ) : null}
+
+                          {voice.stem_available && voice.stem_note && (
+                            <p className="muted small-text">{voice.stem_note}</p>
+                          )}
 
                           {!voice.stem_available && (
                             <div className="withheld-box">

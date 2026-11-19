@@ -23,7 +23,8 @@ This roadmap separates what is already working from deliberate next phases. It i
 - Demucs subprocess adapter with visible fall-safe behaviour
 - Polyphonic pitch salience and multi-candidate frame selection
 - Voice-leading track linking and material-overlap merging
-- Probabilistic Soprano/Alto/Contralto/Tenor/Baritone/Bass-baritone/Bass/Unknown classification
+- Probabilistic Soprano/Mezzo-soprano/Alto/Tenor/Baritone/Bass/Unknown classification (six standard ranges)
+- Lead / backing vocal split, collision-safe voice-stem naming and a "minus-one" practice mix
 - Harmonic soft-mask reconstruction only for evidence-backed tracks
 - Synthetic SATB ground-truth tests plus end-to-end API/security tests
 
@@ -99,7 +100,7 @@ This roadmap separates what is already working from deliberate next phases. It i
 - [ ] Build a professionally labelled evaluation set spanning voice types, ages, styles and recording conditions
 - [ ] Train/calibrate a classifier using range, tessitura, formant/timbre, vibrato, harmonic envelope and temporal behaviour
 - [ ] Report calibrated probabilities and an explicit abstention threshold
-- [ ] Measure confusion specifically among alto, contralto and tenor
+- [ ] Measure confusion specifically among alto, mezzo-soprano and tenor
 - [ ] Keep Unknown when the expected error cost is too high
 
 ### Reconstruction

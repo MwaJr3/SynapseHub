@@ -10,7 +10,7 @@ import json, time, zipfile
 from pathlib import Path
 import numpy as np
 
-from . import PIPELINE_VERSION, audio_io, dsp, engines, quality, vocal
+from . import PIPELINE_VERSION, audio_io, dsp, engines, outcomes, quality, vocal
 from .db import SessionLocal, ProcessingJob, ProcessingStage, Stem, VoiceTrack, AudioFile, Export, now
 from .storage import storage
 
@@ -111,6 +111,11 @@ def run_job(job_id: int) -> None:
             stems_np["instrumental"] = mix - stems_np["vocals"]
         _stage(job_id, "separating", "done", 1, f"Produced {len(stems_np)} music stems", time.time() - t)
 
+        level1_names = set(stems_np)              # music stems; voice parts must never reuse these names
+        voice_stem_ids: dict[str, str] = {}       # stem name -> voice_id for every reconstructed part
+        outcome_code = outcomes.DISABLED
+        lead_code = outcomes.LEAD_NOT_APPLICABLE
+
         # ---- Level 2 vocal analysis + voice-part separation
         analysis = None
         if want_voice_parts and "vocals" in stems_np:
@@ -123,6 +128,7 @@ def run_job(job_id: int) -> None:
                                 "This recording may be instrumental, or vocals may not be centre-panned.")
                 _stage(job_id, "vocal_analysis", "done", 1, "No analysable vocal energy", time.time() - t)
                 _stage(job_id, "voice_part_separation", "skipped", 1, "Skipped — no vocal evidence")
+                outcome_code = outcomes.NO_VOCAL_ENERGY
             else:
                 analysis = vocal.analyze_vocals(
                     vocal_mono, sr,
@@ -150,16 +156,18 @@ def run_job(job_id: int) -> None:
                     voice_stems = vocal.reconstruct_voice_stems(
                         stems_np["vocals"], sr, analysis,
                         progress=lambda f, m: _stage(job_id, "voice_part_separation", "running", f, m))
-                    used_names: set[str] = set()
+                    names = vocal.assign_voice_stem_names(analysis["voices"], reserved=set(stems_np))
                     for v in avail:
-                        if v["voice_id"] not in voice_stems:
+                        vid = v["voice_id"]
+                        if vid not in voice_stems or vid not in names:
                             continue
-                        name = v["classification"] if v["classification"] != "unknown" else v["voice_id"]
-                        stem_name = name if name not in used_names else f"{name}_{v['voice_id']}"
-                        used_names.add(stem_name)
-                        stems_np[stem_name] = voice_stems[v["voice_id"]]
-                        with SessionLocal() as s:
-                            pass  # stem rows written after files
+                        stems_np[names[vid]] = voice_stems[vid]
+                        voice_stem_ids[names[vid]] = vid
+                        if v.get("is_lead"):
+                            # Exact complement, like the instrumental: lead + backing == vocals.
+                            stems_np["backing_vocals"] = stems_np["vocals"] - voice_stems[vid]
+                            lead_code = outcomes.LEAD_READY
+                    outcome_code = outcomes.READY if voice_stem_ids else outcomes.NO_PART_STEMS
                     _stage(job_id, "voice_part_separation", "done", 1,
                            f"{len(voice_stems)} experimental voice-part stem(s)", time.time() - t)
                 else:
@@ -168,6 +176,7 @@ def run_job(job_id: int) -> None:
                                     "instead of fabricating parts.")
                     _stage(job_id, "voice_part_separation", "done", 1,
                            "No voice part met the export threshold — see analysis", time.time() - t)
+                    outcome_code = outcomes.NO_PART_MET_THRESHOLD
         else:
             _stage(job_id, "vocal_analysis", "skipped", 1, "Disabled in job options")
             _stage(job_id, "voice_part_separation", "skipped", 1, "Disabled in job options")
@@ -175,15 +184,11 @@ def run_job(job_id: int) -> None:
         # ---- quality assessment + save stems (+previews, waveform peaks)
         t = time.time(); _set_job(job_id, state="QUALITY_CHECK")
         _stage(job_id, "quality_check", "running", 0.3, "Measuring bleed, levels and alignment…")
-        core = [k for k in ("vocals", "drums", "bass", "other") if k in stems_np]
+        core = [k for k in ("vocals", "drums", "bass", "other") if k in level1_names]
         report["reconstruction"] = quality.reconstruction_residual(mix, {k: stems_np[k] for k in core}, core) \
             if len(core) == 4 else {"note": "subset profile — residual check n/a"}
-        voice_ids_by_stem = {}
-        if analysis:
-            for v in analysis["voices"]:
-                if v["stem_available"]:
-                    key = v["classification"] if v["classification"] != "unknown" else v["voice_id"]
-                    voice_ids_by_stem.setdefault(key, v["voice_id"])
+        report["voice_outcome"] = outcomes.describe(outcome_code)
+        report["lead_split_outcome"] = outcomes.describe(lead_code)
         saved = []
         for name, wav in stems_np.items():
             q = quality.assess_stem(name, wav, stems_np, mix)
@@ -195,9 +200,9 @@ def run_job(job_id: int) -> None:
                 audio_io.save_audio(storage.path(preview_key), wav, sr, fmt="MP3")
             except Exception:
                 preview_key = key
-            kind = "voice_part" if name in voice_ids_by_stem or name.startswith("voice_") else \
-                   "derived" if name == "instrumental" else "music"
-            saved.append((name, kind, key, preview_key, voice_ids_by_stem.get(name, ""), q))
+            kind = "voice_part" if name in voice_stem_ids else \
+                   "derived" if name in ("instrumental", "backing_vocals") else "music"
+            saved.append((name, kind, key, preview_key, voice_stem_ids.get(name, ""), q))
             report["detected_sources"].append(name)
         # original as a first-class stem (§20/27)
         orig_key = f"{stems_dir}/{base}_original.wav"

@@ -12,7 +12,7 @@ from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from pydantic import BaseModel as BM
 import re
 
-from . import PIPELINE_VERSION, engines, vocal
+from . import PIPELINE_VERSION, audio_io, engines, practice, quality, vocal
 from .config import ADMIN_EMAIL, RETENTION_DAYS
 from .db import (SessionLocal, init_db, User, Project, AudioFile, ProcessingJob,
                  ProcessingStage, Stem, VoiceTrack, ModelRecord, AuditLog, Export, now)
@@ -20,7 +20,7 @@ from .security import hash_password, verify_password, make_token, decode_token, 
 from .storage import storage
 from .validation import validate_upload, UploadValidationError
 from .jobs import enqueue
-from .pipeline import make_zip_export
+from .pipeline import make_zip_export, _waveform_peaks
 
 app = FastAPI(title="AI Music & Vocal Part Separator", version="0.1.0",
               description="Hierarchical stem + voice-part separation. Extracted stems are "
@@ -316,6 +316,16 @@ def cancel_job(job_id: int, user: User = Depends(current_user)):
         return job_summary(j)
 
 
+def stem_payload(st: Stem, user: User) -> dict:
+    """One stem as the API returns it, with short-lived owner-bound media URLs."""
+    return {
+        "id": st.id, "name": st.name, "kind": st.kind, "voice_id": st.voice_id,
+        "user_label": st.user_label, "quality": st.quality,
+        "stream_url": f"/api/stems/{st.id}/stream?token={sign_download(st.preview_key or st.storage_key, user.id)}&preview=1",
+        "download_url": f"/api/stems/{st.id}/download?token={sign_download(st.storage_key, user.id)}",
+    }
+
+
 @app.get("/api/jobs/{job_id}/results")
 def job_results(job_id: int, user: User = Depends(current_user)):
     j = own_job(user, job_id)
@@ -326,18 +336,15 @@ def job_results(job_id: int, user: User = Depends(current_user)):
         return {
             **job_summary(j),
             "audio_file": {"filename": af.filename, "meta": af.meta},
-            "stems": [{
-                "id": st.id, "name": st.name, "kind": st.kind, "voice_id": st.voice_id,
-                "user_label": st.user_label, "quality": st.quality,
-                "stream_url": f"/api/stems/{st.id}/stream?token={sign_download(st.preview_key or st.storage_key, user.id)}&preview=1",
-                "download_url": f"/api/stems/{st.id}/download?token={sign_download(st.storage_key, user.id)}",
-            } for st in stems],
+            "stems": [stem_payload(st, user) for st in stems],
             "voices": [{
-                "voice_id": v.voice_id, "role": v.role, "classification": v.classification,
-                "user_classification": v.user_classification, "confidence": v.confidence,
+                "voice_id": v.voice_id, "role": v.role, "classification": vocal.canonical_part(v.classification),
+                "user_classification": vocal.canonical_part(v.user_classification) if v.user_classification else "",
+                "confidence": v.confidence,
                 **{k: val for k, val in (v.data or {}).items()
                    if k in ("predictions", "range", "pitch_statistics", "voiced_seconds",
-                            "stem_available", "stem_unavailable_reason", "confidence_label", "predicted")},
+                            "stem_available", "stem_unavailable_reason", "confidence_label", "predicted",
+                            "chart_fit", "is_lead", "stem_note")},
             } for v in voices],
             "report": j.report or {},
         }
@@ -410,8 +417,10 @@ def patch_stem(stem_id: int, body: StemPatch, user: User = Depends(current_user)
         if body.user_label is not None:
             st.user_label = body.user_label[:64]
         if body.voice_classification is not None and st.voice_id:
-            if body.voice_classification not in list(vocal.VOICE_PARTS) + ["unknown"]:
+            label = vocal.canonical_part(body.voice_classification)
+            if label not in list(vocal.VOICE_PARTS) + ["unknown"]:
                 raise HTTPException(422, "Unknown voice-part label")
+            body.voice_classification = label
             vt = s.query(VoiceTrack).filter_by(job_id=st.job_id, voice_id=st.voice_id).first()
             if vt:
                 vt.user_classification = body.voice_classification
@@ -435,6 +444,68 @@ def delete_stem(stem_id: int, user: User = Depends(current_user)):
 class ExportIn(BM):
     job_id: int
     format: str = "WAV"
+
+
+class MinusOneIn(BM):
+    without: str          # name of the stem to take out, e.g. "lead_vocal", "drums", "soprano"
+
+
+@app.post("/api/jobs/{job_id}/minus-one")
+def create_minus_one(job_id: int, body: MinusOneIn, request: Request, user: User = Depends(current_user)):
+    """Practice mix: the original recording with one stem removed (see ``practice.py``).
+
+    Idempotent: asking again for the same stem returns the existing mix. The result is
+    stored as a stem of kind ``minus_one`` so it uses the same owner-bound signed URLs.
+    """
+    rate_limit(request, f"minus-one:{user.id}", limit=20, window=60)
+    j = own_job(user, job_id)
+    if j.state != "COMPLETED":
+        raise HTTPException(409, "Job is not complete yet")
+    with SessionLocal() as s:
+        stems = s.query(Stem).filter_by(job_id=job_id).all()
+        by_name = {st.name: st for st in stems}
+        target = by_name.get(body.without)
+        if target is None or target.kind in ("original", "minus_one"):
+            raise HTTPException(422, "Choose an existing music, vocal or voice-part stem to remove")
+        mix_stem = next((st for st in stems if st.kind == "original"), None)
+        if mix_stem is None:
+            raise HTTPException(409, "This job has no original mix to subtract from")
+        name = f"minus_{target.name}"[:64]
+        existing = by_name.get(name)
+        if existing is not None:
+            return stem_payload(existing, user)
+        target_key, mix_key = target.storage_key, mix_stem.storage_key
+    mix, sr = audio_io.load_audio(storage.path(mix_key))
+    stem_audio, _ = audio_io.load_audio(storage.path(target_key))
+    try:
+        backing, gain = practice.minus_one_mix(mix, stem_audio)
+    except ValueError:
+        raise HTTPException(409, "The stem and the mix are not sample-aligned")
+    base_dir = Path(target_key).parent.as_posix()
+    stem_file = Path(target_key).name
+    base = stem_file[: -len(f"_{target.name}.wav")] if stem_file.endswith(f"_{target.name}.wav") else Path(stem_file).stem
+    key = f"{base_dir}/{base}_{name}.wav"
+    preview_key = f"{base_dir}/{base}_{name}.preview.mp3"
+    audio_io.save_audio(storage.path(key), backing, sr)
+    try:
+        audio_io.save_audio(storage.path(preview_key), backing, sr, fmt="MP3")
+    except Exception:
+        preview_key = key
+    q = quality.assess_stem(name, backing, {}, mix)
+    q["waveform"] = _waveform_peaks(audio_io.to_mono(backing))
+    q["without"] = target.name
+    q["gain_applied"] = round(gain, 4)
+    if gain < 1.0:
+        q.setdefault("warnings", []).append("Scaled down slightly to avoid clipping.")
+    with SessionLocal() as s:
+        st = s.query(Stem).filter_by(job_id=job_id, name=name).first()
+        if st is None:
+            st = Stem(job_id=job_id, name=name, kind="minus_one", storage_key=key,
+                      preview_key=preview_key, voice_id="", quality=q)   # no voice link: it must not shadow the real part stem
+            s.add(st); s.commit(); s.refresh(st)
+        payload = stem_payload(st, user)
+    audit(user.id, "minus_one", f"{job_id}:{target.name}")
+    return payload
 
 
 @app.post("/api/exports")
