@@ -24,6 +24,10 @@ WORKER_THREADS = int(os.getenv("WORKER_THREADS", "1"))        # audio jobs are R
 # Separation engine preference: auto = ML (Demucs) when truly available, else DSP.
 ENGINE = os.getenv("SEPARATION_ENGINE", "auto")               # auto | demucs | dsp
 DEMUCS_MODEL = os.getenv("DEMUCS_MODEL", "htdemucs")
+# BS-RoFormer (e.g. viperx ep_317). Both files must exist or the engine reports itself unavailable.
+ROFORMER_CKPT = os.getenv("ROFORMER_CKPT", "")
+ROFORMER_CONFIG = os.getenv("ROFORMER_CONFIG", "")
+ROFORMER_DEVICE = os.getenv("ROFORMER_DEVICE", "auto")       # auto | cpu | cuda
 FFMPEG = os.getenv("FFMPEG_BINARY", "ffmpeg")
 
 def ensure_dirs() -> None:

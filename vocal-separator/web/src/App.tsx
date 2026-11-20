@@ -97,6 +97,10 @@ function HealthList({ health }: { health: Health | null }) {
         <dd>{health.engines.dsp ? 'Available now' : 'Unavailable'}</dd>
       </div>
       <div>
+        <dt>BS-RoFormer vocals</dt>
+        <dd>{health.engines.roformer ? 'Available' : health.engines.roformer_note ?? 'Not configured'}</dd>
+      </div>
+      <div>
         <dt>Demucs ML</dt>
         <dd>{health.engines.demucs ? 'Available' : health.engines.demucs_note}</dd>
       </div>
@@ -956,6 +960,7 @@ export default function App() {
                   <span>Engine selection</span>
                   <select value={engine} onChange={(event) => setEngine(event.target.value)}>
                     <option value="auto">Auto — ML when genuinely available, DSP fallback with a visible warning</option>
+                    <option value="roformer">BS-RoFormer vocals — fail clearly if not configured</option>
                     <option value="demucs">Demucs only — fail clearly if unavailable</option>
                     <option value="dsp">Built-in DSP — exact-sum soft masks, more bleed</option>
                   </select>
@@ -985,7 +990,9 @@ export default function App() {
                 </label>
                 <div className="engine-note">
                   <strong>Current server:</strong>{' '}
-                  {health?.engines.demucs
+                  {health?.engines.roformer
+                    ? 'BS-RoFormer is configured and is preferred in Auto mode. It is slow without a GPU.'
+                    : health?.engines.demucs
                     ? 'Demucs reports available; first use may need its weights.'
                     : `DSP will be used in Auto mode. ${health?.engines.demucs_note ?? ''}`}
                 </div>

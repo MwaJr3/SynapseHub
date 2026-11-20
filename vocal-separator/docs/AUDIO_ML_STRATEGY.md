@@ -258,7 +258,7 @@ heuristic over pitch evidence, not a trained SATB model; it cannot tell two sing
 
 | Repo | Role | Status here |
 |---|---|---|
-| `BS-RoFormer` (lucidrains) | Architecture for band-split RoFormer vocal/stem separation | Not integrated: needs a trained checkpoint, which the sandbox cannot download. Plan: new `RoformerAdapter` in `engines.py`, checkpoint path from config, `available()` false without it. |
+| `BS-RoFormer` (lucidrains) | Architecture for band-split RoFormer vocal separation | **Integrated** as `engine=roformer` (and preferred by `auto` when configured). Set `ROFORMER_CKPT` and `ROFORMER_CONFIG`. Verified with viperx `model_bs_roformer_ep_317_sdr_12.9755` (+ ZFTurbo YAML): strict load, 0 missing/unexpected keys. **Pin `bs-roformer>=0.4,<0.5`**: 0.5+ changed the layer layout and cannot load that checkpoint. Weights are loaded with `torch.load(weights_only=True)`. Vocals come from the model; drums/bass/other are split from `mix - vocals` by the DSP engine so stems still sum exactly. CPU speed is about 13x slower than real time on 2 cores, so use a GPU (`ROFORMER_DEVICE=cuda`) for real use. Checkpoint licences are separate from the MIT code: check before redistributing. |
 | `mdx-net` (KINoAI) | ONNX/PyTorch first-pass vocal/instrument model | Not integrated: same reason. Plan: `MdxAdapter` already registered as unavailable. |
 | `crepe` | Monophonic pitch tracker (needs TensorFlow) | Not integrated: our tracker is polyphonic. Plan: use CREPE/torchcrepe only to refine a *single* isolated line's contour. |
 

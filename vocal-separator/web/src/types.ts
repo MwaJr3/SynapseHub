@@ -16,6 +16,8 @@ export interface Health {
     dsp: boolean;
     demucs: boolean;
     demucs_note: string;
+    roformer?: boolean;
+    roformer_note?: string;
     crepe: boolean;
     crepe_note: string;
     ffmpeg: boolean;

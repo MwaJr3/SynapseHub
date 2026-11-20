@@ -107,9 +107,11 @@ def _startup():
 def health():
     demucs_ok, demucs_why = engines.REGISTRY["htdemucs"].available()
     crepe_ok, crepe_why = vocal.crepe_available()
+    rof_ok, rof_why = engines.REGISTRY["roformer"].available()
     from .audio_io import ffmpeg_available
     return {"status": "ok", "pipeline": PIPELINE_VERSION,
             "engines": {"dsp": True, "demucs": demucs_ok, "demucs_note": demucs_why,
+                        "roformer": rof_ok, "roformer_note": rof_why,
                         "crepe": crepe_ok, "crepe_note": crepe_why, "ffmpeg": ffmpeg_available()},
             "retention_days": RETENTION_DAYS}
 
@@ -237,7 +239,7 @@ class JobIn(BM):
     audio_file_id: int
     quality: str = "balanced"          # fast|balanced|high|maximum
     profile: str = "choir"             # vocals_instrumental|full|extended|choir
-    engine: str = "auto"               # auto|demucs|dsp
+    engine: str = "auto"               # auto|roformer|demucs|dsp
     vocal_analysis: bool = True
     all_voice_parts: bool = False
 
@@ -257,8 +259,8 @@ def create_job(body: JobIn, request: Request, user: User = Depends(current_user)
         raise HTTPException(422, f"quality must be one of {list(engines.QUALITY_PRESETS)}")
     if body.profile not in engines.PROFILES:
         raise HTTPException(422, f"profile must be one of {list(engines.PROFILES)}")
-    if body.engine not in ("auto", "demucs", "dsp"):
-        raise HTTPException(422, "engine must be auto, demucs or dsp")
+    if body.engine not in ("auto", "roformer", "demucs", "dsp"):
+        raise HTTPException(422, "engine must be auto, roformer, demucs or dsp")
     with SessionLocal() as s:
         af = s.get(AudioFile, body.audio_file_id)
         if not af:
