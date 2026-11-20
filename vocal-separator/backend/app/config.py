@@ -28,6 +28,7 @@ DEMUCS_MODEL = os.getenv("DEMUCS_MODEL", "htdemucs")
 ROFORMER_CKPT = os.getenv("ROFORMER_CKPT", "")
 ROFORMER_CONFIG = os.getenv("ROFORMER_CONFIG", "")
 ROFORMER_DEVICE = os.getenv("ROFORMER_DEVICE", "auto")       # auto | cpu | cuda
+ROFORMER_PRECISION = os.getenv("ROFORMER_PRECISION", "auto") # auto | fp32 | bf16 | fp16 (auto = fastest safe)
 FFMPEG = os.getenv("FFMPEG_BINARY", "ffmpeg")
 
 def ensure_dirs() -> None:

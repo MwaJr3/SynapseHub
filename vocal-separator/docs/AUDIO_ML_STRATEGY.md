@@ -267,3 +267,28 @@ music removal (RoFormer vocals) → de-reverb → lead/backing split → pitch-g
 (this mode) → optional per-part masks refined by the model. Ensembling two models by averaging
 magnitudes is only worth doing after a listening/bleed comparison on the same song.
 
+## 15. Making RoFormer separation faster
+
+Measured on a 2-core Xeon (AMX/AVX512-bf16), one 8 s stereo chunk of the viperx BS-RoFormer:
+
+| Setting | Time | Match to fp32 | Verdict |
+|---|---|---|---|
+| fp32 (baseline) | ~68 s | n/a | slow |
+| int8 dynamic quantization (Linear) | 51 s | 46 dB | rejected: less gain, less accuracy |
+| **bf16 autocast** | **33 s** | **58 dB** | **used automatically when the CPU has bf16** |
+
+Other levers, all implemented in `app/roformer.py`:
+
+* `ROFORMER_PRECISION=auto|fp32|bf16|fp16`: auto picks fp16 on CUDA, bf16 on CPUs with bf16, else fp32.
+* Overlap per quality preset (compute is proportional to `1 / (1 - overlap)`): fast 12.5 %, balanced 25 %, high 50 % (reference setting), maximum 75 %.
+* Silent chunks skip the model. The last chunk is moved back instead of zero-padded.
+* `ROFORMER_DEVICE=cuda` is the largest single win; a GPU is the real answer for anything longer than a clip.
+
+Not done yet, in order of expected value: batching chunks on GPU, `torch.compile`, ONNX/fp16 export,
+caching model output by file hash so re-runs with different Level-2 options never re-separate.
+
+**Resources**
+* [audiojs/mel-roformer](https://huggingface.co/audiojs/mel-roformer): Kimberley Jensen's vocal Mel-Band RoFormer as fp16 ONNX (464 MB, MIT). Its notes put CPU at about 9 s per 8 s segment on an M4 Max, about 3x slower than GPU. Good candidate for an ONNX runtime path.
+* [splifft](https://undef13.github.io/splifft): inference library with fp16 autocast and chunk batching for BS/Mel-RoFormer; ONNX export is on its roadmap.
+* [bs-roformer-infer](https://github.com/openmirlab/bs-roformer-infer) (MIT) and [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) (MIT): ready-made loaders for UVR-family checkpoints.
+* [Towards Practical Real-Time Low-Latency Music Source Separation](https://arxiv.org/pdf/2511.13146): fp16 post-training quantization via ONNX/TensorRT cut inference time ~5x within 0.01 dB; int8 was worse. That matches our CPU result.

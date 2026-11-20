@@ -15,13 +15,13 @@ falls back to DSPEngine and records a user-visible warning.
 """
 from __future__ import annotations
 import importlib.util, subprocess, sys, tempfile
-from dataclasses import dataclass, field
 from pathlib import Path
 import numpy as np
 from scipy.ndimage import median_filter
 
 from . import dsp, audio_io
-from .config import DEMUCS_MODEL, ROFORMER_CKPT, ROFORMER_CONFIG, ROFORMER_DEVICE
+from .config import DEMUCS_MODEL
+from .engine_base import SeparationModel, SeparationResult
 
 QUALITY_PRESETS = {
     # n_fft, hop, median kernel, mask power
@@ -36,25 +36,6 @@ PROFILES = {
     "extended":            ["vocals", "drums", "bass", "piano", "guitar", "other"],  # ML 6-stem only
     "choir":               ["vocals", "drums", "bass", "other"],                     # + Level-2 voice parts
 }
-
-
-@dataclass
-class SeparationResult:
-    stems: dict[str, np.ndarray] = field(default_factory=dict)   # name -> (ch, n) float32
-    sample_rate: int = 44100
-    model_name: str = ""
-    model_version: str = ""
-    engine: str = ""
-    warnings: list[str] = field(default_factory=list)
-
-
-class SeparationModel:
-    name = "base"; version = "0"; sources: list[str] = []
-    def available(self) -> tuple[bool, str]:
-        return False, "not implemented"
-    def separate(self, audio: np.ndarray, sr: int, requested: list[str], quality: str,
-                 progress=lambda f, m: None) -> SeparationResult:
-        raise NotImplementedError
 
 
 # ---------------------------------------------------------------- DSP engine
@@ -188,144 +169,6 @@ class DemucsAdapter(SeparationModel):
             return result
 
 
-class RoformerAdapter(SeparationModel):
-    """BS-RoFormer vocal separation (MIT code from lucidrains/BS-RoFormer; weights are the user's).
-
-    The model only separates vocals. Drums/bass/other are split from the *remainder*
-    (mix - vocals) by the DSP engine, so the stems still sum exactly to the input.
-    Requires ``bs-roformer>=0.4,<0.5`` (later releases changed the layer layout and
-    cannot load checkpoints trained before that change) plus a checkpoint and its YAML config.
-    """
-    name = "bs-roformer"; version = "viperx-ep317"
-    sources = ["vocals", "instrumental", "drums", "bass", "other"]
-    OVERLAP = {"fast": 2, "balanced": 2, "high": 4, "maximum": 4}
-
-    def __init__(self):
-        self._model = None
-        self._cfg: dict | None = None
-
-    # -- configuration -------------------------------------------------
-    @staticmethod
-    def _read_config(path: Path) -> dict:
-        import yaml
-
-        class _Loader(yaml.SafeLoader):
-            pass
-        # ZFTurbo-style configs tag tuples; read them without enabling arbitrary python tags.
-        _Loader.add_constructor("tag:yaml.org,2002:python/tuple",
-                                lambda l, n: tuple(l.construct_sequence(n)))
-        cfg = yaml.load(path.read_text(), Loader=_Loader)
-        if not isinstance(cfg, dict) or "model" not in cfg or "audio" not in cfg:
-            raise ValueError("config must contain 'audio' and 'model' sections")
-        if int(cfg["model"].get("linear_transformer_depth", 0)) != 0:
-            raise ValueError("configs with linear_transformer_depth > 0 are not supported")
-        if int(cfg["model"].get("num_stems", 1)) != 1:
-            raise ValueError("only single-stem (vocal) BS-RoFormer configs are supported")
-        return cfg
-
-    def available(self):
-        if not ROFORMER_CKPT or not ROFORMER_CONFIG:
-            return False, "BS-RoFormer is not configured (set ROFORMER_CKPT and ROFORMER_CONFIG)."
-        for pkg in ("torch", "bs_roformer", "yaml"):
-            if importlib.util.find_spec(pkg) is None:
-                return False, f"BS-RoFormer needs the '{pkg}' package (pip install 'bs-roformer>=0.4,<0.5')."
-        ckpt, conf = Path(ROFORMER_CKPT), Path(ROFORMER_CONFIG)
-        if not ckpt.is_file() or not conf.is_file():
-            return False, "BS-RoFormer checkpoint or config file was not found."
-        try:
-            self._read_config(conf)
-        except Exception as e:                       # noqa: BLE001 - report, never crash a health check
-            return False, f"BS-RoFormer config is not usable: {e}"
-        return True, "BS-RoFormer checkpoint and config found."
-
-    # -- model ---------------------------------------------------------
-    def _device(self):
-        import torch
-        if ROFORMER_DEVICE in ("cpu", "cuda"):
-            return torch.device(ROFORMER_DEVICE)
-        return torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    def _load(self):
-        if self._model is not None:
-            return self._model, self._cfg
-        import inspect, torch
-        from bs_roformer import BSRoformer
-        cfg = self._read_config(Path(ROFORMER_CONFIG))
-        accepted = inspect.signature(BSRoformer.__init__).parameters
-        kwargs = {k: v for k, v in cfg["model"].items() if k in accepted}
-        # weights_only: a checkpoint is data, never code. A file that needs pickle is refused.
-        state = torch.load(ROFORMER_CKPT, map_location="cpu", weights_only=True)
-        if isinstance(state, dict) and "state_dict" in state:
-            state = state["state_dict"]
-        model = BSRoformer(**kwargs)
-        model.load_state_dict(state, strict=True)     # layout mismatch fails loudly, not silently
-        self._model, self._cfg = model.eval().to(self._device()), cfg
-        return self._model, self._cfg
-
-    def _vocals(self, audio: np.ndarray, sr: int, quality: str, progress) -> np.ndarray:
-        import torch
-        from scipy.signal import resample_poly
-        from math import gcd
-        model, cfg = self._load()
-        msr = int(cfg["audio"].get("sample_rate", 44100))
-        x = audio if audio.shape[0] >= 2 else np.repeat(audio, 2, axis=0)
-        x = x[:2].astype(np.float32)
-        if sr != msr:
-            g = gcd(sr, msr)
-            x = resample_poly(x, msr // g, sr // g, axis=1).astype(np.float32)
-        n = x.shape[1]
-        chunk = int(cfg["audio"]["chunk_size"])
-        step = max(1, chunk // self.OVERLAP.get(quality, 2))
-        fade = np.sin(np.linspace(0, np.pi, chunk, endpoint=False) + 1e-3).astype(np.float32) ** 2
-        starts = list(range(0, max(1, n - chunk + step), step)) or [0]
-        out = np.zeros_like(x); norm = np.zeros(n, dtype=np.float32)
-        dev = self._device()
-        with torch.inference_mode():
-            for i, a in enumerate(starts):
-                seg = x[:, a:a + chunk]; m = seg.shape[1]
-                if m < chunk:
-                    seg = np.pad(seg, ((0, 0), (0, chunk - m)))
-                y = model(torch.from_numpy(seg).unsqueeze(0).to(dev)).squeeze(0).cpu().numpy()
-                w = fade[:m] if a > 0 or a + chunk < n else np.ones(m, np.float32)
-                out[:, a:a + m] += y[:, :m] * w
-                norm[a:a + m] += w
-                progress(0.1 + 0.8 * (i + 1) / len(starts), f"BS-RoFormer chunk {i + 1}/{len(starts)}")
-        out /= np.maximum(norm, 1e-6)
-        if sr != msr:
-            g = gcd(sr, msr)
-            out = resample_poly(out, sr // g, msr // g, axis=1).astype(np.float32)
-        out = out[:, :audio.shape[1]]
-        if out.shape[1] < audio.shape[1]:
-            out = np.pad(out, ((0, 0), (0, audio.shape[1] - out.shape[1])))
-        return out if audio.shape[0] >= 2 else out[:1]
-
-    def separate(self, audio, sr, requested, quality, progress=lambda f, m: None):
-        ok, why = self.available()
-        if not ok:
-            raise RuntimeError(why)
-        vocals = self._vocals(audio, sr, quality, progress)
-        rest = (audio - vocals).astype(np.float32)
-        result = SeparationResult(sample_rate=sr, model_name=self.name, model_version=self.version,
-                                  engine="bs-roformer")
-        result.stems["vocals"] = vocals
-        if "instrumental" in requested:
-            result.stems["instrumental"] = rest
-        if any(s in requested for s in ("drums", "bass", "other")):
-            progress(0.92, "Splitting the instrumental into drums / bass / other (DSP)…")
-            dsp_res = REGISTRY["dsp-softmask"].separate(rest, sr, ["vocals", "drums", "bass", "other"], quality)
-            others = dsp_res.stems["other"] + dsp_res.stems["vocals"]    # stray vocal energy stays out of vocals
-            parts = {"drums": dsp_res.stems["drums"], "bass": dsp_res.stems["bass"], "other": others}
-            parts["other"] = parts["other"] + (rest - sum(parts.values()))    # exact sum with the mix
-            for k in ("drums", "bass", "other"):
-                if k in requested:
-                    result.stems[k] = parts[k].astype(np.float32)
-        result.warnings.append(
-            "Vocals were separated with BS-RoFormer. Drums, bass and other were split from the remaining "
-            "instrumental by the DSP engine, so they are weaker than a full multi-stem model.")
-        progress(1.0, "BS-RoFormer complete")
-        return result
-
-
 class UnavailableAdapter(SeparationModel):
     def __init__(self, name, pkg, sources, note):
         self.name, self.pkg, self.sources, self.note = name, pkg, sources, note
@@ -338,14 +181,17 @@ class UnavailableAdapter(SeparationModel):
         raise RuntimeError(self.available()[1])
 
 
+from .roformer import RoformerAdapter          # noqa: E402  (after the types it depends on)
+
+_DSP = DSPEngine()
 REGISTRY: dict[str, SeparationModel] = {
-    "dsp-softmask": DSPEngine(),
+    "dsp-softmask": _DSP,
     "htdemucs": DemucsAdapter(),
     "spleeter": UnavailableAdapter("spleeter", "spleeter", ["vocals", "drums", "bass", "piano", "other"],
                                    "Spleeter is not installed (legacy TensorFlow stack; see docs/ML_NOTES.md)."),
     "mdx": UnavailableAdapter("mdx-net", "mdx", ["vocals", "instrumental"],
                               "No MDX-Net weights are bundled; register validated weights to enable."),
-    "roformer": RoformerAdapter(),
+    "roformer": RoformerAdapter(instrument_splitter=_DSP),
 }
 
 
