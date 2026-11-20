@@ -241,3 +241,29 @@ These tests validate the signal-processing mechanics. They do not establish equa
 7. **Human review tools** for splitting/merging tracks and editing masks before export.
 
 No future model should bypass the existing evidence gates merely because it is neural; it must improve measured separation and calibration on held-out material.
+
+## 14. Every-voice-part mode and next model backends
+
+**Every-voice-part mode (`all_voice_parts`).** The default path withholds a line whose classifier
+confidence is below the gate. Choir material often has several lines whose ranges overlap (alto vs
+tenor, tenor vs baritone), so the gate removes exactly the lines a person wants. The mode keeps the gate
+for the *label* but not for the *export*: lines are assigned to the six chart parts by a dynamic program
+over lines sorted by median pitch, scoring `log(classifier probability) + log(chart range fit)` under the
+constraint that a lower line is never a higher part, with a small bonus for covering a new part. Lines
+the classifier already trusts act as anchors. Lines placed only by this procedure are labelled
+`best_guess` everywhere (API, stem chip, voice card). Lines under 1.2 s are never assigned. This is a
+heuristic over pitch evidence, not a trained SATB model; it cannot tell two singers on one pitch apart.
+
+**Candidate backends (all MIT-licensed, so they may be integrated, unlike AGPL StemDeck):**
+
+| Repo | Role | Status here |
+|---|---|---|
+| `BS-RoFormer` (lucidrains) | Architecture for band-split RoFormer vocal/stem separation | Not integrated: needs a trained checkpoint, which the sandbox cannot download. Plan: new `RoformerAdapter` in `engines.py`, checkpoint path from config, `available()` false without it. |
+| `mdx-net` (KINoAI) | ONNX/PyTorch first-pass vocal/instrument model | Not integrated: same reason. Plan: `MdxAdapter` already registered as unavailable. |
+| `crepe` | Monophonic pitch tracker (needs TensorFlow) | Not integrated: our tracker is polyphonic. Plan: use CREPE/torchcrepe only to refine a *single* isolated line's contour. |
+
+**Intended chain once weights are available** (each stage optional, each recorded in the report):
+music removal (RoFormer vocals) → de-reverb → lead/backing split → pitch-guided part assignment
+(this mode) → optional per-part masks refined by the model. Ensembling two models by averaging
+magnitudes is only worth doing after a listening/bleed comparison on the same song.
+
