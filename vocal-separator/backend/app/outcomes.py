@@ -13,6 +13,7 @@ DISABLED = "voice_analysis_disabled"
 NO_VOCAL_ENERGY = "no_vocal_energy"
 NO_PART_MET_THRESHOLD = "no_part_met_threshold"
 NO_PART_STEMS = "no_part_stems_written"
+ALL_PARTS_READY = "all_voice_parts_ready"
 
 MESSAGES: dict[str, str] = {
     READY: "Voice-part stems were reconstructed. They are experimental estimates, not studio multitracks.",
@@ -21,6 +22,8 @@ MESSAGES: dict[str, str] = {
                       "instrumental, or the vocals may not be centre-panned."),
     NO_PART_MET_THRESHOLD: ("Vocal lines were found, but none had enough evidence to export as a part. "
                             "The analysis is shown instead of guessing."),
+    ALL_PARTS_READY: ("Every detected line was assigned to a voice part (soprano to bass). Parts marked best guess "
+                      "were placed by pitch order and range fit, not by a confident classification."),
     NO_PART_STEMS: "Vocal lines passed the gates but no part stem could be written. Try again.",
 }
 

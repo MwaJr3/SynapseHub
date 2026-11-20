@@ -239,6 +239,7 @@ class JobIn(BM):
     profile: str = "choir"             # vocals_instrumental|full|extended|choir
     engine: str = "auto"               # auto|demucs|dsp
     vocal_analysis: bool = True
+    all_voice_parts: bool = False
 
 
 def job_summary(j: ProcessingJob) -> dict:
@@ -344,7 +345,8 @@ def job_results(job_id: int, user: User = Depends(current_user)):
                 **{k: val for k, val in (v.data or {}).items()
                    if k in ("predictions", "range", "pitch_statistics", "voiced_seconds",
                             "stem_available", "stem_unavailable_reason", "confidence_label", "predicted",
-                            "chart_fit", "is_lead", "stem_note")},
+                            "chart_fit", "is_lead", "stem_note",
+                            "assigned_part", "assignment")},
             } for v in voices],
             "report": j.report or {},
         }

@@ -109,6 +109,7 @@ export const api = {
       profile: string;
       engine: string;
       vocal_analysis: boolean;
+      all_voice_parts?: boolean;
     },
   ) => request<JobSummary>('/api/jobs', { method: 'POST', body: JSON.stringify(body) }, token),
   job: (token: string, jobId: number) =>

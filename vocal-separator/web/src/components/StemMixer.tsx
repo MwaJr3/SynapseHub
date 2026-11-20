@@ -584,6 +584,7 @@ export function StemMixer({
                 <div className="stem-title-row">
                   <h3>{displayName}</h3>
                   <span className="kind-chip">{stem.kind.replace('_', ' ')}</span>
+                  {stem.quality?.best_guess === true && <span className="kind-chip">best guess</span>}
                 </div>
                 <p className="muted small-text">
                   Source identity: {prettyName(stem.name)}

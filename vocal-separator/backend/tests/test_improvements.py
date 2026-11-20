@@ -125,6 +125,8 @@ def test_outcome_codes_have_fixed_safe_messages():
 
 # ---------------------------------------------------------------- end to end
 def _auth(email):
+    from app import main as _main
+    _main._hits.clear()                  # the auth limiter is per-minute; tests share one client IP
     r = client.post("/api/auth/register", json={"email": email, "password": "hunter2-hunter2"})
     if r.status_code == 409:
         r = client.post("/api/auth/login", json={"email": email, "password": "hunter2-hunter2"})
@@ -212,3 +214,75 @@ def test_minus_one_api(finished_job):
     names = {s["name"] for s in client.get(f"/api/jobs/{jid}/results", headers=h).json()["stems"]}
     assert "minus_drums" in names
     assert client.get(st["download_url"].split("?")[0] + "?token=0.bad").status_code == 403
+
+
+# ---------------------------------------------------------------- every voice part
+def _pv(vid, median, secs, cls="unknown", avail=False, probs=None):
+    probs = probs or {}
+    return {"voice_id": vid, "classification": cls, "stem_available": avail, "voiced_seconds": secs,
+            "pitch_statistics": {"median_midi": median},
+            "predictions": [{"class": p, "probability": probs.get(p, 0.05)} for p in vocal.PART_ORDER],
+            "chart_fit": vocal.chart_fit(np.full(50, median))}
+
+
+def test_assign_parts_orders_lines_by_pitch_and_flags_guesses():
+    voices = [_pv("a", 72, 10, "soprano", True), _pv("b", 66, 20), _pv("c", 61, 20),
+              _pv("d", 58, 20), _pv("e", 54, 20, "baritone", True), _pv("f", 49, 20)]
+    vocal.assign_parts(voices)
+    idx = [vocal.PART_ORDER.index(v["assigned_part"]) for v in voices]
+    assert idx == sorted(idx), "a lower line must never be a higher part"
+    assert voices[0]["assigned_part"] == "soprano" and voices[0]["assignment"] == "classified"
+    assert voices[4]["assigned_part"] == "baritone"
+    assert voices[5]["assigned_part"] == "bass" and voices[5]["assignment"] == "best_guess"
+    assert voices[1]["assignment"] == "best_guess"
+
+
+def test_assign_parts_skips_short_lines_and_survives_conflicts():
+    voices = [_pv("hi", 50, 10, "soprano", True), _pv("lo", 70, 10, "bass", True), _pv("blip", 60, 0.3)]
+    vocal.assign_parts(voices)                      # trusted classes contradict pitch order
+    assert voices[2]["assigned_part"] is None
+    assert voices[0]["assigned_part"] == "soprano" and voices[1]["assigned_part"] == "bass"
+
+
+def test_group_part_audio_sums_members_and_marks_guesses():
+    voices = [_pv("a", 60, 10), _pv("b", 61, 5)]
+    for v in voices:
+        v["assigned_part"], v["assignment"] = "tenor", "best_guess"
+    voices[0]["assignment"] = "classified"
+    stems = {"a": np.ones(4, np.float32), "b": np.full(4, 2, np.float32)}
+    g = vocal.group_part_audio(voices, stems)["tenor"]
+    assert np.allclose(g["audio"], 3) and g["primary"] == "a" and g["best_guess"] is True
+
+
+@pytest.fixture(scope="module")
+def all_parts_job():
+    h = _auth("allparts@example.com")
+    pid = client.post("/api/projects", json={"title": "SATB parts"}, headers=h).json()["id"]
+    song = make_satb_mix()
+    buf = io.BytesIO(); sf.write(buf, song["mix"].T, 44100, format="WAV", subtype="PCM_16")
+    afid = client.post(f"/api/projects/{pid}/audio", headers=h,
+                       files={"file": ("satb.wav", io.BytesIO(buf.getvalue()), "audio/wav")}).json()["audio_file_id"]
+    jid = client.post("/api/jobs", headers=h, json={"audio_file_id": afid, "quality": "fast", "profile": "choir",
+                                                    "engine": "dsp", "vocal_analysis": True,
+                                                    "all_voice_parts": True}).json()["id"]
+    deadline = time.time() + 300
+    while time.time() < deadline:
+        if client.get(f"/api/jobs/{jid}", headers=h).json()["state"] in ("COMPLETED", "FAILED"):
+            break
+        time.sleep(1)
+    res = client.get(f"/api/jobs/{jid}/results", headers=h).json()
+    assert res["state"] == "COMPLETED", res
+    return res
+
+
+def test_all_parts_job_exports_one_stem_per_part(all_parts_job):
+    res = all_parts_job
+    names = [s["name"] for s in res["stems"]]
+    assert len(names) == len(set(names))
+    parts = {s["name"]: s for s in res["stems"] if s["kind"] == "voice_part"}
+    assert parts, names
+    assert res["report"]["voice_outcome"]["code"] == outcomes.ALL_PARTS_READY
+    assert "bass" in {s["name"] for s in res["stems"] if s["kind"] == "music"}, "Level-1 bass must survive"
+    for name, meta in res["report"]["voice_analysis"]["part_stems"].items():
+        assert meta["part"] in vocal.PART_ORDER and meta["voice_ids"]
+    assert all(v["assigned_part"] for v in res["voices"] if v["voiced_seconds"] >= vocal.MIN_VOICE_SECONDS)

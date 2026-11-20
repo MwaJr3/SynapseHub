@@ -128,6 +128,8 @@ export interface ChartFit {
 export interface Voice {
   voice_id: string;
   is_lead?: boolean;
+  assigned_part?: string | null;
+  assignment?: 'classified' | 'best_guess' | null;
   stem_note?: string;
   chart_fit?: ChartFit[];
   role: string;

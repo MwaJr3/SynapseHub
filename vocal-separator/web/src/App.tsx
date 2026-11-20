@@ -170,6 +170,7 @@ export default function App() {
   const [profile, setProfile] = useState('choir');
   const [engine, setEngine] = useState('auto');
   const [vocalAnalysis, setVocalAnalysis] = useState(true);
+  const [allVoiceParts, setAllVoiceParts] = useState(true);
 
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [jobDetail, setJobDetail] = useState<JobDetail | null>(null);
@@ -198,8 +199,13 @@ export default function App() {
   }, [results]);
   const associatedStemByVoice = useMemo(() => {
     const map = new Map<string, number>();
-    results?.stems.forEach((stem) => {
-      if (stem.voice_id) map.set(stem.voice_id, stem.id);
+    const stems = results?.stems ?? [];
+    // The lead copy first, so a merged part stem (which carries every member line) wins.
+    stems.filter((stem) => stem.voice_id && stem.name === 'lead_vocal').forEach((stem) => map.set(stem.voice_id, stem.id));
+    stems.filter((stem) => stem.voice_id && stem.name !== 'lead_vocal').forEach((stem) => {
+      map.set(stem.voice_id, stem.id);
+      const members = stem.quality?.voice_ids;
+      if (Array.isArray(members)) members.forEach((id) => map.set(String(id), stem.id));
     });
     return map;
   }, [results]);
@@ -482,6 +488,7 @@ export default function App() {
         profile,
         engine,
         vocal_analysis: vocalAnalysis,
+        all_voice_parts: vocalAnalysis && allVoiceParts,
       });
       setSelectedJobId(created.id);
       setJobDetail({ ...created, stages: [] });
@@ -964,6 +971,18 @@ export default function App() {
                     <small>Pitch tracks, ranges, probabilities and confidence-gated part reconstruction.</small>
                   </span>
                 </label>
+                <label className="check-field large-check">
+                  <input
+                    type="checkbox"
+                    checked={allVoiceParts}
+                    disabled={!vocalAnalysis}
+                    onChange={(event) => setAllVoiceParts(event.target.checked)}
+                  />
+                  <span>
+                    <strong>Separate every voice part (soprano → bass)</strong>
+                    <small>One stem per part. Low-confidence lines are placed by pitch order and marked best guess.</small>
+                  </span>
+                </label>
                 <div className="engine-note">
                   <strong>Current server:</strong>{' '}
                   {health?.engines.demucs
@@ -1191,6 +1210,7 @@ export default function App() {
                             <div>
                               <p className="eyebrow">
                                 {voice.voice_id.replace('_', ' ')} · {voice.is_lead ? 'Lead line' : prettyName(voice.role)}
+                                {voice.assigned_part ? ` · Part: ${prettyName(voice.assigned_part)}${voice.assignment === 'best_guess' ? ' (best guess)' : ''}` : ''}
                               </p>
                               <h3>{prettyName(displayClass)}</h3>
                               {voice.user_classification && voice.user_classification !== voice.classification && (
