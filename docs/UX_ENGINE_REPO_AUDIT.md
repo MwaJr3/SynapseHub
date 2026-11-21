@@ -1,8 +1,8 @@
 # UX engine repository audit
 
-Generated 2026-10-29 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
+Generated 2026-11-21 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
 
-Scope: **32 frontends**, **572 source files**, **756 findings**.
+Scope: **32 frontends**, **580 source files**, **757 findings**.
 
 ## Method and limitations
 
@@ -19,7 +19,7 @@ Scope: **32 frontends**, **572 source files**, **756 findings**.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | Portfolio website | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Challenge collection | 13 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Company platform (Next.js) | 106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Company platform (Next.js) | 114 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
 | WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Vocal separator web app | 11 | 0 | 0 | 76 | 0 | 0 | 75 | 1 |
 | companies/tamuzi/campusflow | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -64,9 +64,11 @@ No findings — every static detector passed.
 
 ## Company platform (Next.js)
 
-Root: `company-platform/src` — 0 findings.
+Root: `company-platform/src` — 1 findings.
 
-No findings — every static detector passed.
+| # | Severity | Conf. | Rule | Location | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| 1 | minor | medium | A11Y-HEADING-01 (P62/P41) | `company-platform/src/app/openjarvis/page.tsx:113` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## WorkNiche (Next.js)
 
@@ -1045,6 +1047,7 @@ Root: `companies/velaqori/threatintel-desk/frontend/src` — 6 findings.
 
 | Frontend | Location | Off-scale values |
 | --- | --- | --- |
+| Company platform (Next.js) | `company-platform/src/app/openjarvis/page.tsx:113` | px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:86` | 20px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:96` | 14px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:135` | 10px |

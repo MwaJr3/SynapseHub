@@ -89,10 +89,26 @@ describe('UX engine repository gate', () => {
     for (const finding of remaining) {
       expect(finding.severity).toBe('minor');
       expect(finding.confidence).not.toBe('high');
-      expect(['TOKEN-SPACING-01', 'A11Y-SCROLL-01']).toContain(
-        finding.ruleId,
-      );
+      expect([
+        'TOKEN-SPACING-01',
+        'A11Y-SCROLL-01',
+        'A11Y-HEADING-01',
+      ]).toContain(finding.ruleId);
     }
+
+    // Heading-level cues are pinned by location too. The detector reads one
+    // file at a time, so it cannot see the <h2> that a shared component
+    // renders. Reviewed: company-platform's `Section` (components/ui.tsx)
+    // renders each title as an <h2>, so the composed OpenJarvis page is
+    // h1 > h2 > h3 and the h3 cards are correctly nested. A new cue fails this
+    // gate until the composed page has been checked and the location added.
+    const headingCues = remaining
+      .filter((finding) => finding.ruleId === 'A11Y-HEADING-01')
+      .map((finding) => finding.location)
+      .sort();
+    expect(headingCues).toEqual([
+      'company-platform/src/app/openjarvis/page.tsx:113',
+    ]);
 
     // The scrollable-region inventory is pinned by location. The CSS detector
     // cannot see rendered overflow or tab order, so each cue is a low-confidence
