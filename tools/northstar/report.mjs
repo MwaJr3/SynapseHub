@@ -70,7 +70,7 @@ export function renderReport(report, options = {}) {
     lines.push(`- **Pattern:** ${finding.pattern}`);
     lines.push(`- **Why it matters:** ${finding.why}`);
     lines.push(`- **Fix:** ${finding.fix}`);
-    if (finding.detail) lines.push(`- **Measured:** ${finding.detail}`);
+    if (finding.detail) lines.push(`- **Found in source:** ${finding.detail}`);
     lines.push(`- **Evidence:** \`${cell(finding.evidence)}\``);
     lines.push('');
   });

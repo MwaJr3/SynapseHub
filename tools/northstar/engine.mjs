@@ -26,29 +26,18 @@ export const SEVERITY_LABEL = {
 };
 
 /**
- * Scan one project.
- * @param {{ name:string, root:string, kind:string, surface?:string }} project
+ * Run every rule over one file.
+ *
+ * Extracted from `scanProject` so the advisory hook can check the single file that
+ * was just written with exactly the rules, comment stripping and context a full
+ * scan uses — there is one definition of "what the engine says about this file".
+ *
+ * @param {{ relPath:string, text:string, extension?:string }} view
+ * @param {{ name:string, surface?:string }} project
  */
-export function scanProject(project, options = {}) {
-  const { rules = RULES } = options;
-  const files = walk(project.root, { exclude: project.exclude ?? [] });
-  const allViews =
-    project.kind === 'server-rendered'
-      ? serverRenderedViews(project.root)
-      : files.map((file) => ({
-          relPath: path.relative(project.root, file).split(path.sep).join('/'),
-          text: fs.readFileSync(file, 'utf8'),
-          absolute: file,
-        }));
-  // `includeOnly` narrows the scan to a set of absolute paths. It is how
-  // `/ux-review` looks at a diff without reading the rest of the tree.
-  const wanted = project.includeOnly ? new Set(project.includeOnly) : null;
-  const views = wanted
-    ? allViews.filter((view) => (view.absolute ? wanted.has(view.absolute) : true))
-    : allViews;
+export function scanView(view, project, rules = RULES) {
   const findings = [];
-
-  for (const view of views) {
+  {
     const text = stripComments(view.text);
     const extension = view.extension ?? path.extname(view.relPath).toLowerCase();
     const context = {
@@ -84,6 +73,33 @@ export function scanProject(project, options = {}) {
       findings.push(...hits.map((hit) => ({ ...hit, project: project.name })));
     }
   }
+  return findings;
+}
+
+/**
+ * Scan one project.
+ * @param {{ name:string, root:string, kind:string, surface?:string }} project
+ */
+export function scanProject(project, options = {}) {
+  const { rules = RULES } = options;
+  const files = walk(project.root, { exclude: project.exclude ?? [] });
+  const allViews =
+    project.kind === 'server-rendered'
+      ? serverRenderedViews(project.root)
+      : files.map((file) => ({
+          relPath: path.relative(project.root, file).split(path.sep).join('/'),
+          text: fs.readFileSync(file, 'utf8'),
+          absolute: file,
+        }));
+  // `includeOnly` narrows the scan to a set of absolute paths. It is how
+  // `/ux-review` looks at a diff without reading the rest of the tree.
+  const wanted = project.includeOnly ? new Set(project.includeOnly) : null;
+  const views = wanted
+    ? allViews.filter((view) => (view.absolute ? wanted.has(view.absolute) : true))
+    : allViews;
+  const findings = [];
+
+  for (const view of views) findings.push(...scanView(view, project, rules));
 
   const ranked = rank(findings);
   return {

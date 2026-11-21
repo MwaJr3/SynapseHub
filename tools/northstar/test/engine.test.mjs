@@ -62,6 +62,7 @@ test('the bad-form fixture produces exactly its planted defects', () => {
     'disabled-without-reason',
     'native-alert',
     'no-focus-style',
+    'password-autocomplete',
     'text-contrast',
     'unlabelled-input',
   ]);
@@ -127,4 +128,40 @@ test('ranking is deterministic and keeps the project in the key', () => {
   const ranked = rank([a, b, { ...a }]);
   assert.equal(ranked.length, 2, 'the same path in two products is two files');
   assert.equal(ranked.find((finding) => finding.project === 'one').occurrences, 2);
+});
+
+test('the keyboard-and-media fixture finds exactly the planted defects and spares the correct twins', () => {
+  const project = scan('keyboard-and-media');
+  assert.deepEqual(ids(project), [
+    'click-on-non-interactive',
+    'image-without-dimensions',
+    'input-type-generic',
+    'tabindex-positive',
+  ]);
+  const byId = (id) => project.findings.find((finding) => finding.id === id);
+  assert.equal(byId('click-on-non-interactive').detail, '<div onClick>');
+  assert.equal(byId('click-on-non-interactive').occurrences ?? 1, 1, 'the backdrop and stopPropagation wrappers are not reported');
+  assert.equal(byId('tabindex-positive').detail, 'tabindex=3', 'tabIndex={0} is fine; only the positive value is reported');
+  assert.equal(byId('input-type-generic').detail, 'looks like type="email"');
+  assert.equal(byId('image-without-dimensions').occurrences ?? 1, 1, 'the sized image is not reported');
+  assert.equal(byId('tabindex-positive').pattern, 'P46');
+  assert.equal(byId('click-on-non-interactive').pattern, 'X13');
+});
+
+test('the auth-and-motion fixture finds the planted defects and spares the correct twins', () => {
+  const project = scan('auth-and-motion');
+  assert.deepEqual(ids(project), [
+    'accordion-without-expanded',
+    'linear-easing',
+    'no-reduced-motion',
+    'otp-autocomplete',
+    'password-autocomplete',
+    'transition-all',
+  ]);
+  const byId = (id) => project.findings.find((finding) => finding.id === id);
+  assert.match(byId('password-autocomplete').detail, /no autocomplete/);
+  assert.equal(byId('password-autocomplete').occurrences ?? 1, 1, 'the new-password field is fine');
+  assert.equal(byId('otp-autocomplete').occurrences ?? 1, 1, 'the one-time-code field is fine');
+  assert.equal(byId('linear-easing').occurrences ?? 1, 1, 'a linear spinner animation is not a transition');
+  assert.equal(byId('accordion-without-expanded').pattern, 'P62');
 });

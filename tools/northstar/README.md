@@ -13,7 +13,7 @@ are complementary and both are kept, behind one entry point:
 
 | Layer | Where | Reached by |
 | --- | --- | --- |
-| Severity-ranked rules (27 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Severity-ranked rules (36 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
 | Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
 
 It holds to a rule most design tooling breaks: **it does not claim to have seen
@@ -62,38 +62,48 @@ Node 20 or newer. No dependencies, no network access, no telemetry.
 
 ## What it checks
 
-Twenty-seven checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
+Thirty-six checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
 rendered from Python string templates. The ones that find the most, in this repository:
 
 | Check | Pattern | What it proves |
 | --- | --- | --- |
 | `text-contrast` | P70 | Two colours resolve to a ratio below 4.5:1 — printed as `#ffffff on #0891b2 = 3.68:1` |
 | `placeholder-contrast` | P24 | Placeholder text below 4.5:1 against its own field background |
-| `unlabelled-input` | P51 | An input with no label, no `aria-label`, and no label wrapper |
+| `unlabelled-input` | X05 | An input with no label, no `aria-label`, and no label wrapper |
 | `no-focus-style` | P46 | A stylesheet that styles buttons and links but never styles focus |
 | `focus-ring-removed` | P46 | `outline: none` with nothing painted in its place |
 | `disabled-without-reason` | P05 | A button blocked on unfilled content, with no explanation in the DOM |
 | `disabled-contrast` | P70 | `:disabled { opacity: < 0.75 }` — the label usually ends up below 3:1 |
-| `native-confirm` | P48 | `window.confirm` for a destructive action |
+| `native-confirm` | P11 | `window.confirm` for a destructive action |
 | `native-alert` | P23 | Errors surfaced through `alert()` |
 | `swallowed-error` | P23 | `catch {}` / `.catch(() => {})` in a data path |
-| `bare-loading` | P54 | "Loading…" with no `role="status"` and no shape |
-| `no-reduced-motion` | P21 | Motion with no `prefers-reduced-motion` escape |
-| `animate-height-auto` | P21 | A transition on `height: auto`, which cannot animate |
+| `bare-loading` | P28 | "Loading…" with no `role="status"` and no shape |
+| `no-reduced-motion` | P09 | Motion with no `prefers-reduced-motion` escape |
+| `animate-height-auto` | P09 | A transition on `height: auto`, which cannot animate |
 | `zindex-arms-race` | P44 | `z-index` of 100 or more, instead of a stacking context |
 | `radius-off-scale` | P72 | More than five distinct border radii in one stylesheet |
 | `table-semantics` | P63 | `<th>` without `scope` |
 | `numeric-cells` | P63 | Numeric cells without `tabular-nums` or right alignment |
 | `pagination-not-in-url` | P61 | Page state in component state, so a refresh loses it |
-| `accidental-submit` | P51 | An `onClick` button inside a form that also has `onSubmit` |
-| `image-without-alt` | P15 | `<img>` with no `alt` attribute |
-| `fixed-width-container` | P66 | A hard width of 360px or more, which cannot fit a 320px viewport |
+| `accidental-submit` | X05 | An `onClick` button inside a form that also has `onSubmit` |
+| `image-without-alt` | X01 | `<img>` with no `alt` attribute |
+| `fixed-width-container` | X09 | A hard width of 360px or more, which cannot fit a 320px viewport |
+
+| `tabindex-positive` | P46 | `tabindex` above 0, which overrides the natural tab order |
+| `image-without-dimensions` | X01 | `<img>` with no width/height or aspect-ratio, so the page jumps as it loads |
+| `input-type-generic` | X05 | A field named email/phone/url that is not typed or given an `inputmode` |
+| `click-on-non-interactive` | X13 | `onClick` on a `<div>`/`<span>` with no role, tabindex or key handler |
+| `otp-autocomplete` | P60 | A verification-code field without `autocomplete="one-time-code"` |
+| `password-autocomplete` | P57 | `type="password"` with no `current-password` / `new-password` hint |
+| `transition-all` | P09 | `transition: all`, which animates layout properties nobody chose |
+| `linear-easing` | P21 | A UI transition on `linear` (spinners and progress bars are exempt) |
+| `accordion-without-expanded` | P62 | An accordion with no `aria-expanded` and no `<details>` |
 
 Plus `hover-only-action`, `raw-colour-in-class`, `nav-missing-current`,
 `placeholder-link`, `target-blank-noopener` and `small-target`. The full mapping lives
 in `PATTERNS.md` and `patterns.mjs`.
 
-**Forty-eight of the 76 patterns are not machine-checked.** That is stated in the
+**Fifty-two of the 76 canonical patterns are not machine-checked.** That is stated in the
 pattern library, in the audit report, and in every command's output. `PATTERNS.md`
 lists them with the standard they are held to.
 
@@ -136,9 +146,35 @@ Two specialists are included because delegation genuinely helps:
 `ux-auditor` (audits and reports, never edits) and `design-system-cartographer`
 (inventories an existing system before anyone replaces it).
 
-## The hook
+## Numbering
 
-One hook, and only because it is reliable: `hooks/guard-writes.mjs` runs before every
+Canonical patterns are `P01`–`P76` (zero-padded, so they never collide with the
+severities `P0`–`P3`); the TypeScript engine writes the same patterns as `P1`–`P76`.
+Northstar-only checks are extensions `X01`–`X13`. Every record keeps a `legacyId` that
+traces it to its 1.0.x number. `PATTERNS.md` is generated: `northstar patterns --markdown`.
+
+## Measuring a real page
+
+`northstar page <url|file> [--viewports 320,768,1280] [--out dir] [--json file]` opens
+the page in headless Chromium (Playwright, optional), presses Tab, and measures
+horizontal overflow, target sizes, accessible names, alt text, headings, document
+basics and focus visibility. It never clicks or submits. Without Playwright it prints
+**Not measured** and exits 3 — it does not guess. Only http(s) URLs and local files are
+opened.
+
+## The hooks
+
+Two hooks, deliberately different in strength. The **enforced** one blocks; the
+**advisory** one only informs.
+
+- **Enforced — `hooks/guard-writes.mjs`** (PreToolUse, Bash). See below.
+- **Advisory — `hooks/post-edit-advisory.mjs`** (PostToolUse, Edit|Write|MultiEdit)
+  audits the file just edited and hands Claude up to five P0–P2 findings as context.
+  It always exits 0 and never blocks. `NORTHSTAR_ADVISORY=off` disables it.
+
+### The guard
+
+The only enforced hook, and only because it is reliable: `hooks/guard-writes.mjs` runs before every
 Bash command and blocks `git commit`, `git push`, `git reset --hard`, `npm publish`,
 `vercel deploy` and recursive deletes. It is a pure string check — no state, no
 network, no guessing. It exits 2 with a reason, which Claude Code feeds back to the

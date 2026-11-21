@@ -106,6 +106,22 @@ function lexicalScore(
       }
     }
   }
+  // The full write-up is a tie-breaker, never a driver: it lets a technical term
+  // ("grid-template-rows", "safe triangle") find its pattern without letting long
+  // prose outrank a title or tag match. Capped below the smallest integer weight.
+  const writeUp = [
+    pattern.knowledge.tagline,
+    ...pattern.knowledge.insights,
+    ...pattern.knowledge.do,
+    ...pattern.knowledge.dont,
+  ]
+    .join(' ')
+    .toLowerCase();
+  const writeUpHits = tokens.filter((token) => writeUp.includes(token)).length;
+  if (writeUpHits > 0) {
+    score += Math.min(0.9, writeUpHits * 0.25);
+    reasons.push('named in the pattern write-up');
+  }
   return { score, reasons: [...new Set(reasons)].slice(0, 4) };
 }
 

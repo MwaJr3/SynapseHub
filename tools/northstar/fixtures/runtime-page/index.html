@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- Fixture for the runtime probe: planted defects measured by a real browser, no <html lang>, no <title>, no viewport meta. -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  .wide { width: 520px; background: #eee; }
+  .tiny { width: 14px; height: 14px; padding: 0; border: 1px solid #333; }
+  a.plain:focus, input.quiet:focus { outline: none; }
+  a.plain { color: #00e; text-decoration: none; }
+  input.quiet { border: 1px solid #999; }
+</style>
+</head>
+<body>
+  <h2>Account</h2>
+  <div class="wide">This panel is wider than a small phone.</div>
+  <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="40" height="40">
+  <button class="tiny"></button>
+  <input class="quiet" name="email">
+  <a class="plain" href="#next">Next</a>
+  <h4>Details</h4>
+  <button tabindex="3">Save</button>
+</body>
+</html>

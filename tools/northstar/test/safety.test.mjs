@@ -117,7 +117,7 @@ test('nothing in the plugin reads credentials or environment secrets', () => {
   // one. A new variable has to be justified by editing this list.
   assert.deepEqual(
     [...variables].sort(),
-    ['NORTHSTAR_ALLOW_GIT', 'NORTHSTAR_SKIP'],
+    ['NORTHSTAR_ADVISORY', 'NORTHSTAR_ALLOW_GIT', 'NORTHSTAR_SKIP'],
     'the only environment variables read are the documented overrides',
   );
 });

@@ -390,7 +390,7 @@ const placeholderContrast = {
 /** Rule 7 — an input with no accessible name. */
 const unlabelledInput = {
   id: 'unlabelled-input',
-  pattern: 'P51',
+  pattern: 'X05',
   severity: 'P1',
   confidence: 'medium',
   aggregate: 'file',
@@ -418,7 +418,7 @@ const unlabelledInput = {
 /** Rule 8 — native `confirm()` for a destructive or consequential action. */
 const nativeConfirm = {
   id: 'native-confirm',
-  pattern: 'P48',
+  pattern: 'P11',
   severity: 'P2',
   confidence: 'high',
   title: 'Consequential action uses the browser’s blocking confirm()',
@@ -463,7 +463,7 @@ const nativeAlert = {
 /** Rule 10 — a page-level load that only says "Loading…". */
 const bareLoading = {
   id: 'bare-loading',
-  pattern: 'P54',
+  pattern: 'P28',
   severity: 'P2',
   confidence: 'high',
   title: 'Loading state is bare text with no status semantics or shape',
@@ -497,7 +497,7 @@ const bareLoading = {
 /** Rule 11 — motion with no reduced-motion escape. */
 const noReducedMotion = {
   id: 'no-reduced-motion',
-  pattern: 'P21',
+  pattern: 'P09',
   severity: 'P2',
   confidence: 'high',
   title: 'Motion declared without a prefers-reduced-motion escape',
@@ -755,7 +755,7 @@ const navMissingCurrent = {
 /** Rule 21 — an image with no alternative text. */
 const imageWithoutAlt = {
   id: 'image-without-alt',
-  pattern: 'P15',
+  pattern: 'X01',
   severity: 'P1',
   confidence: 'high',
   aggregate: 'file',
@@ -777,7 +777,7 @@ const imageWithoutAlt = {
 /** Rule 22 — a link that goes nowhere. */
 const placeholderLink = {
   id: 'placeholder-link',
-  pattern: 'P51',
+  pattern: 'X02',
   severity: 'P2',
   confidence: 'high',
   aggregate: 'file',
@@ -831,7 +831,7 @@ const swallowedError = {
 /** Rule 24 — a button inside a form that will submit it by accident. */
 const accidentalSubmit = {
   id: 'accidental-submit',
-  pattern: 'P51',
+  pattern: 'X05',
   severity: 'P2',
   confidence: 'medium',
   aggregate: 'file',
@@ -865,7 +865,7 @@ const accidentalSubmit = {
 /** Rule 25 — a new tab opened without `rel="noopener"`. */
 const targetBlank = {
   id: 'target-blank-noopener',
-  pattern: 'P17',
+  pattern: 'X02',
   severity: 'P3',
   confidence: 'high',
   aggregate: 'file',
@@ -887,7 +887,7 @@ const targetBlank = {
 /** Rule 26 — a control that is sized below the 24px minimum target. */
 const smallTarget = {
   id: 'small-target',
-  pattern: 'P42',
+  pattern: 'X03',
   severity: 'P3',
   confidence: 'low',
   aggregate: 'file',
@@ -910,7 +910,7 @@ const smallTarget = {
 /** Rule 27 — a container wider than a small phone that cannot shrink. */
 const fixedWidthContainer = {
   id: 'fixed-width-container',
-  pattern: 'P66',
+  pattern: 'X09',
   severity: 'P2',
   confidence: 'medium',
   aggregate: 'file',
@@ -943,6 +943,248 @@ const fixedWidthContainer = {
   },
 };
 
+/** Rule 28 — a positive tabindex that reorders the page's focus sequence. */
+const tabindexPositive = {
+  id: 'tabindex-positive',
+  pattern: 'P46',
+  severity: 'P2',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Positive tabindex overrides the natural focus order',
+  why:
+    'WCAG 2.4.3. A `tabindex` above 0 jumps the element ahead of everything in DOM order, so Tab moves around the page unpredictably — and every later element added to the page has to be numbered around it.',
+  fix: 'Use `tabindex="0"` to make an element focusable in its natural place, `-1` for programmatic focus only, and fix the DOM order instead of numbering it.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/\btab[iI]ndex\s*=\s*(?:\{\s*)?["']?\s*([1-9]\d*)\b/g)) {
+      out.push(finding(tabindexPositive, file, text, match.index, { detail: `tabindex=${match[1]}` }));
+    }
+    return out;
+  },
+};
+
+/** Rule 29 — an image with no declared size, which lets the layout jump when it loads. */
+const imageWithoutDimensions = {
+  id: 'image-without-dimensions',
+  pattern: 'X01',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Image declares no width and height, so the layout can shift when it loads',
+  why:
+    'Without dimensions the browser reserves no space, then pushes the content below the image down when it arrives (layout shift). The reader loses their place, and a tap can land on whatever moved under it.',
+  fix: 'Add `width` and `height` attributes (the browser derives the aspect ratio from them), or give the image a sized container or an `aspect-ratio`.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'img')) {
+      if (/\bwidth\s*=/.test(element) && /\bheight\s*=/.test(element)) continue;
+      // A sized Tailwind box, an aspect ratio or an inline size reserves the space too.
+      if (/\bsize-/.test(element)) continue;
+      if (/\bw-[^\s"'`}]+/.test(element) && /\bh-[^\s"'`}]+/.test(element)) continue;
+      if (/\baspect-|aspect-?ratio/i.test(element)) continue;
+      if (/\bstyle\s*=/.test(element) && /width/.test(element) && /height/.test(element)) continue;
+      out.push(finding(imageWithoutDimensions, file, text, index, { detail: (element.match(/src\s*=\s*(?:"[^"]*"|'[^']*'|\{[^}]*\})/) ?? [element.slice(0, 60)])[0] }));
+    }
+    return out;
+  },
+};
+
+/**
+ * Rule 30 — a plain text input whose own name says it is an email, phone or URL.
+ * Only the field's name, id and autocomplete are read: a placeholder that says
+ * "Search by email" is not a declaration of what the field holds.
+ */
+const inputTypeGeneric = {
+  id: 'input-type-generic',
+  pattern: 'X05',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Input is a plain text field although its name says email, phone or URL',
+  why:
+    'The input type chooses the mobile keyboard and the browser\'s built-in validation. A plain text field makes people hunt for the @ or the digits, and skips format checking that costs nothing.',
+  fix: 'Use `type="email"`, `type="tel"` or `type="url"` (and the matching `autocomplete`), keeping the label and server-side validation as they are.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'input')) {
+      const type = element.match(/\btype\s*=\s*(?:"([^"]*)"|'([^']*)')/);
+      if (/\btype\s*=\s*\{/.test(element)) continue; // dynamic type — cannot be judged from source
+      const declared = type ? (type[1] ?? type[2]).toLowerCase() : 'text';
+      if (declared !== 'text') continue;
+      if (/\binput[mM]ode\s*=/.test(element)) continue; // the keyboard was chosen another way
+      const identity = [element.match(/\b(?:name|id|autoComplete|autocomplete)\s*=\s*(?:"([^"]*)"|'([^']*)'|\{["'`]([^"'`]*)["'`]\})/g) ?? []]
+        .flat()
+        .join(' ');
+      let kind = null;
+      // `_` and digits are word characters, so \b would miss `contact_email`; these
+      // patterns treat anything that is not a letter as a boundary instead.
+      if (/e-?mail/i.test(identity)) kind = 'email';
+      else if (/(?:^|[^a-z])(?:tel|mobile)(?:[^a-z]|$)|phone/i.test(identity)) kind = 'tel';
+      else if (/(?:^|[^a-z])url(?:[^a-z]|$)|website/i.test(identity)) kind = 'url';
+      if (!kind) continue;
+      out.push(finding(inputTypeGeneric, file, text, index, { detail: `looks like type="${kind}"` }));
+    }
+    return out;
+  },
+};
+
+/** Rule 31 — a click handler on an element that is not a control. */
+const clickOnNonInteractive = {
+  id: 'click-on-non-interactive',
+  pattern: 'X13',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'line',
+  title: 'Click handler on an element that cannot be reached or operated by keyboard',
+  why:
+    'A `<div onClick>` is not in the tab order, has no role, and does not respond to Enter or Space. Keyboard and screen-reader users cannot use it, and it is announced as plain text. (WCAG 2.1.1, 4.1.2)',
+  fix: 'Use a real `<button>` (or `<a href>` for navigation). If the element must stay a `div`, it needs `role`, `tabIndex={0}` and an Enter/Space handler — which is a button with extra steps.',
+  check(file, text) {
+    if (!is(file, 'jsx')) return [];
+    const out = [];
+    for (const name of ['div', 'span', 'li', 'td', 'p', 'section', 'article', 'img', 'h1', 'h2', 'h3']) {
+      for (const { index, element } of tags(text, name)) {
+        if (!/\bonClick\s*=/.test(element)) continue;
+        if (/\brole\s*=/.test(element) || /\btab[iI]ndex\s*=/.test(element)) continue;
+        if (/\bonKey(?:Down|Up|Press)\s*=/.test(element)) continue;
+        if (/aria-hidden/.test(element)) continue;
+        // Swallowing a click so it does not reach a parent is not an action.
+        if (/onClick\s*=\s*\{[^}]*stopPropagation/.test(element)) continue;
+        // A dimmed backdrop that dismisses on click is conventional when Escape also closes.
+        if (/class(?:Name)?\s*=\s*[^>]*(?:backdrop|overlay|scrim)/i.test(element)) continue;
+        out.push(finding(clickOnNonInteractive, file, text, index, { detail: `<${name} onClick>` }));
+      }
+    }
+    return out;
+  },
+};
+
+const attr = (element, name) => {
+  const m = element.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|\\{\\s*["'\`]([^"'\`]*)["'\`]\\s*\\})`, 'i'));
+  return m ? (m[1] ?? m[2] ?? m[3] ?? '') : null;
+};
+
+/** Rule 32 — a one-time-code field that does not ask the platform to fill it. */
+const otpAutocomplete = {
+  id: 'otp-autocomplete',
+  pattern: 'P60',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Verification-code field lacks autocomplete="one-time-code"',
+  why:
+    'Without `autocomplete="one-time-code"` the phone cannot offer the code from the SMS or authenticator it just received, so the person switches apps, memorises six digits and types them — the step where most sign-ins are abandoned.',
+  fix: 'Add `autocomplete="one-time-code"` and `inputMode="numeric"` to the field (or to the first box of a split input), and let paste fill every box.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'input')) {
+      const identity = ['name', 'id', 'aria-label', 'placeholder', 'autocomplete']
+        .map((n) => attr(element, n) ?? '').join(' ');
+      if (!/(?:^|[^a-z])(?:otp|2fa|mfa|totp)(?:[^a-z]|$)|verification[\s_-]?code|security[\s_-]?code|one[\s_-]?time|passcode|sms[\s_-]?code/i.test(identity)) continue;
+      if (/one-time-code/i.test(element)) continue;
+      out.push(finding(otpAutocomplete, file, text, index, { detail: `<input ${(attr(element, 'name') ?? attr(element, 'id') ?? 'code')}> has no autocomplete="one-time-code"` }));
+    }
+    return out;
+  },
+};
+
+/** Rule 33 — a password field that tells the password manager nothing. */
+const passwordAutocomplete = {
+  id: 'password-autocomplete',
+  pattern: 'P57',
+  severity: 'P2',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Password field has no autocomplete hint',
+  why:
+    'Without `autocomplete="current-password"` or `"new-password"` password managers guess — they offer to save the wrong thing, fail to fill, or never suggest a strong password on sign-up.',
+  fix: 'Use `autocomplete="current-password"` on sign-in and `"new-password"` on sign-up and change-password, and do not block paste.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'input')) {
+      if (!/\btype\s*=\s*(?:\{\s*)?["']password["']/i.test(element)) continue;
+      if (/\bautoComplete\s*=|\bautocomplete\s*=|\{\s*\.\.\./i.test(element)) continue;
+      out.push(finding(passwordAutocomplete, file, text, index, { detail: '<input type="password"> with no autocomplete' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 34 — `transition: all`, which animates properties nobody meant to animate. */
+const transitionAll = {
+  id: 'transition-all',
+  pattern: 'P09',
+  severity: 'P3',
+  confidence: 'high',
+  aggregate: 'file',
+  title: '`transition: all` animates properties nobody chose',
+  why:
+    'It also animates layout properties (width, height, margin), forcing layout on every frame, and it turns a later change to any property — a colour token, a theme switch — into an unintended animation.',
+  fix: 'List the properties: `transition: opacity 150ms ease-out, transform 150ms ease-out`. In Tailwind use `transition-colors`, `transition-opacity` or `transition-transform` instead of `transition-all`.',
+  check(file, text) {
+    if (!is(file, 'css', 'jsx', 'html')) return [];
+    const out = [];
+    const pattern = is(file, 'css')
+      ? /\btransition(?:-property)?\s*:\s*all\b/g
+      : /\btransition(?:-property)?\s*:\s*['"]?all\b|\btransition-all\b/g;
+    for (const match of text.matchAll(pattern)) {
+      out.push(finding(transitionAll, file, text, match.index, { detail: match[0] }));
+    }
+    return out;
+  },
+};
+
+/** Rule 35 — linear easing on a transition, which reads as mechanical. */
+const linearEasing = {
+  id: 'linear-easing',
+  pattern: 'P21',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'UI transition uses `linear` easing',
+  why:
+    'Nothing physical moves at constant speed. A linear transition starts and stops abruptly and feels mechanical; entrances should decelerate (ease-out) and exits accelerate (ease-in).',
+  fix: 'Use an ease-out curve for entrances (`cubic-bezier(0.16, 1, 0.3, 1)` or `ease-out`) and ease-in for exits. Keep `linear` for progress bars, spinners and looping animations only.',
+  check(file, text) {
+    if (!is(file, 'css', 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/\btransition(?:-timing-function)?\s*:\s*[^;}\n]*\blinear\b/g)) {
+      out.push(finding(linearEasing, file, text, match.index, { detail: match[0].trim() }));
+    }
+    for (const match of text.matchAll(/\bease-linear\b/g)) {
+      const around = text.slice(Math.max(0, match.index - 80), match.index + 40);
+      if (/\btransition|duration-/.test(around)) out.push(finding(linearEasing, file, text, match.index, { detail: 'ease-linear' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 36 — an accordion with no expanded state exposed. */
+const accordionWithoutExpanded = {
+  id: 'accordion-without-expanded',
+  pattern: 'P62',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Accordion toggles content but never exposes its expanded state',
+  why:
+    'A screen reader announces a plain button with no sign that it opens or closes anything, or whether it is open now. The trigger needs `aria-expanded`; a native `<details>` provides this for free.',
+  fix: 'Use `<details>/<summary>`, or give the trigger `aria-expanded={open}` and `aria-controls` pointing at the panel.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const match = /\b(?:accordion|collapsible|disclosure)\b/i.exec(text);
+    if (!match) return [];
+    if (/aria-expanded|<details\b|<summary\b|<Accordion\b|<Collapsible\b|<Disclosure\b/.test(text)) return [];
+    if (!/<button\b|onClick/.test(text)) return [];
+    return [finding(accordionWithoutExpanded, file, text, match.index, { detail: `"${match[0]}" but no aria-expanded or <details> in this file` })];
+  },
+};
+
 export const RULES = [
   focusRingRemoved,
   noFocusStyle,
@@ -971,6 +1213,15 @@ export const RULES = [
   targetBlank,
   smallTarget,
   fixedWidthContainer,
+  tabindexPositive,
+  imageWithoutDimensions,
+  inputTypeGeneric,
+  clickOnNonInteractive,
+  otpAutocomplete,
+  passwordAutocomplete,
+  transitionAll,
+  linearEasing,
+  accordionWithoutExpanded,
 ];
 
 export { NON_TEXT_RATIO, SMALL_TEXT_RATIO, LARGE_TEXT_RATIO, contrast, blend };

@@ -6,6 +6,33 @@ All notable changes to the Northstar UX Engine. Format follows
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-11-20
+
+### Added
+
+- **Pattern knowledge.** All 76 write-ups (426 insights, do/don't lists) are carried in
+  `engine/patternKnowledge.ts` and attached to every engine pattern.
+- **Four checks:** `tabindex-positive` (P46), `image-without-dimensions` (X01),
+  `input-type-generic` (X05), `click-on-non-interactive` (X13), plus `otp-autocomplete`
+  (P60), `password-autocomplete` (P57), `transition-all` (P09), `linear-easing` (P21) and
+  `accordion-without-expanded` (P62). 36 rules in total.
+- **`northstar page`** — measures a URL or HTML file in a real browser at 320/768/1280px
+  (optional Playwright; honest "Not measured", exit 3, when unavailable).
+- **Advisory PostToolUse hook** that audits each edited file; never blocks.
+- **`ux-designer` agent**; `/ux-design` now delegates to it and adds users and
+  assumptions, a textual wireframe, component specification, responsive behaviour,
+  acceptance criteria and pattern citations.
+- `/ux-audit` accepts source, URL/file and screenshots, labelling evidence as
+  source, measured or visual.
+- `PATTERNS.md` is generated (`patterns --markdown`) and tested for drift.
+
+### Changed
+
+- Source findings are labelled "Found in source" in the report, not "Measured".
+- **Unified numbering.** CLI patterns are `P01`–`P76`, matching the engine's `P1`–`P76`;
+  Northstar-only checks are `X01`–`X13`; each keeps a `legacyId` to its 1.0.x number.
+  Rule, skill and README references were remapped.
+
 ### Added
 
 - `fixed-width-container` check (P66): a hard pixel width at or above 360px that

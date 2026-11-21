@@ -31,7 +31,7 @@ Rules:
 - **Disabled fields** are unreadable and unfocusable. Show the value read-only with a
   note instead ("Set by your administrator").
 
-## Validation timing (P11)
+## Validation timing (P50)
 
 | Moment | Correct behaviour |
 | --- | --- |
@@ -44,7 +44,7 @@ Errors on the first keystroke punish the user for not having finished yet. Error
 only on submit make a ten-field form a guessing game. The table above is the whole
 rule; there is no reason to deviate.
 
-## Error copy (P64, P12)
+## Error copy (X07, P51)
 
 Name the field, the rule and the fix:
 
@@ -66,7 +66,7 @@ Never clear the form on failure. Never use `alert()` (the engine flags
 
 ## Specific controls
 
-### Password (P02)
+### Password (P57)
 
 - Reveal toggle that does not move the layout and is keyboard reachable.
 - Never block paste. Password managers are the correct behaviour, not an attack.
@@ -74,14 +74,14 @@ Never clear the form on failure. Never use `alert()` (the engine flags
   saying so up front.
 - Confirm-password fields only when a reveal toggle does not already solve it.
 
-### Verification codes / OTP (P01)
+### Verification codes / OTP (P60)
 
 - One visible group, but a single logical field: paste the whole code and it lands.
 - `inputmode="numeric"`, `autocomplete="one-time-code"`.
 - On a wrong code, keep the entry, select it, and say how many tries remain.
 - Do not auto-submit on the last digit unless the code length is fixed and known.
 
-### File upload (P03)
+### File upload (P56)
 
 - Show the chosen file name and size *before* uploading.
 - Progress, with a cancel that actually aborts.
@@ -98,7 +98,7 @@ Never clear the form on failure. Never use `alert()` (the engine flags
 - Native `<input type="date">` is usually the right answer; a bespoke picker has to
   earn its complexity.
 
-### Selects (P32)
+### Selects (P20)
 
 - A native `<select>` inherits the platform's keyboard model for free. A custom one
   must reimplement type-ahead, Home/End, Escape and arrow navigation — and usually
@@ -106,19 +106,19 @@ Never clear the form on failure. Never use `alert()` (the engine flags
 - Include a disabled placeholder option ("Choose a section") rather than
   defaulting to the first real option, which submits a choice the user did not make.
 
-### Sliders (P09)
+### Sliders (P33)
 
 - Show the current value, the min and max, and the step.
 - Arrow keys change by one step; Page Up/Down by ten.
 - Pair with a number input when precision matters.
 
-### Steppers (P10)
+### Steppers (P38)
 
 - Show total steps, current step and what remains.
 - Back never loses validated input.
 - The final action says what it will do: "Create course", not "Finish".
 
-### Switches (P20)
+### Switches (P41)
 
 - Apply immediately and say so; do not require a separate Save for a toggle that looks
   like it already applied.

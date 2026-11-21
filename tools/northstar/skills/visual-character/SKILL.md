@@ -62,14 +62,14 @@ sentence, it does not go in. The sentence belongs in `DESIGN.md` — see
   rather than inventing four unrelated colours.
 - Status colours are separate from the accent: success, warning, danger, info. They
   carry meaning, so they are used sparingly and always with a word, never colour alone.
-- **Von Restorff (P52):** the thing that is different gets noticed *because* it is the
+- **Von Restorff (P74):** the thing that is different gets noticed *because* it is the
   only one. Two emphasised elements halve each other.
-- Dark mode is a token set (P59): layered surfaces (base, raised, overlay), not
+- Dark mode is a token set (P73): layered surfaces (base, raised, overlay), not
   inverted greys; accents lightened enough to clear 4.5:1 on the darkest surface.
 
 ### 3. Composition
 
-- **The hero says what the product does, for whom** (P40), in the user's words. One
+- **The hero says what the product does, for whom** (P67), in the user's words. One
   primary action. If there is a second button, it is visually secondary.
 - Asymmetry is cheaper character than symmetry: an off-centre column with a wide
   margin reads as designed, a centred stack reads as templated.
@@ -79,15 +79,15 @@ sentence, it does not go in. The sentence belongs in `DESIGN.md` — see
 
 ### 4. Surface and depth
 
-- Cards (P39) carry one idea and one action. A card with three buttons is a page.
+- Cards (P64) carry one idea and one action. A card with three buttons is a page.
 - Hover lift of 1–2px and a slightly stronger shadow is enough. Rotating the card,
   scaling it 1.05 and moving it 8px is three effects doing one job.
 - Borders and shadows are alternatives. Using both, at full strength, on every
   surface, is why the page looks noisy.
-- Gradients (P74) are a light decision: a single direction, two nearby stops, and a
+- Gradients (P53) are a light decision: a single direction, two nearby stops, and a
   reason. A four-stop diagonal rainbow is decoration pretending to be design.
 
-## Charts (P38)
+## Charts (P08)
 
 - Title states the question the chart answers, not the metric name.
 - Units on the axis, or in the label if there is only one series.
@@ -97,7 +97,7 @@ sentence, it does not go in. The sentence belongs in `DESIGN.md` — see
 - A text summary beneath for anyone who cannot read the chart: "Sessions rose from 3
   to 9 over six weeks."
 
-## Iconography (P71)
+## Iconography (P66)
 
 - One family, one stroke width, one optical weight. Mixing a filled icon with a
   hairline icon in the same toolbar looks like two products.
@@ -106,7 +106,7 @@ sentence, it does not go in. The sentence belongs in `DESIGN.md` — see
 - Never use an emoji where a real icon is needed; the rendering varies by platform and
   the product looks different on every phone.
 
-## Copy is part of the character (P12)
+## Copy is part of the character (P51)
 
 - Labels name the thing; buttons name the action ("Save grade", not "Submit").
 - Sentences in the product's own voice, not a marketing voice.

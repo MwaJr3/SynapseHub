@@ -30,6 +30,31 @@ Two modes, chosen by the user and never assumed:
 5. **Write the report** to `docs/ux/audit-<target>.md` and present the top three in
    the reply.
 
+## What can be audited
+
+Say which kinds of evidence a finding rests on. Never describe a page as opened, a
+control as clicked or a value as measured unless a tool actually did it.
+
+| Input | How | Evidence kind |
+| --- | --- | --- |
+| A file, component or directory | `northstar audit <path>` and reading the source | `source` — found in the code |
+| A URL or HTML file | `node tools/northstar/bin/northstar.mjs page <url\|file> --viewports 320,768,1280 --out docs/ux/shots` | `measured` — read from a real browser, with the numbers |
+| A screenshot (or several) | Look at the image with the Read tool | `visual` — seen, not measured |
+| A combination | Merge, deduplicate, and keep the strongest evidence per finding | each finding names its kind |
+
+- **URL or file.** `page` opens headless Chromium, presses Tab, and measures overflow,
+  target sizes, accessible names, alt text, headings, document basics and focus
+  visibility. It never clicks or submits. It needs Playwright; **exit code 3 means it
+  could not run and measured nothing** — say that, and do not substitute guesses. If
+  the session has its own browser tools you may use them, and label what they showed
+  `measured`. Only open pages the user pointed you at; their scripts run.
+- **Screenshots.** Judge hierarchy, spacing, grouping, copy, and which states are shown
+  or missing. You cannot judge keyboard order, focus visibility, accessible names or
+  contrast values from an image — list those under *Not checked*. Several screenshots
+  are several states: name the ones shown and the ones absent.
+- **Anything behind a login** is out of reach unless the user supplies a screenshot or
+  a local build; say so rather than skipping it silently.
+
 ## Report contract
 
 ```

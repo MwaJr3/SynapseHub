@@ -27,20 +27,20 @@ screen when the person navigates away and comes back.
 
 ## Rules that hold in every framework
 
-### Loading (P22, P54, P50)
+### Loading (P54, P28, P17)
 
 - **Shape the skeleton like the content.** Three grey bars where three rows will be;
   not a centred spinner over an empty box. The layout must not jump when data lands.
 - **Announce it.** `role="status"` with `aria-live="polite"` and a name: "Loading
   submissions". A spinner with no name is invisible to assistive technology.
-- **Acknowledge inside 400ms** (P57, Doherty). If the work takes longer, show a
+- **Acknowledge inside 400ms** (P18, Doherty). If the work takes longer, show a
   progress value; if it is unknown, say "this can take a minute" rather than leaving
   a bar at 90%.
-- **Behind-the-button (P50):** the control that started the work disables itself and
+- **Behind-the-button (P17):** the control that started the work disables itself and
   changes its label to "Saving…". The rest of the page stays usable.
 - **Never block the whole page for one panel's request.**
 
-### Empty (P25)
+### Empty (P22)
 
 Two different sentences, two different actions:
 
@@ -77,7 +77,7 @@ Ask the course owner." is a state. A grey button is not.
 - A confirmation that names what happened: "Grade saved for Ada Obi." Not "Success".
 - If the action removes the item from the current view, the confirmation must be
   visible after it disappears (or the user thinks the wrong row went).
-- Optimistic UI (P13) needs a rollback path and a message for the rollback.
+- Optimistic UI (P52) needs a rollback path and a message for the rollback.
 
 ## Review procedure
 

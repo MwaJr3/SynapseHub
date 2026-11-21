@@ -13,7 +13,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PATTERNS, patternById, unautomated } from '../patterns.mjs';
+import { PATTERNS, engineId, patternById, patternByLegacyId, unautomated } from '../patterns.mjs';
+import { renderPatternsDoc } from '../lib/patterns-doc.mjs';
 import { RULES } from '../rules.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -23,10 +24,12 @@ const skills = fs
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 
-test('the pattern library has 76 stable ids with no gaps or duplicates', () => {
-  assert.equal(PATTERNS.length, 76);
+test('the pattern library has 76 canonical ids with no gaps or duplicates, plus the extensions', () => {
   const ids = PATTERNS.map((pattern) => pattern.id);
-  assert.equal(new Set(ids).size, 76, 'no duplicate ids');
+  assert.equal(new Set(ids).size, ids.length, 'no duplicate ids');
+  assert.equal(ids.filter((id) => /^P\d\d$/.test(id)).length, 76);
+  assert.ok(ids.filter((id) => /^X\d\d$/.test(id)).length >= 12, 'extensions are numbered X01…');
+  assert.equal(ids.length, 76 + ids.filter((id) => id.startsWith('X')).length, 'nothing else is in the catalogue');
   for (let index = 1; index <= 76; index += 1) {
     assert.ok(ids.includes(`P${String(index).padStart(2, '0')}`), `P${index} exists`);
   }
@@ -82,7 +85,43 @@ test('patterns without a check are declared, not hidden', () => {
 });
 
 test('a pattern lookup never returns the wrong thing', () => {
-  assert.equal(patternById('P70').name, 'Contrast and colour legibility');
-  assert.equal(patternById('P05').name, 'Disabled buttons');
+  assert.equal(patternById('P70').name, 'Color Accessibility');
+  assert.equal(patternById('P05').name, 'Disabled Buttons');
   assert.equal(patternById('P99'), null);
+});
+
+/** The write-ups the engine was built from, read out of the generated TypeScript module. */
+function knowledge() {
+  const source = fs.readFileSync(path.join(root, 'engine', 'patternKnowledge.ts'), 'utf8');
+  return JSON.parse(source.slice(source.indexOf('= [') + 2, source.lastIndexOf('];') + 1));
+}
+
+test('the CLI catalogue and the engine catalogue are the same 76 patterns', () => {
+  const entries = knowledge();
+  assert.equal(entries.length, 76);
+  for (const entry of entries) {
+    const id = `P${String(entry.number).padStart(2, '0')}`;
+    assert.equal(patternById(id)?.name, entry.title, `${id} is "${entry.title}" in both`);
+    assert.equal(engineId(id), `P${entry.number}`);
+  }
+});
+
+test('every pattern keeps the id it had before the numbering was unified', () => {
+  const legacy = PATTERNS.filter((pattern) => pattern.legacyId);
+  assert.equal(legacy.length, 76, 'all 76 v1.0.x ids are traceable');
+  assert.equal(new Set(legacy.map((pattern) => pattern.legacyId)).size, 76);
+  assert.equal(patternByLegacyId('P11').id, 'P50', 'old P11 was validation timing; it is P50 now');
+  assert.equal(patternByLegacyId('P75').id, 'P01', 'old P75 was modern CSS; it is the :has() pattern now');
+  assert.equal(patternByLegacyId('P99'), null);
+});
+
+test('PATTERNS.md is exactly what the catalogue renders', () => {
+  const onDisk = fs.readFileSync(path.join(root, 'PATTERNS.md'), 'utf8');
+  assert.equal(onDisk, renderPatternsDoc(), 'run: node bin/northstar.mjs patterns --markdown > PATTERNS.md');
+});
+
+test('severities and pattern ids cannot be confused in a report', () => {
+  for (const pattern of PATTERNS) {
+    assert.doesNotMatch(pattern.id, /^P[0-3]$/, `${pattern.id} would read as a severity`);
+  }
 });

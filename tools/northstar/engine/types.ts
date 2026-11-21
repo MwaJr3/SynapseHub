@@ -61,6 +61,20 @@ export interface EngineRule {
   patternIds: string[];
 }
 
+/** Full write-up of a pattern: what the source said, not a summary of it. */
+export interface PatternKnowledge {
+  number: number;
+  /** The source's own category label (forms, interaction, motion, …). */
+  category: string;
+  title: string;
+  /** The one-line hook the write-up opens with. */
+  tagline: string;
+  /** Key insights, in source order. Markdown emphasis is preserved. */
+  insights: string[];
+  do: string[];
+  dont: string[];
+}
+
 export interface UXPattern {
   /** `P1` … `P76`, matching the blueprint catalog numbering. */
   id: string;
@@ -84,6 +98,8 @@ export interface UXPattern {
   related: string[];
   /** Patterns that pull in a different direction and need a trade-off call. */
   conflicts: string[];
+  /** The full write-up this record was built from. */
+  knowledge: PatternKnowledge;
 }
 
 export interface PatternRelationship {

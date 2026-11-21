@@ -50,13 +50,13 @@ Rules:
   dialog.
 - **Announce politely.** `role="status"` for confirmations, `role="alert"` for errors.
   A toast that appears with no live region is silent to a screen reader.
-- **Optimistic UI needs a rollback** (P13): if the server refuses, put the old value
+- **Optimistic UI needs a rollback** (P52): if the server refuses, put the old value
   back and say so. An optimistic update with no failure path is a lie that lasts until
   the page reloads.
-- **Doherty (P57):** acknowledge within 400ms. If the work is slower, the
+- **Doherty (P18):** acknowledge within 400ms. If the work is slower, the
   acknowledgement is the button state, not a spinner over the whole page.
 
-## Destructive actions (P48)
+## Destructive actions (P11)
 
 The ladder, best first:
 
@@ -77,7 +77,7 @@ Never:
 The confirm button names the action ("Delete 12 items"), the cancel button names the
 alternative ("Keep them").
 
-## Bulk actions (P16)
+## Bulk actions (P04)
 
 - Say how many, before running: "Delete 12 submissions".
 - Show the selection persistently with a way to clear it.
@@ -86,7 +86,7 @@ alternative ("Keep them").
 - Bulk destructive actions always get the undo path; they cannot be individually
   confirmed.
 
-## Toasts (P26)
+## Toasts (P40)
 
 - One at a time, or a stack capped at three.
 - Bottom or top corner, away from the primary action.
@@ -94,7 +94,7 @@ alternative ("Keep them").
 - Dismissible by a real button, not by hovering.
 - Never the only record of something that matters: the state itself should show it.
 
-## Tooltips (P27)
+## Tooltips (P42)
 
 - Open on focus as well as hover, and close on Escape.
 - Never the only copy of a label; a tooltip is an addition.
@@ -102,7 +102,7 @@ alternative ("Keep them").
 - Not the only explanation of a disabled control — the tooltip never fires on a
   disabled element.
 
-## Menus, palettes and context menus (P28, P31)
+## Menus, palettes and context menus (P58, P10)
 
 - The keyboard model is the native one: arrows to move, Enter to activate, Escape to
   close, Home/End to jump.
@@ -110,7 +110,7 @@ alternative ("Keep them").
   right click.
 - A palette lists what the *current* page can do, not the whole app.
 
-## Drag and drop (P35)
+## Drag and drop (P19)
 
 - A keyboard path exists (move up/down buttons are enough).
 - The drop target is visible during the drag.

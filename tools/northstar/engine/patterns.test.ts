@@ -77,3 +77,39 @@ describe('76-pattern knowledge layer', () => {
     }
   });
 });
+
+describe('pattern write-ups are carried in full', () => {
+  it('every record carries its own source write-up', () => {
+    for (const pattern of PATTERNS) {
+      expect(pattern.knowledge.number).toBe(pattern.number);
+      expect(pattern.knowledge.title.toLowerCase().replace(/[^a-z]/g, '')).toBe(
+        pattern.title.toLowerCase().replace(/[^a-z]/g, ''),
+      );
+      expect(pattern.knowledge.insights.length).toBeGreaterThanOrEqual(4);
+      expect(pattern.knowledge.do.length).toBeGreaterThanOrEqual(1);
+      expect(pattern.knowledge.dont.length).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('keeps the specific numbers and techniques the write-ups state', () => {
+    const text = (n: number) =>
+      JSON.stringify(getPattern(`P${n}`).thresholds).toLowerCase();
+    expect(text(9)).toContain('250ms'); // exits shorter than entrances
+    expect(text(62)).toContain('grid-template-rows');
+    expect(text(44)).toContain('isolation: isolate');
+    expect(text(5)).toContain('4.5:1');
+    expect(text(60)).toContain('one-time-code');
+    expect(text(1)).toContain(':user-invalid');
+  });
+
+  it('has no markdown residue or doubled-percent typos in the write-ups', () => {
+    for (const pattern of PATTERNS) {
+      const all = [
+        ...pattern.knowledge.insights,
+        ...pattern.knowledge.do,
+        ...pattern.knowledge.dont,
+      ].join('\n');
+      expect(all, `P${pattern.number}`).not.toMatch(/%%|\*\*\*|\*\*Do:\*\*/);
+    }
+  });
+});

@@ -7,9 +7,10 @@
  * (`conflicts`). The retrieval, audit and command layers never invent
  * guidance — they read these records and cite them.
  */
-import type { UXPattern } from './types';
+import type { PatternKnowledge, UXPattern } from './types';
+import { PATTERN_KNOWLEDGE } from './patternKnowledge';
 
-export const PATTERNS: UXPattern[] = [
+const BASE_PATTERNS: Array<Omit<UXPattern, 'knowledge'>> = [
   {
     id: 'P1',
     number: 1,
@@ -2155,6 +2156,39 @@ export const PATTERNS: UXPattern[] = [
     conflicts: [],
   },
 ];
+
+/** Strip the markdown emphasis the write-ups use, for plain-text consumers. */
+export function plain(text: string): string {
+  return text.replace(/\*\*/g, '').replace(/`/g, '').trim();
+}
+
+/**
+ * An insight is a threshold when it states something measurable: a number with a
+ * unit, a ratio, or a CSS property/selector the engine can look for.
+ */
+function isThreshold(insight: string): boolean {
+  return /\d/.test(insight) || /`[^`]+`/.test(insight);
+}
+
+const knowledgeByNumber = new Map<number, PatternKnowledge>(
+  PATTERN_KNOWLEDGE.map((entry) => [entry.number, entry]),
+);
+
+/**
+ * Merge the full write-up into each record. `do`/`dont` stay the rule-oriented
+ * short lists the audit cites; the complete lists live under `knowledge`. Measurable
+ * insights are appended to `thresholds` so they can be searched and quoted.
+ */
+export const PATTERNS: UXPattern[] = BASE_PATTERNS.map((base) => {
+  const knowledge = knowledgeByNumber.get(base.number);
+  if (!knowledge) throw new Error(`No knowledge record for pattern P${base.number}`);
+  const extra = knowledge.insights.filter(isThreshold).map(plain);
+  return {
+    ...base,
+    thresholds: [...new Set([...base.thresholds, ...extra])],
+    knowledge,
+  };
+});
 
 const patternIndex = new Map(PATTERNS.map((pattern) => [pattern.id, pattern]));
 

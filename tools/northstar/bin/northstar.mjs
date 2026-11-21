@@ -10,7 +10,8 @@
  *   scan            the static detector layer over every frontend, with evidence
  *   review  [path]  scan only the files changed against a git ref (read-only)
  *   check   [path]  exit non-zero if any defect at or above a severity exists
- *   patterns        print the pattern index the skills reference
+ *   page <url|file> measure a page in a real browser at several widths (needs Playwright)
+ *   patterns        print the pattern index the skills reference (--markdown renders PATTERNS.md)
  *   fix     [path]  apply the mechanical fixes, verify each one, refuse the rest
  *   watch   [path]  re-audit on save; with --fix, re-fix too
  *   hooks           install the pre-commit gate that runs `fix` then `check`
@@ -34,6 +35,7 @@ import { renderReport } from '../report.mjs';
 import { PATTERNS } from '../patterns.mjs';
 import { contextFor, fixFile } from '../fixer.mjs';
 import { applyIgnore, loadConfig } from '../config.mjs';
+import { renderPatternsDoc } from '../lib/patterns-doc.mjs';
 
 const SEVERITIES = ['P0', 'P1', 'P2', 'P3'];
 
@@ -41,7 +43,7 @@ function parseArguments(argv) {
   const [verb = 'audit', ...rest] = argv;
   const options = {
     verb, target: '.', out: null, json: null, minSeverity: 'P3', ref: 'HEAD', quiet: false,
-    dryRun: false, only: null, maxRounds: 3, fix: false,
+    dryRun: false, only: null, maxRounds: 3, fix: false, markdown: false, viewports: null,
   };
   for (let index = 0; index < rest.length; index += 1) {
     const argument = rest[index];
@@ -52,6 +54,8 @@ function parseArguments(argv) {
     else if (argument === '--quiet') options.quiet = true;
     else if (argument === '--dry-run') options.dryRun = true;
     else if (argument === '--fix') options.fix = true;
+    else if (argument === '--markdown') options.markdown = true;
+    else if (argument === '--viewports') options.viewports = rest[++index].split(',').map(Number).filter((n) => n >= 240 && n <= 3840);
     else if (argument === '--only') options.only = rest[++index];
     else if (argument === '--max-rounds') options.maxRounds = Number(rest[++index]) || 3;
     else options.target = argument;
@@ -248,10 +252,26 @@ async function main(argv) {
   const options = parseArguments(argv);
 
   if (options.verb === 'patterns') {
+    if (options.markdown) {
+      process.stdout.write(renderPatternsDoc());
+      return 0;
+    }
     for (const pattern of PATTERNS) {
       process.stdout.write(`${pattern.id}\t${pattern.name}\t${pattern.checks.join(', ')}\n`);
     }
     return 0;
+  }
+
+  if (options.verb === 'page') {
+    // Runtime evidence: opens the page, presses Tab, reads. Never clicks or submits.
+    if (options.target === '.') throw new Error('page needs a URL or an HTML file: northstar page <url|file> [--viewports 320,768,1280] [--out <screenshot dir>] [--json <file>]');
+    const { probePage, renderProbeReport } = await import('../lib/page-probe.mjs');
+    const result = await probePage(options.target, { viewports: options.viewports ?? undefined, outDir: options.out ?? undefined });
+    if (options.json) writeIfRequested(options.json, `${JSON.stringify(result, null, 2)}\n`);
+    const text = renderProbeReport(result);
+    if (!options.quiet) process.stdout.write(`${text}\n`);
+    // 3 = nothing was measured. Distinct from 1 (defects) so a script cannot mistake "could not look" for "looked, clean".
+    return result.available ? 0 : 3;
   }
 
   if (options.verb === 'review') {

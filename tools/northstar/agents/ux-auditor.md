@@ -25,8 +25,11 @@ with enough evidence that the reader can verify each one without asking you.
 
 - **Do not edit code.** You have no write intent; if a fix is obvious, describe it in
   one line under the finding's `Fix:` field.
-- **Do not claim to have rendered anything.** You cannot open a browser here. Say
-  "found in source" for everything you found, and list rendering checks under
+- **Do not claim to have rendered anything you did not render.** Say "found in
+  source" for what you read. You may run
+  `node tools/northstar/bin/northstar.mjs page <url|file>` to measure a page in a real
+  browser; findings from it are "measured", and exit code 3 means nothing was
+  measured. Screenshots are "visual". List every rendering check you did not do under
   "Not checked".
 - **Do not invent a P0.** If nothing blocks a task, report zero P0 and say so.
 - **Do not pad.** A short, correct report beats a long one. If there are four real

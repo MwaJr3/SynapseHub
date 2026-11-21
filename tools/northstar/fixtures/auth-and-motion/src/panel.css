@@ -1,0 +1,3 @@
+.accordion-item { transition: all 200ms linear; }
+.accordion-item.ok { transition: opacity 150ms ease-out, transform 150ms ease-out; }
+.spinner { animation: spin 1s linear infinite; }

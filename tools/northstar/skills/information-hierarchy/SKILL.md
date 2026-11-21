@@ -19,7 +19,7 @@ Test: cover the labels and look at the shapes. The primary action should be find
 without reading. If the eye lands on a heading, a chart and two buttons at the same
 weight, there is no hierarchy — there is a list.
 
-The corollary (P52, Von Restorff): the *accent* is a scarce resource. One element per
+The corollary (P74, Von Restorff): the *accent* is a scarce resource. One element per
 view is allowed to be different. Three red badges, two coloured cards and a gradient
 hero means none of them is the exception any more.
 
@@ -33,19 +33,19 @@ hero means none of them is the exception any more.
    user must interpret to reach it.
 3. **Group by proximity, and delete the dividers.** If two things need a line between
    them, they are either too close to unrelated content or too far from related
-   content. Space is the grouping; a rule is an apology (P43).
+   content. Space is the grouping; a rule is an apology (P71).
 4. **Then and only then** add borders, shadows and colour.
 
 ## Lists, tables and the middle
 
-- **Serial position (P45):** the first and last items of a list get attention. Put the
+- **Serial position (P35):** the first and last items of a list get attention. Put the
   item that needs action at the top, and the "add another" affordance at the end —
   not in the middle of the list.
 - **Tables (P63):** every `<th>` gets `scope`. Numeric columns are right-aligned and
   use `tabular-nums`, otherwise the digits jitter and cannot be compared. Keep the
   header visible when the body scrolls. If a table needs a horizontal scrollbar below
   768px, say so and give the first column a sticky position.
-- **Empty is a state, not a table with zero rows** (P25). One sentence on why it is
+- **Empty is a state, not a table with zero rows** (P22). One sentence on why it is
   empty and one action that fills it. A table header with nothing under it reads as a
   bug.
 - **Pagination (P61)** belongs in the URL. If the page number lives only in React
@@ -68,10 +68,10 @@ hero means none of them is the exception any more.
   things to be visible at the same time.
 - Animate `grid-template-rows` from `0fr` to `1fr`. `height: auto` cannot be
   interpolated, so it snaps and reads as broken.
-- **Tabs (P30)** are for views of the same object, not for steps of a process (that is
+- **Tabs (P39)** are for views of the same object, not for steps of a process (that is
   a stepper) and not for navigation (that is a nav). A tab set whose tabs each contain
   their own page title is a nav pretending.
-- **Zeigarnik (P58):** unfinished work should be visible and resumable; finished work
+- **Zeigarnik (P45):** unfinished work should be visible and resumable; finished work
   should leave the working set. A list that mixes both, sorted by date, makes the
   user re-read everything to find the one open item.
 
@@ -85,7 +85,7 @@ hero means none of them is the exception any more.
 
 ## Density
 
-Density is a decision, not an accident (P53). A security console and a reading app
+Density is a decision, not an accident (P26). A security console and a reading app
 want different row heights. Choose a density per product, put the spacing scale in
 `DESIGN.md`, and do not mix: a 48px row beside a 28px row looks like two components
 from two teams.

@@ -31,7 +31,7 @@ Things that break at 320px, in order of frequency:
    word pushes the row wider than the screen.
 3. A table with eight columns and no scroll container.
 4. A grid with `grid-cols-3` and no `sm:` variant.
-5. Long unbroken strings (emails, hashes, URLs) with no `break-words` (P66).
+5. Long unbroken strings (emails, hashes, URLs) with no `break-words` (X09).
 
 ## Touch and pointer
 
@@ -39,7 +39,7 @@ Things that break at 320px, in order of frequency:
   phone-sized layout should aim for.
 - Space adjacent targets by at least 8px, or merge them into a menu.
 - Every action available on hover must have a tap route (P06).
-- Every action available by swipe must have a visible button (P42).
+- Every action available by swipe must have a visible button (X03).
 - `cursor: pointer` on interactive elements; `touch-action` set where a gesture is
   intentional.
 
@@ -52,10 +52,10 @@ Things that break at 320px, in order of frequency:
 - **Focus is visible** at 3:1 against its background (P46). `outline: none` with no
   replacement is a P1 — the engine reports it as `focus-ring-removed`, and reports a
   stylesheet that never styles focus at all as `no-focus-style`.
-- **Focus management** (P65): opening a dialog moves focus into it; closing returns it
+- **Focus management** (X08): opening a dialog moves focus into it; closing returns it
   to the element that opened it; deleting a row moves focus to the next row or the
   list header, never to `<body>`.
-- **Skip link** (P76) when there is more than a handful of nav items, and it must be
+- **Skip link** (X12) when there is more than a handful of nav items, and it must be
   the first focusable thing on the page.
 - A modal traps focus while open. A non-modal panel does not.
 
@@ -69,10 +69,10 @@ Things that break at 320px, in order of frequency:
 - Tables: `<th scope>`; a caption or an `aria-label`; no layout tables.
 - Forms: `<label for>`; `aria-describedby` for hints and errors; `<fieldset>`/`<legend>`
   for groups.
-- Images: `alt` describing the content, or `alt=""` when decorative (P15). The engine
+- Images: `alt` describing the content, or `alt=""` when decorative (X01). The engine
   flags `image-without-alt`.
 
-## Colour and contrast (P67, P70)
+## Colour and contrast (X10, P70)
 
 - Body text 4.5:1; large text (24px, or 18.66px bold) 3:1.
 - Non-text indicators — borders that convey state, icons, focus rings, chart series —
@@ -82,13 +82,13 @@ Things that break at 320px, in order of frequency:
   colour from the same class on a solid one. A disabled control at `opacity: 0.5` is
   usually below the floor (the engine flags `disabled-contrast`).
 
-## Motion and reduced motion (P21)
+## Motion and reduced motion (P09)
 
 - `@media (prefers-reduced-motion: reduce)` turns off parallax, reveal-on-scroll,
   auto-playing loops and shimmer. Transitions that communicate a state change may stay,
   shortened.
 - Nothing flashes more than three times a second.
-- Nothing moves the content the user is reading (P36).
+- Nothing moves the content the user is reading (P12).
 
 ## Zoom and text resizing
 

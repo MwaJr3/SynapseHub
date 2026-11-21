@@ -1,5 +1,5 @@
 {
-  "description": "Blocks the commands the engine's contract forbids before the user has authorised them: commits, pushes, deploys and recursive deletes. Pure string matching on the Bash payload; no state, no network.",
+  "description": "PreToolUse guard (enforced): blocks commits, pushes, deploys and recursive deletes until the user has authorised them. PostToolUse advisory (not enforced): after a UI file is written, reports up to five P0\u2013P2 defects in that one file as context; it always exits 0 and never edits anything. No state, no network.",
   "hooks": {
     "PreToolUse": [
       {
@@ -9,6 +9,18 @@
             "type": "command",
             "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/guard-writes.mjs\"",
             "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/post-edit-advisory.mjs\"",
+            "timeout": 10
           }
         ]
       }

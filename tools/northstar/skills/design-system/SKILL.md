@@ -43,7 +43,7 @@ mapping, not a special case.
 
 - Related things are separated by the smallest step that still groups them.
 - A block's padding is smaller than the gap between blocks, or the blocks merge.
-- Density is chosen per product (P53) and written down; a console at 48px rows and a
+- Density is chosen per product (P26) and written down; a console at 48px rows and a
   reading app at 28px are both correct, just not in the same view.
 
 ## Radii (P72)
@@ -54,7 +54,7 @@ means the radius was decided per component (the engine flags `radius-off-scale`)
 Nesting: **inner radius = outer radius − padding.** A 12px card with 8px padding gets
 a 4px inner element. Getting this right is most of what makes corners look intentional.
 
-## Elevation (P73)
+## Elevation (P36)
 
 Three levels, not eight: flat (border only), raised (small shadow), floating
 (popover/dialog). Shadow direction agrees with the light source — pick "light from
@@ -63,7 +63,7 @@ above" and never mix.
 A shadow is not a substitute for a border: on a dark theme, a shadow is invisible, so
 surfaces are separated by lightness and a hairline.
 
-## Z-index and stacking (P44, P47)
+## Z-index and stacking (P44, X04)
 
 A short documented scale:
 
