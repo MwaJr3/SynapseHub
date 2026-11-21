@@ -1,0 +1,228 @@
+# Dependabot configuration.
+#
+# Goals: keep the ~120 open alerts from piling up again without flooding the
+# repository with one pull request per package per folder.
+#   - Security updates for an ecosystem arrive as ONE grouped pull request.
+#   - Routine minor/patch version updates are batched into ONE weekly pull
+#     request per ecosystem.
+#   - Major versions are NOT grouped, so a breaking upgrade is always its own
+#     reviewable pull request.
+# Manifest folders are listed explicitly (generated from the tree) because a
+# glob would also match folders with no manifest and make Dependabot error.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directories:
+      - "/"
+      - "/companies"
+      - "/companies/tamuzi/cyberaware-lab/frontend"
+      - "/companies/tamuzi/transcriptwise/frontend"
+      - "/companies/velaqori/assetwatch/frontend"
+      - "/companies/velaqori/hashsight/frontend"
+      - "/companies/velaqori/incidentflow/frontend"
+      - "/companies/velaqori/netscope/frontend"
+      - "/companies/velaqori/phishlens/frontend"
+      - "/companies/velaqori/securecode-workbench/frontend"
+      - "/companies/velaqori/threatintel-desk/frontend"
+      - "/company-platform"
+      - "/contextvault"
+      - "/coursework/cbu-assignments/tenantcore/frontend"
+      - "/native/desktop"
+      - "/native/mobile"
+      - "/sites/archive/WebstormProjects/Weather App/javascript-main/javascript-main"
+      - "/sites/portfolio"
+      - "/tools/synapsehub-smoke"
+      - "/vocal-separator/web"
+      - "/workniche"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      npm-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      npm-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "pip"
+    directories:
+      - "/"
+      - "/backend"
+      - "/companies/tamuzi/campusflow/backend"
+      - "/companies/tamuzi/classconnect/backend"
+      - "/companies/tamuzi/cyberaware-lab/backend"
+      - "/companies/tamuzi/eduaccess/backend"
+      - "/companies/tamuzi/flashkit"
+      - "/companies/tamuzi/gradeflow"
+      - "/companies/tamuzi/learnbridge/backend"
+      - "/companies/tamuzi/learnpulse/backend"
+      - "/companies/tamuzi/openlearn-commons/backend"
+      - "/companies/tamuzi/pathwise/backend"
+      - "/companies/tamuzi/prepwise"
+      - "/companies/tamuzi/quizarena"
+      - "/companies/tamuzi/quizbox"
+      - "/companies/tamuzi/reachlearn/backend"
+      - "/companies/tamuzi/shelfwise"
+      - "/companies/tamuzi/teachcraft/backend"
+      - "/companies/tamuzi/tessera/backend"
+      - "/companies/tamuzi/transcriptwise/backend"
+      - "/companies/tamuzi/tutorspring/backend"
+      - "/companies/tamuzi/unicore"
+      - "/companies/velaqori/assetwatch/backend"
+      - "/companies/velaqori/authgate"
+      - "/companies/velaqori/budgetbook"
+      - "/companies/velaqori/circuitlab-calc/backend"
+      - "/companies/velaqori/creadesk"
+      - "/companies/velaqori/datadesk"
+      - "/companies/velaqori/dependsecure/backend"
+      - "/companies/velaqori/docsage"
+      - "/companies/velaqori/fileguard/backend"
+      - "/companies/velaqori/fileseal"
+      - "/companies/velaqori/frontpage/backend"
+      - "/companies/velaqori/guessmaster"
+      - "/companies/velaqori/hashsight/backend"
+      - "/companies/velaqori/headercheck"
+      - "/companies/velaqori/hostwatch"
+      - "/companies/velaqori/incidentflow-cli"
+      - "/companies/velaqori/incidentflow/backend"
+      - "/companies/velaqori/loginsense"
+      - "/companies/velaqori/netscope-cli"
+      - "/companies/velaqori/netscope/backend"
+      - "/companies/velaqori/notekit"
+      - "/companies/velaqori/passforge"
+      - "/companies/velaqori/passmeter"
+      - "/companies/velaqori/phishlens-cli"
+      - "/companies/velaqori/phishlens/backend"
+      - "/companies/velaqori/secops-dash"
+      - "/companies/velaqori/secretscan"
+      - "/companies/velaqori/securecode-workbench/backend"
+      - "/companies/velaqori/secweblab"
+      - "/companies/velaqori/sentinelcore/backend"
+      - "/companies/velaqori/sentinellog/backend"
+      - "/companies/velaqori/shopdeck"
+      - "/companies/velaqori/simforge"
+      - "/companies/velaqori/skycast"
+      - "/companies/velaqori/stockmate"
+      - "/companies/velaqori/taskdeck"
+      - "/companies/velaqori/threatintel-desk-cli"
+      - "/companies/velaqori/threatintel-desk/backend"
+      - "/companies/velaqori/tidyfiles"
+      - "/companies/velaqori/urlshield"
+      - "/companies/velaqori/wattwise"
+      - "/companies/velaqori/webwatch"
+      - "/coursework/cbu-assignments/tenantcore/backend"
+      - "/coursework/cbu-assignments/video_downloader_app"
+      - "/stock-price-analysis"
+      - "/stock-price-time-series-analysis"
+      - "/tools/personal_os_companion"
+      - "/vocal-separator/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      pip-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      pip-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker"
+    directories:
+      - "/backend"
+      - "/companies/tamuzi/tessera"
+      - "/companies/tamuzi/transcriptwise"
+      - "/contextvault"
+      - "/vocal-separator/backend"
+      - "/vocal-separator/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      docker-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      docker-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "docker-compose"
+    directories:
+      - "/companies/tamuzi/tessera"
+      - "/contextvault"
+      - "/coursework/cbu-assignments/tenantcore"
+      - "/vocal-separator"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      docker-compose-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      docker-compose-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "cargo"
+    directory: "/native/desktop/src-tauri"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      cargo-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      cargo-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Africa/Lusaka"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      github-actions-security:
+        applies-to: security-updates
+        patterns: ["*"]
+      github-actions-minor-patch:
+        applies-to: version-updates
+        update-types: ["minor", "patch"]
