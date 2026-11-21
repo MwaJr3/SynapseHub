@@ -5,4 +5,6 @@ torch>=2.1
 torchaudio>=2.1
 demucs>=4.0
 torchcrepe>=0.0.23
+bs-roformer>=0.4,<0.5   # 0.4.x matches checkpoints trained before the hyper-connection layout change
+pyyaml>=6
 librosa>=0.10

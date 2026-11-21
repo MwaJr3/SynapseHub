@@ -1,12 +1,12 @@
 import type { Stem } from '../types';
 
+// The six standard vocal ranges (soprano … bass) plus Unknown, which is a valid result.
 export const VOICE_PARTS = [
   'soprano',
+  'mezzo_soprano',
   'alto',
-  'contralto',
   'tenor',
   'baritone',
-  'bass_baritone',
   'bass',
   'unknown',
 ] as const;
@@ -20,31 +20,39 @@ const STEM_ORDER: Record<string, number> = {
   piano: 50,
   guitar: 60,
   other: 70,
+  lead_vocal: 92,
+  backing_vocals: 94,
   soprano: 100,
+  mezzo_soprano: 105,
   alto: 110,
-  contralto: 120,
   tenor: 130,
   baritone: 140,
-  bass_baritone: 150,
   bass_voice: 160,
 };
 
 export function sortStems(stems: Stem[]): Stem[] {
   return [...stems].sort((a, b) => {
-    const av = STEM_ORDER[a.name] ?? (a.kind === 'voice_part' ? 170 : 80);
-    const bv = STEM_ORDER[b.name] ?? (b.kind === 'voice_part' ? 170 : 80);
+    const rank = (stem: Stem) =>
+      STEM_ORDER[stem.name] ?? (stem.kind === 'minus_one' ? 300 : stem.kind === 'voice_part' ? 170 : 80);
+    const av = rank(a);
+    const bv = rank(b);
     return av - bv || a.name.localeCompare(b.name) || a.id - b.id;
   });
 }
 
 export function prettyName(name: string): string {
   const special: Record<string, string> = {
-    bass_baritone: 'Bass-baritone',
+    mezzo_soprano: 'Mezzo-soprano',
+    // Older results used these two labels; the chart folds them into Alto and Baritone.
+    contralto: 'Alto (contralto)',
+    bass_baritone: 'Baritone',
+    bass_voice: 'Bass voice (part)',
   };
   return (
     special[name] ??
     name
       .replace(/^voice_(\d+)$/, 'Voice $1')
+      .replace(/^minus_/, 'Without ')
       .replace(/_/g, ' ')
       .replace(/\b\w/g, (letter) => letter.toUpperCase())
   );

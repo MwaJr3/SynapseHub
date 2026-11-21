@@ -15,13 +15,13 @@ falls back to DSPEngine and records a user-visible warning.
 """
 from __future__ import annotations
 import importlib.util, subprocess, sys, tempfile
-from dataclasses import dataclass, field
 from pathlib import Path
 import numpy as np
 from scipy.ndimage import median_filter
 
 from . import dsp, audio_io
 from .config import DEMUCS_MODEL
+from .engine_base import SeparationModel, SeparationResult
 
 QUALITY_PRESETS = {
     # n_fft, hop, median kernel, mask power
@@ -36,25 +36,6 @@ PROFILES = {
     "extended":            ["vocals", "drums", "bass", "piano", "guitar", "other"],  # ML 6-stem only
     "choir":               ["vocals", "drums", "bass", "other"],                     # + Level-2 voice parts
 }
-
-
-@dataclass
-class SeparationResult:
-    stems: dict[str, np.ndarray] = field(default_factory=dict)   # name -> (ch, n) float32
-    sample_rate: int = 44100
-    model_name: str = ""
-    model_version: str = ""
-    engine: str = ""
-    warnings: list[str] = field(default_factory=list)
-
-
-class SeparationModel:
-    name = "base"; version = "0"; sources: list[str] = []
-    def available(self) -> tuple[bool, str]:
-        return False, "not implemented"
-    def separate(self, audio: np.ndarray, sr: int, requested: list[str], quality: str,
-                 progress=lambda f, m: None) -> SeparationResult:
-        raise NotImplementedError
 
 
 # ---------------------------------------------------------------- DSP engine
@@ -200,15 +181,17 @@ class UnavailableAdapter(SeparationModel):
         raise RuntimeError(self.available()[1])
 
 
+from .roformer import RoformerAdapter          # noqa: E402  (after the types it depends on)
+
+_DSP = DSPEngine()
 REGISTRY: dict[str, SeparationModel] = {
-    "dsp-softmask": DSPEngine(),
+    "dsp-softmask": _DSP,
     "htdemucs": DemucsAdapter(),
     "spleeter": UnavailableAdapter("spleeter", "spleeter", ["vocals", "drums", "bass", "piano", "other"],
                                    "Spleeter is not installed (legacy TensorFlow stack; see docs/ML_NOTES.md)."),
     "mdx": UnavailableAdapter("mdx-net", "mdx", ["vocals", "instrumental"],
                               "No MDX-Net weights are bundled; register validated weights to enable."),
-    "roformer": UnavailableAdapter("bs-roformer", "bs_roformer", ["vocals", "instrumental"],
-                                   "No BS-RoFormer weights are bundled; register validated weights to enable."),
+    "roformer": RoformerAdapter(instrument_splitter=_DSP),
 }
 
 
@@ -217,13 +200,21 @@ def select_engine(preference: str, requested: list[str]) -> tuple[SeparationMode
     warnings: list[str] = []
     if preference == "dsp":
         return REGISTRY["dsp-softmask"], warnings
+    roformer = REGISTRY["roformer"]
+    if preference == "roformer":
+        rok, rwhy = roformer.available()
+        if not rok:
+            raise RuntimeError(f"BS-RoFormer was requested but is unavailable: {rwhy}")
+        return roformer, warnings
     demucs = REGISTRY["htdemucs"]
     ok, why = demucs.available()
     if preference == "demucs":
         if not ok:
             raise RuntimeError(f"Demucs was requested but is unavailable: {why}")
         return demucs, warnings
-    # auto
+    # auto: best vocal model first, then Demucs, then DSP
+    if roformer.available()[0]:
+        return roformer, warnings
     if ok:
         return demucs, warnings
     warnings.append(f"ML separation unavailable ({why}) Using the DSP soft-mask engine instead.")

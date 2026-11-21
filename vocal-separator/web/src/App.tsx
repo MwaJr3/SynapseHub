@@ -97,6 +97,10 @@ function HealthList({ health }: { health: Health | null }) {
         <dd>{health.engines.dsp ? 'Available now' : 'Unavailable'}</dd>
       </div>
       <div>
+        <dt>BS-RoFormer vocals</dt>
+        <dd>{health.engines.roformer ? 'Available' : health.engines.roformer_note ?? 'Not configured'}</dd>
+      </div>
+      <div>
         <dt>Demucs ML</dt>
         <dd>{health.engines.demucs ? 'Available' : health.engines.demucs_note}</dd>
       </div>
@@ -133,7 +137,7 @@ function HonestyPanel({ health }: { health: Health | null }) {
           tracked line passes evidence and confidence gates.
         </li>
         <li>
-          <strong>Unknown is a valid result.</strong> Alto, contralto and tenor overlap heavily;
+          <strong>Unknown is a valid result.</strong> The standard vocal ranges overlap heavily (alto, mezzo-soprano and tenor most of all);
           the UI shows probabilities instead of inventing certainty or empty part files.
         </li>
         <li>
@@ -170,6 +174,7 @@ export default function App() {
   const [profile, setProfile] = useState('choir');
   const [engine, setEngine] = useState('auto');
   const [vocalAnalysis, setVocalAnalysis] = useState(true);
+  const [allVoiceParts, setAllVoiceParts] = useState(true);
 
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [jobDetail, setJobDetail] = useState<JobDetail | null>(null);
@@ -198,8 +203,13 @@ export default function App() {
   }, [results]);
   const associatedStemByVoice = useMemo(() => {
     const map = new Map<string, number>();
-    results?.stems.forEach((stem) => {
-      if (stem.voice_id) map.set(stem.voice_id, stem.id);
+    const stems = results?.stems ?? [];
+    // The lead copy first, so a merged part stem (which carries every member line) wins.
+    stems.filter((stem) => stem.voice_id && stem.name === 'lead_vocal').forEach((stem) => map.set(stem.voice_id, stem.id));
+    stems.filter((stem) => stem.voice_id && stem.name !== 'lead_vocal').forEach((stem) => {
+      map.set(stem.voice_id, stem.id);
+      const members = stem.quality?.voice_ids;
+      if (Array.isArray(members)) members.forEach((id) => map.set(String(id), stem.id));
     });
     return map;
   }, [results]);
@@ -482,6 +492,7 @@ export default function App() {
         profile,
         engine,
         vocal_analysis: vocalAnalysis,
+        all_voice_parts: vocalAnalysis && allVoiceParts,
       });
       setSelectedJobId(created.id);
       setJobDetail({ ...created, stages: [] });
@@ -949,6 +960,7 @@ export default function App() {
                   <span>Engine selection</span>
                   <select value={engine} onChange={(event) => setEngine(event.target.value)}>
                     <option value="auto">Auto — ML when genuinely available, DSP fallback with a visible warning</option>
+                    <option value="roformer">BS-RoFormer vocals — fail clearly if not configured</option>
                     <option value="demucs">Demucs only — fail clearly if unavailable</option>
                     <option value="dsp">Built-in DSP — exact-sum soft masks, more bleed</option>
                   </select>
@@ -964,9 +976,23 @@ export default function App() {
                     <small>Pitch tracks, ranges, probabilities and confidence-gated part reconstruction.</small>
                   </span>
                 </label>
+                <label className="check-field large-check">
+                  <input
+                    type="checkbox"
+                    checked={allVoiceParts}
+                    disabled={!vocalAnalysis}
+                    onChange={(event) => setAllVoiceParts(event.target.checked)}
+                  />
+                  <span>
+                    <strong>Separate every voice part (soprano → bass)</strong>
+                    <small>One stem per part. Low-confidence lines are placed by pitch order and marked best guess.</small>
+                  </span>
+                </label>
                 <div className="engine-note">
                   <strong>Current server:</strong>{' '}
-                  {health?.engines.demucs
+                  {health?.engines.roformer
+                    ? 'BS-RoFormer is configured and is preferred in Auto mode. It is slow without a GPU.'
+                    : health?.engines.demucs
                     ? 'Demucs reports available; first use may need its weights.'
                     : `DSP will be used in Auto mode. ${health?.engines.demucs_note ?? ''}`}
                 </div>
@@ -1092,7 +1118,7 @@ export default function App() {
                 <div className="summary-grid">
                   <article className="summary-card">
                     <span>Music / derived stems</span>
-                    <strong>{results.stems.filter((stem) => stem.kind !== 'voice_part').length}</strong>
+                    <strong>{results.stems.filter((stem) => stem.kind !== 'voice_part' && stem.kind !== 'minus_one').length}</strong>
                   </article>
                   <article className="summary-card">
                     <span>Exported voice parts</span>
@@ -1107,6 +1133,15 @@ export default function App() {
                     <strong className="summary-model">{results.model || '—'} {results.model_version}</strong>
                   </article>
                 </div>
+
+                {results.report.voice_outcome && (
+                  <p className="muted small-text" data-outcome={results.report.voice_outcome.code}>
+                    {results.report.voice_outcome.message}
+                    {results.report.lead_split_outcome?.code === 'lead_split_ready'
+                      ? ` ${results.report.lead_split_outcome.message}`
+                      : ''}
+                  </p>
+                )}
 
                 {resultWarnings.length > 0 && (
                   <ul className="warning-list">
@@ -1180,7 +1215,10 @@ export default function App() {
                         <article key={voice.voice_id} className="voice-card">
                           <div className="voice-card-heading">
                             <div>
-                              <p className="eyebrow">{voice.voice_id.replace('_', ' ')} · {prettyName(voice.role)}</p>
+                              <p className="eyebrow">
+                                {voice.voice_id.replace('_', ' ')} · {voice.is_lead ? 'Lead line' : prettyName(voice.role)}
+                                {voice.assigned_part ? ` · Part: ${prettyName(voice.assigned_part)}${voice.assignment === 'best_guess' ? ' (best guess)' : ''}` : ''}
+                              </p>
                               <h3>{prettyName(displayClass)}</h3>
                               {voice.user_classification && voice.user_classification !== voice.classification && (
                                 <p className="muted small-text">AI/DSP said: {prettyName(voice.classification)}</p>
@@ -1232,6 +1270,20 @@ export default function App() {
                             </div>
                           </dl>
 
+                          {voice.chart_fit?.length ? (
+                            <p className="muted small-text" title="Share of this line's notes inside each standard vocal range">
+                              Fits the standard ranges:{' '}
+                              {voice.chart_fit
+                                .filter((fit, index) => index === 0 || fit.within_range_ratio >= 0.9)
+                                .slice(0, 3)
+                                .map(
+                                  (fit) =>
+                                    `${prettyName(fit.class)} ${fit.lowest_note}–${fit.highest_note} (${percent(fit.within_range_ratio)})`,
+                                )
+                                .join(' · ')}
+                            </p>
+                          ) : null}
+
                           {voice.predictions?.length ? (
                             <div className="prediction-list">
                               {voice.predictions.slice(0, 4).map((prediction) => (
@@ -1241,6 +1293,10 @@ export default function App() {
                               ))}
                             </div>
                           ) : null}
+
+                          {voice.stem_available && voice.stem_note && (
+                            <p className="muted small-text">{voice.stem_note}</p>
+                          )}
 
                           {!voice.stem_available && (
                             <div className="withheld-box">

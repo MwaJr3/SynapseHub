@@ -22,20 +22,175 @@ MIDI_MIN, MIDI_MAX = 36, 86            # C2 .. D6 candidate grid (0.5-semitone s
 MIN_VOICE_SECONDS = 1.2                # evidence required before a part stem may exist
 MIN_STEM_CONFIDENCE = 0.40             # below this: detected but "separation unavailable" (§73)
 
-# Musicological priors (§10): tessitura centre/width + typical range. Priors, not rules.
+# The six standard vocal ranges (reference chart "The Standard 6 Vocal Ranges").
+# These are the *published* extremes of each voice type, as MIDI note numbers
+# (C4 = 60). They bound what a part may plausibly sing; they are not tessituras.
+VOCAL_RANGE_CHART = {
+    "soprano":       dict(lo=60, hi=84),   # C4 - C6
+    "mezzo_soprano": dict(lo=57, hi=81),   # A3 - A5
+    "alto":          dict(lo=53, hi=77),   # F3 - F5   (the chart's "Alto (Contralto)")
+    "tenor":         dict(lo=48, hi=72),   # C3 - C5
+    "baritone":      dict(lo=43, hi=67),   # G2 - G4
+    "bass":          dict(lo=40, hi=64),   # E2 - E4
+}
+
+# Older results (and user corrections) used a seven-class scheme. The chart has
+# one Alto (Contralto) range and no Bass-baritone, so the old labels map onto it.
+LEGACY_PART_ALIASES = {"contralto": "alto", "bass_baritone": "baritone"}
+
+
+def canonical_part(label: str | None) -> str:
+    """Current class name for ``label`` (legacy names are mapped; unknown stays unknown)."""
+    if not label:
+        return "unknown"
+    return LEGACY_PART_ALIASES.get(label, label)
+
+
+# Musicological priors (§10): tessitura centre/width on top of the chart range.
 # "centroid" = expected spectral centroid of the voice's own harmonic series, in
 # semitones relative to its median pitch. This is deliberately WEAK evidence
 # (0.85–1.00 multiplier): formant/tract cues help at the margins but cannot turn
 # an ambiguous alto/tenor line into a certain one — that stays Unknown (§71).
+# Tessitura centres sit in the comfortable lower-middle of each chart range.
 VOICE_PARTS = {
-    "soprano":       dict(centre=69.0, width=4.5, lo=60, hi=84, centroid=26.0),
-    "alto":          dict(centre=63.0, width=4.0, lo=55, hi=74, centroid=25.0),
-    "contralto":     dict(centre=60.0, width=4.0, lo=52, hi=72, centroid=24.5),
-    "tenor":         dict(centre=60.5, width=4.0, lo=48, hi=72, centroid=24.0),
-    "baritone":      dict(centre=55.0, width=4.0, lo=45, hi=69, centroid=23.0),
-    "bass_baritone": dict(centre=52.5, width=3.8, lo=43, hi=67, centroid=22.5),
-    "bass":          dict(centre=50.0, width=3.8, lo=40, hi=64, centroid=22.0),
+    "soprano":       dict(centre=69.0, width=4.5, centroid=26.0, **VOCAL_RANGE_CHART["soprano"]),
+    "mezzo_soprano": dict(centre=66.0, width=3.4, centroid=25.5, **VOCAL_RANGE_CHART["mezzo_soprano"]),
+    "alto":          dict(centre=61.5, width=4.2, centroid=24.8, **VOCAL_RANGE_CHART["alto"]),
+    "tenor":         dict(centre=60.0, width=4.0, centroid=24.0, **VOCAL_RANGE_CHART["tenor"]),
+    "baritone":      dict(centre=54.5, width=3.8, centroid=23.0, **VOCAL_RANGE_CHART["baritone"]),
+    "bass":          dict(centre=49.5, width=3.6, centroid=22.0, **VOCAL_RANGE_CHART["bass"]),
 }
+
+MIN_LEAD_SECONDS = 4.0                 # a dominant line this long may be exported as the lead vocal
+
+
+def chart_range_notes(part: str) -> tuple[str, str]:
+    r = VOCAL_RANGE_CHART[canonical_part(part)]
+    return dsp.midi_to_note(float(r["lo"])), dsp.midi_to_note(float(r["hi"]))
+
+
+def chart_fit(midis) -> list[dict]:
+    """Share of a line's pitches that fall inside each chart range, best first.
+
+    Several ranges usually contain a line (the chart's ranges overlap by design),
+    so this is evidence about *which parts could sing it*, not a classification.
+    """
+    m = np.asarray(midis, dtype=float)
+    out = []
+    for part, r in VOCAL_RANGE_CHART.items():
+        lo_n, hi_n = chart_range_notes(part)
+        out.append({"class": part, "lowest_note": lo_n, "highest_note": hi_n,
+                    "within_range_ratio": round(float(np.mean((m >= r["lo"]) & (m <= r["hi"]))), 3) if m.size else 0.0})
+    return sorted(out, key=lambda d: -d["within_range_ratio"])
+
+
+def assign_voice_stem_names(voices: list[dict], reserved: set[str]) -> dict[str, str]:
+    """voice_id -> unique stem name for every exported voice.
+
+    ``reserved`` holds names already taken by Level-1 stems. A reconstructed
+    "bass" voice must never replace the real bass stem, so a clash becomes
+    ``bass_voice`` (or ``<name>_<voice_id>`` if that is taken too). The lead line
+    is always named ``lead_vocal``; unclassified lines use their voice id.
+    """
+    used = set(reserved)
+    names: dict[str, str] = {}
+    for v in voices:
+        if not v.get("stem_available"):
+            continue
+        cls = v.get("classification", "unknown")
+        base = "lead_vocal" if v.get("is_lead") else (cls if cls != "unknown" else v["voice_id"])
+        name = base
+        if name in used:
+            name = f"{base}_voice" if base in reserved else f"{base}_{v['voice_id']}"
+        if name in used:
+            name = f"{base}_{v['voice_id']}"
+        used.add(name)
+        names[v["voice_id"]] = name
+    return names
+
+
+PART_ORDER = ["soprano", "mezzo_soprano", "alto", "tenor", "baritone", "bass"]   # high -> low
+NEW_PART_BONUS = 0.20          # log-score nudge toward covering another distinct part
+
+
+def _part_scores(v: dict) -> dict[str, float]:
+    """Log-evidence that line ``v`` belongs to each part: classifier probability x chart range fit."""
+    prob = {p["class"]: float(p["probability"]) for p in v.get("predictions", [])}
+    fit = {d["class"]: float(d["within_range_ratio"]) for d in v.get("chart_fit", [])}
+    return {part: float(np.log(prob.get(part, 0.0) + 0.03) + np.log(fit.get(part, 0.5) + 0.05))
+            for part in PART_ORDER}
+
+
+def assign_parts(voices: list[dict], min_seconds: float = MIN_VOICE_SECONDS) -> None:
+    """Give every line with enough evidence one of the six parts (sets ``assigned_part``/``assignment``).
+
+    * Lines the classifier already trusts (``classification`` set and exportable) keep their class.
+    * Every other line is a *best guess*: its classifier probabilities and the share of its notes inside
+      each chart range are combined, then the assignment is made for all lines together under the one
+      constraint a choir imposes: a lower line is never a higher part than a line above it. Parts that
+      end up used by some line get a small bonus, so a tie (alto vs tenor, say) resolves toward covering
+      another part instead of stacking two lines on one.
+    * If trusted classes contradict the pitch order, the constraint is dropped and each line takes its
+      own best part, rather than failing.
+    Lines with less than ``min_seconds`` of voiced evidence get ``assigned_part = None``.
+    """
+    for v in voices:
+        v["assigned_part"], v["assignment"] = None, None
+    lines = [v for v in voices if v.get("voiced_seconds", 0.0) >= min_seconds]
+    if not lines:
+        return
+    lines.sort(key=lambda v: -v.get("pitch_statistics", {}).get("median_midi", 0.0))     # highest first
+    NEG = -1e9
+    cost = []
+    for v in lines:
+        sc = _part_scores(v)
+        trusted = v.get("classification", "unknown") != "unknown" and v.get("stem_available")
+        cost.append([sc[p] if (not trusted or p == v["classification"]) else NEG for p in PART_ORDER])
+    n, k = len(lines), len(PART_ORDER)
+    dp = [[NEG * 10] * k for _ in range(n)]
+    back = [[-1] * k for _ in range(n)]
+    for j in range(k):
+        dp[0][j] = cost[0][j] + (NEW_PART_BONUS if cost[0][j] > NEG / 2 else 0.0)
+    for i in range(1, n):
+        for j in range(k):
+            for q in range(j + 1):                       # previous (higher) line sits in part q <= j
+                cand = dp[i - 1][q] + cost[i][j] + (NEW_PART_BONUS if j > q and cost[i][j] > NEG / 2 else 0.0)
+                if cand > dp[i][j]:
+                    dp[i][j], back[i][j] = cand, q
+    j = int(np.argmax(dp[-1]))
+    if dp[-1][j] > NEG / 2:
+        chosen = [0] * n
+        for i in range(n - 1, -1, -1):
+            chosen[i] = j; j = back[i][j]
+    else:                                                # trusted classes conflict with pitch order
+        chosen = [int(np.argmax(c)) for c in cost]
+    for v, j in zip(lines, chosen):
+        part = PART_ORDER[j]
+        trusted = v.get("classification", "unknown") == part and v.get("stem_available")
+        v["assigned_part"] = part
+        v["assignment"] = "classified" if trusted else "best_guess"
+
+
+def group_part_audio(voices: list[dict], voice_stems: dict) -> dict[str, dict]:
+    """Merge the reconstructed lines of each assigned part into one stem per part.
+
+    Returns ``{part: {"audio", "voice_ids", "primary", "best_guess"}}`` in high-to-low part order.
+    ``primary`` is the line with the most voiced time; ``best_guess`` is True if any member was a guess.
+    """
+    groups: dict[str, list[dict]] = {}
+    for v in voices:
+        if v.get("assigned_part") and v["voice_id"] in voice_stems:
+            groups.setdefault(v["assigned_part"], []).append(v)
+    out: dict[str, dict] = {}
+    for part in PART_ORDER:
+        members = groups.get(part)
+        if not members:
+            continue
+        audio = sum(np.asarray(voice_stems[m["voice_id"]], dtype=np.float32) for m in members)
+        out[part] = {"audio": audio, "voice_ids": [m["voice_id"] for m in members],
+                     "primary": max(members, key=lambda m: m["voiced_seconds"])["voice_id"],
+                     "best_guess": any(m["assignment"] != "classified" for m in members)}
+    return out
 
 
 def confidence_label(c: float) -> str:
@@ -326,6 +481,7 @@ def classify_voice(line: VoiceLine, rel_centroid_st: float | None = None) -> dic
                   "highest_note": dsp.midi_to_note(float(np.max(midis)))},
         "pitch_statistics": {"median_midi": round(median, 2), "mean_midi": round(float(np.mean(midis)), 2),
                              "p10_midi": round(p10, 2), "p90_midi": round(p90, 2)},
+        "chart_fit": chart_fit(midis),
     }
 
 
@@ -406,7 +562,7 @@ def crepe_available() -> tuple[bool, str]:
 
 
 def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
-                   progress=lambda f, m: None) -> dict:
+                   progress=lambda f, m: None, all_parts: bool = False) -> dict:
     """Full Level-2 analysis on a mono vocal signal. Returns voices + pitch tracks + meta."""
     from scipy.signal import resample_poly
     from math import gcd
@@ -444,9 +600,30 @@ def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
             "_line": line,
         })
     # Lead heuristic: most voiced seconds + highest mean strength = probable lead (§14).
+    for v in voices:
+        v["is_lead"] = False
     if len(voices) > 1:
         lead = max(voices, key=lambda v: v["voiced_seconds"])
         lead["role"] = "possible_lead"
+        lead["is_lead"] = True
+        # The lead is chosen by dominance, not by part class, so a long lead line is
+        # exported as the lead vocal even when its class stays Unknown. The class
+        # itself is left as-is: only the stem is allowed, never a made-up label.
+        if not lead["stem_available"] and lead["voiced_seconds"] >= MIN_LEAD_SECONDS:
+            lead["stem_available"] = True
+            lead["stem_unavailable_reason"] = None
+            lead["stem_note"] = ("Exported as the lead vocal (longest, most persistent line); "
+                                 "its voice part is still reported as Unknown.")
+    assign_parts(voices)
+    if all_parts:
+        # Every line with enough voiced time becomes exportable, labelled as a best guess when the
+        # classifier alone would have withheld it. Unknown/withheld is never silently hidden.
+        for v in voices:
+            if v["assigned_part"] and not v["stem_available"]:
+                v["stem_available"] = True
+                v["stem_unavailable_reason"] = None
+                v["stem_note"] = (f"Best guess: assigned to {v['assigned_part'].replace('_', '-')} from pitch order, "
+                                  "chart range fit and classifier probabilities; confidence is below the usual gate.")
     pitch_tracks = {v["voice_id"]: [
         {"time": round(float(t), 3), "midi": round(float(m), 2),
          "frequency": round(float(dsp.midi_to_freq(m)), 2), "note": dsp.midi_to_note(m),

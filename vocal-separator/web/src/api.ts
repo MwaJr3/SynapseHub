@@ -9,6 +9,7 @@ import type {
   ProjectDetail,
   ProjectSummary,
   Session,
+  Stem,
   UploadResponse,
 } from './types';
 
@@ -108,6 +109,7 @@ export const api = {
       profile: string;
       engine: string;
       vocal_analysis: boolean;
+      all_voice_parts?: boolean;
     },
   ) => request<JobSummary>('/api/jobs', { method: 'POST', body: JSON.stringify(body) }, token),
   job: (token: string, jobId: number) =>
@@ -139,6 +141,13 @@ export const api = {
     ),
   deleteStem: (token: string, stemId: number) =>
     request<{ deleted: boolean }>(`/api/stems/${stemId}`, { method: 'DELETE' }, token),
+  /** Practice mix: the song with one stem taken out. Idempotent per stem. */
+  createMinusOne: (token: string, jobId: number, without: string) =>
+    request<Stem>(
+      `/api/jobs/${jobId}/minus-one`,
+      { method: 'POST', body: JSON.stringify({ without }) },
+      token,
+    ),
   createExport: (token: string, jobId: number, format: ExportFormat) =>
     request<{ download_url: string }>(
       '/api/exports',

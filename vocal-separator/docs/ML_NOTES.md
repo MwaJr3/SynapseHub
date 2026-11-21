@@ -192,3 +192,7 @@ Use precise claims:
 - Surface expected bleed/artifacts in quality warnings.
 
 Honest provenance is part of the ML system, not marketing copy added afterward.
+
+## 11. Reference material for the lead / backing and practice features
+
+The lead/backing split and the minus-one practice mix were designed with two open-source projects as *references for ideas only*: Ultimate Vocal Remover (karaoke-style lead vs backing vocal separation; the instrumental as the exact complement of the vocals) and StemDeck (typed outcome codes; practice mixes with one part removed and a peak ceiling instead of clipping). No code was copied; StemDeck is AGPL-3.0, so anything derived from its source would carry that licence. The implementations here (`outcomes.py`, `practice.py`, the lead handling in `vocal.py`) are original and DSP-only. A trained karaoke model would be a better lead/backing engine than harmonic masks and could replace the lead stem behind the same API.

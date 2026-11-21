@@ -165,7 +165,7 @@ MODEL_SEED = [
          meta={"kind": "unet", "expected_quality": "moderate", "notes": "Legacy TensorFlow stack; not bundled."}),
     dict(name="harmonic-mask-voice-separator", version="1.0.0", provider="Built-in Level-2",
          license="Project licence",
-         supported_sources=["soprano", "alto", "contralto", "tenor", "baritone", "bass_baritone", "bass", "unknown"],
+         supported_sources=["soprano", "mezzo_soprano", "alto", "tenor", "baritone", "bass", "unknown"],
          gpu_required=False,
          meta={"kind": "multi-pitch salience + tracking + harmonic soft masks",
                "expected_quality": "experimental — confidence-gated, Unknown is a valid result"}),

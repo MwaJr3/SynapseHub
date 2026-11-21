@@ -47,11 +47,13 @@ const WAVE_COLORS: Record<string, string> = {
   guitar: '#facc15',
   other: '#94a3b8',
   soprano: '#67e8f9',
+  mezzo_soprano: '#a78bfa',
   alto: '#f472b6',
-  contralto: '#c084fc',
   tenor: '#a3e635',
   baritone: '#facc15',
-  bass_baritone: '#fb923c',
+  bass_voice: '#fb923c',
+  lead_vocal: '#22d3ee',
+  backing_vocals: '#818cf8',
 };
 
 function defaultControl(stem: Stem): StemControl {
@@ -61,7 +63,8 @@ function defaultControl(stem: Stem): StemControl {
     // Voice-part stems are subdivisions of the aggregate vocal stem. Starting
     // them muted prevents the same reconstructed voice energy from being
     // intentionally double-counted in the default full mix.
-    muted: stem.kind === 'voice_part' || stem.name === 'original',
+    // Practice mixes are alternatives to the full mix, so they start muted too.
+    muted: stem.kind === 'voice_part' || stem.kind === 'minus_one' || stem.name === 'original',
     solo: false,
   };
 }
@@ -340,12 +343,13 @@ export function StemMixer({
       const next: Record<number, StemControl> = {};
       stems.forEach((stem) => {
         const base = previous[stem.id] ?? defaultControl(stem);
-        let muted = stem.name === 'original' || stem.kind === 'voice_part';
+        let muted = stem.name === 'original' || stem.kind === 'voice_part' || stem.kind === 'minus_one';
         if (name === 'instrumental') {
           muted =
             stem.name === 'original' ||
             stem.name === 'vocals' ||
             stem.kind === 'voice_part' ||
+            stem.kind === 'minus_one' ||
             (stem.name === 'instrumental' && hasComponents);
         }
         next[stem.id] = { ...base, solo: false, muted };
@@ -362,6 +366,19 @@ export function StemMixer({
     onNotice(
       `Practice mode: soloing the reconstructed ${stem.user_label || prettyName(stem.name)} stem. Use loop and tempo controls to rehearse a phrase.`,
     );
+  }
+
+  async function makePracticeMix(stem: Stem) {
+    setSavingStemId(stem.id);
+    try {
+      await api.createMinusOne(token, results.id, stem.name);
+      await onRefresh();
+      onNotice(`Practice mix ready: everything except ${prettyName(stem.name)}. It appears at the end of the stem list.`);
+    } catch (error) {
+      onError(error instanceof Error ? error.message : 'Could not build the practice mix.');
+    } finally {
+      setSavingStemId(null);
+    }
   }
 
   async function saveLabel(stem: Stem) {
@@ -567,6 +584,7 @@ export function StemMixer({
                 <div className="stem-title-row">
                   <h3>{displayName}</h3>
                   <span className="kind-chip">{stem.kind.replace('_', ' ')}</span>
+                  {stem.quality?.best_guess === true && <span className="kind-chip">best guess</span>}
                 </div>
                 <p className="muted small-text">
                   Source identity: {prettyName(stem.name)}
@@ -582,6 +600,7 @@ export function StemMixer({
                     </span>
                   )}
                   {stem.kind === 'voice_part' && <span className="experimental-chip">Experimental</span>}
+                  {stem.kind === 'minus_one' && <span className="experimental-chip">Practice mix</span>}
                 </div>
                 <div className="stem-actions">
                   <button
@@ -603,6 +622,17 @@ export function StemMixer({
                   {stem.kind === 'voice_part' && (
                     <button type="button" className="button small ghost" onClick={() => practiceStem(stem)}>
                       Practice
+                    </button>
+                  )}
+                  {stem.name !== 'original' && stem.kind !== 'minus_one' && (
+                    <button
+                      type="button"
+                      className="button small ghost"
+                      disabled={savingStemId === stem.id}
+                      title="Build a practice mix of the song without this part"
+                      onClick={() => makePracticeMix(stem)}
+                    >
+                      Minus-one
                     </button>
                   )}
                 </div>

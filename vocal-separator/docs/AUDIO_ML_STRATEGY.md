@@ -142,14 +142,15 @@ For each track the system reports:
 
 The classifier produces probabilities over:
 
-- Soprano
-- Alto
-- Contralto
-- Tenor
-- Baritone
-- Bass-baritone
-- Bass
+- Soprano (C4–C6)
+- Mezzo-soprano (A3–A5)
+- Alto / contralto (F3–F5)
+- Tenor (C3–C5)
+- Baritone (G2–G4)
+- Bass (E2–E4)
 - Unknown when evidence is insufficient
+
+The ranges are the six standard vocal ranges from the project's reference chart ("The Standard 6 Vocal Ranges"), kept in `VOCAL_RANGE_CHART` in `backend/app/vocal.py`. They bound what a part may plausibly sing; the classifier still scores the *tessitura* of the whole line inside them. Results and corrections saved with the older labels still load: `contralto` is read as Alto and `bass_baritone` as Baritone. Each voice also reports `chart_fit`, the share of its notes inside every range, because the ranges overlap by design and "which ranges could sing this" is often the honest answer.
 
 It does **not** equate "currently highest note" with soprano or "currently lowest note" with bass. Classification uses the persistent line as a whole, including:
 
@@ -160,7 +161,7 @@ It does **not** equate "currently highest note" with soprano or "currently lowes
 - relationships among simultaneously detected tracks;
 - overlap between plausible voice categories.
 
-Alto, contralto and tenor overlap heavily in real music. If the highest-probability class is not reliable enough, the product displays **Unknown** while still showing the probability distribution. A user can save a correction, but it is stored separately and does not rewrite the system inference.
+Alto, mezzo-soprano and tenor overlap heavily in real music. If the highest-probability class is not reliable enough, the product displays **Unknown** while still showing the probability distribution. A user can save a correction, but it is stored separately and does not rewrite the system inference.
 
 ## 8. Voice-line reconstruction
 
@@ -223,7 +224,7 @@ These tests validate the signal-processing mechanics. They do not establish equa
 | Dense choir/unison | Fewer distinguishable lines; Unknown/withheld parts. |
 | Heavy reverb | Fragmented tracks, smeared boundaries, lower confidence. |
 | Strong accompaniment bleed in vocals | Piano/guitar harmonics may create spurious candidates; quality warnings should be heeded. |
-| Overlapping ranges | Wider class probabilities; alto/contralto/tenor ambiguity. |
+| Overlapping ranges | Wider class probabilities; alto/mezzo-soprano/tenor ambiguity; `chart_fit` shows every range that could sing the line. |
 | Vibrato/extended techniques | Pitch paths may wobble or split without adequate continuity. |
 | Consonant-heavy passages | Harmonic masks capture pitched vowels better than unvoiced speech sounds. |
 | Very short excerpts | Insufficient voiced seconds for responsible part export. |
@@ -240,3 +241,54 @@ These tests validate the signal-processing mechanics. They do not establish equa
 7. **Human review tools** for splitting/merging tracks and editing masks before export.
 
 No future model should bypass the existing evidence gates merely because it is neural; it must improve measured separation and calibration on held-out material.
+
+## 14. Every-voice-part mode and next model backends
+
+**Every-voice-part mode (`all_voice_parts`).** The default path withholds a line whose classifier
+confidence is below the gate. Choir material often has several lines whose ranges overlap (alto vs
+tenor, tenor vs baritone), so the gate removes exactly the lines a person wants. The mode keeps the gate
+for the *label* but not for the *export*: lines are assigned to the six chart parts by a dynamic program
+over lines sorted by median pitch, scoring `log(classifier probability) + log(chart range fit)` under the
+constraint that a lower line is never a higher part, with a small bonus for covering a new part. Lines
+the classifier already trusts act as anchors. Lines placed only by this procedure are labelled
+`best_guess` everywhere (API, stem chip, voice card). Lines under 1.2 s are never assigned. This is a
+heuristic over pitch evidence, not a trained SATB model; it cannot tell two singers on one pitch apart.
+
+**Candidate backends (all MIT-licensed, so they may be integrated, unlike AGPL StemDeck):**
+
+| Repo | Role | Status here |
+|---|---|---|
+| `BS-RoFormer` (lucidrains) | Architecture for band-split RoFormer vocal separation | **Integrated** as `engine=roformer` (and preferred by `auto` when configured). Set `ROFORMER_CKPT` and `ROFORMER_CONFIG`. Verified with viperx `model_bs_roformer_ep_317_sdr_12.9755` (+ ZFTurbo YAML): strict load, 0 missing/unexpected keys. **Pin `bs-roformer>=0.4,<0.5`**: 0.5+ changed the layer layout and cannot load that checkpoint. Weights are loaded with `torch.load(weights_only=True)`. Vocals come from the model; drums/bass/other are split from `mix - vocals` by the DSP engine so stems still sum exactly. CPU speed is about 13x slower than real time on 2 cores, so use a GPU (`ROFORMER_DEVICE=cuda`) for real use. Checkpoint licences are separate from the MIT code: check before redistributing. |
+| `mdx-net` (KINoAI) | ONNX/PyTorch first-pass vocal/instrument model | Not integrated: same reason. Plan: `MdxAdapter` already registered as unavailable. |
+| `crepe` | Monophonic pitch tracker (needs TensorFlow) | Not integrated: our tracker is polyphonic. Plan: use CREPE/torchcrepe only to refine a *single* isolated line's contour. |
+
+**Intended chain once weights are available** (each stage optional, each recorded in the report):
+music removal (RoFormer vocals) → de-reverb → lead/backing split → pitch-guided part assignment
+(this mode) → optional per-part masks refined by the model. Ensembling two models by averaging
+magnitudes is only worth doing after a listening/bleed comparison on the same song.
+
+## 15. Making RoFormer separation faster
+
+Measured on a 2-core Xeon (AMX/AVX512-bf16), one 8 s stereo chunk of the viperx BS-RoFormer:
+
+| Setting | Time | Match to fp32 | Verdict |
+|---|---|---|---|
+| fp32 (baseline) | ~68 s | n/a | slow |
+| int8 dynamic quantization (Linear) | 51 s | 46 dB | rejected: less gain, less accuracy |
+| **bf16 autocast** | **33 s** | **58 dB** | **used automatically when the CPU has bf16** |
+
+Other levers, all implemented in `app/roformer.py`:
+
+* `ROFORMER_PRECISION=auto|fp32|bf16|fp16`: auto picks fp16 on CUDA, bf16 on CPUs with bf16, else fp32.
+* Overlap per quality preset (compute is proportional to `1 / (1 - overlap)`): fast 12.5 %, balanced 25 %, high 50 % (reference setting), maximum 75 %.
+* Silent chunks skip the model. The last chunk is moved back instead of zero-padded.
+* `ROFORMER_DEVICE=cuda` is the largest single win; a GPU is the real answer for anything longer than a clip.
+
+Not done yet, in order of expected value: batching chunks on GPU, `torch.compile`, ONNX/fp16 export,
+caching model output by file hash so re-runs with different Level-2 options never re-separate.
+
+**Resources**
+* [audiojs/mel-roformer](https://huggingface.co/audiojs/mel-roformer): Kimberley Jensen's vocal Mel-Band RoFormer as fp16 ONNX (464 MB, MIT). Its notes put CPU at about 9 s per 8 s segment on an M4 Max, about 3x slower than GPU. Good candidate for an ONNX runtime path.
+* [splifft](https://undef13.github.io/splifft): inference library with fp16 autocast and chunk batching for BS/Mel-RoFormer; ONNX export is on its roadmap.
+* [bs-roformer-infer](https://github.com/openmirlab/bs-roformer-infer) (MIT) and [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) (MIT): ready-made loaders for UVR-family checkpoints.
+* [Towards Practical Real-Time Low-Latency Music Source Separation](https://arxiv.org/pdf/2511.13146): fp16 post-training quantization via ONNX/TensorRT cut inference time ~5x within 0.01 dB; int8 was worse. That matches our CPU result.
