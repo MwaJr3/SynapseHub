@@ -175,6 +175,7 @@ export default function App() {
   const [engine, setEngine] = useState('auto');
   const [vocalAnalysis, setVocalAnalysis] = useState(true);
   const [allVoiceParts, setAllVoiceParts] = useState(true);
+  const [wantedParts, setWantedParts] = useState<string[]>([]);
 
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [jobDetail, setJobDetail] = useState<JobDetail | null>(null);
@@ -493,6 +494,7 @@ export default function App() {
         engine,
         vocal_analysis: vocalAnalysis,
         all_voice_parts: vocalAnalysis && allVoiceParts,
+        voice_parts: vocalAnalysis ? wantedParts : [],
       });
       setSelectedJobId(created.id);
       setJobDetail({ ...created, stages: [] });
@@ -984,10 +986,26 @@ export default function App() {
                     onChange={(event) => setAllVoiceParts(event.target.checked)}
                   />
                   <span>
-                    <strong>Separate every voice part (soprano → bass)</strong>
-                    <small>One stem per part. Low-confidence lines are placed by pitch order and marked best guess.</small>
+                    <strong>Include low-confidence parts (best guess)</strong>
+                    <small>Only parts actually found in the song are exported. Uncertain ones are marked best guess.</small>
                   </span>
                 </label>
+                <fieldset className="check-field" disabled={!vocalAnalysis}>
+                  <legend><strong>Only extract these voices</strong> <small>(none selected = every voice found)</small></legend>
+                  {['soprano', 'mezzo_soprano', 'alto', 'tenor', 'baritone', 'bass'].map((part) => (
+                    <label key={part} className="inline-check">
+                      <input
+                        type="checkbox"
+                        checked={wantedParts.includes(part)}
+                        onChange={(event) =>
+                          setWantedParts((current) =>
+                            event.target.checked ? [...current, part] : current.filter((p) => p !== part))
+                        }
+                      />{' '}
+                      {prettyName(part)}
+                    </label>
+                  ))}
+                </fieldset>
                 <div className="engine-note">
                   <strong>Current server:</strong>{' '}
                   {health?.engines.roformer
@@ -1133,6 +1151,15 @@ export default function App() {
                     <strong className="summary-model">{results.model || '—'} {results.model_version}</strong>
                   </article>
                 </div>
+
+                {results.report.instrumentation && (
+                  <p className="muted small-text" data-kind={results.report.instrumentation.kind}>
+                    {results.report.instrumentation.note}
+                    {results.report.voice_analysis?.parts_present
+                      ? ` Voices found: ${results.report.voice_analysis.parts_present.map(prettyName).join(', ') || 'none'}.`
+                      : ''}
+                  </p>
+                )}
 
                 {results.report.voice_outcome && (
                   <p className="muted small-text" data-outcome={results.report.voice_outcome.code}>

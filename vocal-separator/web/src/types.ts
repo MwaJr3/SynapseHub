@@ -163,7 +163,9 @@ export interface ProcessingReport {
   pipeline?: string;
   detected_sources?: string[];
   separation?: Record<string, unknown>;
-  voice_analysis?: Record<string, unknown>;
+  voice_analysis?: { parts_present?: string[]; parts_absent?: string[]; [key: string]: unknown };
+  instrumentation?: { kind: 'a_cappella' | 'vocals_with_instruments' | 'instrumental_only'; confidence: 'high' | 'low'; note: string };
+  omitted_stems?: string[];
   voice_outcome?: { code: string; message: string };
   lead_split_outcome?: { code: string; message: string };
   reconstruction?: {

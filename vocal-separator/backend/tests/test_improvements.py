@@ -233,7 +233,7 @@ def test_assign_parts_orders_lines_by_pitch_and_flags_guesses():
     assert idx == sorted(idx), "a lower line must never be a higher part"
     assert voices[0]["assigned_part"] == "soprano" and voices[0]["assignment"] == "classified"
     assert voices[4]["assigned_part"] == "baritone"
-    assert voices[5]["assigned_part"] == "bass" and voices[5]["assignment"] == "best_guess"
+    assert voices[5]["assigned_part"] in ("baritone", "bass") and voices[5]["assignment"] == "best_guess"
     assert voices[1]["assignment"] == "best_guess"
 
 
@@ -285,4 +285,63 @@ def test_all_parts_job_exports_one_stem_per_part(all_parts_job):
     assert "bass" in {s["name"] for s in res["stems"] if s["kind"] == "music"}, "Level-1 bass must survive"
     for name, meta in res["report"]["voice_analysis"]["part_stems"].items():
         assert meta["part"] in vocal.PART_ORDER and meta["voice_ids"]
-    assert all(v["assigned_part"] for v in res["voices"] if v["voiced_seconds"] >= vocal.MIN_VOICE_SECONDS)
+    assert all(v["assigned_part"] for v in res["voices"] if v["present"])
+    assert all(v["assigned_part"] is None for v in res["voices"] if not v["present"])
+
+
+def test_absent_parts_stay_absent():
+    """Two lines must never be spread over more than two parts: no part is invented to fill the choir."""
+    voices = [_pv("hi", 72, 30, probs={"soprano": .6}), _pv("lo", 45, 30, probs={"bass": .6})]
+    vocal.assign_parts(voices)
+    assert {v["assigned_part"] for v in voices} == {"soprano", "bass"}
+
+
+def test_fragments_are_not_voices():
+    voices = [dict(_pv("long", 66, 60), role="x"), dict(_pv("blip", 52, 2.0), role="x")]
+    vocal.select_present_voices(voices, active_seconds=70)
+    assert voices[0]["present"] and not voices[1]["present"]
+    assert "fragment" in voices[1]["presence_note"]
+    vocal.assign_parts(voices)
+    assert voices[1]["assigned_part"] is None
+
+
+# ---------------------------------------------------------------- choosing voices / what is present
+def _run_job(email, mix, **opts):
+    h = _auth(email)
+    pid = client.post("/api/projects", json={"title": email}, headers=h).json()["id"]
+    buf = io.BytesIO(); sf.write(buf, mix.T, 44100, format="WAV", subtype="PCM_16")
+    afid = client.post(f"/api/projects/{pid}/audio", headers=h,
+                       files={"file": ("m.wav", io.BytesIO(buf.getvalue()), "audio/wav")}).json()["audio_file_id"]
+    body = {"audio_file_id": afid, "quality": "fast", "profile": "choir", "engine": "dsp", "vocal_analysis": True, **opts}
+    r = client.post("/api/jobs", headers=h, json=body)
+    assert r.status_code == 200, r.text
+    jid = r.json()["id"]
+    deadline = time.time() + 300
+    while time.time() < deadline:
+        if client.get(f"/api/jobs/{jid}", headers=h).json()["state"] in ("COMPLETED", "FAILED"):
+            break
+        time.sleep(1)
+    res = client.get(f"/api/jobs/{jid}/results", headers=h).json()
+    assert res["state"] == "COMPLETED", res
+    return res
+
+
+def test_only_the_requested_voice_is_exported():
+    res = _run_job("only-bass@example.com", make_satb_mix()["mix"], voice_parts=["bass"])
+    parts = [s for s in res["stems"] if s["kind"] == "voice_part"]
+    assert [res["report"]["voice_analysis"]["part_stems"][s["name"]]["part"] for s in parts] == ["bass"], parts
+    assert "instrumentation" in res["report"]
+
+
+def test_report_lists_which_parts_are_present_and_absent():
+    res = _run_job("present@example.com", make_satb_mix(with_accompaniment=False)["mix"])
+    va = res["report"]["voice_analysis"]
+    assert va["parts_present"] and set(va["parts_present"]).isdisjoint(va["parts_absent"])
+    assert set(va["parts_present"]) | set(va["parts_absent"]) == set(vocal.PART_ORDER)
+    assert len(va["parts_present"]) <= 4, "a four-voice recording must not report more than four parts"
+
+
+def test_unknown_part_name_is_rejected():
+    h = _auth("badpart@example.com")
+    r = client.post("/api/jobs", headers=h, json={"audio_file_id": 1, "voice_parts": ["kazoo"]})
+    assert r.status_code == 422

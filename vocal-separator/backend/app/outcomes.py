@@ -14,6 +14,8 @@ NO_VOCAL_ENERGY = "no_vocal_energy"
 NO_PART_MET_THRESHOLD = "no_part_met_threshold"
 NO_PART_STEMS = "no_part_stems_written"
 ALL_PARTS_READY = "all_voice_parts_ready"
+NO_VOCALS_IN_SONG = "no_vocals_in_song"
+NO_WANTED_PART = "wanted_part_not_present"
 
 MESSAGES: dict[str, str] = {
     READY: "Voice-part stems were reconstructed. They are experimental estimates, not studio multitracks.",
@@ -24,6 +26,9 @@ MESSAGES: dict[str, str] = {
                             "The analysis is shown instead of guessing."),
     ALL_PARTS_READY: ("Every detected line was assigned to a voice part (soprano to bass). Parts marked best guess "
                       "were placed by pitch order and range fit, not by a confident classification."),
+    NO_VOCALS_IN_SONG: "No vocals were found in this recording, so no voice analysis was done.",
+    NO_WANTED_PART: ("None of the voice parts you asked for is present in this recording. The parts that were "
+                     "found are listed in the analysis."),
     NO_PART_STEMS: "Vocal lines passed the gates but no part stem could be written. Try again.",
 }
 

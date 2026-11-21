@@ -292,3 +292,10 @@ caching model output by file hash so re-runs with different Level-2 options neve
 * [splifft](https://undef13.github.io/splifft): inference library with fp16 autocast and chunk batching for BS/Mel-RoFormer; ONNX export is on its roadmap.
 * [bs-roformer-infer](https://github.com/openmirlab/bs-roformer-infer) (MIT) and [python-audio-separator](https://github.com/nomadkaraoke/python-audio-separator) (MIT): ready-made loaders for UVR-family checkpoints.
 * [Towards Practical Real-Time Low-Latency Music Source Separation](https://arxiv.org/pdf/2511.13146): fp16 post-training quantization via ONNX/TensorRT cut inference time ~5x within 0.01 dB; int8 was worse. That matches our CPU result.
+
+## 16. What is actually in the song (presence detection)
+
+* `app/presence.py` decides from measured energy whether the recording is `a_cappella`, `vocals_with_instruments` or `instrumental_only`. Drums/bass/other stems that are not present are **not exported** (an a cappella choir no longer gets empty "instrument" stems). The decision is only acted on when the vocal stem came from a trained model; with the DSP engine it is reported as low-confidence and nothing is removed.
+* Tracked lines must be at least 3 s and 8 % of the vocal-active time to count as a voice; shorter ones are fragments or ad-libs and are never labelled or exported. Part assignment no longer rewards covering new parts, so absent parts stay absent. The report lists `parts_present` and `parts_absent`.
+* Every tracked line competes for spectrum when stems are rebuilt, including lines that are not exported. Previously unexported lines leaked into the exported neighbours. On the synthetic four-voice choir (known ground truth) the bass stem improved from 4.2 dB to 10.0 dB SDR, and from 4.2 dB to 15.3 dB when only two voices sing. Alto and tenor remain weak (about 4 dB) because their harmonics collide; fixing that needs better line tracking, not just masks.
+* Calibration on real songs: with BS-RoFormer, "Arise" puts 98.9 % of its energy in the vocal stem (a cappella). The DSP engine put only 38 % of a similar choir's energy there, which is why its instrument decisions are not trusted.

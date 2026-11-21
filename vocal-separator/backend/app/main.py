@@ -241,7 +241,8 @@ class JobIn(BM):
     profile: str = "choir"             # vocals_instrumental|full|extended|choir
     engine: str = "auto"               # auto|roformer|demucs|dsp
     vocal_analysis: bool = True
-    all_voice_parts: bool = False
+    all_voice_parts: bool = False       # also export low-confidence parts, marked best guess
+    voice_parts: list[str] = []         # extract only these parts (empty = every part that is present)
 
 
 def job_summary(j: ProcessingJob) -> dict:
@@ -259,6 +260,9 @@ def create_job(body: JobIn, request: Request, user: User = Depends(current_user)
         raise HTTPException(422, f"quality must be one of {list(engines.QUALITY_PRESETS)}")
     if body.profile not in engines.PROFILES:
         raise HTTPException(422, f"profile must be one of {list(engines.PROFILES)}")
+    bad = [p for p in body.voice_parts if p not in vocal.PART_ORDER]
+    if bad:
+        raise HTTPException(422, f"voice_parts must be from {vocal.PART_ORDER}")
     if body.engine not in ("auto", "roformer", "demucs", "dsp"):
         raise HTTPException(422, "engine must be auto, roformer, demucs or dsp")
     with SessionLocal() as s:
@@ -348,7 +352,7 @@ def job_results(job_id: int, user: User = Depends(current_user)):
                    if k in ("predictions", "range", "pitch_statistics", "voiced_seconds",
                             "stem_available", "stem_unavailable_reason", "confidence_label", "predicted",
                             "chart_fit", "is_lead", "stem_note",
-                            "assigned_part", "assignment")},
+                            "assigned_part", "assignment", "present", "presence_note")},
             } for v in voices],
             "report": j.report or {},
         }

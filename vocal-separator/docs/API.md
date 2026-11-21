@@ -187,6 +187,7 @@ Fields:
 | `profile` | Requested stem profile, such as vocals/instrumental, full, extended or choir |
 | `engine` | `auto` (BS-RoFormer if configured, else Demucs, else DSP), `roformer`, `demucs` or `dsp`. Named engines fail clearly if unavailable. |
 | `vocal_analysis` | Whether to run Level-2 voice tracking/classification/reconstruction |
+| `voice_parts` | List of parts to extract (`soprano`, `mezzo_soprano`, `alto`, `tenor`, `baritone`, `bass`). Empty = every part found. Unknown names return 422. If none of the requested parts is present the outcome is `wanted_part_not_present`. |
 | `all_voice_parts` | Default `false`. When `true` (needs `vocal_analysis`), every detected line is assigned to one of soprano, mezzo_soprano, alto, tenor, baritone, bass and exported as one merged stem per part. Lines the classifier would have withheld are marked `best_guess` (stem `quality.best_guess`, voice `assignment`). A part that clashes with a Level-1 name is exported as `<part>_voice` (e.g. `bass_voice`). `lead_vocal` is kept as a `derived` stem. Outcome code `all_voice_parts_ready`. |
 
 The returned summary includes job ID, state, progress, message, model/version fields, config, timestamps, warnings and an estimated-processing-time note when available.

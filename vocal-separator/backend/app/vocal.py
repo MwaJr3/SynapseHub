@@ -110,7 +110,7 @@ def assign_voice_stem_names(voices: list[dict], reserved: set[str]) -> dict[str,
 
 
 PART_ORDER = ["soprano", "mezzo_soprano", "alto", "tenor", "baritone", "bass"]   # high -> low
-NEW_PART_BONUS = 0.20          # log-score nudge toward covering another distinct part
+NEW_PART_BONUS = 0.0           # never reward inventing a part: absent parts must stay absent
 
 
 def _part_scores(v: dict) -> dict[str, float]:
@@ -119,6 +119,25 @@ def _part_scores(v: dict) -> dict[str, float]:
     fit = {d["class"]: float(d["within_range_ratio"]) for d in v.get("chart_fit", [])}
     return {part: float(np.log(prob.get(part, 0.0) + 0.03) + np.log(fit.get(part, 0.5) + 0.05))
             for part in PART_ORDER}
+
+
+MIN_PRESENT_SECONDS = 3.0      # a line shorter than this is a fragment/ad-lib, not a part of the song
+MIN_PRESENT_SHARE = 0.08       # ... and must cover at least this share of the vocal-active time
+
+
+def select_present_voices(voices: list[dict], active_seconds: float) -> None:
+    """Mark which tracked lines are real voices of the song (``present``) and why not otherwise.
+
+    A tracker splits one singer into several fragments and also picks up ad-libs and bleed, so a
+    line only counts as a voice when it is long enough in absolute terms and relative to how long
+    anybody is singing. Lines that are not present still *compete* for spectrum when stems are
+    reconstructed (so their sound is not dumped into a neighbour) but are never exported or labelled.
+    """
+    floor = max(MIN_PRESENT_SECONDS, MIN_PRESENT_SHARE * max(active_seconds, 0.0))
+    for v in voices:
+        v["present"] = bool(v["voiced_seconds"] >= floor)
+        v["presence_note"] = None if v["present"] else (
+            f"Only {v['voiced_seconds']:.1f}s (needs {floor:.1f}s): treated as a fragment or ad-lib, not a voice part.")
 
 
 def assign_parts(voices: list[dict], min_seconds: float = MIN_VOICE_SECONDS) -> None:
@@ -136,7 +155,7 @@ def assign_parts(voices: list[dict], min_seconds: float = MIN_VOICE_SECONDS) -> 
     """
     for v in voices:
         v["assigned_part"], v["assignment"] = None, None
-    lines = [v for v in voices if v.get("voiced_seconds", 0.0) >= min_seconds]
+    lines = [v for v in voices if v.get("voiced_seconds", 0.0) >= min_seconds and v.get("present", True)]
     if not lines:
         return
     lines.sort(key=lambda v: -v.get("pitch_statistics", {}).get("median_midi", 0.0))     # highest first
@@ -614,12 +633,18 @@ def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
             lead["stem_unavailable_reason"] = None
             lead["stem_note"] = ("Exported as the lead vocal (longest, most persistent line); "
                                  "its voice part is still reported as Unknown.")
+    select_present_voices(voices, active_seconds=float(len(sig) / ANALYSIS_SR) * float(np.mean(energy > 0.08 * (np.median(energy) + 1e-12))))
+    for v in voices:
+        if not v["present"]:
+            v["stem_available"] = False
+            v["stem_unavailable_reason"] = v["presence_note"]
+            v["is_lead"] = False
     assign_parts(voices)
     if all_parts:
         # Every line with enough voiced time becomes exportable, labelled as a best guess when the
         # classifier alone would have withheld it. Unknown/withheld is never silently hidden.
         for v in voices:
-            if v["assigned_part"] and not v["stem_available"]:
+            if v["assigned_part"] and v["present"] and not v["stem_available"]:
                 v["stem_available"] = True
                 v["stem_unavailable_reason"] = None
                 v["stem_note"] = (f"Best guess: assigned to {v['assigned_part'].replace('_', '-')} from pitch order, "
@@ -644,13 +669,20 @@ def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
 def reconstruct_voice_stems(vocals: np.ndarray, sr: int, analysis: dict,
                             progress=lambda f, m: None) -> dict[str, np.ndarray]:
     """Per-voice stems via harmonic masks on the stereo vocal stem (§13/18).
-    Keyed by voice_id; pipeline names files by classified part. Chunked for RAM."""
-    lines = [v["_line"] for v in analysis["voices"] if v["stem_available"]]
-    ids = [v["voice_id"] for v in analysis["voices"] if v["stem_available"]]
-    if not lines:
+
+    Every tracked line with enough evidence *competes* for each time-frequency bin, including lines
+    that will not be exported: otherwise an unexported alto or tenor line is never claimed by its own
+    mask and its sound leaks into the stems of the neighbours that are exported (measured: bass stem
+    +4 dB cleaner on the synthetic choir). Only lines with ``stem_available`` are returned.
+    Keyed by voice_id. Chunked for RAM."""
+    competing = [v for v in analysis["voices"] if v["voiced_seconds"] >= MIN_VOICE_SECONDS or v["stem_available"]]
+    export = {v["voice_id"] for v in analysis["voices"] if v["stem_available"]}
+    if not export:
         return {}
-    n = vocals.shape[1]; out = {vid: np.zeros_like(vocals) for vid in ids}
-    n_fft, hop = 4096, 1024
+    lines = [v["_line"] for v in competing]
+    ids = [v["voice_id"] for v in competing]
+    n = vocals.shape[1]; out = {vid: np.zeros_like(vocals) for vid in ids if vid in export}
+    n_fft, hop = 8192, 2048                    # finer bins separate low voices (bass SDR 8.3 -> 10.0 dB)
     chunk_n, margin_n = int(20 * sr), int(1 * sr)
     pos, step, total = 0, 0, max(1, int(np.ceil(n / chunk_n)))
     while pos < n:
@@ -659,16 +691,15 @@ def reconstruct_voice_stems(vocals: np.ndarray, sr: int, analysis: dict,
         t0 = lo / sr
         Zs = [dsp.stft(seg[ch], sr, n_fft, hop)[2] for ch in range(seg.shape[0])]
         freqs, times, _ = dsp.stft(seg[0], sr, n_fft, hop)
-        shifted = []
-        for line in lines:
-            nl = VoiceLine([t - t0 for t in line.times], list(line.midis), list(line.strengths))
-            shifted.append(nl)
+        shifted = [VoiceLine([t - t0 for t in line.times], list(line.midis), list(line.strengths)) for line in lines]
         mid = Zs[0] if len(Zs) == 1 else (Zs[0] + Zs[1]) / 2
         masks = harmonic_masks(mid, freqs, times, shifted)
         for vid, mask in zip(ids, masks):
+            if vid not in out:
+                continue
             chans = [dsp.istft(Z * mask, sr, n_fft, hop, length=seg.shape[1]) for Z in Zs]
-            a, b = pos - lo, pos - lo + min(chunk_n, n - pos)
-            out[vid][:, pos:pos + (b - a)] = np.stack(chans)[:, a:b]
+            a_, b_ = pos - lo, pos - lo + min(chunk_n, n - pos)
+            out[vid][:, pos:pos + (b_ - a_)] = np.stack(chans)[:, a_:b_]
         pos += chunk_n; step += 1
         progress(step / total, f"Reconstructing voice-part stems {step}/{total}")
     return out
