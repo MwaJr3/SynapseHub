@@ -22,13 +22,13 @@
     "@aws-sdk/s3-request-presigner": "^3.700.0",
     "@electric-sql/pglite": "0.5.11",
     "drizzle-orm": "0.45.4",
-    "next": "15.5.28",
+    "next": "15.5.29",
     "next-auth": "5.0.0-beta.32",
     "pg": "8.23.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "react-hook-form": "^7.90.0",
-    "zod": "3.25.76"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

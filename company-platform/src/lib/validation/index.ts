@@ -107,7 +107,7 @@ export const portfolioLinkSchema = z.object({
 export const contactSchema = z
   .object({
     companySlug: z.enum(['velaqori-systems', 'tamuzi-learning'], {
-      errorMap: () => ({ message: 'Choose which company to contact' }),
+      error: 'Choose which company to contact',
     }),
     name: z.string().trim().min(2, 'Tell us your name').max(120),
     email: z.string().email('Enter a valid email').max(200),
