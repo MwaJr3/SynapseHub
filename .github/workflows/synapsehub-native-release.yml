@@ -55,7 +55,7 @@ jobs:
             cache: npm,
             cache-dependency-path: native/mobile/package-lock.json,
           }
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: '17' }
       - uses: android-actions/setup-android@v3
       - run: node scripts/check-native-env.mjs --mobile
