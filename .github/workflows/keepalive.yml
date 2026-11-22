@@ -1,0 +1,18 @@
+name: keepalive
+# Pings the deployed site's DB-backed route twice a week so the Supabase
+# free-tier project is not paused for inactivity (it pauses after ~7 idle days).
+on:
+  schedule:
+    - cron: '17 6 * * 1,4'
+  workflow_dispatch:
+permissions: {}
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping /api/keepalive
+        env:
+          SITE_URL: ${{ vars.SITE_URL || 'https://company-platform-ivory.vercel.app' }}
+        run: |
+          curl --fail --silent --show-error --retry 3 --retry-delay 20 \
+            --max-time 30 "$SITE_URL/api/keepalive"
