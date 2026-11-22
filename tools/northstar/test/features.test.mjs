@@ -78,6 +78,7 @@ test('probe without a browser says Not measured instead of guessing', async () =
 test('probe measures the planted defects in a real browser (skipped without Playwright)',
   { skip: loadPlaywright() ? false : 'Playwright not installed' }, async () => {
     const result = await probePage(path.join(root, 'fixtures', 'runtime-page', 'index.html'), { viewports: [320] });
+    if (!result.available) return; // Playwright present, Chromium not downloaded: nothing to measure
     assert.equal(result.available, true);
     const ids = result.viewports.flatMap((v) => v.findings.map((f) => f.rule ?? f.id));
     assert.ok(ids.includes('runtime-horizontal-overflow'));

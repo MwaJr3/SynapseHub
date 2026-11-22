@@ -250,7 +250,17 @@ export async function probePage(target, options = {}) {
     };
   }
   const widths = options.viewports ?? DEFAULT_VIEWPORTS;
-  const browser = await playwright.chromium.launch();
+  let browser;
+  try {
+    browser = await playwright.chromium.launch();
+  } catch (error) {
+    // Playwright can be installed without its browser binary. That is "cannot measure",
+    // not a crash, and not a reason to guess.
+    return {
+      target, url, available: false, viewports: [], limits: LIMITS,
+      reason: `Playwright is installed but Chromium could not start (${String(error.message).split('\n')[0]}). Run \`npx playwright install chromium\`, then run this again.`,
+    };
+  }
   const viewports = [];
   try {
     for (const width of widths) {
