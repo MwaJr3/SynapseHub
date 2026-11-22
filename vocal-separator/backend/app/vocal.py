@@ -140,6 +140,80 @@ def select_present_voices(voices: list[dict], active_seconds: float) -> None:
             f"Only {v['voiced_seconds']:.1f}s (needs {floor:.1f}s): treated as a fragment or ad-lib, not a voice part.")
 
 
+def merge_lines_into_tracks(voices: list[dict], max_tracks: int = 6) -> int:
+    """Group fragments of the same singer into one track per concurrent voice.
+
+    The tracker splits a singer into many pieces, so counting lines over-counts singers (a
+    four-part choir came out as six parts). The number of voices that really sing together is
+    measured instead: the 90th percentile of how many present lines are active at once. Lines are
+    then clustered by median pitch (1-D k-means weighted by duration) into that many tracks, and
+    each line gets ``track`` (0 = highest). Returns the number of tracks (0 when nothing is present).
+    """
+    pres = [v for v in voices if v.get("present", True) and v.get("voiced_seconds", 0) > 0 and v.get("_line") is not None]
+    for v in voices:
+        v["track"] = None
+    if not pres:
+        return 0
+    t_end = max(max(v["_line"].times) for v in pres if v["_line"].times)
+    grid = np.arange(0.0, t_end + 0.1, 0.1)
+    active = np.zeros((len(pres), len(grid)), bool)
+    for i, v in enumerate(pres):
+        ts = np.asarray(v["_line"].times)
+        if len(ts):
+            idx = np.clip(np.round(ts / 0.1).astype(int), 0, len(grid) - 1)
+            active[i, idx] = True
+            for sh in (-1, 1):                       # bridge single-frame gaps
+                active[i, np.clip(idx + sh, 0, len(grid) - 1)] = True
+    count = active.sum(axis=0)
+    k = int(np.clip(round(float(np.percentile(count[count > 0], 90))) if (count > 0).any() else 1, 1, max_tracks))
+    k = min(k, len(pres))
+    med = np.array([v["_line"].median_midi for v in pres]); w = np.array([v["voiced_seconds"] for v in pres], float)
+    centres = np.quantile(med, (np.arange(k) + 0.5) / k)
+    for _ in range(30):
+        lab = np.argmin(np.abs(med[:, None] - centres[None, :]), axis=1)
+        new = np.array([np.average(med[lab == j], weights=w[lab == j]) if (lab == j).any() else centres[j] for j in range(k)])
+        if np.allclose(new, centres):
+            break
+        centres = new
+    order = np.argsort(-centres)                     # track 0 = highest pitch
+    rank = {int(j): r for r, j in enumerate(order)}
+    used = sorted({int(l) for l in lab}, key=lambda j: rank[j])
+    for v, l in zip(pres, lab):
+        v["track"] = used.index(int(l))
+    return len(used)
+
+
+def _assign_parts_to_tracks(voices: list[dict]) -> None:
+    """Name each track (one per concurrent singer) by running the pitch-ordered assignment on
+    track-level evidence, then give every member line its track's part."""
+    tracks: dict[int, list[dict]] = {}
+    for v in voices:
+        v["assigned_part"], v["assignment"] = None, None
+        if v.get("track") is not None:
+            tracks.setdefault(v["track"], []).append(v)
+    pseudo = []
+    for t, members in sorted(tracks.items()):
+        w = np.array([m["voiced_seconds"] for m in members], float); w /= w.sum()
+        probs = {p: float(sum(wi * next((x["probability"] for x in m["predictions"] if x["class"] == p), 0.0)
+                              for wi, m in zip(w, members))) for p in PART_ORDER}
+        fit = {p: float(sum(wi * next((x["within_range_ratio"] for x in m["chart_fit"] if x["class"] == p), 0.5)
+                            for wi, m in zip(w, members))) for p in PART_ORDER}
+        trusted = [m for m in members if m.get("classification", "unknown") != "unknown" and m.get("stem_available")]
+        cls = max(trusted, key=lambda m: m["voiced_seconds"])["classification"] if trusted else "unknown"
+        pseudo.append({"tid": t, "members": members, "voiced_seconds": float(sum(m["voiced_seconds"] for m in members)),
+                       "pitch_statistics": {"median_midi": float(np.average([m["pitch_statistics"]["median_midi"] for m in members], weights=w))},
+                       "predictions": [{"class": p, "probability": probs[p]} for p in PART_ORDER],
+                       "chart_fit": [{"class": p, "within_range_ratio": fit[p]} for p in PART_ORDER],
+                       "classification": cls, "stem_available": bool(trusted), "present": True})
+    assign_parts_to_lines = [p for p in pseudo]
+    # reuse the monotone assignment on the pseudo-lines (no tracks on them, so no recursion)
+    assign_parts(assign_parts_to_lines)
+    for ps in pseudo:
+        for m in ps["members"]:
+            m["assigned_part"] = ps["assigned_part"]
+            m["assignment"] = ps["assignment"]
+
+
 def assign_parts(voices: list[dict], min_seconds: float = MIN_VOICE_SECONDS) -> None:
     """Give every line with enough evidence one of the six parts (sets ``assigned_part``/``assignment``).
 
@@ -155,6 +229,9 @@ def assign_parts(voices: list[dict], min_seconds: float = MIN_VOICE_SECONDS) -> 
     """
     for v in voices:
         v["assigned_part"], v["assignment"] = None, None
+    if any(v.get("track") is not None for v in voices):
+        _assign_parts_to_tracks(voices)
+        return
     lines = [v for v in voices if v.get("voiced_seconds", 0.0) >= min_seconds and v.get("present", True)]
     if not lines:
         return
@@ -639,6 +716,7 @@ def analyze_vocals(vocal_mono: np.ndarray, sr: int, max_voices: int = 6,
             v["stem_available"] = False
             v["stem_unavailable_reason"] = v["presence_note"]
             v["is_lead"] = False
+    merge_lines_into_tracks(voices)
     assign_parts(voices)
     if all_parts:
         # Every line with enough voiced time becomes exportable, labelled as a best guess when the

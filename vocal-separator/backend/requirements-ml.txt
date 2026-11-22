@@ -5,6 +5,6 @@ torch>=2.1
 torchaudio>=2.1
 demucs>=4.0
 torchcrepe>=0.0.23
-bs-roformer>=0.4,<0.5   # 0.4.x matches checkpoints trained before the hyper-connection layout change
+bs-roformer==0.3.10   # 0.3.10 loads both the viperx BS-RoFormer and the aufr33 Mel-Band karaoke checkpoints (0.5+ changed layer layout)
 pyyaml>=6
 librosa>=0.10

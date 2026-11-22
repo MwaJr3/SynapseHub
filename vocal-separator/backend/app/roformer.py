@@ -17,7 +17,7 @@ def _cpu_has_bf16() -> bool:
     return "avx512_bf16" in flags or "amx_bf16" in flags
 
 
-class RoformerAdapter(SeparationModel):
+class RoformerRunner:
     """BS-RoFormer vocal separation (MIT code from lucidrains/BS-RoFormer; weights are the user's).
 
     The model only separates vocals. Drums/bass/other are split from the *remainder*
@@ -25,22 +25,20 @@ class RoformerAdapter(SeparationModel):
     Requires ``bs-roformer>=0.4,<0.5`` (later releases changed the layer layout and
     cannot load checkpoints trained before that change) plus a checkpoint and its YAML config.
     """
-    name = "bs-roformer"; version = "viperx-ep317"
-    sources = ["vocals", "instrumental", "drums", "bass", "other"]
     # Fraction of a chunk shared with its neighbour, per quality preset. 0.5 is the usual reference
     # setting; lower is proportionally faster (compute ~ 1 / (1 - overlap)) and may leave faint seams.
     OVERLAP_FRACTION = {"fast": 0.125, "balanced": 0.25, "high": 0.5, "maximum": 0.75}
     SILENCE_RMS = 1e-4          # chunks quieter than this are not sent to the model
 
-    def __init__(self, instrument_splitter=None):
+    label = "BS-RoFormer"
+
+    def __init__(self):
         self._model = None
         self._cfg: dict | None = None
-        self._splitter = instrument_splitter        # injected: splits mix-vocals into drums/bass/other
 
-    def instrument_splitter(self):
-        if self._splitter is None:
-            raise RuntimeError("RoformerAdapter needs an instrument splitter for drums/bass/other")
-        return self._splitter
+    def _paths(self) -> tuple[str, str]:
+        """(checkpoint, config) paths; subclasses say where their files are."""
+        raise NotImplementedError
 
     # -- configuration -------------------------------------------------
     @staticmethod
@@ -62,19 +60,20 @@ class RoformerAdapter(SeparationModel):
         return cfg
 
     def available(self):
-        if not ROFORMER_CKPT or not ROFORMER_CONFIG:
-            return False, "BS-RoFormer is not configured (set ROFORMER_CKPT and ROFORMER_CONFIG)."
+        ckpt_s, conf_s = self._paths()
+        if not ckpt_s or not conf_s:
+            return False, f"{self.label} is not configured (checkpoint and config paths are empty)."
         for pkg in ("torch", "bs_roformer", "yaml"):
             if importlib.util.find_spec(pkg) is None:
                 return False, f"BS-RoFormer needs the '{pkg}' package (pip install 'bs-roformer>=0.4,<0.5')."
-        ckpt, conf = Path(ROFORMER_CKPT), Path(ROFORMER_CONFIG)
+        ckpt, conf = Path(ckpt_s), Path(conf_s)
         if not ckpt.is_file() or not conf.is_file():
-            return False, "BS-RoFormer checkpoint or config file was not found."
+            return False, f"{self.label} checkpoint or config file was not found."
         try:
             self._read_config(conf)
         except Exception as e:                       # noqa: BLE001 - report, never crash a health check
-            return False, f"BS-RoFormer config is not usable: {e}"
-        return True, "BS-RoFormer checkpoint and config found."
+            return False, f"{self.label} config is not usable: {e}"
+        return True, f"{self.label} checkpoint and config found."
 
     # -- model ---------------------------------------------------------
     def _device(self):
@@ -87,15 +86,18 @@ class RoformerAdapter(SeparationModel):
         if self._model is not None:
             return self._model, self._cfg
         import inspect, torch
-        from bs_roformer import BSRoformer
-        cfg = self._read_config(Path(ROFORMER_CONFIG))
-        accepted = inspect.signature(BSRoformer.__init__).parameters
+        import bs_roformer
+        ckpt_s, conf_s = self._paths()
+        cfg = self._read_config(Path(conf_s))
+        # Mel-Band configs carry num_bands; band-split configs carry freqs_per_bands.
+        arch = bs_roformer.MelBandRoformer if "num_bands" in cfg["model"] else bs_roformer.BSRoformer
+        accepted = inspect.signature(arch.__init__).parameters
         kwargs = {k: v for k, v in cfg["model"].items() if k in accepted}
         # weights_only: a checkpoint is data, never code. A file that needs pickle is refused.
-        state = torch.load(ROFORMER_CKPT, map_location="cpu", weights_only=True)
+        state = torch.load(ckpt_s, map_location="cpu", weights_only=True)
         if isinstance(state, dict) and "state_dict" in state:
             state = state["state_dict"]
-        model = BSRoformer(**kwargs)
+        model = arch(**kwargs)
         model.load_state_dict(state, strict=True)     # layout mismatch fails loudly, not silently
         self._model, self._cfg = model.eval().to(self._device()), cfg
         return self._model, self._cfg
@@ -125,7 +127,7 @@ class RoformerAdapter(SeparationModel):
         starts.append(n - chunk)
         return sorted(set(starts))
 
-    def _vocals(self, audio: np.ndarray, sr: int, quality: str, progress) -> np.ndarray:
+    def run_model(self, audio: np.ndarray, sr: int, quality: str, progress) -> np.ndarray:
         import contextlib, torch
         from scipy.signal import resample_poly
         from math import gcd
@@ -163,7 +165,7 @@ class RoformerAdapter(SeparationModel):
                     y = np.zeros_like(seg)              # silence in, silence out: no model call
                 out[:, a:a + chunk] += y * w
                 norm[a:a + chunk] += w
-                progress(0.1 + 0.8 * (i + 1) / len(starts), f"BS-RoFormer chunk {i + 1}/{len(starts)}")
+                progress(0.1 + 0.8 * (i + 1) / len(starts), f"{self.label} chunk {i + 1}/{len(starts)}")
         out /= np.maximum(norm, 1e-6)
         out = out[:, :n]
         if sr != msr:
@@ -173,6 +175,25 @@ class RoformerAdapter(SeparationModel):
         if out.shape[1] < audio.shape[1]:
             out = np.pad(out, ((0, 0), (0, audio.shape[1] - out.shape[1])))
         return out[:1] if mono_in else out
+
+    _vocals = run_model            # historical name
+
+
+class RoformerAdapter(RoformerRunner, SeparationModel):
+    name = "bs-roformer"; version = "viperx-ep317"
+    sources = ["vocals", "instrumental", "drums", "bass", "other"]
+
+    def __init__(self, instrument_splitter=None):
+        super().__init__()
+        self._splitter = instrument_splitter        # injected: splits mix-vocals into drums/bass/other
+
+    def _paths(self):
+        return ROFORMER_CKPT, ROFORMER_CONFIG
+
+    def instrument_splitter(self):
+        if self._splitter is None:
+            raise RuntimeError("RoformerAdapter needs an instrument splitter for drums/bass/other")
+        return self._splitter
 
     def separate(self, audio, sr, requested, quality, progress=lambda f, m: None):
         ok, why = self.available()
@@ -199,3 +220,16 @@ class RoformerAdapter(SeparationModel):
             "instrumental by the DSP engine, so they are weaker than a full multi-stem model.")
         progress(1.0, "BS-RoFormer complete")
         return result
+
+
+class StemStage(RoformerRunner):
+    """One optional post-processing model applied to a stem (karaoke lead/backing, de-reverb).
+
+    Same loader and chunked inference as the separation engine; it only differs in which files it reads.
+    """
+    def __init__(self, label: str, ckpt: str, config: str):
+        super().__init__()
+        self.label, self._ckpt, self._conf = label, ckpt, config
+
+    def _paths(self):
+        return self._ckpt, self._conf

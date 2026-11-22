@@ -27,6 +27,12 @@ DEMUCS_MODEL = os.getenv("DEMUCS_MODEL", "htdemucs")
 # BS-RoFormer (e.g. viperx ep_317). Both files must exist or the engine reports itself unavailable.
 ROFORMER_CKPT = os.getenv("ROFORMER_CKPT", "")
 ROFORMER_CONFIG = os.getenv("ROFORMER_CONFIG", "")
+# Optional stem stages (Mel-Band RoFormer karaoke = lead/backing, BS-RoFormer de-reverb). Experimental:
+# on PawChorale SATB songs the karaoke stage gave no usable lead/backing split, so nothing enables them by default.
+KARAOKE_CKPT = os.getenv("KARAOKE_CKPT", "")
+KARAOKE_CONFIG = os.getenv("KARAOKE_CONFIG", "")
+DEVERB_CKPT = os.getenv("DEVERB_CKPT", "")
+DEVERB_CONFIG = os.getenv("DEVERB_CONFIG", "")
 ROFORMER_DEVICE = os.getenv("ROFORMER_DEVICE", "auto")       # auto | cpu | cuda
 ROFORMER_PRECISION = os.getenv("ROFORMER_PRECISION", "auto") # auto | fp32 | bf16 | fp16 (auto = fastest safe)
 FFMPEG = os.getenv("FFMPEG_BINARY", "ffmpeg")

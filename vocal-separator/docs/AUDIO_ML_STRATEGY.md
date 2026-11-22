@@ -299,3 +299,30 @@ caching model output by file hash so re-runs with different Level-2 options neve
 * Tracked lines must be at least 3 s and 8 % of the vocal-active time to count as a voice; shorter ones are fragments or ad-libs and are never labelled or exported. Part assignment no longer rewards covering new parts, so absent parts stay absent. The report lists `parts_present` and `parts_absent`.
 * Every tracked line competes for spectrum when stems are rebuilt, including lines that are not exported. Previously unexported lines leaked into the exported neighbours. On the synthetic four-voice choir (known ground truth) the bass stem improved from 4.2 dB to 10.0 dB SDR, and from 4.2 dB to 15.3 dB when only two voices sing. Alto and tenor remain weak (about 4 dB) because their harmonics collide; fixing that needs better line tracking, not just masks.
 * Calibration on real songs: with BS-RoFormer, "Arise" puts 98.9 % of its energy in the vocal stem (a cappella). The DSP engine put only 38 % of a similar choir's energy there, which is why its instrument decisions are not trusted.
+
+## 17. Real-choir benchmark (PawChorale) and what it showed
+
+Benchmark: `backend/benchmarks/` scores per-part stems against the isolated SATB parts of four PawChorale songs
+(31-44 s each, rendered choral audio; the dataset is not redistributed and each work has its own licence terms).
+Metric: SDR of each estimated part after projecting onto the four true parts (generous: it ignores gain).
+
+| Pipeline | Result |
+|---|---|
+| Synthetic test choir (steady tones) | Bass +10 dB SDR, alto/tenor about +4 dB. **Far too optimistic.** |
+| Current masks + tracker on PawChorale | Mostly **-14 to +1 dB** SDR; 3-5 parts found for 4 true parts (tenor/alto often missing) |
+| Same masks with the *true* pitch of each singer (oracle) | **-0.2 to +3.8 dB** (mean about +2): tracking costs roughly 5-8 dB, but even perfect tracking leaves harmonic masks near 2 dB |
+| Mask parameter sweep under the oracle (floor, width, harmonics, power) | No setting beat about +2 dB mean |
+| Karaoke (Mel-Band RoFormer) stage on the master | Output nearly silent and unrelated to any one part (shares varied 0-94 % per song); **no usable lead/backing split** for lead-less SATB |
+
+Conclusions: (1) harmonic masking cannot separate dense reverberant SATB; it is a fallback, not the answer.
+(2) Tracks are now formed by measured concurrency (p90 of simultaneously active lines), which stopped
+the tracker's fragments from inventing extra parts, but identification is still imperfect.
+(3) The karaoke model targets a different problem (lead over backing) and is left as an optional, off-by-default
+stage (`StemStage`, `KARAOKE_*` settings). The de-reverb checkpoint is hosted only on Hugging Face, which this
+environment cannot reach, so it was not evaluated.
+
+**Training decision (not started).** PawChorale provides about 27 hours of isolated SATB stems plus 6.8 hours of masters,
+which is enough to fine-tune a RoFormer for four-part separation. That needs a GPU (a single 24 GB card for days),
+a train/validation split by work, and attention to the per-edition licences. Expected gain over masks is large (learned
+models routinely beat +2 dB SDR) but unproven on this data until trained.
+
