@@ -59,7 +59,7 @@ function Meta({ item }: { item: Item }) {
 
 function Thumb({ item }: { item: Item }) {
   if (!item.image_url) return null;
-  return <img ref={hideBrokenImage} className="thumb" src={item.image_url} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />;
+  return <img ref={hideBrokenImage} className="thumb" width={112} height={76} src={item.image_url} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" />;
 }
 
 export const ItemRow = memo(forwardRef<HTMLDivElement, RowProps>(function ItemRow(props, ref) {

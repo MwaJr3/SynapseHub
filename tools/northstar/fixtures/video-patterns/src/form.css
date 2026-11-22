@@ -3,3 +3,8 @@ input:user-invalid { border-color: red; }
 .dark { background: #000; }
 @media (prefers-color-scheme: dark) { :root { --surface: #0f1115; } }
 input:focus-visible { outline: 2px solid #2563eb; }
+.badge { z-index: 9; }
+.badge-ok { position: relative; z-index: 9; }
+.row > .cell { display: flex; z-index: 2; }
+.hero-bad { background: linear-gradient(135deg, #ff3b30, #34c759); }
+.hero-good { background: linear-gradient(135deg, #5b5bf0, #a855f7); }

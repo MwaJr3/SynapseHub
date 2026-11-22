@@ -4043,6 +4043,7 @@ details > summary::-webkit-details-marker {
   gap: 18px;
 }
 .library-card {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--panel);

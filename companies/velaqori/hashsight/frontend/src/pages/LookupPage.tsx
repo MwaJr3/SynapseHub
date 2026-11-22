@@ -32,7 +32,7 @@ export default function LookupPage() {
         Enabling an external provider sends only the digest, and only when you tick the confirmation below.
       </div>
       <form className="card" onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
-        <input className="input" type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} required />
+        <input className="input" type="file" accept="*/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} required />
         <label style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem" }}>
           <input type="checkbox" checked={confirmExternal} onChange={(e) => setConfirmExternal(e.target.checked)} />
           I understand that, if an external provider is configured, this file's digest will be sent to it (the file itself is never uploaded).

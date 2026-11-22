@@ -103,7 +103,7 @@ export function HeroPanel({ children }: { children: ReactNode }) {
       <div className="grid items-center gap-6 md:grid-cols-[1.2fr_1fr]">
         <div>{children}</div>
         <div className="tilt hidden rounded-[14px] md:block" aria-hidden="true">
-          <img className="hero-image max-h-52" src="/hero-tessera.png" alt="" loading="lazy" decoding="async" />
+          <img className="hero-image max-h-52" src="/hero-tessera.png" alt="" width={1376} height={768} style={{ height: 'auto', maxWidth: '100%' }} loading="lazy" decoding="async" />
         </div>
       </div>
     </section>

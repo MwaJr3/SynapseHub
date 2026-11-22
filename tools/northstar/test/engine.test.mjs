@@ -169,15 +169,19 @@ test('the auth-and-motion fixture finds the planted defects and spares the corre
 test('the video-patterns fixture finds the planted defects and spares the correct twins', () => {
   const project = scan('video-patterns');
   assert.deepEqual(ids(project), [
+    'ai-cliche-copy',
     'dark-pure-black',
     'dark-pure-black',
     'file-input-accept',
+    'gradient-opposed-hues',
     'invalid-on-load',
     'invalid-without-description',
+    'paste-blocked',
     'progress-without-value',
     'switch-without-checked',
     'truncated-bar-axis',
     'validate-on-every-keystroke',
+    'zindex-without-position',
   ]);
   const byId = (id) => project.findings.find((finding) => finding.id === id);
   assert.equal(byId('truncated-bar-axis').occurrences ?? 1, 1, 'the zero-based chart is fine');

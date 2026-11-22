@@ -239,6 +239,7 @@ export function FilesPage() {
             <input
               className="input flex-1"
               type="file"
+              accept="*/*"
               required
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
@@ -351,7 +352,7 @@ export function BaselinesPage() {
               <tr>
                 <th scope="col" className="th">Name</th>
                 <th scope="col" className="th">Version</th>
-                <th scope="col" className="th">Files</th>
+                <th scope="col" className="th text-right">Files</th>
                 <th scope="col" className="th">Created</th>
                 <th scope="col" className="th">Actions</th>
               </tr>
@@ -361,7 +362,7 @@ export function BaselinesPage() {
                 <tr key={b.id} className="border-t border-slate-800">
                   <td className="td font-medium">{b.name}</td>
                   <td className="td">v{b.version}</td>
-                  <td className="td">{b.entry_count}</td>
+                  <td className="td text-right tabular-nums">{b.entry_count}</td>
                   <td className="td text-slate-400">{formatTimestamp(b.created_at)}</td>
                   <td className="td space-x-2 whitespace-nowrap">
                     <a className="btn-ghost" href={`/api/baselines/${b.id}/manifest.json`}>

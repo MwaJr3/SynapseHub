@@ -16,7 +16,7 @@ export function FeedIcon({ id, title, src, size = 18 }: { id: number; title: str
   useEffect(() => setFailed(false), [src]);
   const style = { width: size, height: size } as const;
   if (src && !failed) {
-    return <img className="feed-icon" style={style} src={src} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} referrerPolicy="no-referrer" />;
+    return <img className="feed-icon" style={style} width={size} height={size} src={src} alt="" loading="lazy" decoding="async" onError={() => setFailed(true)} referrerPolicy="no-referrer" />;
   }
   const hue = hueFor(id);
   return (

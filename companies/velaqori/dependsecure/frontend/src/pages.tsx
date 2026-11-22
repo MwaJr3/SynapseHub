@@ -255,7 +255,7 @@ export function ManifestsPage() {
               <tr>
                 <th scope="col" className="th">File</th>
                 <th scope="col" className="th">Kind</th>
-                <th scope="col" className="th">Packages</th>
+                <th scope="col" className="th text-right">Packages</th>
                 <th scope="col" className="th">Parse notes</th>
                 <th scope="col" className="th">Uploaded</th>
                 <th scope="col" className="th">Actions</th>
@@ -269,8 +269,8 @@ export function ManifestsPage() {
                     {m.selected ? <Badge tone="bg-violet-950 text-violet-300 border border-violet-800">selected</Badge> : null}
                   </td>
                   <td className="td">{m.kind}</td>
-                  <td className="td">{m.package_count}</td>
-                  <td className="td text-xs text-slate-400">{m.errors.length} note(s)</td>
+                  <td className="td text-right tabular-nums">{m.package_count}</td>
+                  <td className="td text-xs text-slate-400 tabular-nums">{m.errors.length} note(s)</td>
                   <td className="td text-slate-400">{formatTimestamp(m.uploaded_at)}</td>
                   <td className="td space-x-2 whitespace-nowrap">
                     <button
@@ -370,7 +370,7 @@ export function ScansPage() {
                 <th scope="col" className="th">Scan</th>
                 <th scope="col" className="th">Status</th>
                 <th scope="col" className="th">Tool</th>
-                <th scope="col" className="th">Findings</th>
+                <th scope="col" className="th text-right">Findings</th>
                 <th scope="col" className="th">Started</th>
                 <th scope="col" className="th">Error</th>
               </tr>
@@ -383,7 +383,7 @@ export function ScansPage() {
                     <Badge tone={scanStatusTone(s.status)}>{s.status}</Badge>
                   </td>
                   <td className="td">{s.tool}</td>
-                  <td className="td">{s.finding_count}</td>
+                  <td className="td text-right tabular-nums">{s.finding_count}</td>
                   <td className="td text-slate-400">{formatTimestamp(s.started_at)}</td>
                   <td className="td max-w-sm truncate text-xs text-rose-300">{s.error || '—'}</td>
                 </tr>

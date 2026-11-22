@@ -135,7 +135,7 @@ export function StudentsPage({ user }: { user: User }) {
                 <th scope="col" className="th">Name</th>
                 <th scope="col" className="th">Email</th>
                 <th scope="col" className="th">Status</th>
-                <th scope="col" className="th">Sections</th>
+                <th scope="col" className="th text-right">Sections</th>
                 {user.role === 'admin' ? <th scope="col" className="th">Actions</th> : null}
               </tr>
             </thead>
@@ -146,7 +146,7 @@ export function StudentsPage({ user }: { user: User }) {
                   <td className="td">{s.first_name} {s.last_name}</td>
                   <td className="td text-slate-400">{s.email || '—'}</td>
                   <td className="td">{s.status}</td>
-                  <td className="td">{s.enrolled_sections.length}</td>
+                  <td className="td text-right tabular-nums">{s.enrolled_sections.length}</td>
                   {user.role === 'admin' ? (
                     <td className="td">
                       <ConfirmButton

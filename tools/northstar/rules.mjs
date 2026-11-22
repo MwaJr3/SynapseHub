@@ -594,6 +594,8 @@ const numericCells = {
       const classList = match[1] ?? match[2] ?? '';
       const body = match[3];
       if (!/toLocaleString|toFixed|\.length\}|%<\/|count\b|amount|total/i.test(body)) continue;
+      // A formatted date or time is text that happens to contain digits, not a number to compare.
+      if (/new Date\(|formatDate|formatTime|formatTimestamp|toLocale(?:Date|Time)String|\bdate\b|\btime(?:stamp)?\b/i.test(body)) continue;
       // `td-num` is this repository's documented numeric-cell class; the engine
       // cannot read the stylesheet from here, so the convention is named instead.
       if (/tabular-nums|text-right|td-num|num-cell/.test(classList)) continue;
@@ -615,16 +617,16 @@ const paginationNotInUrl = {
   fix: 'Read and write the page from the URL (`useSearchParams`, or the hash the router already owns) so the view is addressable.',
   check(file, text) {
     if (!is(file, 'jsx')) return [];
-    if (!/useState[^\n]*\bpage\b|setPage\b/.test(text)) return [];
+    if (!/useState[^\n]*(?<![-\w."'])\bpage\b(?![-\w"'])|setPage\b/.test(text)) return [];
     // The page number has to come from the address bar somehow. Either the file
     // reads the URL itself (search params, a hash router), or it calls the
     // repository's `usePageParam` hook, whose job is exactly that — the hook reads
     // `useSearchParams` and writes `?page=`. Anything else means the number is
     // living in component state and will be lost on reload.
-    if (/useSearchParams|URLSearchParams|location\.hash|location\.search|\busePageParam\b/.test(text)) {
+    if (/useSearchParams|URLSearchParams|location\.hash|location\.search|pageFromHash|history\.(?:push|replace)State|\busePageParam\b/.test(text)) {
       return [];
     }
-    const index = text.search(/useState[^\n]*\bpage\b|setPage\b/);
+    const index = text.search(/useState[^\n]*(?<![-\w."'])\bpage\b(?![-\w"'])|setPage\b/);
     return [finding(paginationNotInUrl, file, text, index)];
   },
 };
@@ -1383,6 +1385,128 @@ const darkPureBlack = {
   },
 };
 
+/** Rule 45 — a field that refuses paste, which is what password managers do. */
+const pasteBlocked = {
+  id: 'paste-blocked',
+  pattern: 'P57',
+  severity: 'P2',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Password or code field blocks paste',
+  why:
+    'Password managers fill and paste. Blocking paste pushes people toward shorter, memorable, reused passwords — the opposite of the security the block was meant to buy.',
+  fix: 'Delete the `onPaste` handler that calls `preventDefault()`. For split code boxes, handle paste by spreading the digits across the boxes instead.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'input')) {
+      const m = /\bonPaste\s*=\s*\{[^}]*preventDefault|\bonpaste\s*=\s*["'][^"']*(?:return\s+false|preventDefault)/i.exec(element);
+      if (!m) continue;
+      out.push(finding(pasteBlocked, file, text, index, { detail: 'onPaste calls preventDefault()' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 46 — z-index on a rule with no positioning, so it does nothing. */
+const zindexWithoutPosition = {
+  id: 'zindex-without-position',
+  pattern: 'P44',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: '`z-index` on an element that is not positioned',
+  why:
+    'z-index only applies to positioned elements (and flex or grid children). On a static element the number is ignored, so the stacking bug it was meant to fix stays, and people raise the number instead of finding the cause.',
+  fix: 'Add `position: relative` (or `isolation: isolate` to create a stacking context without positioning), or remove the z-index if the element is a flex/grid child that already stacks.',
+  check(file, text) {
+    if (!is(file, 'css')) return [];
+    const out = [];
+    // A class positioned by one rule and stacked by another (`.card {position:relative}`
+    // + `.card:has(.open) {z-index:25}`) is fine: the number is applied to a positioned box.
+    const positioned = new Set();
+    for (const rule of text.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
+      if (!/(?:^|[;\s])position\s*:\s*(?:relative|absolute|fixed|sticky)/.test(rule[2])) continue;
+      for (const m of rule[1].matchAll(/\.([A-Za-z_][\w-]*)/g)) positioned.add(m[1]);
+    }
+    for (const rule of text.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
+      const body = rule[2];
+      const subject = rule[1].replace(/:[a-z-]+\((?:[^()]|\([^()]*\))*\)/g, '');
+      if ([...subject.matchAll(/\.([A-Za-z_][\w-]*)/g)].some((m) => positioned.has(m[1]))) continue;
+      const z = /(?:^|[;\s])z-index\s*:\s*(-?\d+)/.exec(body);
+      if (!z || Number(z[1]) === 0) continue;
+      if (/(?:^|[;\s])position\s*:\s*(?:relative|absolute|fixed|sticky)/.test(body)) continue;
+      if (/(?:^|[;\s])(?:display\s*:\s*(?:flex|grid|inline-flex|inline-grid)|isolation\s*:)/.test(body)) continue;
+      const selector = rule[1].trim().split(/\s*,\s*/)[0];
+      out.push(finding(zindexWithoutPosition, file, text, rule.index + rule[1].length - rule[1].trimStart().length, { detail: `${selector.slice(0, 60)} { z-index: ${z[1]} } with no position` }));
+    }
+    return out;
+  },
+};
+
+const CLICHES = /\b(supercharge[sd]?|unleash(?:es|ed)?|elevate (?:your|the)|seamless(?:ly)?|revolutioni[sz]e[sd]?|game[- ]chang(?:er|ing)|next[- ]gen(?:eration)?|cutting[- ]edge|empower(?:s|ing)? (?:your|teams|everyone)|all-in-one platform|take (?:your \w+ )?to the next level|reimagine[sd]?)\b/i;
+
+/** Rule 47 — adjectives where the outcome should be. */
+const aiClicheCopy = {
+  id: 'ai-cliche-copy',
+  pattern: 'X14',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Headline leans on stock adjectives instead of stating the outcome',
+  why:
+    '"Supercharge your workflow", "seamless", "elevate", "all-in-one platform" describe nothing a visitor can check, and they are the first thing people read as machine-written. The headline is the one sentence every visitor reads; it should say what changes for whom.',
+  fix: 'Rewrite as outcome + audience: "Close the month in one afternoon. Bookkeeping for small teams, without the spreadsheet." Keep the proof concrete (a name, a role, a number with a unit).',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/<h[12]\b[^>]*>([\s\S]*?)<\/h[12]>/gi)) {
+      const hit = CLICHES.exec(match[1].replace(/<[^>]+>/g, ' '));
+      if (hit) out.push(finding(aiClicheCopy, file, text, match.index, { detail: `heading uses "${hit[0]}"` }));
+    }
+    return out;
+  },
+};
+
+const hexToHue = (hex) => {
+  let h = hex.replace('#', '');
+  if (h.length === 3) h = [...h].map((c) => c + c).join('');
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b); const min = Math.min(r, g, b); const d = max - min;
+  if (d < 0.15 || max === 0 || d / max < 0.3) return null; // grey or washed-out: no meaningful hue
+  let hue;
+  if (max === r) hue = ((g - b) / d) % 6; else if (max === g) hue = (b - r) / d + 2; else hue = (r - g) / d + 4;
+  return (hue * 60 + 360) % 360;
+};
+
+/** Rule 48 — a gradient between opposite hues. */
+const gradientOpposedHues = {
+  id: 'gradient-opposed-hues',
+  pattern: 'X15',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Gradient runs between near-opposite hues',
+  why:
+    'Hues 120–180° apart (red→green, orange→blue) blend through a muddy grey-brown middle and vibrate at the edge. Neighbouring hues, about 60° apart, stay clean the whole way across.',
+  fix: 'Keep the two stops within roughly 60–90° on the colour wheel (indigo→violet, teal→blue), or add a deliberate third stop. Use 135° for a natural diagonal light.',
+  check(file, text) {
+    if (!is(file, 'css', 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/linear-gradient\(([^;{}]*?)\)(?=\s*[;,'"`}\n])/g)) {
+      const stops = [...match[1].matchAll(/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b/g)].map((m) => hexToHue(m[0]));
+      const hues = stops.filter((h) => h !== null);
+      if (hues.length < 2) continue;
+      let worst = 0;
+      for (let i = 0; i < hues.length; i++) for (let j = i + 1; j < hues.length; j++) {
+        const diff = Math.abs(hues[i] - hues[j]); worst = Math.max(worst, Math.min(diff, 360 - diff));
+      }
+      if (worst >= 120) out.push(finding(gradientOpposedHues, file, text, match.index, { detail: `hues ${Math.round(worst)}° apart` }));
+    }
+    return out;
+  },
+};
+
 export const RULES = [
   focusRingRemoved,
   noFocusStyle,
@@ -1428,6 +1552,10 @@ export const RULES = [
   invalidWithoutDescription,
   progressWithoutValue,
   darkPureBlack,
+  pasteBlocked,
+  zindexWithoutPosition,
+  aiClicheCopy,
+  gradientOpposedHues,
 ];
 
 export { NON_TEXT_RATIO, SMALL_TEXT_RATIO, LARGE_TEXT_RATIO, contrast, blend };

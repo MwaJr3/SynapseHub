@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --color-canvas: #f5f7fb;
   --color-ink-950: #111a2e;
   --color-ink-900: #18233a;
   --color-ink-800: #24324a;
@@ -17,7 +18,7 @@
   --shadow-modal: 0 24px 80px rgba(17,26,46,.22);
 }
 
-:root { color: #18233a; background: #f5f7fb; font-synthesis: none; text-rendering: optimizeLegibility; }
+:root { color: #18233a; background: var(--color-canvas); font-synthesis: none; text-rendering: optimizeLegibility; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; min-height: 100vh; }
 button, input, select, textarea { font: inherit; }

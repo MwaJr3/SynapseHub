@@ -22,7 +22,7 @@ export function Layout() {
   const navigate = useNavigate();
   const navigation = [...(user?.is_platform_admin ? [{ to: '/platform', label: 'Platform control', icon: Building2 }] : []), ...(currentMembership ? tenantNav : [])];
   const signOut = async () => { await logout(); navigate('/login'); };
-  return <div className="min-h-screen bg-[#f5f7fb]">
+  return <div className="min-h-screen bg-canvas">
     {mobileOpen && <button aria-label="Close navigation overlay" className="fixed inset-0 z-30 bg-ink-950/40 lg:hidden" onClick={() => setMobileOpen(false)} />}
     <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-ink-950 text-white transition-transform lg:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="flex h-20 items-center gap-3 border-b border-white/10 px-6"><div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-500 shadow-lg shadow-brand-500/20"><ShieldCheck size={21} /></div><div><p className="text-lg font-bold tracking-tight">TenantCore</p><p className="text-[10px] font-medium uppercase tracking-[.18em] text-slate-500">Isolation by design</p></div><button className="ml-auto p-1 text-slate-500 lg:hidden" onClick={() => setMobileOpen(false)} aria-label="Close navigation"><X size={20} /></button></div>

@@ -1,4 +1,7 @@
-export type Page = 'overview'|'chat'|'documents'|'collections'|'playground'|'evaluation'|'architecture'|'settings';
+export const PAGES = ['overview','chat','documents','collections','playground','evaluation','architecture','settings'] as const;
+export type Page = typeof PAGES[number];
+/** The page named by the URL hash, so a refresh, a shared link and the back button keep the place. */
+export const pageFromHash = (): Page | null => { const name = typeof window === 'undefined' ? '' : window.location.hash.replace(/^#\/?/, ''); return (PAGES as readonly string[]).includes(name) ? name as Page : null; };
 export interface User { id:string; email:string; display_name:string; role:'user'|'developer' }
 export interface Collection { id:string; name:string; description:string; color:string; document_count:number; ready_count:number; chunk_size:number; chunk_overlap:number; created_at:string }
 export interface Document { id:string; collection_id:string; filename:string; content_type:string; file_size:number; page_count:number|null; status:string; progress:number; error:string|null; tags:string[]; archived:boolean; timings:Record<string,number>; created_at:string; updated_at:string; collection_name:string; collection_color:string; chunk_count:number; embedding_model:string|null }

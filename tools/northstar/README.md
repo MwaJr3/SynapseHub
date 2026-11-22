@@ -13,7 +13,7 @@ are complementary and both are kept, behind one entry point:
 
 | Layer | Where | Reached by |
 | --- | --- | --- |
-| Severity-ranked rules (44 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Severity-ranked rules (48 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
 | Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
 
 It holds to a rule most design tooling breaks: **it does not claim to have seen
@@ -62,7 +62,7 @@ Node 20 or newer. No dependencies, no network access, no telemetry.
 
 ## What it checks
 
-Forty-four checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
+Forty-eight checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
 rendered from Python string templates. The ones that find the most, in this repository:
 
 | Check | Pattern | What it proves |
@@ -106,6 +106,10 @@ rendered from Python string templates. The ones that find the most, in this repo
 | `file-input-accept` | P56 | `<input type="file">` with no `accept` |
 | `progress-without-value` | P28 | `role="progressbar"` with no `aria-valuenow` |
 | `dark-pure-black` | P73 | Pure `#000` as a dark-theme surface |
+| `paste-blocked` | P57 | A password or code field whose `onPaste` calls `preventDefault()` |
+| `zindex-without-position` | P44 | `z-index` on a rule that is never positioned (cross-rule aware) |
+| `ai-cliche-copy` | X14 | An `<h1>`/`<h2>` built from stock adjectives ("supercharge", "seamless") |
+| `gradient-opposed-hues` | X15 | A linear gradient between hues 120° or more apart |
 
 Plus `hover-only-action`, `raw-colour-in-class`, `nav-missing-current`,
 `placeholder-link`, `target-blank-noopener` and `small-target`. The full mapping lives
