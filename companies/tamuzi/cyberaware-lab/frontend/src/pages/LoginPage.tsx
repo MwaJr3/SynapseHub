@@ -34,7 +34,7 @@ export default function LoginPage() {
       <h1 style={{ marginTop: 0 }}>{mode === "login" ? "Sign in" : "Create account"}</h1>
       <form onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
         <input aria-label="Email" className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input aria-label="Account password (12+ characters)" className="input" type="password" placeholder="account password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input aria-label="Account password (12+ characters)" className="input" type="password" autoComplete={mode === "register" ? "new-password" : "current-password"} placeholder="account password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {mode === "register" && (
           <>
             <input aria-label="Display name" className="input" placeholder="display name" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />

@@ -2,7 +2,7 @@
 import { useRef, useState } from 'react';
 import { AlertTriangle, Check, FileText, FolderPlus, LoaderCircle, RotateCw, Trash2, UploadCloud, X } from 'lucide-react';
 import { api, ext, formatDate, formatSize, type Collection, type Document } from './types';
-import { FileIcon, Modal, Status } from './shared';
+import { FileIcon, Modal, Status, askConfirm } from './shared';
 
 type Shared={onClose:()=>void;onChanged:()=>Promise<void>;notify:(message:string)=>void};
 export function UploadModal({collections,defaultCollection,onClose,onChanged,notify,demo}:Shared & {collections:Collection[];defaultCollection:string;demo:boolean}) {
@@ -20,7 +20,7 @@ export function UploadModal({collections,defaultCollection,onClose,onChanged,not
 export function CollectionModal({collection,onClose,onChanged,notify}:Shared & {collection?:Collection}) {
   const [name,setName]=useState(collection?.name||''); const [description,setDescription]=useState(collection?.description||''); const [color,setColor]=useState(collection?.color||'violet'); const [chunkSize,setChunkSize]=useState(collection?.chunk_size||900); const [overlap,setOverlap]=useState(collection?.chunk_overlap||120); const [busy,setBusy]=useState(false);
   const save=async()=>{setBusy(true);try{await api(collection?`collections/${collection.id}`:'collections',{method:collection?'PATCH':'POST',body:JSON.stringify({name,description,color,chunkSize,chunkOverlap:overlap})});await onChanged();notify(collection?'Collection updated.':'Collection created.');onClose()}catch(e){notify((e as Error).message)}finally{setBusy(false)}};
-  const remove=async()=>{if(!collection||!confirm(`Delete “${collection.name}” and all of its documents and conversations? This cannot be undone.`))return;setBusy(true);try{await api(`collections/${collection.id}`,{method:'DELETE'});await onChanged();notify('Collection deleted.');onClose()}catch(e){notify((e as Error).message)}finally{setBusy(false)}};
+  const remove=async()=>{if(!collection||!(await askConfirm(`Delete “${collection.name}” and all of its documents and conversations? This cannot be undone.`)))return;setBusy(true);try{await api(`collections/${collection.id}`,{method:'DELETE'});await onChanged();notify('Collection deleted.');onClose()}catch(e){notify((e as Error).message)}finally{setBusy(false)}};
   return <Modal title={collection?'Edit collection':'Create a collection'} description="Bring related documents together in one space." onClose={onClose}>
     <label className="field-label">Collection name<input className="field" value={name} maxLength={100} placeholder="e.g. Research Library" onChange={e=>setName(e.target.value)}/></label>
     <label className="field-label">Description <span className="optional">Optional</span><textarea className="field textarea-small" value={description} maxLength={300} placeholder="What will you keep in this collection?" onChange={e=>setDescription(e.target.value)}/></label>
@@ -35,7 +35,7 @@ export function DocumentModal({doc,collections,embeddingModel,onClose,onChanged,
   const save=()=>call(`documents/${doc.id}`,{method:'PATCH',body:JSON.stringify({filename:name,collectionId:collection,tags:tags.split(',').map(t=>t.trim()).filter(Boolean)})},'Document updated.');
   const retry=()=>call(`documents/${doc.id}/retry`,{method:'POST'},'Document queued for reprocessing.');
   const archive=()=>call(`documents/${doc.id}`,{method:'PATCH',body:JSON.stringify({archived:!doc.archived})},doc.archived?'Document restored.':'Document archived.');
-  const remove=()=>{if(confirm(`Permanently delete “${doc.filename}”? Its chunks and vectors will also be deleted.`))call(`documents/${doc.id}`,{method:'DELETE'},'Document deleted. File cleanup is queued.')};
+  const remove=async()=>{if(await askConfirm(`Permanently delete “${doc.filename}”? Its chunks and vectors will also be deleted.`))call(`documents/${doc.id}`,{method:'DELETE'},'Document deleted. File cleanup is queued.')};
   const stale=doc.status==='READY' && !!doc.embedding_model && doc.embedding_model!==embeddingModel;
   const processing=['UPLOADED','VALIDATING','EXTRACTING','CHUNKING','EMBEDDING','INDEXING'].includes(doc.status);
   const stages=[{status:'VALIDATING',label:'Validate'},{status:'EXTRACTING',label:'Extract'},{status:'CHUNKING',label:'Chunk'},{status:'EMBEDDING',label:'Embed'},{status:'INDEXING',label:'Index'}];

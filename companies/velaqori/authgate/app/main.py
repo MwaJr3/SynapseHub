@@ -70,7 +70,7 @@ async def index(request: Request):
 async def register_form(request: Request):
     return page("register", "<h1>Register</h1><form method='post' action='/register'>"
                 "<label>Username<input name='username' placeholder='username' required></label>"
-                "<label>Password<input name='password' type='password' placeholder='password' required></label>"
+                "<label>Password<input name='password' type='password' autocomplete='current-password' placeholder='password' required></label>"
                 "<input name='csrf' type='hidden' value='" + request.cookies.get("ag_anon", "") + "'>"
                 "<button>Create account</button></form>"
                 "<p>Policy: ≥12 chars with upper, lower, digit, symbol; no username reuse; no bundled common passwords.</p>")
@@ -96,8 +96,8 @@ async def register(request: Request):
 async def login_form():
     return page("login", "<h1>Sign in</h1><form method='post' action='/login'>"
                 "<label>Username<input name='username' placeholder='username' required></label>"
-                "<label>Password<input name='password' type='password' placeholder='password' required></label>"
-                "<label>MFA code<input name='otp' placeholder='MFA code (if enabled)'></label>"
+                "<label>Password<input name='password' type='password' autocomplete='current-password' placeholder='password' required></label>"
+                "<label>MFA code<input name='otp' autocomplete='one-time-code' inputmode='numeric' placeholder='MFA code (if enabled)'></label>"
                 "<button>Sign in</button></form>")
 
 

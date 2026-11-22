@@ -70,7 +70,7 @@ function AuthScreen({ onSignedIn }: { onSignedIn: (user: User) => void }) {
         <Field label="Password (min 8 characters)">
           <input
             className="input"
-            type="password"
+            type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
             required
             minLength={8}
             value={password}

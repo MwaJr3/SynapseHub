@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { usePageMeta } from '@/hooks/usePageMeta';
 import { challengeManifest } from '@challenges';
 import { ChallengeCard } from '@/components/projects/ChallengeCard';
+import { NumberTicker } from '@/components/ui/NumberTicker';
 import { profileConfig, links } from '@/config/site';
 
 const featured = challengeManifest.filter((project) => project.featured).slice(0, 6);
@@ -21,7 +22,7 @@ export default function HomePage() {
           <h1>Exploring Interfaces.<br /><span>Studying Experiences.</span><br />One Brief at a Time.</h1>
           <p className="hero-description">I’m Mwangala, a developer building a roadmap for frontend practice through design challenges. This catalogue includes 60 browser-side prototypes; full completion against each official brief has not been verified.</p>
           <div className="hero-actions"><Link className="btn btn-primary" to="/apps">Try the interactive prototypes <span aria-hidden="true">↗</span></Link><Link className="btn btn-secondary" to="/projects">Browse challenge records</Link><Link className="btn btn-secondary" to="/about">About my work</Link>{links.github && <a className="btn btn-secondary" href={links.github} target="_blank" rel="noreferrer">View GitHub ↗</a>}</div>
-          <div className="hero-foot"><span><b>{challengeManifest.length}</b> challenge briefs catalogued</span><span>Independent work inspired by Frontend Mentor</span></div>
+          <div className="hero-foot"><span><b><NumberTicker value={challengeManifest.length} /></b> challenge briefs catalogued</span><span>Independent work inspired by Frontend Mentor</span></div>
         </div>
         <div className="hero-art" aria-label="An editorial illustration representing interface and code">
           <div className="hero-art__label"><span className="pulse-dot" /> Interface / in progress</div>

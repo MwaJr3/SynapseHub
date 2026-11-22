@@ -742,6 +742,9 @@ const navMissingCurrent = {
     if (!is(file, 'jsx')) return [];
     if (!/<nav\b/.test(text)) return [];
     if (/aria-current/.test(text)) return [];
+    // In-page tab/segmented controls that expose their state another way (aria-pressed,
+    // aria-selected, role=tab) already tell assistive tech which one is active.
+    if (/aria-pressed|aria-selected|role\s*=\s*["']tab["']/.test(text)) return [];
     // React Router's NavLink sets aria-current="page" itself when active, and a
     // project that wraps it (CurrentNavLink, ActiveLink) moves the marking one
     // level out. Both are the component owning the state, not the page losing it.
@@ -900,6 +903,8 @@ const smallTarget = {
     const out = [];
     for (const match of text.matchAll(/<button\b[^>]*className=(?:"([^"]*)"|\{`([^`]*)`\})[^>]*>\s*<[A-Za-z][^>]*\/>\s*<\/button>/g)) {
       const classList = match[1] ?? match[2] ?? '';
+      // A class the project's own stylesheet gives padding or a size is not "unpadded".
+      if (file.sizedClasses && classList.split(/\s+/).some((name) => file.sizedClasses.has(name))) continue;
       if (/\b(p-1|p-2|p-3|px-2|px-3|w-6|w-7|h-6|h-7|w-8|h-8|size-)/.test(classList)) continue;
       out.push(finding(smallTarget, file, text, match.index, { detail: classList.slice(0, 80) }));
     }
@@ -1185,6 +1190,199 @@ const accordionWithoutExpanded = {
   },
 };
 
+/** Rule 37 — `:invalid` styled on load, so the field is red before anyone has typed. */
+const invalidOnLoad = {
+  id: 'invalid-on-load',
+  pattern: 'P24',
+  severity: 'P3',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Field styled with `:invalid`, which fires before the person has typed',
+  why:
+    'An empty required field matches `:invalid` the moment the page loads, so the form opens covered in red. `:user-invalid` waits until the person has interacted with the field.',
+  fix: 'Use `:user-invalid` (with a `.touched`/`[data-touched]` fallback for older browsers), or validate on blur.',
+  check(file, text) {
+    if (!is(file, 'css')) return [];
+    const out = [];
+    for (const match of text.matchAll(/:invalid\b(?!-)/g)) {
+      const before = text.slice(Math.max(0, match.index - 12), match.index);
+      if (/user-$/.test(before)) continue;
+      const rest = text.slice(match.index, match.index + 200);
+      if (!/\{/.test(rest)) continue;
+      out.push(finding(invalidOnLoad, file, text, match.index, { detail: snippetAt(text, match.index, 80) }));
+    }
+    return out;
+  },
+};
+
+/** Rule 38 — a switch that never says whether it is on. */
+const switchWithoutChecked = {
+  id: 'switch-without-checked',
+  pattern: 'P41',
+  severity: 'P2',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Toggle switch does not expose its on/off state',
+  why:
+    'A `role="switch"` without `aria-checked` is announced as a bare "switch" — a screen-reader user cannot tell whether the setting is on. The colour of the rail is the only signal, and it is invisible to them.',
+  fix: 'Add `aria-checked={on}` to every `role="switch"`, or use `<input type="checkbox" role="switch">`, which reports its own state.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/<(?!input\b)[A-Za-z][\w.]*\b[^>]*\brole\s*=\s*["']switch["']/g)) {
+      const end = tagEnd(text, match.index);
+      const element = text.slice(match.index, end === -1 ? match.index + 400 : end + 1);
+      if (/aria-checked|\{\s*\.\.\./.test(element)) continue;
+      out.push(finding(switchWithoutChecked, file, text, match.index, { detail: 'role="switch" with no aria-checked' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 39 — validating on every keystroke. */
+const validateOnEveryKeystroke = {
+  id: 'validate-on-every-keystroke',
+  pattern: 'P50',
+  severity: 'P3',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Form validates on every keystroke',
+  why:
+    '`mode: "onChange"` runs validation on each key press, so a person typing "alex" in an email field is told "invalid email" before they have finished. Errors should appear when they leave the field, then update live once shown.',
+  fix: 'Use `mode: "onTouched"` (validate on blur, then on change) or `"onBlur"`; keep the submit-time check as the backstop.',
+  check(file, text) {
+    if (!is(file, 'jsx')) return [];
+    const out = [];
+    for (const match of text.matchAll(/\b(?:mode|validateOn)\s*:\s*['"]onChange['"]|validateOnChange\s*[:=]\s*\{?\s*true/g)) {
+      out.push(finding(validateOnEveryKeystroke, file, text, match.index, { detail: match[0] }));
+    }
+    return out;
+  },
+};
+
+/** Rule 40 — a bar chart whose axis does not start at zero. */
+const truncatedBarAxis = {
+  id: 'truncated-bar-axis',
+  pattern: 'P08',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Bar chart axis starts above zero',
+  why:
+    'Bar length encodes value, so a baseline above zero makes a 5% difference look like a 5× difference. This is the most common way a chart lies without containing a false number.',
+  fix: 'Start the value axis of bar charts at 0. If the differences are too small to see, use a dot or line chart, or show the delta directly.',
+  check(file, text) {
+    if (!is(file, 'jsx')) return [];
+    if (!/<BarChart\b|<Bar\b|type\s*:\s*['"]bar['"]/.test(text)) return [];
+    const out = [];
+    for (const match of text.matchAll(/\bdomain\s*=\s*\{\s*\[\s*(-?\d+(?:\.\d+)?)\s*,|\bbeginAtZero\s*:\s*false|\by\s*:\s*\{[^}]*\bmin\s*:\s*([1-9]\d*(?:\.\d+)?)/g)) {
+      const start = match[1];
+      if (start !== undefined && Number(start) <= 0) continue;
+      out.push(finding(truncatedBarAxis, file, text, match.index, { detail: match[0].replace(/\s+/g, ' ') }));
+    }
+    return out;
+  },
+};
+
+/** Rule 41 — a file input that accepts anything. */
+const fileInputAccept = {
+  id: 'file-input-accept',
+  pattern: 'P56',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'File input has no `accept`, so the picker offers every file type',
+  why:
+    'Without `accept` the person can choose a file the app will reject, and only learns after the upload. Filtering the picker removes the error instead of reporting it.',
+  fix: 'Add `accept="image/png,image/jpeg"` (or the real list) and still validate type and size on the server.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of tags(text, 'input')) {
+      if (!/\btype\s*=\s*["']file["']/i.test(element)) continue;
+      if (/\baccept\s*=|\{\s*\.\.\./.test(element)) continue;
+      out.push(finding(fileInputAccept, file, text, index, { detail: '<input type="file"> with no accept' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 42 — an invalid field whose message is not tied to it. */
+const invalidWithoutDescription = {
+  id: 'invalid-without-description',
+  pattern: 'P24',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: '`aria-invalid` set but the error message is not associated with the field',
+  why:
+    'Marking a field invalid tells a screen reader "something is wrong" but not what. Without `aria-describedby` pointing at the message, the person hears only "invalid entry" and must hunt for the text.',
+  fix: 'Give the error message an `id` and add `aria-describedby="that-id"` to the input (and keep the message text, not just a red border, as the visible signal).',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const { index, element } of [...tags(text, 'input'), ...tags(text, 'textarea'), ...tags(text, 'select')]) {
+      if (!/\baria-invalid\b/.test(element)) continue;
+      if (/aria-describedby|aria-errormessage|\{\s*\.\.\./.test(element)) continue;
+      out.push(finding(invalidWithoutDescription, file, text, index, { detail: 'aria-invalid without aria-describedby' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 43 — a progress bar with no value for assistive technology. */
+const progressWithoutValue = {
+  id: 'progress-without-value',
+  pattern: 'P28',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Progress bar exposes no value',
+  why:
+    'A `role="progressbar"` with no `aria-valuenow` is announced as "progress bar" with nothing else — the person cannot tell 10% from 90%, so a long task looks stalled.',
+  fix: 'Add `aria-valuenow`, `aria-valuemin` and `aria-valuemax`, or use a native `<progress value max>`. For unknown duration, omit `aria-valuenow` deliberately and add an `aria-label` describing the task.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    for (const match of text.matchAll(/<[A-Za-z][\w.]*\b[^>]*\brole\s*=\s*["']progressbar["']/g)) {
+      const end = tagEnd(text, match.index);
+      const element = text.slice(match.index, end === -1 ? match.index + 400 : end + 1);
+      if (/aria-valuenow|\{\s*\.\.\./.test(element)) continue;
+      out.push(finding(progressWithoutValue, file, text, match.index, { detail: 'role="progressbar" with no aria-valuenow' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 44 — pure black behind dark-mode surfaces. */
+const darkPureBlack = {
+  id: 'dark-pure-black',
+  pattern: 'P73',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Dark theme uses pure black as a surface',
+  why:
+    'On #000 there is nowhere darker to go, so shadows and elevation vanish, and white text on pure black vibrates (halation). Dark themes read better on a very dark grey, with lighter greys for raised surfaces.',
+  fix: 'Use a surface around #0f1115–#161b22 and step lighter for each elevation. Keep pure black for video players and true-OLED opt-ins only.',
+  check(file, text) {
+    if (!is(file, 'css', 'jsx', 'html')) return [];
+    const out = [];
+    if (!is(file, 'css')) {
+      for (const match of text.matchAll(/\bdark:bg-(?:black|\[#0{3}(?:0{3})?\])(?![\w/-])/g)) {
+        out.push(finding(darkPureBlack, file, text, match.index, { detail: match[0] }));
+      }
+      return out;
+    }
+    for (const block of text.matchAll(/(?:\.dark\b|\[data-theme=["']?dark["']?\]|prefers-color-scheme:\s*dark)[^{]*\{([\s\S]*?\})/g)) {
+      const body = block[1];
+      const hit = /(?:^|[;{\s])(?:background(?:-color)?|--(?:bg|background|surface)[\w-]*)\s*:\s*(?:#0{3}(?:0{3})?|black)\b/i.exec(body);
+      if (hit) out.push(finding(darkPureBlack, file, text, block.index, { detail: hit[0].trim().replace(/^[;{\s]+/, '') }));
+    }
+    return out;
+  },
+};
+
 export const RULES = [
   focusRingRemoved,
   noFocusStyle,
@@ -1222,6 +1420,14 @@ export const RULES = [
   transitionAll,
   linearEasing,
   accordionWithoutExpanded,
+  invalidOnLoad,
+  switchWithoutChecked,
+  validateOnEveryKeystroke,
+  truncatedBarAxis,
+  fileInputAccept,
+  invalidWithoutDescription,
+  progressWithoutValue,
+  darkPureBlack,
 ];
 
 export { NON_TEXT_RATIO, SMALL_TEXT_RATIO, LARGE_TEXT_RATIO, contrast, blend };

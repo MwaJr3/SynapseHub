@@ -165,3 +165,22 @@ test('the auth-and-motion fixture finds the planted defects and spares the corre
   assert.equal(byId('linear-easing').occurrences ?? 1, 1, 'a linear spinner animation is not a transition');
   assert.equal(byId('accordion-without-expanded').pattern, 'P62');
 });
+
+test('the video-patterns fixture finds the planted defects and spares the correct twins', () => {
+  const project = scan('video-patterns');
+  assert.deepEqual(ids(project), [
+    'dark-pure-black',
+    'dark-pure-black',
+    'file-input-accept',
+    'invalid-on-load',
+    'invalid-without-description',
+    'progress-without-value',
+    'switch-without-checked',
+    'truncated-bar-axis',
+    'validate-on-every-keystroke',
+  ]);
+  const byId = (id) => project.findings.find((finding) => finding.id === id);
+  assert.equal(byId('truncated-bar-axis').occurrences ?? 1, 1, 'the zero-based chart is fine');
+  assert.equal(byId('switch-without-checked').occurrences ?? 1, 1, 'the switch with aria-checked is fine');
+  assert.equal(byId('invalid-on-load').occurrences ?? 1, 1, ':user-invalid is fine');
+});

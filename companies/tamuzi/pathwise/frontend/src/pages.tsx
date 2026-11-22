@@ -192,11 +192,11 @@ export function ReportPage({ user }: { user: User }) {
               <table className="min-w-full">
                 <thead className="bg-slate-900">
                   <tr>
-                    <th className="th">Skill</th>
-                    <th className="th">Pre</th>
-                    <th className="th">Post</th>
-                    <th className="th">Change</th>
-                    <th className="th">Meets threshold</th>
+                    <th scope="col" className="th">Skill</th>
+                    <th scope="col" className="th">Pre</th>
+                    <th scope="col" className="th">Post</th>
+                    <th scope="col" className="th">Change</th>
+                    <th scope="col" className="th">Meets threshold</th>
                   </tr>
                 </thead>
                 <tbody>

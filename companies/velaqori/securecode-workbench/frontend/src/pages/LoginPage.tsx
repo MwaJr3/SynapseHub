@@ -32,7 +32,7 @@ export default function LoginPage() {
       <h1 style={{ marginTop: 0 }}>{mode === "login" ? "Sign in" : "Create reviewer account"}</h1>
       <form onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
         <input aria-label="Email" className="input" type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input aria-label="Password (12+ characters)" className="input" type="password" placeholder="password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input aria-label="Password (12+ characters)" className="input" type="password" autoComplete={mode === "register" ? "new-password" : "current-password"} placeholder="password (12+ characters)" value={password} onChange={(e) => setPassword(e.target.value)} required />
         {error && <p role="alert" style={{ color: "#9b2226", margin: 0 }}>{error}</p>}
         <button className="btn" disabled={busy}>{busy ? "Working…" : mode === "login" ? "Sign in" : "Register"}</button>
       </form>

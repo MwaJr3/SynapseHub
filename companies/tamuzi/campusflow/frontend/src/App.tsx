@@ -71,7 +71,7 @@ function AuthScreen({ onSignedIn }: { onSignedIn: (user: User) => void }) {
           <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </Field>
         <Field label="Password (min 8 characters)">
-          <input className="input" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input className="input" type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
         </Field>
         {mode === 'register' ? (
           <>

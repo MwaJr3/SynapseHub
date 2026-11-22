@@ -44,6 +44,7 @@ export function scanView(view, project, rules = RULES) {
       relPath: view.relPath,
       kind: extension === '.tsx' || extension === '.jsx' ? 'jsx' : extension === '.css' ? 'css' : 'html',
       surface: project.surface,
+      sizedClasses: project.sizedClasses,
       // Rules that need to distinguish "no comment here" from "a comment explained
       // this" read the unstripped source.
       raw: view.text,
@@ -76,6 +77,30 @@ export function scanView(view, project, rules = RULES) {
   return findings;
 }
 
+
+/**
+ * Class names whose stylesheet rule gives them a real hit area: padding of 4px or more
+ * around a 16px icon, or an explicit width/height of 24px or more. Rules that look at
+ * JSX only (`small-target`) use it so a class like `.icon-button { padding: 7px }` in
+ * the project's CSS is not reported as "no padding".
+ */
+export function sizedClassesFrom(cssTexts) {
+  const sized = new Set();
+  for (const css of cssTexts) {
+    for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+      const body = rule[2];
+      const padding = [...body.matchAll(/\bpadding(?:-(?:top|bottom|block|inline|left|right))?\s*:\s*(\d+(?:\.\d+)?)(px|rem)/g)].some((m) => Number(m[1]) * (m[2] === 'rem' ? 16 : 1) >= 4);
+      const box = [...body.matchAll(/\b(?:min-)?(?:width|height)\s*:\s*(\d+(?:\.\d+)?)(px|rem)/g)].some((m) => Number(m[1]) * (m[2] === 'rem' ? 16 : 1) >= 24);
+      if (!padding && !box) continue;
+      for (const selector of rule[1].split(',')) {
+        const last = selector.trim().split(/[\s>+~]+/).pop() ?? '';
+        for (const m of last.matchAll(/\.([A-Za-z_][\w-]*)/g)) sized.add(m[1]);
+      }
+    }
+  }
+  return sized;
+}
+
 /**
  * Scan one project.
  * @param {{ name:string, root:string, kind:string, surface?:string }} project
@@ -97,6 +122,8 @@ export function scanProject(project, options = {}) {
   const views = wanted
     ? allViews.filter((view) => (view.absolute ? wanted.has(view.absolute) : true))
     : allViews;
+  const cssTexts = allViews.filter((v) => /\.css$/i.test(v.relPath)).map((v) => v.text);
+  project = { ...project, sizedClasses: sizedClassesFrom(cssTexts) };
   const findings = [];
 
   for (const view of views) findings.push(...scanView(view, project, rules));

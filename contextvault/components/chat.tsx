@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ArrowDown, ArrowRight, BookOpen, Check, ChevronDown, Clock3, Copy, FileSearch, FileText, Layers3, LoaderCircle, MessageSquarePlus, MoreHorizontal, PanelRightOpen, Plus, RotateCw, Search, Send, Sparkles, Square, Trash2, X } from 'lucide-react';
-import { BrandMark, CollectionChip, Empty, FileIcon } from './shared';
+import { BrandMark, CollectionChip, Empty, FileIcon, askConfirm } from './shared';
 import { api, initial, type Chunk, type Conversation, type Message, type WorkspaceData } from './types';
 
 type Props={data:WorkspaceData;collectionId:string;setCollectionId:(id:string)=>void;conversationId:string|null;setConversationId:(id:string|null)=>void;onUpload:()=>void;refresh:()=>Promise<void>;notify:(message:string)=>void};
@@ -36,11 +36,11 @@ export default function ChatView({data,collectionId,setCollectionId,conversation
     try{
       if(!id){const created=await api<{id:string}>('conversations',{method:'POST',body:JSON.stringify({collectionId:selected.id})});id=created.id;setConversationId(id)}
       const result=await api<{messages:Message[]}>('chat',{method:'POST',body:JSON.stringify({conversationId:id,question:value,mode}),signal:abort.signal});setMessages(result.messages);await refresh();
-    }catch(e){if((e as Error).name==='AbortError')notify('Stopped in this browser. Server processing may still finish.');else notify((e as Error).message);if(id){try{const latest=await api<{messages:Message[]}>(`conversations/${id}`);setMessages(latest.messages);await refresh()}catch{}}}
+    }catch(e){if((e as Error).name==='AbortError')notify('Stopped in this browser. Server processing may still finish.');else notify((e as Error).message);if(id){try{const latest=await api<{messages:Message[]}>(`conversations/${id}`);setMessages(latest.messages);await refresh()}catch(inner){console.warn("Could not reload the conversation after an error.",inner)}}}
     finally{setPending('');setBusy(false);controller.current=null}
   };
   const rename=async()=>{if(!conversation)return;const title=prompt('Rename conversation',conversation.title)?.trim();if(!title)return;try{await api(`conversations/${conversation.id}`,{method:'PATCH',body:JSON.stringify({title})});await refresh();notify('Conversation renamed.')}catch(e){notify((e as Error).message)}setMenu(false)};
-  const remove=async()=>{if(!conversation||!confirm('Delete this conversation and its messages?'))return;try{await api(`conversations/${conversation.id}`,{method:'DELETE'});await refresh();newChat();notify('Conversation deleted.')}catch(e){notify((e as Error).message)}};
+  const remove=async()=>{if(!conversation||!(await askConfirm('Delete this conversation and its messages?')))return;try{await api(`conversations/${conversation.id}`,{method:'DELETE'});await refresh();newChat();notify('Conversation deleted.')}catch(e){notify((e as Error).message)}};
   const copy=async(msg:Message)=>{try{await navigator.clipboard.writeText(msg.content);setCopied(msg.id);setTimeout(()=>setCopied(null),1800)}catch{notify('Could not copy to the clipboard.')}};
   const displayMessages=messages.filter(m=>m.role!=='SYSTEM');
   return <div className="chat-layout"><aside className="conversation-rail"><div className="conversation-rail-header"><div><span className="eyebrow-heading">YOUR WORKSPACE</span><h2>Conversations</h2></div><button className="small-icon-button" onClick={newChat} aria-label="New conversation"><Plus size={17}/></button></div><button className="new-chat-button" onClick={newChat}><Plus size={16}/> New conversation</button><div className="conversation-label">RECENT</div><div className="conversation-list">{data.conversations.length?data.conversations.map((c:Conversation)=><button className={`conversation-item ${conversationId===c.id?'active':''}`} key={c.id} onClick={()=>{setConversationId(c.id);setCollectionId(c.collection_id)}}><span className="conversation-item-icon"><MessageSquarePlus size={15}/></span><span><strong>{c.title}</strong><small>{c.collection_name}</small></span></button>):<p className="rail-empty">Your conversations will appear here.</p>}</div><div className="rail-tip"><Sparkles size={17}/><div><strong>Better questions, better insights.</strong><p>Try asking something specific about a document.</p></div></div></aside>

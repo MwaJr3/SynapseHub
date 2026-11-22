@@ -848,6 +848,8 @@ function AddAssessmentCard({ instruments, onSaved }: { instruments: Instrument[]
             </label>
             <input
               id="source-url"
+              type="url"
+              inputMode="url"
               className="mt-1 w-full rounded border p-2 text-sm"
               style={{ borderColor: 'var(--line)' }}
               value={sourceUrl}

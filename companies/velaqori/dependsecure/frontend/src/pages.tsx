@@ -253,12 +253,12 @@ export function ManifestsPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">File</th>
-                <th className="th">Kind</th>
-                <th className="th">Packages</th>
-                <th className="th">Parse notes</th>
-                <th className="th">Uploaded</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">File</th>
+                <th scope="col" className="th">Kind</th>
+                <th scope="col" className="th">Packages</th>
+                <th scope="col" className="th">Parse notes</th>
+                <th scope="col" className="th">Uploaded</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -367,12 +367,12 @@ export function ScansPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Scan</th>
-                <th className="th">Status</th>
-                <th className="th">Tool</th>
-                <th className="th">Findings</th>
-                <th className="th">Started</th>
-                <th className="th">Error</th>
+                <th scope="col" className="th">Scan</th>
+                <th scope="col" className="th">Status</th>
+                <th scope="col" className="th">Tool</th>
+                <th scope="col" className="th">Findings</th>
+                <th scope="col" className="th">Started</th>
+                <th scope="col" className="th">Error</th>
               </tr>
             </thead>
             <tbody>

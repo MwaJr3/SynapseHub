@@ -131,12 +131,12 @@ export function StudentsPage({ user }: { user: User }) {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Enrollment no.</th>
-                <th className="th">Name</th>
-                <th className="th">Email</th>
-                <th className="th">Status</th>
-                <th className="th">Sections</th>
-                {user.role === 'admin' ? <th className="th">Actions</th> : null}
+                <th scope="col" className="th">Enrollment no.</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Email</th>
+                <th scope="col" className="th">Status</th>
+                <th scope="col" className="th">Sections</th>
+                {user.role === 'admin' ? <th scope="col" className="th">Actions</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -481,11 +481,11 @@ export function TranscriptsPage() {
             <table className="min-w-full">
               <thead className="bg-slate-900">
                 <tr>
-                  <th className="th">Course</th>
-                  <th className="th">Term</th>
-                  <th className="th">Credits</th>
-                  <th className="th">Average</th>
-                  <th className="th">Letter</th>
+                  <th scope="col" className="th">Course</th>
+                  <th scope="col" className="th">Term</th>
+                  <th scope="col" className="th">Credits</th>
+                  <th scope="col" className="th">Average</th>
+                  <th scope="col" className="th">Letter</th>
                 </tr>
               </thead>
               <tbody>
@@ -524,10 +524,10 @@ export function AuditPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Time</th>
-                <th className="th">Action</th>
-                <th className="th">Target</th>
-                <th className="th">Detail</th>
+                <th scope="col" className="th">Time</th>
+                <th scope="col" className="th">Action</th>
+                <th scope="col" className="th">Target</th>
+                <th scope="col" className="th">Detail</th>
               </tr>
             </thead>
             <tbody>

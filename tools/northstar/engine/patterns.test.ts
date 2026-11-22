@@ -82,9 +82,9 @@ describe('pattern write-ups are carried in full', () => {
   it('every record carries its own source write-up', () => {
     for (const pattern of PATTERNS) {
       expect(pattern.knowledge.number).toBe(pattern.number);
-      expect(pattern.knowledge.title.toLowerCase().replace(/[^a-z]/g, '')).toBe(
-        pattern.title.toLowerCase().replace(/[^a-z]/g, ''),
-      );
+      const squash = (text: string) => text.toLowerCase().replace(/[^a-z]/g, '');
+      // The write-up's title may carry a longer subtitle ("CSS :has() Selector").
+      expect(squash(pattern.knowledge.title)).toContain(squash(pattern.title));
       expect(pattern.knowledge.insights.length).toBeGreaterThanOrEqual(4);
       expect(pattern.knowledge.do.length).toBeGreaterThanOrEqual(1);
       expect(pattern.knowledge.dont.length).toBeGreaterThanOrEqual(1);

@@ -258,12 +258,12 @@ export function FilesPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Name</th>
-                <th className="th">Size</th>
-                <th className="th">Type</th>
-                <th className="th">SHA-256</th>
-                <th className="th">Uploaded</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Size</th>
+                <th scope="col" className="th">Type</th>
+                <th scope="col" className="th">SHA-256</th>
+                <th scope="col" className="th">Uploaded</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -349,11 +349,11 @@ export function BaselinesPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Name</th>
-                <th className="th">Version</th>
-                <th className="th">Files</th>
-                <th className="th">Created</th>
-                <th className="th">Actions</th>
+                <th scope="col" className="th">Name</th>
+                <th scope="col" className="th">Version</th>
+                <th scope="col" className="th">Files</th>
+                <th scope="col" className="th">Created</th>
+                <th scope="col" className="th">Actions</th>
               </tr>
             </thead>
             <tbody>

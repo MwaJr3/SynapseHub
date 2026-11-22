@@ -15,7 +15,10 @@ All notable changes to the Northstar UX Engine. Format follows
 - **Four checks:** `tabindex-positive` (P46), `image-without-dimensions` (X01),
   `input-type-generic` (X05), `click-on-non-interactive` (X13), plus `otp-autocomplete`
   (P60), `password-autocomplete` (P57), `transition-all` (P09), `linear-easing` (P21) and
-  `accordion-without-expanded` (P62). 36 rules in total.
+  `accordion-without-expanded` (P62), then eight from the video series: `invalid-on-load`,
+  `invalid-without-description` (P24), `switch-without-checked` (P41),
+  `validate-on-every-keystroke` (P50), `truncated-bar-axis` (P08), `file-input-accept` (P56),
+  `progress-without-value` (P28), `dark-pure-black` (P73). 44 rules in total.
 - **`northstar page`** — measures a URL or HTML file in a real browser at 320/768/1280px
   (optional Playwright; honest "Not measured", exit 3, when unavailable).
 - **Advisory PostToolUse hook** that audits each edited file; never blocks.
@@ -28,6 +31,7 @@ All notable changes to the Northstar UX Engine. Format follows
 
 ### Changed
 
+- `small-target` reads the project's stylesheets, so a class such as `.icon-button { padding: 7px }` is no longer reported as unpadded; `nav-missing-current` accepts `aria-pressed`/`aria-selected`/`role=tab` as state.
 - Source findings are labelled "Found in source" in the report, not "Measured".
 - **Unified numbering.** CLI patterns are `P01`–`P76`, matching the engine's `P1`–`P76`;
   Northstar-only checks are `X01`–`X13`; each keeps a `legacyId` to its 1.0.x number.

@@ -13,7 +13,7 @@ are complementary and both are kept, behind one entry point:
 
 | Layer | Where | Reached by |
 | --- | --- | --- |
-| Severity-ranked rules (36 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Severity-ranked rules (44 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
 | Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
 
 It holds to a rule most design tooling breaks: **it does not claim to have seen
@@ -62,7 +62,7 @@ Node 20 or newer. No dependencies, no network access, no telemetry.
 
 ## What it checks
 
-Thirty-six checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
+Forty-four checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
 rendered from Python string templates. The ones that find the most, in this repository:
 
 | Check | Pattern | What it proves |
@@ -98,12 +98,20 @@ rendered from Python string templates. The ones that find the most, in this repo
 | `transition-all` | P09 | `transition: all`, which animates layout properties nobody chose |
 | `linear-easing` | P21 | A UI transition on `linear` (spinners and progress bars are exempt) |
 | `accordion-without-expanded` | P62 | An accordion with no `aria-expanded` and no `<details>` |
+| `invalid-on-load` | P24 | CSS `:invalid` styling, which paints empty fields red before anyone types |
+| `invalid-without-description` | P24 | `aria-invalid` with no `aria-describedby` message |
+| `switch-without-checked` | P41 | `role="switch"` with no `aria-checked` |
+| `validate-on-every-keystroke` | P50 | Form `mode: 'onChange'` |
+| `truncated-bar-axis` | P08 | A bar chart whose value axis starts above zero |
+| `file-input-accept` | P56 | `<input type="file">` with no `accept` |
+| `progress-without-value` | P28 | `role="progressbar"` with no `aria-valuenow` |
+| `dark-pure-black` | P73 | Pure `#000` as a dark-theme surface |
 
 Plus `hover-only-action`, `raw-colour-in-class`, `nav-missing-current`,
 `placeholder-link`, `target-blank-noopener` and `small-target`. The full mapping lives
 in `PATTERNS.md` and `patterns.mjs`.
 
-**Fifty-two of the 76 canonical patterns are not machine-checked.** That is stated in the
+**Fifty of the 76 canonical patterns are not machine-checked.** That is stated in the
 pattern library, in the audit report, and in every command's output. `PATTERNS.md`
 lists them with the standard they are held to.
 

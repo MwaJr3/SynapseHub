@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, CheckCircle2, ChevronRight, FileText, LoaderCircle, X, AlertTriangle, UploadCloud } from 'lucide-react';
 import type { Document } from './types';
 import { ext, formatSize } from './types';
@@ -8,6 +8,21 @@ export function BrandMark({small=false}:{small?:boolean}) { return <span classNa
 export function Modal({title,description,children,onClose,wide=false}:{title:string;description?:string;children:React.ReactNode;onClose:()=>void;wide?:boolean}) {
   useEffect(()=>{ const fn=(event:KeyboardEvent)=>{if(event.key==='Escape')onClose()}; window.addEventListener('keydown',fn); return()=>window.removeEventListener('keydown',fn); },[onClose]);
   return <div className="modal-backdrop" onMouseDown={(e)=>{if(e.target===e.currentTarget)onClose()}}><div role="dialog" aria-modal="true" aria-label={title} className={`modal ${wide?'modal-wide':''}`}><div className="modal-heading"><div><h2>{title}</h2>{description && <p>{description}</p>}</div><button className="icon-button" onClick={onClose} aria-label="Close"><X size={19}/></button></div>{children}</div></div>;
+}
+/** In-app replacement for window.confirm: a labelled dialog with an explicit verb, Cancel focused first. */
+type ConfirmRequest = { message: string; confirmLabel: string; resolve: (ok: boolean) => void };
+let showConfirm: ((request: ConfirmRequest) => void) | null = null;
+export function askConfirm(message: string, confirmLabel = 'Delete'): Promise<boolean> {
+  return new Promise((resolve) => { if (showConfirm) showConfirm({ message, confirmLabel, resolve }); else resolve(false); });
+}
+export function ConfirmHost() {
+  const [request, setRequest] = useState<ConfirmRequest | null>(null);
+  useEffect(() => { showConfirm = setRequest; return () => { showConfirm = null; }; }, []);
+  if (!request) return null;
+  const done = (ok: boolean) => { request.resolve(ok); setRequest(null); };
+  return <Modal title="Are you sure?" description={request.message} onClose={() => done(false)}>
+    <div className="modal-actions"><button className="button button-secondary" autoFocus onClick={() => done(false)}>Cancel</button><button className="button button-danger-text" onClick={() => done(true)}>{request.confirmLabel}</button></div>
+  </Modal>;
 }
 export function Status({status,progress}:{status:string;progress?:number}) {
   if (status==='READY') return <span className="status ready"><CheckCircle2 size={13}/> Ready</span>;

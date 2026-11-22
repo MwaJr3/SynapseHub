@@ -125,11 +125,11 @@ export function EventsPage({ user }: { user: User }) {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Occurred</th>
-                <th className="th">Source</th>
-                <th className="th">Category</th>
-                <th className="th">Summary</th>
-                <th className="th">Severity</th>
+                <th scope="col" className="th">Occurred</th>
+                <th scope="col" className="th">Source</th>
+                <th scope="col" className="th">Category</th>
+                <th scope="col" className="th">Summary</th>
+                <th scope="col" className="th">Severity</th>
               </tr>
             </thead>
             <tbody>
@@ -518,10 +518,10 @@ export function AdminPage() {
           <table className="min-w-full">
             <thead className="bg-slate-900">
               <tr>
-                <th className="th">Time</th>
-                <th className="th">Action</th>
-                <th className="th">Target</th>
-                <th className="th">Detail</th>
+                <th scope="col" className="th">Time</th>
+                <th scope="col" className="th">Action</th>
+                <th scope="col" className="th">Target</th>
+                <th scope="col" className="th">Detail</th>
               </tr>
             </thead>
             <tbody>

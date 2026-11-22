@@ -51,7 +51,7 @@ function AuthScreen({ onSignedIn }: { onSignedIn: (u: User) => void }) {
         </div>
         {error ? <ErrorBanner message={error} /> : null}
         <Field label="Email"><input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
-        <Field label="Password (min 8 characters)"><input className="input" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} /></Field>
+        <Field label="Password (min 8 characters)"><input className="input" type="password" autoComplete={mode === 'register' ? 'new-password' : 'current-password'} required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} /></Field>
         {mode === 'register' ? (
           <>
             <Field label="Display name"><input className="input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} /></Field>
