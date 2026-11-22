@@ -198,11 +198,15 @@ pre-launch list and `DELIVERY_REPORT.md` for the final delivery report.
 
 ## Deploying
 
-**Nothing is deployed at the time of writing.** The hosting configuration was
-removed on 2026-10-28 so this repository can be restructured and redeployed
-deliberately; see `docs/deployment/README.md`. This section describes what a
-future deployment of the company website would need — it is not currently
-wired up, and no file in the repository configures it.
+**The site is deployed on Vercel** (project `company-platform`, root directory
+`company-platform`, Next.js preset, build command `npm run db:bootstrap && npm run build`).
+`company-platform/vercel.json` sets an Ignored Build Step
+(`scripts/vercel-ignore.sh`): builds are skipped for `dependabot/*` branches and for
+commits that touch nothing under `company-platform/`, `companies/`, `projects.json`
+or `scripts/build-catalogue.mjs`. The database is Supabase Postgres; free-tier
+projects pause after inactivity, so if `/` shows "Catalogue temporarily
+unavailable", restore the project. `db:bootstrap` no longer fails the build when the
+database is unreachable (set `BOOTSTRAP_STRICT=1` to restore that).
 
 This repository holds **every** project: the company website
 (`company-platform/`) plus all consolidated project source. The company

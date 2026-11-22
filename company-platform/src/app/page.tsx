@@ -8,13 +8,27 @@ import { getDb } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const db = getDb();
-  const [companies, products, caseStudies, people] = await Promise.all([
-    listCompanies(db),
-    listPublishedProducts(db),
-    listPublishedCaseStudies(db),
-    listPublishedPeople(db),
-  ]);
+  let data;
+  try {
+    const db = getDb();
+    data = await Promise.all([
+      listCompanies(db),
+      listPublishedProducts(db),
+      listPublishedCaseStudies(db),
+      listPublishedPeople(db),
+    ]);
+  } catch (error) {
+    console.error('[home] catalogue unavailable', error);
+    return (
+      <section className="card p-8" role="status">
+        <h1 className="text-2xl font-semibold">Catalogue temporarily unavailable</h1>
+        <p className="mt-3 text-muted">
+          The content database could not be reached. Please try again in a few minutes.
+        </p>
+      </section>
+    );
+  }
+  const [companies, products, caseStudies, people] = data;
 
   const featuredProducts = products.filter((product) => product.featured).slice(0, 6);
 
