@@ -2,8 +2,8 @@
  * Create the schema and, on a fresh database, the catalogue.
  *
  * `npm run db:bootstrap` is what the deploy runs before `next build`, so the
- * database is ready before the first request — and the deploy fails, loudly and
- * visibly, if it cannot be. The same function also runs from `instrumentation.ts`
+ * database is ready before the first request — and the deploy logs loudly if it cannot be
+ * (set BOOTSTRAP_STRICT=1 to make that fatal). The same function also runs from `instrumentation.ts`
  * on every server start, which is what covers a database that appears later.
  *
  * Safe to run repeatedly: migrations are recorded, and the content step returns
@@ -23,12 +23,17 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const { seeded } = await bootstrapDatabase();
-  console.log(seeded ? '[db] schema created, catalogue seeded' : '[db] schema and catalogue already current');
-  process.exit(0);
+  try {
+    const { seeded } = await bootstrapDatabase();
+    console.log(seeded ? '[db] schema created, catalogue seeded' : '[db] schema and catalogue already current');
+    process.exit(0);
+  } catch (error: unknown) {
+    console.error('[db] bootstrap failed', error);
+    // A paused or unreachable database must not take the whole deploy down:
+    // instrumentation.ts retries bootstrap on every server start and the
+    // homepage degrades gracefully. Set BOOTSTRAP_STRICT=1 to fail the build.
+    process.exit(process.env.BOOTSTRAP_STRICT === '1' ? 1 : 0);
+  }
 }
 
-main().catch((error: unknown) => {
-  console.error('[db] bootstrap failed', error);
-  process.exit(1);
-});
+void main();
