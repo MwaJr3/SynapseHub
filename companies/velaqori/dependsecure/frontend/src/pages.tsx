@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Finding, type Project, type User } from './api';
 import { formatTimestamp, remediationTone, scanStatusTone } from './utils';
+import { BlurFade, NumberTicker } from './decor';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -86,10 +87,10 @@ export function OverviewPage() {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Overview</h1>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Monitored projects" value={projects.length} />
-        <StatCard label="Completed scans" value={projects.reduce((s, p) => s + p.scan_count, 0)} />
-        <StatCard label="Findings" value={(findings ?? []).length} tone="text-rose-300" />
-        <StatCard label="Affected dependencies" value={affected.size} tone="text-amber-300" />
+        <BlurFade><StatCard label="Monitored projects" value={<NumberTicker value={projects.length} />} /></BlurFade>
+        <BlurFade><StatCard label="Completed scans" value={<NumberTicker value={projects.reduce((s, p) => s + p.scan_count, 0)} />} /></BlurFade>
+        <BlurFade><StatCard label="Findings" value={<NumberTicker value={(findings ?? []).length} />} tone="text-rose-300" /></BlurFade>
+        <BlurFade><StatCard label="Affected dependencies" value={<NumberTicker value={affected.size} />} tone="text-amber-300" /></BlurFade>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Open" value={byStatus.Open ?? 0} tone="text-rose-300" />
@@ -449,6 +450,26 @@ export function FindingsPage() {
     [selected],
   );
 
+  const params = new URLSearchParams(window.location.search);
+  const [status, setStatus] = useState(params.get('status') ?? 'all');
+  const [fixOnly, setFixOnly] = useState(params.get('fix') === '1');
+  const [text, setText] = useState(params.get('q') ?? '');
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const put = (k: string, v: string, on: boolean) => (on ? url.searchParams.set(k, v) : url.searchParams.delete(k));
+    put('status', status, status !== 'all');
+    put('fix', '1', fixOnly);
+    put('q', text, text !== '');
+    window.history.replaceState(null, '', url);
+  }, [status, fixOnly, text]);
+  const needle = text.trim().toLowerCase();
+  const visible = (findings ?? []).filter(
+    (f) =>
+      (status === 'all' || f.remediation.status === status) &&
+      (!fixOnly || f.fix_versions.length > 0) &&
+      (!needle || `${f.package} ${f.advisory_id} ${f.aliases.join(' ')}`.toLowerCase().includes(needle)),
+  );
+
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Vulnerability findings & remediation</h1>
@@ -466,7 +487,28 @@ export function FindingsPage() {
         <EmptyState title="No findings" hint="Run a scan first." />
       ) : (
         <div className="space-y-3">
-          {findings.map((f) => (
+          <div className="flex flex-wrap items-end gap-3">
+            <Field label="Status">
+              <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
+                {['all', 'Open', 'Under Review', 'Resolved', 'Accepted Risk'].map((o) => (
+                  <option key={o} value={o}>
+                    {o === 'all' ? 'All statuses' : o}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Package or advisory">
+              <input className="input" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. requests or CVE-" />
+            </Field>
+            <label className="flex items-center gap-2 pb-2 text-sm text-slate-300">
+              <input type="checkbox" checked={fixOnly} onChange={(e) => setFixOnly(e.target.checked)} /> Fix available
+            </label>
+            <span className="pb-2 text-xs text-slate-400">
+              Showing {visible.length} of {findings.length}. Filters are kept in the page address so you can share a view.
+            </span>
+          </div>
+          {visible.length === 0 ? <EmptyState title="No findings match" hint="Loosen a filter above to see the rest." /> : null}
+          {visible.map((f) => (
             <Card key={f.id}>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone={remediationTone(f.remediation.status)}>{f.remediation.status}</Badge>

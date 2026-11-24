@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type User } from './api';
 import { HONESTY_NOTICE, severityTone, statusTone } from './utils';
+import { BlurFade, NumberTicker } from './decor';
+import { downloadText, toCsv } from './export';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -46,8 +48,8 @@ export function DashboardPage({ user }: { user: User }) {
       <h1 className="text-xl font-semibold">Security operations dashboard</h1>
       <DemoBanner demo={dash.demo_data} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Events" value={dash.events} />
-        <StatCard label="Open alerts" value={dash.alerts_open} tone="text-amber-300" />
+        <BlurFade><StatCard label="Events" value={<NumberTicker value={dash.events} />} /></BlurFade>
+        <BlurFade delayMs={60}><StatCard label="Open alerts" value={<NumberTicker value={dash.alerts_open} />} tone="text-amber-300" /></BlurFade>
         <StatCard label="Active incidents" value={(dash.incidents_by_status.new ?? 0) + (dash.incidents_by_status.triaged ?? 0) + (dash.incidents_by_status.contained ?? 0)} tone="text-rose-300" />
         <StatCard label="Your role" value={user.role} />
       </div>
@@ -84,7 +86,14 @@ export function DashboardPage({ user }: { user: User }) {
 /* --------------------------------- Events -------------------------------- */
 
 export function EventsPage({ user }: { user: User }) {
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(() => new URLSearchParams(window.location.search).get('q') ?? '');
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (q) params.set('q', q);
+    else params.delete('q');
+    const qs = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
+  }, [q]);
   const [events, error, reload] = useAsync(() => api.events(q), [q]);
   const [actionError, setActionError] = useState('');
   const canWrite = user.role === 'admin' || user.role === 'analyst';
@@ -115,11 +124,21 @@ export function EventsPage({ user }: { user: User }) {
             + Manual event
           </button>
         ) : null}
+        <button
+          className="btn-ghost"
+          disabled={!events || events.length === 0}
+          onClick={() => downloadText('sentinelcore-events.csv', toCsv((events ?? []) as unknown as Array<Record<string, unknown>>, ['occurred_at', 'source_ip', 'category', 'severity', 'summary']))}
+        >
+          Export CSV{events ? ` (${events.length})` : ''}
+        </button>
       </div>
       {!events ? (
         <Loading />
       ) : events.length === 0 ? (
-        <EmptyState title="No events" hint="Events appear here once ingested." />
+        <EmptyState
+          title={q ? 'No events match this search' : 'No events'}
+          hint={q ? 'Clear the search box to see all events, or try a shorter phrase.' : 'Events appear here once ingested.'}
+        />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-slate-800">
           <table className="min-w-full">

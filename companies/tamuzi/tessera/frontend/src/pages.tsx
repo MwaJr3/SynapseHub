@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { api, ApiError, type AnswerResult, type ConceptDetail, type KnowledgeRow, type MoveResult, type OpeningsResponse, type PuzzleSummary, type PuzzleView, type SourceRow, type TodayResponse } from './api';
 import { ChessBoard } from './board';
+import { BlurFade } from './decor';
 import { useAsync } from './hooks';
 import { OpeningsPanel } from './openings';
 import { Badge, Card, EmptyState, ErrorNote, Loading, MasteryBar, ReasonList, SectionTitle } from './ui';
@@ -111,6 +112,7 @@ export function TodayPage({ onOpenConcept }: { onOpenConcept: (id: string) => vo
 
   return (
     <div className="grid gap-4">
+      <BlurFade>
       <Card>
         <SectionTitle hint="Assembled from what is due, what is weak, and what you have not started.">
           Today
@@ -133,6 +135,7 @@ export function TodayPage({ onOpenConcept }: { onOpenConcept: (id: string) => vo
           The session adapts to the time you have; it does not pad itself with filler.
         </p>
       </Card>
+      </BlurFade>
 
       {data.items.length === 0 ? (
         <EmptyState title="Nothing scheduled" body={data.empty_state ?? 'Pick a concept to begin.'} />

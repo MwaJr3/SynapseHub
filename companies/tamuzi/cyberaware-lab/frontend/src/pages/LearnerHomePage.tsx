@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { BlurFade, NumberTicker } from "../decor"
 import { api, type AssignmentRow } from "../lib/api"
 
 export default function LearnerHomePage() {
@@ -9,10 +10,13 @@ export default function LearnerHomePage() {
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Your training assignments</h1>
-      <div className="notice">
-        Every exercise is a fictional simulation with a visible training banner. You will never be
-        asked for a real password, and simulated senders use fictional domains only.
-      </div>
+      <BlurFade>
+        <div className="notice">
+          Every exercise is a fictional simulation with a visible training banner. You will never be
+          asked for a real password, and simulated senders use fictional domains only.
+        </div>
+      </BlurFade>
+      {rows.length > 0 && <p style={{ margin: 0 }}><NumberTicker value={rows.filter((r) => !r.completed).length} /> of {rows.length} exercises still open</p>}
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>No assignments yet — your instructor will add them.</p> : (
         <table className="table card">

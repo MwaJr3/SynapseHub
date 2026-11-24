@@ -15,3 +15,8 @@ export function localTime(iso: string): string {
 
 export const NO_FAKE_VIDEO =
   'When no WebRTC provider is configured the live-call integration shows as unavailable — asynchronous workflows continue and a real call is never faked.';
+
+/** Plain-text copy of a session's chat and questions, so nothing is lost when the class ends. */
+export function chatToText(messages: { kind: string; body: string }[]): string {
+  return messages.map((m) => `[${m.kind}] ${m.body}`).join('\n');
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { FAIRNESS_RULE, LEDGER_RULE, appStatusTone, planLabel } from './utils';
+import { FAIRNESS_RULE, LEDGER_RULE, appStatusTone, applicationsToCsv, planLabel } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -19,13 +20,26 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
   return [data, error, reload];
 }
 
+const DRAFT_KEY = 'eduaccess.statementDrafts';
+function loadDrafts(): Record<string, string> {
+  try { return JSON.parse(localStorage.getItem(DRAFT_KEY) || '{}') as Record<string, string>; } catch { return {}; }
+}
+
 export function PlansPage({ user: _user }: { user: User }) {
+  const [drafts, setDrafts] = useState<Record<string, string>>(loadDrafts);
+  const [draftSaved, setDraftSaved] = useState(false);
+  const setDraft = (planId: number, text: string) => {
+    const next = { ...drafts, [String(planId)]: text };
+    if (!text) delete next[String(planId)];
+    setDrafts(next);
+    try { localStorage.setItem(DRAFT_KEY, JSON.stringify(next)); setDraftSaved(true); } catch { setDraftSaved(false); }
+  };
   const [courses, error, reload] = useAsync(() => api.courses(), []);
   const [message, setMessage] = useState('');
   const [actionError, setActionError] = useState('');
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Access plans</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Access plans</h1></BlurFade>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       {message ? (
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
@@ -46,11 +60,20 @@ export function PlansPage({ user: _user }: { user: User }) {
                       <div className="text-sm font-medium">{planLabel(plan.kind, plan.price)}</div>
                       {plan.evidence_required ? <div className="text-xs text-slate-400">Evidence: {plan.evidence_required}</div> : null}
                     </div>
+                    {plan.kind !== 'paid' ? (
+                      <div className="w-full">
+                        <label className="text-xs text-slate-400" htmlFor={`st-${plan.id}`}>Short statement (kept minimal — no sensitive documents)</label>
+                        <textarea id={`st-${plan.id}`} className="mt-1 w-full rounded-lg border border-slate-800 bg-transparent p-2 text-sm" rows={3} maxLength={1000}
+                          value={drafts[String(plan.id)] ?? ''} onChange={(e) => setDraft(plan.id, e.target.value)} />
+                        <div className="text-xs text-slate-400" role="status">{draftSaved && drafts[String(plan.id)] ? 'Draft saved on this device' : 'Drafts are kept on this device until you apply.'}</div>
+                      </div>
+                    ) : null}
                     <button className="btn-primary" onClick={async () => {
                       setActionError('');
                       try {
-                        const statement = plan.kind === 'paid' ? '' : (window.prompt('Short statement (kept minimal — no sensitive documents):') ?? '');
+                        const statement = plan.kind === 'paid' ? '' : (drafts[String(plan.id)] ?? '');
                         await api.apply(plan.id, statement);
+                        setDraft(plan.id, '');
                         setMessage('Application submitted. A human reviewer will decide — decisions always record a reason.');
                         reload();
                       } catch (err) { setActionError(err instanceof ApiError ? err.message : 'Apply failed.'); }
@@ -73,7 +96,15 @@ export function ApplicationsPage({ user }: { user: User }) {
   const canDecide = user.role === 'reviewer' || user.role === 'admin';
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Applications & review</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-xl font-semibold">Applications & review</h1>
+        {applications && applications.length > 0 ? (
+          <button className="btn-ghost" onClick={() => {
+            const url = URL.createObjectURL(new Blob([applicationsToCsv(applications)], { type: 'text/csv' }));
+            const a = document.createElement('a'); a.href = url; a.download = 'my-applications.csv'; a.click(); URL.revokeObjectURL(url);
+          }}>Download applications (CSV)</button>
+        ) : null}
+      </div>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       {!applications ? <Loading /> : applications.length === 0 ? (
         <EmptyState title="No applications" hint="Apply from an access plan to get started." />

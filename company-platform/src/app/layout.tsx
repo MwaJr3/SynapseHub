@@ -5,6 +5,7 @@ import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import { getSessionActor } from '@/lib/auth';
 
 import './globals.css';
+import '@/components/decor/decor.css';
 
 export const metadata: Metadata = {
   title: {

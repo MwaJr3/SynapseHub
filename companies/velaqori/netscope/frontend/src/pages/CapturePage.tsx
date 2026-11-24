@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { downloadText, toCsv } from "../lib/export"
 import { api, type CaptureDetail, type CaptureRow } from "../lib/api"
 
 export default function CapturePage() {
@@ -56,6 +57,11 @@ export default function CapturePage() {
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <input aria-label="Capture label" className="input" value={label} onChange={(e) => setLabel(e.target.value)} style={{ maxWidth: "18rem" }} />
           <button className="btn secondary" onClick={async () => { await api.setLabel(rec!.id, label); setFlash("Label saved.") }}>Save label</button>
+          <button className="btn secondary" onClick={() => downloadText(`netscope-summary-${rec!.id}.csv`, toCsv([
+            ...Object.entries(byProtocol).map(([k, v]) => ({ section: "protocol", name: k, count: v })),
+            ...sources.map(([k, v]) => ({ section: "top_source", name: k, count: v })),
+            ...destinations.map(([k, v]) => ({ section: "top_destination", name: k, count: v })),
+          ], ["section", "name", "count"]))}>Export summary (CSV)</button>
           <button className="btn" onClick={async () => {
             const report = await api.report(rec!.id)
             const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" })

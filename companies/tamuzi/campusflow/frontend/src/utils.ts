@@ -35,3 +35,15 @@ export function formatDate(iso: string | null): string {
   const date = new Date(iso);
   return Number.isNaN(date.getTime()) ? iso : date.toLocaleDateString();
 }
+
+function csvCell(value: string | number | null): string {
+  const text = value === null ? '' : String(value);
+  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+/** Build a CSV of a transcript so people can keep their own record. */
+export function transcriptToCsv(lines: { course_code: string; title: string; term: string; credit_hours: number; average: number | null; letter: string | null; grade_points: number | null }[]): string {
+  const rows = [['Course', 'Title', 'Term', 'Credits', 'Average', 'Letter', 'Grade points']];
+  for (const l of lines) rows.push([l.course_code, l.title, l.term, l.credit_hours, l.average, l.letter, l.grade_points] as never);
+  return rows.map((r) => r.map(csvCell).join(',')).join('\n');
+}

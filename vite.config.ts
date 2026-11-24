@@ -46,6 +46,7 @@ export default defineConfig({
     css: false,
     include: [
       'src/**/*.test.{ts,tsx}',
+      'packages/**/*.test.{ts,tsx}',
       'challenges/src/**/*.test.{ts,tsx}',
       'tools/northstar/engine/**/*.test.ts',
     ],

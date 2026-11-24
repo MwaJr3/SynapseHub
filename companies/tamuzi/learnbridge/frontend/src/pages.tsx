@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type LessonDetail, type QuizDetail, type User } from './api';
-import { stateLabel, stateTone, syncTone } from './utils';
+import { notesToText, readQueryParam, stateLabel, stateTone, syncTone, writeQueryParam } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -22,7 +23,8 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
 /* ----------------------------- Catalogue + reader ------------------------ */
 
 export function CataloguePage({ user: _user }: { user: User }) {
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(() => readQueryParam('q'));
+  useEffect(() => { writeQueryParam('q', q); }, [q]);
   const [courses, error, reload] = useAsync(() => api.courses(q), [q]);
   const [openCourse, setOpenCourse] = useState<number | null>(null);
   const [openLesson, setOpenLesson] = useState<LessonDetail | null>(null);
@@ -38,7 +40,7 @@ export function CataloguePage({ user: _user }: { user: User }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Course catalogue</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Course catalogue</h1></BlurFade>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       <input className="input max-w-md" aria-label="Search courses" placeholder="Search courses…" value={q} onChange={(e) => setQ(e.target.value)} />
       {!courses ? <Loading /> : courses.length === 0 ? (
@@ -104,6 +106,12 @@ export function CataloguePage({ user: _user }: { user: User }) {
             <ul className="space-y-1">
               {openLesson.notes.map((n) => <li key={n.id} className="rounded-lg border border-slate-800 px-3 py-1.5 text-xs text-slate-400">{n.body}</li>)}
             </ul>
+            {openLesson.notes.length > 0 ? (
+              <button type="button" className="btn-ghost mt-2" onClick={() => {
+                const url = URL.createObjectURL(new Blob([notesToText(openLesson.title, openLesson.notes)], { type: 'text/plain' }));
+                const a = document.createElement('a'); a.href = url; a.download = 'my-notes.txt'; a.click(); URL.revokeObjectURL(url);
+              }}>Download my notes (.txt)</button>
+            ) : null}
             <NoteForm lessonId={openLesson.id} onSaved={async () => setOpenLesson(await api.lesson(openLesson.id))} />
           </div>
           <div className="mt-4">
@@ -136,8 +144,12 @@ function LessonList({ courseId, onOpen }: { courseId: number; onOpen: (courseId:
 }
 
 function NoteForm({ lessonId, onSaved }: { lessonId: number; onSaved: () => void }) {
-  const [body, setBody] = useState('');
+  const draftKey = `learnbridge.noteDraft.${lessonId}`;
+  const [body, setBody] = useState(() => { try { return localStorage.getItem(draftKey) ?? ''; } catch { return ''; } });
   const [blocked, setBlocked] = useState('');
+  useEffect(() => {
+    try { if (body) localStorage.setItem(draftKey, body); else localStorage.removeItem(draftKey); } catch { /* storage unavailable */ }
+  }, [body, draftKey]);
   const field = useRef<HTMLInputElement>(null);
   return (
     <form className="mt-2 flex flex-wrap gap-2" onSubmit={async (e) => {
@@ -158,6 +170,7 @@ function NoteForm({ lessonId, onSaved }: { lessonId: number; onSaved: () => void
         onChange={(e) => { setBody(e.target.value); setBlocked(''); }} />
       <button className="btn-primary">Save</button>
       {blocked ? <p role="status" className="w-full text-xs text-amber-300">{blocked}</p> : null}
+      {body ? <p role="status" className="w-full text-xs text-slate-400">Draft saved on this device until you save the note.</p> : null}
     </form>
   );
 }

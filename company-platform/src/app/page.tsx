@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { BlurFade, DotPattern } from '@/components/decor-client';
 import { IllustrativeLabel, Badge, StatusBadge, CompanyBadge } from '@/components/ui';
 import { SEED_DATA_NOTICE } from '@/content';
 import { listCompanies, listPublishedCaseStudies, listPublishedProducts, listPublishedPeople } from '@/lib/queries';
@@ -34,7 +35,9 @@ export default async function HomePage() {
 
   return (
     <div className="space-y-14">
-      <section aria-labelledby="hero-heading" className="card p-8">
+      <section aria-labelledby="hero-heading" className="card relative overflow-hidden p-8">
+        <DotPattern />
+        <BlurFade>
         <Badge tone="accent">Two independent companies · one shared platform</Badge>
         <h1 id="hero-heading" className="mt-4 text-3xl font-semibold leading-tight">
           Software and cyber engineering. Education technology.
@@ -52,6 +55,7 @@ export default async function HomePage() {
           <Link href="/products" className="btn btn-primary">Browse all products</Link>
           <Link href="/case-studies" className="btn btn-secondary">Read the case studies</Link>
         </div>
+        </BlurFade>
       </section>
 
       <section aria-labelledby="companies-heading">

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { BlurFade } from '../decor'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -92,7 +93,7 @@ export function Dashboard() {
   return (
     <div className="workspace-page dashboard-page">
       <section className="dashboard-hero">
-        <div className="hero-copy">
+        <BlurFade className="hero-copy">
           <div className="eyebrow">
             <span className="eyebrow-line" /> YOUR PERSONAL LEARNING SPACE
           </div>
@@ -124,7 +125,7 @@ export function Dashboard() {
               Apply
             </span>
           </div>
-        </div>
+        </BlurFade>
         <LearningIllustration />
       </section>
       <InputComposer compact />

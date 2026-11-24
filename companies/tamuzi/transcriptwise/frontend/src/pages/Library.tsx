@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import {
@@ -33,13 +33,24 @@ export function Library() {
   const { session } = useSession()
   const openAuth = useAuthDialog()
   const refresh = useRefreshWorkspace()
-  const [search, setSearch] = useState('')
+  // Filters live in the address bar so a reload, back-navigation or shared link restores the same view.
+  const [initial] = useState(() => new URLSearchParams(window.location.search))
+  const [search, setSearch] = useState(initial.get('q') ?? '')
   const q = useDebounce(search)
-  const [tab, setTab] = useState<'all' | 'saved'>('all')
-  const [folder, setFolder] = useState('')
-  const [tag, setTag] = useState('')
-  const [source, setSource] = useState('')
-  const [sort, setSort] = useState('newest')
+  const [tab, setTab] = useState<'all' | 'saved'>(initial.get('tab') === 'saved' ? 'saved' : 'all')
+  const [folder, setFolder] = useState(initial.get('folder') ?? '')
+  const [tag, setTag] = useState(initial.get('tag') ?? '')
+  const [source, setSource] = useState(initial.get('source') ?? '')
+  const [sort, setSort] = useState(initial.get('sort') ?? 'newest')
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    const wanted: Record<string, string> = { q: search, tab: tab === 'saved' ? 'saved' : '', folder, tag, source, sort: sort === 'newest' ? '' : sort }
+    for (const [key, value] of Object.entries(wanted)) {
+      if (value) url.searchParams.set(key, value)
+      else url.searchParams.delete(key)
+    }
+    window.history.replaceState(window.history.state, '', url)
+  }, [search, tab, folder, tag, source, sort])
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [page, setPage] = useState(0)
   const [managing, setManaging] = useState<LibraryItem | null>(null)

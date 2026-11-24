@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { FAIRNESS_NOTE, flagTone } from './utils';
+import { FAIRNESS_NOTE, flagTone, readQueryParam, topicsToCsv, writeQueryParam } from './utils';
+import { BlurFade, NumberTicker } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -20,12 +21,13 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
 }
 
 export function DashboardPage() {
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [from, setFrom] = useState(() => readQueryParam('from'));
+  const [to, setTo] = useState(() => readQueryParam('to'));
+  useEffect(() => { writeQueryParam('from', from); writeQueryParam('to', to); }, [from, to]);
   const [dash, error] = useAsync(() => api.dashboard(from, to), [from, to]);
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Learning analytics dashboard</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Learning analytics dashboard</h1></BlurFade>
       {error ? <ErrorBanner message={error} /> : null}
       <div className="flex flex-wrap gap-2">
         <input className="input" type="date" aria-label="Start date" value={from} onChange={(e) => setFrom(e.target.value)} />
@@ -35,9 +37,9 @@ export function DashboardPage() {
       {!dash ? <Loading /> : (
         <>
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <StatCard label="Events" value={dash.summary.events} />
-            <StatCard label="Learners" value={dash.summary.learners} />
-            <StatCard label="Lesson completions" value={dash.summary.lesson_completions} />
+            <BlurFade><StatCard label="Events" value={<NumberTicker value={dash.summary.events} />} /></BlurFade>
+            <BlurFade delayMs={80}><StatCard label="Learners" value={<NumberTicker value={dash.summary.learners} />} /></BlurFade>
+            <BlurFade delayMs={160}><StatCard label="Lesson completions" value={<NumberTicker value={dash.summary.lesson_completions} />} /></BlurFade>
             <StatCard label="Quiz average" value={dash.summary.quiz_avg ?? '—'} tone="text-emerald-300" />
             <StatCard label="Assignments submitted" value={dash.summary.assignments_submitted} />
             <StatCard label="Assignments missing" value={dash.summary.assignments_missing} tone="text-amber-300" />
@@ -48,6 +50,11 @@ export function DashboardPage() {
             {Object.keys(dash.summary.by_topic).length === 0 ? (
               <EmptyState title="No events in range" hint="Import data or widen the date range." />
             ) : (
+              <>
+              <button type="button" className="btn-ghost mb-2" onClick={() => {
+                const url = URL.createObjectURL(new Blob([topicsToCsv(dash.summary.by_topic)], { type: 'text/csv' }));
+                const a = document.createElement('a'); a.href = url; a.download = 'events-by-topic.csv'; a.click(); URL.revokeObjectURL(url);
+              }}>Download topics (CSV)</button>
               <ul className="space-y-1">
                 {Object.entries(dash.summary.by_topic).map(([topic, count]) => (
                   <li key={topic} className="flex justify-between rounded-lg border border-slate-800 px-3 py-1.5 text-sm">
@@ -55,6 +62,7 @@ export function DashboardPage() {
                   </li>
                 ))}
               </ul>
+              </>
             )}
           </Card>
           <p className="text-xs text-slate-400">{dash.note}</p>
@@ -79,6 +87,8 @@ export function ImportPage() {
           Required columns: uid, occurred_at, kind, learner_ref. Optional: course, class_name, topic, assessment, value.
           Re-importing the same file is idempotent — duplicate rows are rejected with reasons, not double-counted.
         </p>
+        <input type="file" accept=".csv,text/csv" aria-label="Choose a CSV file" className="mb-2 block text-xs text-slate-400"
+          onChange={async (e) => { const f = e.target.files?.[0]; if (f) { setCsv(await f.text()); setBlocked(''); } }} />
         <textarea ref={csvField} className="input h-48 font-mono text-xs" aria-label="Bulk learner CSV data" placeholder="uid,occurred_at,kind,learner_ref,…"
           value={csv} onChange={(e) => { setCsv(e.target.value); setBlocked(''); }} />
         <button className="btn-primary mt-2" onClick={async () => {

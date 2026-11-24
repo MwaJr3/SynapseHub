@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { SIMULATOR_NOTICE, channelTone, jobTone } from './utils';
+import { SIMULATOR_NOTICE, channelTone, jobTone, jobsToCsv, readQueryParam, writeQueryParam } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -21,16 +22,23 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
 
 export function StudioPage() {
   const [lessons, error, reload] = useAsync(() => api.lessons(), []);
-  const [channel, setChannel] = useState('sms');
+  const [channel, setChannel] = useState(() => ['sms', 'ussd', 'ivr', 'web'].includes(readQueryParam('channel')) ? readQueryParam('channel') : 'sms');
+  useEffect(() => { writeQueryParam('channel', channel === 'sms' ? '' : channel); }, [channel]);
   const [previewId, setPreviewId] = useState<number | null>(null);
   const [preview, setPreview] = useState<import('./api').Preview | null>(null);
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const [title, setTitle] = useState(() => { try { return localStorage.getItem('reachlearn.draftTitle') ?? ''; } catch { return ''; } });
+  const [body, setBody] = useState(() => { try { return localStorage.getItem('reachlearn.draftBody') ?? ''; } catch { return ''; } });
+  useEffect(() => {
+    try {
+      if (title) localStorage.setItem('reachlearn.draftTitle', title); else localStorage.removeItem('reachlearn.draftTitle');
+      if (body) localStorage.setItem('reachlearn.draftBody', body); else localStorage.removeItem('reachlearn.draftBody');
+    } catch { /* storage unavailable */ }
+  }, [title, body]);
   const [actionError, setActionError] = useState('');
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Content studio & channel previews</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Content studio & channel previews</h1></BlurFade>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       <Card title="Create a micro-lesson">
         <form className="flex flex-wrap gap-2" onSubmit={async (e) => {
@@ -51,6 +59,7 @@ export function StudioPage() {
           <input className="input flex-1" aria-label="Short body" placeholder="Short body (text-first)" value={body} onChange={(e) => setBody(e.target.value)} />
           <button className="btn-primary">Create</button>
         </form>
+        {title || body ? <p role="status" className="mt-2 text-xs text-slate-400">Draft saved on this device until you create the lesson.</p> : null}
       </Card>
       <div className="flex gap-2">
         <select className="input max-w-xs" aria-label="Preview channel" value={channel} onChange={(e) => setChannel(e.target.value)}>
@@ -108,6 +117,12 @@ export function DeliveryPage() {
           reload();
         } catch (err) { setActionError(err instanceof ApiError ? err.message : 'Send failed.'); }
       }}>Queue a simulated nudge</button>
+      {jobs && jobs.length > 0 ? (
+        <button type="button" className="btn-ghost ml-2" onClick={() => {
+          const url = URL.createObjectURL(new Blob([jobsToCsv(jobs)], { type: 'text/csv' }));
+          const a = document.createElement('a'); a.href = url; a.download = 'simulated-delivery-log.csv'; a.click(); URL.revokeObjectURL(url);
+        }}>Download delivery log (CSV)</button>
+      ) : null}
       {!jobs ? <Loading /> : jobs.length === 0 ? (
         <EmptyState title="Queue is empty" hint="Queued sends appear here with their states." />
       ) : (

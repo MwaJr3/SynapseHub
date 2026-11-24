@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { BlurFade } from "../decor"
 import { api } from "../lib/api"
 
 export default function AnalyzePage() {
@@ -25,10 +26,10 @@ export default function AnalyzePage() {
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Analyze a message</h1>
-      <div className="notice">
+      <BlurFade><div className="notice">
         Paste the raw message (headers + body). Links are never visited and attachments are never
         opened — the engine only reads the text you paste. Findings are warnings for review, not proof.
-      </div>
+      </div></BlurFade>
       <form className="card" onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
         <input aria-label="Label for this analysis (optional)" className="input" placeholder="label for this analysis (optional)" value={subject} onChange={(e) => setSubject(e.target.value)} />
         <textarea className="input" rows={10} placeholder={"From: someone@example.test\nSubject: ...\n\nMessage body…"} value={raw} onChange={(e) => setRaw(e.target.value)} required />

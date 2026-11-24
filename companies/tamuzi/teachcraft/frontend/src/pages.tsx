@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { EXPORT_NOTE, workflowTone } from './utils';
+import { EXPORT_NOTE, questionsToCsv, workflowTone } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -45,7 +46,7 @@ export function LessonsPage({ user }: { user: User }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Lesson studio</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Lesson studio</h1></BlurFade>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       <Card title="Create a lesson from a template">
         <form className="flex flex-wrap gap-2" onSubmit={async (e) => {
@@ -146,9 +147,19 @@ export function LessonsPage({ user }: { user: User }) {
 export function QuestionBankPage() {
   const [questions, error, reload] = useAsync(() => api.questions(), []);
   const [kind, setKind] = useState('single');
-  const [prompt, setPrompt] = useState('');
-  const [choices, setChoices] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [draft] = useState<{ prompt?: string; choices?: string; answer?: string }>(() => {
+    try { return JSON.parse(localStorage.getItem('teachcraft.questionDraft') || '{}'); } catch { return {}; }
+  });
+  const [prompt, setPrompt] = useState(draft.prompt ?? '');
+  const [choices, setChoices] = useState(draft.choices ?? '');
+  const [answer, setAnswer] = useState(draft.answer ?? '');
+  const hasDraft = Boolean(prompt || choices || answer);
+  useEffect(() => {
+    try {
+      if (hasDraft) localStorage.setItem('teachcraft.questionDraft', JSON.stringify({ prompt, choices, answer }));
+      else localStorage.removeItem('teachcraft.questionDraft');
+    } catch { /* storage unavailable */ }
+  }, [prompt, choices, answer, hasDraft]);
   const [actionError, setActionError] = useState('');
   return (
     <div className="space-y-4">
@@ -184,11 +195,16 @@ export function QuestionBankPage() {
           </Field>
           <button className="btn-primary md:col-span-4 justify-center">Validate & add</button>
         </form>
+        {hasDraft ? <p role="status" className="mt-2 text-xs text-slate-400">Draft saved on this device until you add the question.</p> : null}
       </Card>
       {!questions ? <Loading /> : questions.length === 0 ? (
         <EmptyState title="No questions yet" hint="Validated questions appear here." />
       ) : (
         <div className="space-y-2">
+          <button type="button" className="btn-ghost" onClick={() => {
+            const url = URL.createObjectURL(new Blob([questionsToCsv(questions)], { type: 'text/csv' }));
+            const a = document.createElement('a'); a.href = url; a.download = 'question-bank.csv'; a.click(); URL.revokeObjectURL(url);
+          }}>Download question bank (CSV)</button>
           {questions.map((q) => (
             <div key={q.id} className="card">
               <div className="flex items-center gap-2">

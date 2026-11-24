@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { VERDICT_MEANING } from "../lib/verdicts"
 import { api, type HashRecordDetail } from "../lib/api"
 
 const DISPOSITIONS = ["unreviewed", "suspicious", "malicious", "benign", "false-positive"]
@@ -32,6 +33,7 @@ export default function RecordPage() {
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>{rec.filename} <span className={`verdict ${rec.combined_verdict}`}>{rec.combined_verdict}</span></h1>
       <div className="notice">{rec.disclaimer}</div>
+      {VERDICT_MEANING[rec.combined_verdict] && <p className="hint">What this verdict means: {VERDICT_MEANING[rec.combined_verdict]}</p>}
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Digests</h3>
         <p style={{ fontFamily: "monospace", wordBreak: "break-all", margin: "0.25rem 0" }}>SHA-256: {rec.sha256}</p>

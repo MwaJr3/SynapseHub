@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { BlurFade } from "../decor"
+import { downloadText, toCsv } from "../lib/export"
 import { api, type Finding } from "../lib/api"
 
 export default function FindingsPage() {
   const { runId } = useParams()
   const [findings, setFindings] = useState<Finding[]>([])
-  const [severity, setSeverity] = useState("")
-  const [triageFilter, setTriageFilter] = useState("")
+  const initial = new URLSearchParams(window.location.search)
+  const [severity, setSeverity] = useState(initial.get("severity") ?? "")
+  const [triageFilter, setTriageFilter] = useState(initial.get("triage") ?? "")
   const [open, setOpen] = useState<Finding | null>(null)
   const [error, setError] = useState("")
   const [flash, setFlash] = useState("")
   const load = () => api.findings(Number(runId), severity, triageFilter)
     .then((r) => setFindings(r.findings)).catch((e) => setError(String(e)))
   useEffect(() => { load() }, [runId, severity, triageFilter])
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    severity ? params.set("severity", severity) : params.delete("severity")
+    triageFilter ? params.set("triage", triageFilter) : params.delete("triage")
+    const qs = params.toString()
+    window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
+  }, [severity, triageFilter])
 
   async function exportReport() {
     const report = await api.report(Number(runId))
@@ -27,10 +37,10 @@ export default function FindingsPage() {
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Findings — run #{runId}</h1>
-      <div className="notice">
+      <BlurFade><div className="notice">
         Findings are heuristic indicators to review — not proof of a vulnerability. Suggested fixes are
         guidance to evaluate, never applied automatically. Evidence is redacted.
-      </div>
+      </div></BlurFade>
       <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
         <select className="input" style={{ maxWidth: "12rem" }} value={severity} onChange={(e) => setSeverity(e.target.value)}>
           <option value="">all severities</option>
@@ -41,10 +51,12 @@ export default function FindingsPage() {
           <option>open</option><option>accepted</option><option>fixed</option><option>suppressed</option>
         </select>
         <button className="btn secondary" onClick={exportReport}>Export report</button>
+        <button className="btn secondary" disabled={findings.length === 0} onClick={() => downloadText(`scw-findings-${runId}.csv`, toCsv(findings as unknown as Array<Record<string, unknown>>, ["rule_id", "severity", "cwe", "path", "line", "title", "triage"]))}>Export {findings.length} shown as CSV</button>
       </div>
+      <p className="hint">Severity is the rule author's estimate of impact if the finding is real. It is not a confirmed exploit; triage each finding yourself. Rows are listed as returned by the scan.</p>
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
-      {findings.length === 0 ? <p style={{ color: "var(--muted)" }}>No findings match this filter.</p> : (
+      {findings.length === 0 ? <p style={{ color: "var(--muted)" }}>{severity || triageFilter ? "No findings match these filters. Set both back to “all” to see every finding in this run." : "This run has no findings."}</p> : (
         <table className="table card">
           <thead><tr><th scope="col">Rule</th><th scope="col">Severity</th><th scope="col">Location</th><th scope="col">Summary</th><th scope="col">Triage</th></tr></thead>
           <tbody>

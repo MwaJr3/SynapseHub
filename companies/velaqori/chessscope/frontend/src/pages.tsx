@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
+import { BlurFade, NumberTicker } from './decor';
+import { downloadText, toCsv } from './export';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 export function GamesPage() {
@@ -10,6 +12,14 @@ export function GamesPage() {
   const [openId, setOpenId] = useState<number | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [busy, setBusy] = useState(false);
+  const [q, setQ] = useState(() => new URLSearchParams(window.location.search).get('q') ?? '');
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (q) url.searchParams.set('q', q);
+    else url.searchParams.delete('q');
+    window.history.replaceState(null, '', url);
+  }, [q]);
+  const shown = (games ?? []).filter((g) => `${g.white} ${g.black} ${g.result}`.toLowerCase().includes(q.trim().toLowerCase()));
 
   const reload = useCallback(() => {
     api
@@ -79,7 +89,12 @@ export function GamesPage() {
         <EmptyState title="No games yet" hint="Import a PGN above to get started." />
       ) : (
         <div className="space-y-2">
-          {games.map((g) => (
+          <div className="flex flex-wrap items-center gap-3">
+            <input className="input max-w-xs" aria-label="Filter games" placeholder="Filter by player or result" value={q} onChange={(e) => setQ(e.target.value)} />
+            <span className="text-xs text-slate-400">{shown.length} of {games.length} games</span>
+          </div>
+          {shown.length === 0 ? <EmptyState title="No games match" hint="Clear the filter to see every imported game." /> : null}
+          {shown.map((g) => (
             <div key={g.id} className="card">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
@@ -179,6 +194,18 @@ function AnalysisView({ analysis }: { analysis: Analysis }) {
           </tbody>
         </table>
       </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          className="btn-ghost"
+          onClick={() =>
+            downloadText('moves.csv', toCsv(analysis.moves.map((m) => ({ ...m, flags: m.flags.join('; ') })) as unknown as Array<Record<string, unknown>>, ['ply', 'san', 'side', 'material_after', 'engine_eval_cp', 'classification', 'flags']))
+          }
+        >
+          Download moves (CSV)
+        </button>
+        <span className="text-xs text-slate-400">Your analysis is yours: export it any time.</span>
+      </div>
       <p className="text-xs text-slate-400">{analysis.disclaimer}</p>
     </div>
   );
@@ -199,10 +226,10 @@ export function InsightsPage() {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Insights</h1>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Games" value={data.games} />
-        <StatCard label="White wins" value={data.results.white_wins} />
-        <StatCard label="Black wins" value={data.results.black_wins} />
-        <StatCard label="Draws" value={data.results.draws} />
+        <BlurFade><StatCard label="Games" value={<NumberTicker value={data.games} />} /></BlurFade>
+        <BlurFade><StatCard label="White wins" value={<NumberTicker value={data.results.white_wins} />} /></BlurFade>
+        <BlurFade><StatCard label="Black wins" value={<NumberTicker value={data.results.black_wins} />} /></BlurFade>
+        <BlurFade><StatCard label="Draws" value={<NumberTicker value={data.results.draws} />} /></BlurFade>
       </div>
       <Card title="Openings (from PGN labels)">
         {data.openings.length === 0 ? (

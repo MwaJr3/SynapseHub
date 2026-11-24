@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { AI_DISCLAIMER, modeTone } from './utils';
+import { AI_DISCLAIMER, conversationToText, modeTone } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
 
@@ -92,7 +93,10 @@ export function ChatPage({ user: _user }: { user: User }) {
   const [config] = useAsync(() => api.config(), []);
   const [mode, setMode] = useState('Explain');
   const [topic, setTopic] = useState('');
-  const [question, setQuestion] = useState('');
+  const [question, setQuestion] = useState(() => { try { return localStorage.getItem('tutorspring.questionDraft') ?? ''; } catch { return ''; } });
+  useEffect(() => {
+    try { if (question) localStorage.setItem('tutorspring.questionDraft', question); else localStorage.removeItem('tutorspring.questionDraft'); } catch { /* storage unavailable */ }
+  }, [question]);
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [thread, setThread] = useState<{ id: number; role: string; text: string; sources: { source_id: number; title: string; topic: string }[]; demo_response: boolean }[]>([]);
   const [actionError, setActionError] = useState('');
@@ -117,7 +121,7 @@ export function ChatPage({ user: _user }: { user: User }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Tutor chat</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Tutor chat</h1></BlurFade>
       {actionError ? <ErrorBanner message={actionError} /> : null}
       {config ? (
         <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
@@ -146,7 +150,9 @@ export function ChatPage({ user: _user }: { user: User }) {
             >
               Send
             </button>
-            <p id="ask-hint" className="text-xs text-slate-400">Type a question to enable Send.</p>
+            <p id="ask-hint" className="text-xs text-slate-400">
+              Type a question to enable Send.{question ? ' Your draft is kept on this device until you send it.' : ''}
+            </p>
             <button className="btn-ghost w-full justify-center" onClick={() => { setThread([]); setConversationId(null); }}>New conversation</button>
           </div>
         </Card>
@@ -171,6 +177,10 @@ export function ChatPage({ user: _user }: { user: User }) {
                 </div>
               ))}
               <p className="text-xs text-slate-400">{AI_DISCLAIMER}</p>
+              <button type="button" className="btn-ghost" onClick={() => {
+                const url = URL.createObjectURL(new Blob([conversationToText(thread)], { type: 'text/plain' }));
+                const a = document.createElement('a'); a.href = url; a.download = 'tutor-conversation.txt'; a.click(); URL.revokeObjectURL(url);
+              }}>Download conversation (.txt)</button>
             </div>
           )}
         </Card>

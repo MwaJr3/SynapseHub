@@ -18,3 +18,20 @@ export function syncTone(status: string): string {
     default: return 'bg-rose-950 text-rose-300 border border-rose-800';
   }
 }
+
+export function readQueryParam(name: string): string {
+  try { return new URLSearchParams(window.location.search).get(name) ?? ''; } catch { return ''; }
+}
+
+/** Keeps a filter in the URL so a reload or shared link restores it. */
+export function writeQueryParam(name: string, value: string): void {
+  try {
+    const url = new URL(window.location.href);
+    if (value) url.searchParams.set(name, value); else url.searchParams.delete(name);
+    window.history.replaceState(null, '', url);
+  } catch { /* non-browser env */ }
+}
+
+export function notesToText(lesson: string, notes: { body: string }[]): string {
+  return [`Notes: ${lesson}`, '', ...notes.map((n) => `- ${n.body}`)].join('\n');
+}

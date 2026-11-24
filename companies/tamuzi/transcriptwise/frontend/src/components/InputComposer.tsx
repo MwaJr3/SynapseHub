@@ -52,8 +52,25 @@ export function InputComposer({ compact = false }: { compact?: boolean }) {
         : 'youtube',
   )
   const [url, setUrl] = useState('')
-  const [text, setText] = useState(params.get('sample') ? EXAMPLE_TEXT : '')
-  const [title, setTitle] = useState(params.get('sample') ? EXAMPLE_TITLE : '')
+  const [draft] = useState<{ text?: string; title?: string }>(() => {
+    if (params.get('sample')) return {}
+    try {
+      return JSON.parse(localStorage.getItem('transcriptwise.pasteDraft') || '{}')
+    } catch {
+      return {}
+    }
+  })
+  const [text, setText] = useState(params.get('sample') ? EXAMPLE_TEXT : (draft.text ?? ''))
+  const [title, setTitle] = useState(params.get('sample') ? EXAMPLE_TITLE : (draft.title ?? ''))
+  // A pasted transcript can take minutes to assemble; keep it on this device until it is submitted.
+  useEffect(() => {
+    try {
+      if (text || title) localStorage.setItem('transcriptwise.pasteDraft', JSON.stringify({ text, title }))
+      else localStorage.removeItem('transcriptwise.pasteDraft')
+    } catch {
+      /* storage unavailable or full: the draft just is not kept */
+    }
+  }, [text, title])
   const [language, setLanguage] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -135,6 +152,7 @@ export function InputComposer({ compact = false }: { compact?: boolean }) {
               .slice(0, 8)
               .join(' '),
         })
+        try { localStorage.removeItem('transcriptwise.pasteDraft') } catch { /* storage unavailable */ }
         navigate(`/review/${source.id}`)
       } else {
         if (!file) {
@@ -286,6 +304,8 @@ export function InputComposer({ compact = false }: { compact?: boolean }) {
               <span>
                 {wordCount(text).toLocaleString()} words <span className="dot-separator">·</span>{' '}
                 {text.length.toLocaleString()} characters
+                {text || title ? <span className="dot-separator"> · </span> : null}
+                {text || title ? 'draft kept on this device' : null}
               </span>
               <div>
                 <button

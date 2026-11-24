@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react"
+import { BlurFade } from "../decor"
+import { downloadText, toCsv } from "../lib/export"
 import { api, type IndicatorRow } from "../lib/api"
+
+const TRIAGE_MEANING: Record<string, string> = {
+  unreviewed: "No analyst has looked at this indicator yet.",
+  suspicious: "An analyst thinks it needs a closer look; not confirmed.",
+  "confirmed-malicious": "An analyst has decided this is malicious. This is a human decision, not a feed score.",
+  "false-positive": "An analyst decided this indicator is not a real threat.",
+  "accepted-risk": "Known and deliberately left alone.",
+}
 
 export default function IndicatorsPage() {
   const [rows, setRows] = useState<IndicatorRow[]>([])
-  const [q, setQ] = useState("")
-  const [triage, setTriage] = useState("")
+  const initial = new URLSearchParams(window.location.search)
+  const [q, setQ] = useState(initial.get("q") ?? "")
+  const [triage, setTriage] = useState(initial.get("triage") ?? "")
   const [open, setOpen] = useState<(IndicatorRow & { notes: string }) | null>(null)
   const [notes, setNotes] = useState("")
   const [caseRef, setCaseRef] = useState("")
@@ -12,15 +23,22 @@ export default function IndicatorsPage() {
   const [flash, setFlash] = useState("")
   const load = () => api.indicators(q, triage, "")
     .then((r) => setRows(r.indicators)).catch((e) => setError(String(e)))
-  useEffect(() => { load() }, [q, triage])
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    q ? params.set("q", q) : params.delete("q")
+    triage ? params.set("triage", triage) : params.delete("triage")
+    const qs = params.toString()
+    window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
+    load()
+  }, [q, triage])
 
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Indicators</h1>
-      <div className="notice">
+      <BlurFade><div className="notice">
         Source counts are shown for every indicator. Appearing in feeds raises questions for
         review — it is not proof that an indicator is malicious. Triage is a human judgment.
-      </div>
+      </div></BlurFade>
       <div style={{ display: "flex", gap: "0.75rem" }}>
         <input aria-label="Search value" className="input" placeholder="search value" value={q} onChange={(e) => setQ(e.target.value)} />
         <select className="input" style={{ maxWidth: "14rem" }} value={triage} onChange={(e) => setTriage(e.target.value)}>
@@ -29,9 +47,17 @@ export default function IndicatorsPage() {
           <option>false-positive</option><option>accepted-risk</option>
         </select>
       </div>
+      {triage && TRIAGE_MEANING[triage] && <p className="hint">{triage}: {TRIAGE_MEANING[triage]}</p>}
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
-      {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>No indicators yet — ingest feed data on the Feeds screen.</p> : (
+      {rows.length > 0 && (
+        <div>
+          <button className="btn secondary" onClick={() => downloadText("threatintel-indicators.csv", toCsv(rows.map((r) => ({ ...r, sources: r.sources.join("; ") })), ["value", "kind", "source_count", "sources", "triage", "case_ref", "first_seen", "last_seen"]))}>
+            Export {rows.length} shown as CSV
+          </button>
+        </div>
+      )}
+      {rows.length === 0 ? <p style={{ color: "var(--muted)" }}>{q || triage ? "No indicators match these filters. Clear the search or choose “all triage states”." : "No indicators yet — ingest feed data on the Feeds screen."}</p> : (
         <table className="table card">
           <thead><tr><th scope="col">Value</th><th scope="col">Kind</th><th scope="col">Sources</th><th scope="col">Triage</th><th scope="col">Case</th><th scope="col">Last seen</th></tr></thead>
           <tbody>

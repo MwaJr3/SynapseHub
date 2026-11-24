@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { LICENSE_CAUTION, licenseTone, reuseLabel, translationStatusTone } from './utils';
+import { LICENSE_CAUTION, attributionCsv, licenseTone, readQueryParam, reuseLabel, translationStatusTone, writeQueryParam } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -20,7 +21,8 @@ function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, stri
 }
 
 export function LibraryPage({ user }: { user: User }) {
-  const [q, setQ] = useState('');
+  const [q, setQ] = useState(() => readQueryParam('q'));
+  useEffect(() => { writeQueryParam('q', q); }, [q]);
   const [resources, error, reload] = useAsync(() => api.resources(q), [q]);
   const [selected, setSelected] = useState<number | null>(null);
   const [detail, setDetail] = useState<import('./api').ResourceDetail | null>(null);
@@ -30,13 +32,19 @@ export function LibraryPage({ user }: { user: User }) {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Resource library</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Resource library</h1></BlurFade>
       {error || actionError ? <ErrorBanner message={error || actionError} /> : null}
       {message ? (
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
       <input className="input max-w-md" aria-label="Search titles" placeholder="Search titles…" value={q} onChange={(e) => setQ(e.target.value)} />
       <p className="text-xs text-slate-400">{LICENSE_CAUTION}</p>
+      {resources && resources.length > 0 ? (
+        <button type="button" className="btn-ghost" onClick={() => {
+          const url = URL.createObjectURL(new Blob([attributionCsv(resources)], { type: 'text/csv' }));
+          const a = document.createElement('a'); a.href = url; a.download = 'resource-attributions.csv'; a.click(); URL.revokeObjectURL(url);
+        }}>Download titles, licenses &amp; attributions (CSV)</button>
+      ) : null}
       {!resources ? <Loading /> : resources.length === 0 ? (
         <EmptyState title="No resources found" hint="Try a different search or contribute one in the studio." />
       ) : (
@@ -106,14 +114,27 @@ export function LibraryPage({ user }: { user: User }) {
   );
 }
 
+const STUDIO_DRAFT_KEY = 'openlearn.studioDraft';
+function loadStudioDraft(): Record<string, string> {
+  try { return JSON.parse(localStorage.getItem(STUDIO_DRAFT_KEY) || '{}') as Record<string, string>; } catch { return {}; }
+}
+
 export function StudioPage({ user: _user }: { user: User }) {
-  const [title, setTitle] = useState('');
-  const [license, setLicense] = useState('Unknown');
-  const [creator, setCreator] = useState('');
-  const [sourceUrl, setSourceUrl] = useState('');
-  const [description, setDescription] = useState('');
+  const initial = loadStudioDraft();
+  const [title, setTitle] = useState(initial.title ?? '');
+  const [license, setLicense] = useState(initial.license ?? 'Unknown');
+  const [creator, setCreator] = useState(initial.creator ?? '');
+  const [sourceUrl, setSourceUrl] = useState(initial.sourceUrl ?? '');
+  const [description, setDescription] = useState(initial.description ?? '');
   const [actionError, setActionError] = useState('');
   const [message, setMessage] = useState('');
+  const hasDraft = Boolean(title || creator || sourceUrl || description);
+  useEffect(() => {
+    try {
+      if (hasDraft) localStorage.setItem(STUDIO_DRAFT_KEY, JSON.stringify({ title, license, creator, sourceUrl, description }));
+      else localStorage.removeItem(STUDIO_DRAFT_KEY);
+    } catch { /* storage unavailable */ }
+  }, [title, license, creator, sourceUrl, description, hasDraft]);
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Contributor studio</h1>
@@ -149,6 +170,7 @@ export function StudioPage({ user: _user }: { user: User }) {
           <Field label="Description"><textarea className="input h-20 md:col-span-2" value={description} onChange={(e) => setDescription(e.target.value)} /></Field>
           <button className="btn-primary md:col-span-2 justify-center">Submit entry (rights confirmation required)</button>
         </form>
+        {hasDraft ? <p role="status" className="mt-2 text-xs text-slate-400">Draft saved on this device until you submit.</p> : null}
         <p className="mt-2 text-xs text-slate-400">{LICENSE_CAUTION}</p>
       </Card>
     </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { api, type Asset } from "../lib/api"
+import { downloadText, toCsv } from "../lib/export"
 
 export default function AssetsPage() {
   const [assets, setAssets] = useState<Asset[]>([])
@@ -9,6 +10,13 @@ export default function AssetsPage() {
   const [entry, setEntry] = useState("")
   const [error, setError] = useState("")
   const [flash, setFlash] = useState("")
+  const [q, setQ] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "")
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (q) url.searchParams.set("q", q); else url.searchParams.delete("q")
+    window.history.replaceState(null, "", url)
+  }, [q])
+  const shown = assets.filter((a) => `${a.hostname} ${a.kind} ${a.environment} ${a.owner_name ?? ""} ${a.importance}`.toLowerCase().includes(q.trim().toLowerCase()))
   const load = () => api.assets().then((r) => setAssets(r.assets)).catch((e) => setError(String(e)))
   useEffect(() => { load() }, [])
 
@@ -47,12 +55,19 @@ export default function AssetsPage() {
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {flash && <p role="status" style={{ color: "#1b5e34" }}>{flash}</p>}
       {assets.length === 0
-        ? <p style={{ color: "var(--muted)" }}>No assets recorded yet.</p>
+        ? <p style={{ color: "var(--muted)" }}>No assets recorded yet. Register one above, or authorize a range first.</p>
         : (
+          <>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
+            <input aria-label="Filter assets" className="input" placeholder="Filter by host, owner, environment…" value={q} onChange={(e) => setQ(e.target.value)} style={{ maxWidth: "22rem" }} />
+            <span className="hint">{shown.length} of {assets.length} shown</span>
+            <button className="btn secondary" onClick={() => downloadText("assets.csv", toCsv(shown as unknown as Array<Record<string, unknown>>, ["hostname", "kind", "environment", "owner_name", "importance"]))}>Export CSV</button>
+          </div>
+          {shown.length === 0 && <p style={{ color: "var(--muted)" }}>No assets match “{q}”. Clear the filter to see all {assets.length}.</p>}
           <table className="table card">
             <thead><tr><th scope="col">Hostname</th><th scope="col">Kind</th><th scope="col">Environment</th><th scope="col">Owner</th><th scope="col">Importance</th></tr></thead>
             <tbody>
-              {assets.map((a) => (
+              {shown.map((a) => (
                 <tr key={a.id}>
                   <td>{a.hostname}</td><td>{a.kind}</td><td>{a.environment}</td><td>{a.owner_name || "—"}</td>
                   <td><span className={`badge ${a.importance}`}>{a.importance}</span></td>
@@ -60,6 +75,7 @@ export default function AssetsPage() {
               ))}
             </tbody>
           </table>
+          </>
         )}
     </div>
   )

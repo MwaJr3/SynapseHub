@@ -18,3 +18,24 @@ export function channelTone(channel: string): string {
     default: return 'bg-slate-800 text-slate-300 border border-slate-700';
   }
 }
+
+export function readQueryParam(name: string): string {
+  try { return new URLSearchParams(window.location.search).get(name) ?? ''; } catch { return ''; }
+}
+
+/** Keeps a selection in the URL so a reload or shared link restores it. */
+export function writeQueryParam(name: string, value: string): void {
+  try {
+    const url = new URL(window.location.href);
+    if (value) url.searchParams.set(name, value); else url.searchParams.delete(name);
+    window.history.replaceState(null, '', url);
+  } catch { /* non-browser env */ }
+}
+
+const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+/** Simulated delivery log; contains no phone numbers. */
+export function jobsToCsv(jobs: { provider_uid: string; channel: string; kind: string; state: string; simulator: boolean; body: string }[]): string {
+  return ['reference,channel,kind,state,simulated,body',
+    ...jobs.map((j) => [j.provider_uid, j.channel, j.kind, j.state, j.simulator ? 'yes' : 'no', j.body].map(csvCell).join(','))].join('\n');
+}

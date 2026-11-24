@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { BlurFade } from "../decor"
 import { api, type HashRecordDetail } from "../lib/api"
 
 export default function LookupPage() {
@@ -27,10 +28,10 @@ export default function LookupPage() {
   return (
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>Hash lookup</h1>
-      <div className="notice">
+      <BlurFade><div className="notice">
         Files are hashed locally and are never executed. In demo mode nothing leaves this machine.
         Enabling an external provider sends only the digest, and only when you tick the confirmation below.
-      </div>
+      </div></BlurFade>
       <form className="card" onSubmit={submit} style={{ display: "grid", gap: "0.75rem" }}>
         <input className="input" type="file" accept="*/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} required />
         <label style={{ display: "flex", gap: "0.5rem", alignItems: "center", fontSize: "0.9rem" }}>
@@ -42,7 +43,7 @@ export default function LookupPage() {
           <span id="lookup-hashsight-1-hint" className="hint">Fill in the field above to enable this.</span>
       </form>
       {result && (
-        <div className="card">
+        <BlurFade><div className="card">
           <h2 style={{ marginTop: 0 }}>{result.filename} <span className={`verdict ${result.combined_verdict}`}>{result.combined_verdict}</span></h2>
           <table className="table">
             <tbody>
@@ -55,7 +56,7 @@ export default function LookupPage() {
             MD5/SHA-1 are for indicator compatibility only — not for collision resistance.
           </p>
           <button className="btn" onClick={() => navigate(`/records/${result.id}`)}>Open record</button>
-        </div>
+        </div></BlurFade>
       )}
     </div>
   )

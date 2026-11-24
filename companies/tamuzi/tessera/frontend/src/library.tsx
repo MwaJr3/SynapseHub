@@ -701,9 +701,19 @@ export function LibraryPage({ onOpenConcept }: { onOpenConcept: (id: string) => 
   const sessions = useAsync(() => api.sessions(), []);
 
   const [noteConcept, setNoteConcept] = useState('');
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteBody, setNoteBody] = useState('');
-  const [noteSource, setNoteSource] = useState('');
+  const [noteDraft] = useState<{ title?: string; body?: string; source?: string }>(() => {
+    try { return JSON.parse(localStorage.getItem('tessera.noteDraft') || '{}'); } catch { return {}; }
+  });
+  const [noteTitle, setNoteTitle] = useState(noteDraft.title ?? '');
+  const [noteBody, setNoteBody] = useState(noteDraft.body ?? '');
+  const [noteSource, setNoteSource] = useState(noteDraft.source ?? '');
+  const hasNoteDraft = Boolean(noteTitle || noteBody || noteSource);
+  useEffect(() => {
+    try {
+      if (hasNoteDraft) localStorage.setItem('tessera.noteDraft', JSON.stringify({ title: noteTitle, body: noteBody, source: noteSource }));
+      else localStorage.removeItem('tessera.noteDraft');
+    } catch { /* storage unavailable */ }
+  }, [noteTitle, noteBody, noteSource, hasNoteDraft]);
   const [noteError, setNoteError] = useState<string | null>(null);
   const [noteBusy, setNoteBusy] = useState(false);
 
@@ -948,6 +958,9 @@ export function LibraryPage({ onOpenConcept }: { onOpenConcept: (id: string) => 
               <button type="submit" className="btn" disabled={noteBusy}>
                 {noteBusy ? 'Saving…' : 'Save note'}
               </button>
+              {hasNoteDraft ? (
+                <span role="status" className="ml-3 text-xs text-[color:var(--muted)]">Draft saved on this device until you save the note.</span>
+              ) : null}
             </div>
           </form>
         ) : null}

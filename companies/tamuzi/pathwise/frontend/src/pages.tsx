@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { MODEL_NOTE, confidenceTone, statusTone } from './utils';
+import { MODEL_NOTE, confidenceTone, prePostToCsv, statusTone } from './utils';
+import { BlurFade, NumberTicker } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -176,12 +177,12 @@ export function ReportPage({ user }: { user: User }) {
   const [report, error] = useAsync(() => api.prePost(), []);
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Progress & review</h1>
+      <BlurFade><h1 className="text-xl font-semibold">Progress & review</h1></BlurFade>
       {error ? <ErrorBanner message={error} /> : null}
       {!report ? <Loading /> : (
         <>
           <div className="grid grid-cols-3 gap-3">
-            <StatCard label="Skills compared" value={report.matched_skills} />
+            <BlurFade><StatCard label="Skills compared" value={<NumberTicker value={report.matched_skills} />} /></BlurFade>
             <StatCard label="Average change" value={report.average_delta === null ? '—' : `${report.average_delta} pts`} tone="text-teal-300" />
             <StatCard label="Role" value={user.role} />
           </div>
@@ -212,6 +213,12 @@ export function ReportPage({ user }: { user: User }) {
                 </tbody>
               </table>
             )}
+            {report.rows.length > 0 ? (
+              <button type="button" className="btn-ghost mt-2" onClick={() => {
+                const url = URL.createObjectURL(new Blob([prePostToCsv(report.rows)], { type: 'text/csv' }));
+                const a = document.createElement('a'); a.href = url; a.download = 'my-progress.csv'; a.click(); URL.revokeObjectURL(url);
+              }}>Download my progress (CSV)</button>
+            ) : null}
             <p className="mt-2 text-xs text-slate-400">{report.note}</p>
           </Card>
         </>

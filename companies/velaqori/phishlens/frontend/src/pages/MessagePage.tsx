@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
+import { SEVERITY_MEANING } from "../lib/severity"
 import { api, type MessageDetail } from "../lib/api"
 
 const DISPOSITIONS = ["unreviewed", "phishing", "suspicious", "legitimate", "false-positive"]
@@ -30,6 +31,7 @@ export default function MessagePage() {
     <div style={{ display: "grid", gap: "1rem" }}>
       <h1>{rec.subject || "(untitled)"} <span className={`badge ${rec.worst_severity}`}>{rec.worst_severity}</span></h1>
       <div className="notice">{rec.disclaimer}</div>
+      {SEVERITY_MEANING[rec.worst_severity] && <p className="hint">What “{rec.worst_severity}” means: {SEVERITY_MEANING[rec.worst_severity]}</p>}
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Findings ({rec.findings.length})</h3>
         {rec.findings.length === 0 && <p style={{ color: "var(--muted)" }}>No suspicious patterns matched. That is not proof the message is safe.</p>}

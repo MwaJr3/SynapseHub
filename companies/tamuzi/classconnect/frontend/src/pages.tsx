@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { NO_FAKE_VIDEO, localTime, sessionTone } from './utils';
+import { NO_FAKE_VIDEO, chatToText, localTime, sessionTone } from './utils';
+import { BlurFade } from './decor';
 import { Badge, Card, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -39,10 +40,12 @@ export function SchedulePage({ user }: { user: User }) {
         <div className="rounded-lg border border-emerald-800 bg-emerald-950/60 px-3 py-2 text-sm text-emerald-200">{message}</div>
       ) : null}
       {provider ? (
-        <div className={`rounded-lg border px-3 py-2 text-xs ${provider.available ? 'border-emerald-800 text-emerald-200' : 'border-amber-800 text-amber-200'}`}>
-          <strong>Live audio/video:</strong> {provider.message}
-          <div className="mt-1 text-slate-400">Low-bandwidth policy: {provider.low_bandwidth.video}</div>
-        </div>
+        <BlurFade>
+          <div className={`rounded-lg border px-3 py-2 text-xs ${provider.available ? 'border-emerald-800 text-emerald-200' : 'border-amber-800 text-amber-200'}`}>
+            <strong>Live audio/video:</strong> {provider.message}
+            <div className="mt-1 text-slate-400">Low-bandwidth policy: {provider.low_bandwidth.video}</div>
+          </div>
+        </BlurFade>
       ) : null}
       {canTeach ? (
         <Card title="Create class & session">
@@ -143,6 +146,7 @@ export function RoomPage({ user }: { user: User }) {
   const [attendance] = useAsync(() => (sessionId ? api.attendance(sessionId) : Promise.resolve({ counts: {} as Record<string, number>, total: 0 })), [sessionId]);
   const [text, setText] = useState('');
   const [actionError] = useState('');
+  const [undo, setUndo] = useState<number | null>(null);
 
   return (
     <div className="space-y-4">
@@ -161,11 +165,23 @@ export function RoomPage({ user }: { user: User }) {
                   <Badge tone={m.kind === 'question' ? 'bg-amber-950 text-amber-300 border border-amber-800' : 'bg-slate-800 text-slate-300 border border-slate-700'}>{m.kind}</Badge>{' '}
                   {m.body}
                   {(user.role === 'teacher' || user.role === 'admin') ? (
-                    <button className="btn-ghost ml-2" onClick={async () => { await api.moderate(m.id, 'hide'); reload(); }}>Hide</button>
+                    <button className="btn-ghost ml-2" onClick={async () => { await api.moderate(m.id, 'hide'); setUndo(m.id); reload(); }}>Hide</button>
                   ) : null}
                 </li>
               ))}
             </ul>
+            {undo !== null ? (
+              <p role="status" className="mt-2 text-xs text-slate-300">
+                Message hidden.{' '}
+                <button type="button" className="btn-ghost" onClick={async () => { await api.moderate(undo, 'show'); setUndo(null); reload(); }}>Undo</button>
+              </p>
+            ) : null}
+            <button type="button" className="btn-ghost mt-2" disabled={(messages ?? []).length === 0} onClick={() => {
+              const url = URL.createObjectURL(new Blob([chatToText(messages ?? [])], { type: 'text/plain' }));
+              const a = document.createElement('a');
+              a.href = url; a.download = `session-${sessionId}-chat.txt`; a.click();
+              URL.revokeObjectURL(url);
+            }}>Download chat &amp; questions (.txt)</button>
             <form className="mt-2 flex gap-2" onSubmit={async (e) => {
               e.preventDefault();
               await api.postMessage(sessionId, 'chat', text);

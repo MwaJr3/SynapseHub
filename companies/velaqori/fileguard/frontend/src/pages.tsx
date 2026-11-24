@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Finding, type User, type Workspace } from './api';
 import { formatBytes, formatTimestamp, kindTone, shortHash } from './utils';
+import { BlurFade, NumberTicker } from './decor';
+import { downloadText, toCsv } from './export';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -95,8 +97,8 @@ export function OverviewPage() {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Overview</h1>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Registered files" value={totals.files} />
-        <StatCard label="Integrity scans" value={totals.scans} />
+        <BlurFade><StatCard label="Registered files" value={<NumberTicker value={totals.files} />} /></BlurFade>
+        <BlurFade delayMs={60}><StatCard label="Integrity scans" value={<NumberTicker value={totals.scans} />} /></BlurFade>
         <StatCard label="Baselines" value={totals.baselines} />
         <StatCard label="Open findings" value={(findings ?? []).filter((f) => !f.reviewed).length} tone="text-rose-300" />
       </div>
@@ -507,6 +509,23 @@ export function FindingsPage() {
     [selected],
   );
   const [actionError] = useState('');
+  const initial = new URLSearchParams(window.location.search);
+  const [kindFilter, setKindFilter] = useState(initial.get('kind') ?? 'all');
+  const [statusFilter, setStatusFilter] = useState(initial.get('status') ?? 'all');
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    for (const [k, v] of [['kind', kindFilter], ['status', statusFilter]] as Array<[string, string]>) {
+      if (v === 'all') params.delete(k);
+      else params.set(k, v);
+    }
+    const qs = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
+  }, [kindFilter, statusFilter]);
+  const shown = (findings ?? []).filter(
+    (f) =>
+      (kindFilter === 'all' || f.kind === kindFilter) &&
+      (statusFilter === 'all' || (statusFilter === 'reviewed') === f.reviewed),
+  );
 
   return (
     <div className="space-y-4">
@@ -521,7 +540,36 @@ export function FindingsPage() {
         <EmptyState title="No findings" hint="Findings appear when a scan detects changes, missing or new files." />
       ) : (
         <div className="space-y-3">
-          {findings.map((f) => (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <select className="input w-auto" aria-label="Filter by kind" value={kindFilter} onChange={(e) => setKindFilter(e.target.value)}>
+              <option value="all">All kinds</option>
+              <option value="changed">Changed</option>
+              <option value="missing">Missing</option>
+              <option value="new">New</option>
+            </select>
+            <select className="input w-auto" aria-label="Filter by review status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+              <option value="all">Any status</option>
+              <option value="unreviewed">Not reviewed</option>
+              <option value="reviewed">Reviewed</option>
+            </select>
+            <span className="text-slate-400">Showing {shown.length} of {findings.length}</span>
+            <button
+              className="btn-ghost"
+              disabled={shown.length === 0}
+              onClick={() =>
+                downloadText(
+                  'fileguard-findings.csv',
+                  toCsv(shown as unknown as Array<Record<string, unknown>>, ['display_name', 'kind', 'severity', 'reviewed', 'expected_sha256', 'observed_sha256', 'notes', 'created_at']),
+                )
+              }
+            >
+              Export CSV
+            </button>
+          </div>
+          {shown.length === 0 ? (
+            <EmptyState title="No findings match these filters" hint="Set both filters back to All to see every finding." />
+          ) : null}
+          {shown.map((f) => (
             <Card key={f.id}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type CalcResult, type User } from './api';
 import { formatValue } from './utils';
+import { BlurFade } from './decor';
+import { downloadText, toCsv } from './export';
 import { Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading } from './ui';
 
 type ToolId = 'ohm' | 'power' | 'network' | 'divider' | 'two-mesh' | 'convert';
@@ -94,6 +96,9 @@ export function CalculatorPage() {
       </div>
       {error ? <ErrorBanner message={error} /> : null}
       <Card title={TOOLS.find((t) => t.id === tool)?.label ?? ''}>
+        <form
+          onSubmit={(e) => e.preventDefault()}
+        >
         {tool === 'ohm' ? (
           <div className="grid gap-3 md:grid-cols-5">
             <Field label="Solve for">
@@ -107,6 +112,7 @@ export function CalculatorPage() {
             {ohmKnown !== 'i' ? <NumField label="Current (A)" value={f.current_a ?? ''} onChange={set('current_a')} /> : null}
             {ohmKnown !== 'r' ? <NumField label="Resistance (ohm)" value={f.resistance_ohm ?? ''} onChange={set('resistance_ohm')} /> : null}
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() => run('ohm', { known: ohmKnown, voltage_v: num('voltage_v'), current_a: num('current_a'), resistance_ohm: num('resistance_ohm') })}
             >
@@ -127,6 +133,7 @@ export function CalculatorPage() {
             {powerKnown !== 'vr' ? <NumField label="Current (A)" value={f.current_a ?? ''} onChange={set('current_a')} /> : null}
             {powerKnown !== 'ir' ? <NumField label="Resistance (ohm)" value={f.resistance_ohm ?? ''} onChange={set('resistance_ohm')} /> : null}
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() => run('power', { known: powerKnown, voltage_v: num('voltage_v'), current_a: num('current_a'), resistance_ohm: num('resistance_ohm') })}
             >
@@ -151,6 +158,7 @@ export function CalculatorPage() {
               />
             </Field>
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() => {
                 const list = (f.resistors ?? '')
@@ -170,6 +178,7 @@ export function CalculatorPage() {
             <NumField label="R1 (ohm)" value={f.r1 ?? ''} onChange={set('r1')} />
             <NumField label="R2 (ohm)" value={f.r2 ?? ''} onChange={set('r2')} />
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() => run('divider', { supply_v: num('supply_v'), r1: num('r1'), r2: num('r2') })}
             >
@@ -185,6 +194,7 @@ export function CalculatorPage() {
             <NumField label="R2 (ohm)" value={f.r2 ?? ''} onChange={set('r2')} />
             <NumField label="R3 (ohm)" value={f.r3 ?? ''} onChange={set('r3')} />
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() => run('two-mesh', { v1: num('v1'), v2: num('v2'), r1: num('r1'), r2: num('r2'), r3: num('r3') })}
             >
@@ -211,6 +221,7 @@ export function CalculatorPage() {
               <input className="input" placeholder="ohm" value={f.to_unit ?? ''} onChange={(e) => set('to_unit')(e.target.value)} />
             </Field>
             <button
+              type="submit"
               className="btn-primary justify-center"
               onClick={() =>
                 run('convert', { value: num('value'), kind: f.kind ?? 'V', from_unit: f.from_unit, to_unit: f.to_unit })
@@ -220,6 +231,8 @@ export function CalculatorPage() {
             </button>
           </div>
         ) : null}
+        <p className="mt-2 text-xs text-slate-400">Tip: press Enter in any field to calculate.</p>
+        </form>
       </Card>
       {result ? (
         <ResultPanel
@@ -254,6 +267,25 @@ export function SavedPage() {
         <EmptyState title="Nothing saved yet" hint="Calculate something and use 'Save this calculation'." />
       ) : (
         <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() => downloadText('saved-calculations.json', JSON.stringify(saved, null, 2), 'application/json')}
+            >
+              Export JSON
+            </button>
+            <button
+              type="button"
+              className="btn-ghost"
+              onClick={() =>
+                downloadText('saved-calculations.csv', toCsv(saved.map((s) => ({ name: s.name, kind: s.kind, saved: s.created_at, inputs: JSON.stringify(s.inputs), result: JSON.stringify(s.result) })), ['name', 'kind', 'saved', 'inputs', 'result']))
+              }
+            >
+              Export CSV
+            </button>
+            <span className="text-xs text-slate-400">Your saved work is yours to take with you.</span>
+          </div>
           {saved.map((s) => (
             <div key={s.id} className="card flex flex-wrap items-center justify-between gap-2">
               <div>
@@ -283,11 +315,14 @@ export function SettingsPage({ user }: { user: User }) {
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Settings</h1>
+      <BlurFade>
       <Card title="Account">
         <p className="text-sm text-slate-300">
           {user.display_name} · <span className="text-slate-400">{user.email}</span>
         </p>
       </Card>
+      </BlurFade>
+      <BlurFade delayMs={80}>
       <Card title="How results are presented">
         <ul className="list-inside list-disc space-y-1 text-sm text-slate-300">
           <li>Every calculation shows its working steps and formulas.</li>
@@ -296,6 +331,7 @@ export function SettingsPage({ user }: { user: User }) {
           <li>The calculation core is the tested Python module vendored from the portfolio's circuit_math.py.</li>
         </ul>
       </Card>
+      </BlurFade>
     </div>
   );
 }

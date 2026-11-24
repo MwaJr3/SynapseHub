@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams } from "react-router-dom"
 import { api, type AssignmentRow, type TemplateView } from "../lib/api"
 
@@ -11,6 +11,34 @@ export default function SimulationPage() {
   const [result, setResult] = useState<{ score: number; total: number } | null>(null)
   const [flash, setFlash] = useState("")
   const [error, setError] = useState("")
+  const [saved, setSaved] = useState("")
+  const draftKey = `cyberaware-draft-${assignmentId}`
+  const restored = useRef(false)
+
+  // Restore an unfinished draft (answers + reflection) kept on this device only.
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(draftKey)
+      if (raw) {
+        const d = JSON.parse(raw) as { answers?: number[]; reflection?: string }
+        if (Array.isArray(d.answers)) setAnswers(d.answers)
+        if (typeof d.reflection === "string") setReflection(d.reflection)
+      }
+    } catch { /* storage unavailable: start fresh */ }
+    restored.current = true
+  }, [draftKey])
+
+  // Autosave after a short pause and say so, so nothing is lost on a refresh or a dropped connection.
+  useEffect(() => {
+    if (!restored.current || (answers.length === 0 && reflection === "")) return
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(draftKey, JSON.stringify({ answers, reflection }))
+        setSaved("Draft saved on this device")
+      } catch { setSaved("") }
+    }, 600)
+    return () => clearTimeout(t)
+  }, [answers, reflection, draftKey])
 
   useEffect(() => {
     api.assignments().then(async (r) => {
@@ -26,6 +54,8 @@ export default function SimulationPage() {
         setResult(await api.quizAttempt(Number(assignmentId), answers))
       }
       await api.complete(Number(assignmentId), reflection)
+      try { localStorage.removeItem(draftKey) } catch { /* ignore */ }
+      setSaved("")
       setFlash("Completion recorded. Thank you — your reflection is stored with the exercise.")
     } catch (e) {
       setError(String(e))
@@ -65,6 +95,7 @@ export default function SimulationPage() {
         <h3 style={{ margin: 0 }}>Reflection</h3>
         <textarea className="input" rows={3} placeholder="What signals helped you recognize this simulation?"
           value={reflection} onChange={(e) => setReflection(e.target.value)} />
+        {saved && <p role="status" style={{ margin: 0, fontSize: "0.85rem", color: "var(--muted)" }}>{saved}. You can leave and come back.</p>}
         <button className="btn" onClick={finish}>Complete exercise</button>
         {flash && <p role="status" style={{ color: "#1b5e34", margin: 0 }}>{flash}</p>}
       </div>

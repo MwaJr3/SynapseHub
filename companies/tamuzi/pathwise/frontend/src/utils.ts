@@ -16,3 +16,11 @@ export function confidenceTone(confidence: string): string {
 
 export const MODEL_NOTE =
   'Mastery is a transparent weighted-evidence estimate (not machine learning). Uncertainty is shown when evidence is limited.';
+
+const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+/** Learner-owned copy of the pre/post evidence table. */
+export function prePostToCsv(rows: { skill_id: number; pre: number | null; post: number | null; delta: number | null; meets_threshold_now: boolean }[]): string {
+  return ['skill_id,pre,post,change,meets_threshold',
+    ...rows.map((r) => [r.skill_id, r.pre, r.post, r.delta, r.meets_threshold_now ? 'yes' : 'not yet'].map(csvCell).join(','))].join('\n');
+}

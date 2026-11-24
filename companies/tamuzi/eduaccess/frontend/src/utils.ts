@@ -22,3 +22,10 @@ export const LEDGER_RULE =
 
 export const FAIRNESS_RULE =
   'Consequential decisions require recorded human review — no opaque scoring, sponsors never see applicant details.';
+
+const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+export function applicationsToCsv(apps: { id: unknown; plan_id: unknown; status: unknown; statement?: unknown; decision_reason?: unknown }[]): string {
+  const rows = apps.map((a) => [a.id, a.plan_id, a.status, a.statement, a.decision_reason].map(csvCell).join(','));
+  return ['application,plan,status,statement,decision_reason', ...rows].join('\n');
+}

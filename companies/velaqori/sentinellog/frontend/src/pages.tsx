@@ -8,6 +8,8 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { BlurFade, NumberTicker } from './decor';
+import { downloadText, toCsv } from './export';
 import { api, ApiError, type Dataset, type Report, type Rule, type User } from './api';
 import { eventTypeTone, formatBytes, formatTimestamp, severityTone } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
@@ -106,8 +108,8 @@ export function OverviewPage() {
       </div>
       {findingsError || timelineError ? <ErrorBanner message={findingsError || timelineError || ''} /> : null}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Total events analyzed" value={counts.total} />
-        <StatCard label="Datasets imported" value={datasets.length} />
+        <BlurFade><StatCard label="Total events analyzed" value={<NumberTicker value={counts.total} />} /></BlurFade>
+        <BlurFade delayMs={60}><StatCard label="Datasets imported" value={<NumberTicker value={datasets.length} />} /></BlurFade>
         <StatCard label="Parsing errors" value={counts.errors} tone="text-amber-300" />
         <StatCard label="Suspicious patterns" value={counts.patterns} tone="text-rose-300" />
       </div>
@@ -318,8 +320,17 @@ export function EventsPage() {
   const [datasets, datasetsError] = useAsync(() => api.datasets(), []);
   const [datasetId, setDatasetId] = useState<number | null>(null);
   const selected = datasetId ?? datasets?.[0]?.id ?? null;
-  const [query, setQuery] = useState('');
-  const [eventType, setEventType] = useState('');
+  const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get('q') ?? '');
+  const [eventType, setEventType] = useState(() => new URLSearchParams(window.location.search).get('type') ?? '');
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (query) params.set('q', query);
+    else params.delete('q');
+    if (eventType) params.set('type', eventType);
+    else params.delete('type');
+    const qs = params.toString();
+    window.history.replaceState(null, '', window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash);
+  }, [query, eventType]);
   const [page, setPage] = useHashPage();
   const [expanded, setExpanded] = useState<number | null>(null);
   const [result, error, reload] = useAsync(
@@ -377,10 +388,24 @@ export function EventsPage() {
           </select>
         </Field>
       </div>
+      {result && result.events.length > 0 ? (
+        <div className="flex items-center gap-3 text-sm text-slate-400">
+          <span>{result.total} matching events; showing page {page} of {pages}.</span>
+          <button
+            className="btn-ghost"
+            onClick={() => downloadText('sentinellog-events-page.csv', toCsv(result.events as unknown as Array<Record<string, unknown>>, ['timestamp', 'event_type', 'username', 'source_ip', 'source_system', 'message']))}
+          >
+            Export this page (CSV)
+          </button>
+        </div>
+      ) : null}
       {!result ? (
         <Loading />
       ) : result.events.length === 0 ? (
-        <EmptyState title="No matching events" hint="Adjust the filters or pick another dataset." />
+        <EmptyState
+          title="No matching events"
+          hint={query || eventType ? 'Clear the search box and set Event type to All, or pick another dataset.' : 'Adjust the filters or pick another dataset.'}
+        />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-slate-800">
           <table className="min-w-full">

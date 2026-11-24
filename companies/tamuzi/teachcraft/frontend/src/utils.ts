@@ -9,3 +9,10 @@ export function workflowTone(status: string): string {
 
 export const EXPORT_NOTE =
   'Static HTML export preserves text and layout; interactive question behaviour does not survive export.';
+
+const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+
+/** Prompts and choices only; correct answers are never sent to the client. */
+export function questionsToCsv(rows: { kind: string; prompt: string; choices: string[] }[]): string {
+  return ['kind,prompt,choices', ...rows.map((q) => [q.kind, q.prompt, q.choices.join(' | ')].map(csvCell).join(','))].join('\n');
+}

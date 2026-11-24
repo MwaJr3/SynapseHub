@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { downloadText, toCsv } from "../lib/export"
 import { api } from "../lib/api"
 
 export default function AuditPage() {
@@ -14,6 +15,8 @@ export default function AuditPage() {
       {note && <div className="notice">{note}</div>}
       {error && <p role="alert" style={{ color: "#9b2226" }}>{error}</p>}
       {events.length === 0 ? <p style={{ color: "var(--muted)" }}>No audit entries yet.</p> : (
+        <>
+        <div><button className="btn secondary" onClick={() => downloadText("incidentflow-audit.csv", toCsv(events, ["at", "actor", "action", "detail"]))}>Export CSV</button></div>
         <table className="table card">
           <thead><tr><th scope="col">Time</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Detail</th></tr></thead>
           <tbody>
@@ -22,6 +25,7 @@ export default function AuditPage() {
             ))}
           </tbody>
         </table>
+        </>
       )}
     </div>
   )

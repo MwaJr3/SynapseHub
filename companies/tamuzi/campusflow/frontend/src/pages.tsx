@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type User } from './api';
-import { attendanceTone, formatDate, letterTone } from './utils';
+import { attendanceTone, formatDate, letterTone, transcriptToCsv } from './utils';
+import { BlurFade, NumberTicker } from './decor';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Field, Loading, StatCard } from './ui';
 
 function useAsync<T>(loader: () => Promise<T>, deps: unknown[]): [T | null, string, () => void] {
@@ -46,10 +47,10 @@ export function OverviewPage({ user }: { user: User }) {
       <h1 className="text-xl font-semibold">Overview</h1>
       <DemoBanner demo={overview.demo_data} />
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Students" value={overview.students} />
-        <StatCard label="Sections" value={overview.sections} />
-        <StatCard label="Active enrollments" value={overview.enrollments} />
-        <StatCard label="Grades recorded" value={overview.grades} />
+        <BlurFade><StatCard label="Students" value={<NumberTicker value={overview.students} />} /></BlurFade>
+        <BlurFade delayMs={80}><StatCard label="Sections" value={<NumberTicker value={overview.sections} />} /></BlurFade>
+        <BlurFade delayMs={160}><StatCard label="Active enrollments" value={<NumberTicker value={overview.enrollments} />} /></BlurFade>
+        <BlurFade delayMs={240}><StatCard label="Grades recorded" value={<NumberTicker value={overview.grades} />} /></BlurFade>
       </div>
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <StatCard label="Courses" value={overview.courses} />
@@ -475,6 +476,26 @@ export function TranscriptsPage() {
             <StatCard label="Credits" value={transcript.total_credits} />
             <StatCard label="Computed" value={formatDate(transcript.computed_at)} />
           </div>
+          <p className="mb-3 text-sm text-slate-300">
+            How this GPA is worked out: each course counts its credit hours times its grade points (A=4, B=3, C=2, D=1, F=0), added up and divided by total credits. Only final grades are included; drafts are left out.
+          </p>
+          {transcript.lines.length > 0 ? (
+            <button
+              type="button"
+              className="btn mb-3"
+              onClick={() => {
+                const blob = new Blob([transcriptToCsv(transcript.lines)], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `transcript-${transcript.enrollment_no}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+            >
+              Download transcript (CSV)
+            </button>
+          ) : null}
           {transcript.lines.length === 0 ? (
             <EmptyState title="No final grades yet" hint="Transcripts are computed from final grades only." />
           ) : (
