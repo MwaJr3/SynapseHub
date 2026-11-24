@@ -1507,6 +1507,74 @@ const gradientOpposedHues = {
   },
 };
 
+/** Rule 50 — a button whose only content is an icon and which has no accessible name. */
+const iconButtonUnnamed = {
+  id: 'icon-button-unnamed',
+  pattern: 'P66',
+  severity: 'P1',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Icon-only button has no accessible name',
+  why: 'A screen reader announces "button" and nothing else, and a voice-control user has nothing to say. An icon is not a label.',
+  fix: 'Add `aria-label="Close"` (or visually hidden text) to the button, and keep a `title`/tooltip for sighted users.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    const re = /<button\b([^>]*)>\s*(<(?:svg|i|[A-Z][A-Za-z]*Icon|[A-Z][a-z]+)\b[^>]*?(?:\/>|>[\s\S]*?<\/(?:svg|i)>))\s*<\/button>/g;
+    let m;
+    while ((m = re.exec(text))) {
+      const attrs = m[1];
+      if (/aria-label|aria-labelledby|\btitle\s*=/.test(attrs)) continue;
+      if (/sr-only|visually-hidden/.test(m[0])) continue;
+      out.push(finding(iconButtonUnnamed, file, text, m.index, { detail: 'button contains only an icon' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 51 — a toast container that is not a live region. */
+const toastNoLiveRegion = {
+  id: 'toast-no-live-region',
+  pattern: 'P40',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Toast is not announced to screen readers',
+  why: 'A toast that appears and vanishes is invisible to a screen reader unless its container is a live region. The person never learns the action worked or failed.',
+  fix: 'Give the toast container `role="status"` (or `role="alert"` for errors) and `aria-live`, and keep it mounted so the update is announced.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    const out = [];
+    const re = /<(div|section|ul|ol|aside)\b([^>]*(?:className|class)\s*=\s*["'{`][^>]*\btoasts?\b[^>]*)>/gi;
+    let m;
+    while ((m = re.exec(text))) {
+      if (/role\s*=|aria-live/.test(m[2])) continue;
+      out.push(finding(toastNoLiveRegion, file, text, m.index, { detail: 'toast container without role or aria-live' }));
+    }
+    return out;
+  },
+};
+
+/** Rule 52 — draggable elements with no keyboard path. */
+const draggableNoKeyboard = {
+  id: 'draggable-no-keyboard',
+  pattern: 'P19',
+  severity: 'P2',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Drag-and-drop has no keyboard alternative',
+  why: 'Dragging needs a pointer. Keyboard and switch users cannot reorder or move the item at all, and WCAG 2.5.7 requires a single-pointer alternative.',
+  fix: 'Add move up/down buttons or an arrow-key handler (`onKeyDown`) alongside `draggable`, and announce the new position.',
+  check(file, text) {
+    if (!is(file, 'jsx', 'html')) return [];
+    if (/onKeyDown|keydown|aria-grabbed|Move (?:up|down|to)|aria-label=["'][^"']*move/i.test(text)) return [];
+    const out = [];
+    const m = /\bdraggable(?:\s*=\s*(?:\{true\}|["']true["']))?(?=[\s>\/])/.exec(text);
+    if (m) out.push(finding(draggableNoKeyboard, file, text, m.index, { detail: 'draggable with no key handler in the file' }));
+    return out;
+  },
+};
+
 export const RULES = [
   focusRingRemoved,
   noFocusStyle,
@@ -1556,6 +1624,9 @@ export const RULES = [
   zindexWithoutPosition,
   aiClicheCopy,
   gradientOpposedHues,
+  iconButtonUnnamed,
+  toastNoLiveRegion,
+  draggableNoKeyboard,
 ];
 
 export { NON_TEXT_RATIO, SMALL_TEXT_RATIO, LARGE_TEXT_RATIO, contrast, blend };

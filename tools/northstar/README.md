@@ -13,7 +13,7 @@ are complementary and both are kept, behind one entry point:
 
 | Layer | Where | Reached by |
 | --- | --- | --- |
-| Severity-ranked rules (48 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Severity-ranked rules (51 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
 | Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
 
 It holds to a rule most design tooling breaks: **it does not claim to have seen

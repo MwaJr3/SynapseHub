@@ -6,6 +6,9 @@ All notable changes to the Northstar UX Engine. Format follows
 
 ## [Unreleased]
 
+### Added
+- Three rules from a second pass over the videos: `icon-button-unnamed` (P66), `toast-no-live-region` (P40), `draggable-no-keyboard` (P19). 51 rules in total.
+
 ## [1.1.0] — 2026-11-20
 
 ### Added

@@ -188,3 +188,11 @@ test('the video-patterns fixture finds the planted defects and spares the correc
   assert.equal(byId('switch-without-checked').occurrences ?? 1, 1, 'the switch with aria-checked is fine');
   assert.equal(byId('invalid-on-load').occurrences ?? 1, 1, ':user-invalid is fine');
 });
+
+test('the second-pass fixture finds icon buttons, silent toasts and mouse-only drag', () => {
+  const project = scan('second-pass');
+  assert.deepEqual(ids(project), ['draggable-no-keyboard', 'icon-button-unnamed', 'toast-no-live-region']);
+  const byId = (id) => project.findings.find((finding) => finding.id === id);
+  assert.equal(byId('icon-button-unnamed').occurrences ?? 1, 1, 'the labelled icon button is fine');
+  assert.equal(byId('toast-no-live-region').occurrences ?? 1, 1, 'the role=status toast is fine');
+});
