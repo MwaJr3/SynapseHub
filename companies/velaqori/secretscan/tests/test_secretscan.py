@@ -64,3 +64,13 @@ def test_scope_validation(tmp_path):
     import pytest
     with pytest.raises(ValueError):
         scan(tmp_path / "missing")
+
+
+def test_root_under_skipped_dir_name_is_still_scanned(tmp_path):
+    """Regression: a root inside e.g. 'build/' must not be silently skipped."""
+    from app.scanner import scan
+    root = tmp_path / "build" / "proj"
+    root.mkdir(parents=True)
+    (root / "settings.py").write_text('password = "hunter2hunter2"\n')
+    report = scan(root)
+    assert report.files_scanned >= 1

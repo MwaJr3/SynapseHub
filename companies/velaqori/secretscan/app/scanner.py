@@ -53,7 +53,7 @@ def scan(root: str | Path, rules: tuple[Rule, ...] = DEFAULT_RULES,
     exts = extensions if extensions is not None else DEFAULT_EXTENSIONS
     report = ScanReport(root=str(base))
     for path in sorted(base.rglob("*")):
-        if any(part in SKIP_DIRS for part in path.parts):
+        if any(part in SKIP_DIRS for part in path.relative_to(base).parts):
             continue
         if path.is_dir():
             continue
