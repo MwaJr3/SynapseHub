@@ -192,12 +192,12 @@ describe('seed catalogue integrity', () => {
         appSourceUrl(TAMUZI.has(product.slug) ? 'tamuzi' : 'velaqori', product.slug),
       );
       expect(product.repositoryUrl).toMatch(
-        /^https:\/\/github\.com\/MwaJr3\/SynapseHub\/tree\/main\/companies\/(velaqori|tamuzi)\//,
+        /^https:\/\/github\.com\/MwaJr3\/SynapseHub\/tree\/HEAD\/companies\/(velaqori|tamuzi)\//,
       );
       // The linked directory must exist in this checkout, so the Source Code
       // button never opens a 404.
       const inRepo = (product.repositoryUrl ?? '').replace(
-        'https://github.com/MwaJr3/SynapseHub/tree/main/',
+        'https://github.com/MwaJr3/SynapseHub/tree/HEAD/',
         '',
       );
       expect(existsSync(join(REPO, inRepo))).toBe(true);
