@@ -124,6 +124,14 @@ const REGISTRY_META = {
   },
 };
 
+/**
+ * Deployments the owner asked for while everything else stays paused (2026-10-29,
+ * docs/deployment/README.md). Each one is live configuration, not history.
+ */
+const DEPLOYS = {
+  'company-platform': [{ target: 'vercel-site', project: 'company-platform', rootDirectory: 'company-platform' }],
+};
+
 const DISPLAY_NAME = {
   'companies/velaqori/incidentflow-cli': 'IncidentFlow (CLI)',
   'companies/velaqori/netscope-cli': 'NetScope (CLI)',
@@ -286,7 +294,7 @@ function build() {
         block: blockFor(path),
         interface: surfaces,
         deployment: deploymentFor(path, surfaces),
-        deploys: [],
+        deploys: DEPLOYS[path] ?? [],
       };
       const port = devPort(path);
       if (port !== undefined) entry.devPort = port;
@@ -319,7 +327,7 @@ function build() {
       blocks:
         'A port is allocated once, by the block of its kind. Never reuse a number, even after a project is archived.',
       deployment:
-        'Nothing deploys: hosting configuration was removed on 2026-10-28. pausedDeployment records what used to be live, for the redeployment; it is not configuration.',
+        'Only the projects listed in `deploys` are deployed (company-platform, on the owner\'s request, 2026-10-29); hosting configuration for everything else was removed on 2026-10-28. pausedDeployment records what used to be live, for the redeployment; it is not configuration.',
       generatedBy: 'node scripts/build-registry.mjs — edit REGISTRY_META there, not this file.',
       challenges:
         'The 60 interactive prototypes live in challenges/, a self-contained collection with its own package boundary and one @challenges alias. Not a deployable project: it is content the portfolio site renders. Prepared for extraction to its own branch (docs/branch-splits.md).',

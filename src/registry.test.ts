@@ -48,7 +48,7 @@ interface ProjectEntry {
   /** Port block this project's port was allocated from — recorded, not inferred. */
   block: string;
   interface: string[];
-  deploys: PausedDeployment[];
+  deploys: (PausedDeployment & { rootDirectory?: string })[];
   pausedDeployment?: PausedDeployment;
   devPort?: number;
   package?: string;
@@ -214,13 +214,14 @@ describe('the registry and the tree agree', () => {
 
   it('deploys nothing but what the owner asked for, because deployment is paused', () => {
     const stillDeploying = registry.projects.filter((entry) => entry.deploys.length > 0);
-    expect(stillDeploying.map((entry) => entry.path)).toEqual([]);
+    expect(stillDeploying.map((entry) => entry.path)).toEqual(['company-platform']);
     // A manifest is only allowed where the owner asked for a deployment, and that project
     // must exist in the registry and carry no paused-deployment history.
     for (const manifest of DEPLOYED_ON_REQUEST) {
       const entry = registry.projects.find((project) => manifest.startsWith(`${project.path}/`));
       expect(entry, `${manifest} has no registry project`).toBeDefined();
       expect(entry?.pausedDeployment).toBeUndefined();
+      expect(entry?.deploys.length).toBeGreaterThan(0);
     }
   });
 
