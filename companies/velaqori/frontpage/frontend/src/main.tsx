@@ -5,6 +5,7 @@ import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import './styles/tokens.css';
 import './styles/app.css';
+import './decor/decor.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(

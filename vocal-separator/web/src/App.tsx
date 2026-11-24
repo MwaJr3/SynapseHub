@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type DragEvent, type FormEvent } from 'react';
+import { BlurFade } from './decor';
 import { api, loadSession, saveSession } from './api';
 import { StemMixer } from './components/StemMixer';
 import {
@@ -657,7 +658,7 @@ export default function App() {
         <main className="page auth-layout">
           <section className="hero-panel">
             <p className="eyebrow">Upload → analyze → separate → practice → export</p>
-            <h1>Separate the song. <span>Inspect the voices.</span></h1>
+            <BlurFade><h1>Separate the song. <span>Inspect the voices.</span></h1></BlurFade>
             <p className="hero-copy">
               Turn a mixed recording into synchronized music stems, examine the evidence behind
               detected vocal lines, solo what you need, and download only the parts the system can

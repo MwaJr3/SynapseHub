@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { BlurFade } from '../decor';
 import { profile, configuredLinks, hasContactEmail } from '@/config/profile';
 import { engineeringProcess, technicalFocus } from '@/config/nav';
 import { featuredProjects, projects } from '@/data/projects';
@@ -39,13 +40,13 @@ export default function HomePage() {
                 {profile.role}
               </p>
 
-              <h1 className="text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-fg sm:text-5xl lg:text-[3.4rem]">
+              <BlurFade><h1 className="text-[2.1rem] font-semibold leading-[1.08] tracking-tight text-fg sm:text-5xl lg:text-[3.4rem]">
                 Building Software.
                 <br />
                 Understanding Security.
                 <br />
                 <span className="text-accent">Solving Real Problems.</span>
-              </h1>
+              </h1></BlurFade>
 
               <p className="mt-6 max-w-xl text-base leading-relaxed text-fg-muted sm:text-[1.08rem]">
                 {profile.supportingMessage}

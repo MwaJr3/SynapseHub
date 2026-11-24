@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { BlurFade } from '../decor';
 import { Bookmark, Compass, Keyboard, LayoutGrid, Rss, Sparkles } from 'lucide-react';
 import { Logo } from '../components/Brand';
 import { useSession } from '../state/session';
@@ -33,7 +34,7 @@ export function Landing() {
       <main id="main">
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
-            <h1 id="hero-title">Your personalized front page for tech content.</h1>
+            <BlurFade><h1 id="hero-title">Your personalized front page for tech content.</h1></BlurFade>
             <p className="hero-lede">Follow the blogs, newsletters and changelogs you care about. Frontpage pulls them into one calm place to read, search and catch up.</p>
             <div className="hero-cta">
               {signedIn ? <Link className="btn btn-primary btn-lg" to="/app">Open Frontpage</Link> : <><Link className="btn btn-primary btn-lg" to="/sign-up">Sign up free</Link><GuestButton /></>}

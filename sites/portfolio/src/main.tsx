@@ -1,6 +1,7 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/jetbrains-mono';
 import './styles/tokens.css';
+import './decor/decor.css';
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

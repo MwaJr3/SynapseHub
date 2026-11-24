@@ -25,7 +25,7 @@ export function targets() {
       if (fs.existsSync(dir)) found.push(dir);
     }
   }
-  for (const extra of ['src/components/decor', 'company-platform/src/components/decor', 'contextvault/components/decor', 'challenges/src/components/decor', 'vocal-separator/web/src/decor']) {
+  for (const extra of ['src/components/decor', 'company-platform/src/components/decor', 'contextvault/components/decor', 'challenges/src/components/decor', 'vocal-separator/web/src/decor', 'sites/portfolio/src/decor', 'companies/velaqori/frontpage/frontend/src/decor']) {
     const dir = path.join(root, extra);
     if (fs.existsSync(dir)) found.push(dir);
   }
