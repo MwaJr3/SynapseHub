@@ -27,6 +27,12 @@ interface PausedDeployment {
   rootDirectory: string;
 }
 
+/**
+ * Projects deployed on the owner's explicit request while everything else stays paused.
+ * Each entry is the only manifest that project may ship, as `<path>/vercel.json`.
+ */
+const DEPLOYED_ON_REQUEST = new Set(['company-platform/vercel.json']);
+
 interface ProjectEntry {
   slug: string;
   name: string;
@@ -206,9 +212,16 @@ describe('the registry and the tree agree', () => {
     }
   });
 
-  it('deploys nothing, because deployment is paused', () => {
+  it('deploys nothing but what the owner asked for, because deployment is paused', () => {
     const stillDeploying = registry.projects.filter((entry) => entry.deploys.length > 0);
     expect(stillDeploying.map((entry) => entry.path)).toEqual([]);
+    // A manifest is only allowed where the owner asked for a deployment, and that project
+    // must exist in the registry and carry no paused-deployment history.
+    for (const manifest of DEPLOYED_ON_REQUEST) {
+      const entry = registry.projects.find((project) => manifest.startsWith(`${project.path}/`));
+      expect(entry, `${manifest} has no registry project`).toBeDefined();
+      expect(entry?.pausedDeployment).toBeUndefined();
+    }
   });
 
   it('keeps the nine former deployments as history, with a root directory', () => {
@@ -236,6 +249,9 @@ describe('the registry and the tree agree', () => {
     // The root is included deliberately: a config there deploys the entire repository
     // as one project, which is a larger claim than any single project's config.
     const MANIFESTS = new Set(['vercel.json', 'netlify.toml', 'wrangler.toml', 'now.json']);
+    // The one deliberate exception (see DEPLOYED_ON_REQUEST): the owner asked for the company
+    // website to be deployed on 2026-10-29 (docs/deployment/README.md); its manifest only scopes
+    // rebuilds with an ignoreCommand. Anything else added here still fails this test.
     const found: string[] = [];
 
     const visit = (relative: string): void => {
@@ -243,7 +259,7 @@ describe('the registry and the tree agree', () => {
         if (name === 'node_modules' || name === '.next' || name === 'dist') continue;
         const child = `${relative}/${name}`;
         if (statSync(join(REPO, child)).isDirectory()) visit(child);
-        else if (MANIFESTS.has(name)) found.push(child);
+        else if (MANIFESTS.has(name) && !DEPLOYED_ON_REQUEST.has(child)) found.push(child);
       }
     };
 
