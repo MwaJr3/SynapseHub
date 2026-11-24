@@ -14,6 +14,7 @@ def app_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     data_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setenv("CHESSSCOPE_DATA_DIR", str(data_dir))
     monkeypatch.setenv("CHESSSCOPE_SKIP_SEED", "1")
+    monkeypatch.setenv("CHESSSCOPE_DISABLE_ENGINE", "1")
     monkeypatch.setenv("CHESSSCOPE_ENGINE", "")  # engine absent — graceful path
     monkeypatch.setenv("DATABASE_URL", f"sqlite:///{data_dir / 'test.db'}")
 

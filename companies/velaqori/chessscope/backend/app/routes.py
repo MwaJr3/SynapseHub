@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
+from .engine import engine_status
 from . import analysis, config, recommendations, security
 from .database import get_db
 from .models import Game, Mistake, User
@@ -287,6 +288,7 @@ def insights(user: User = Depends(current_user), db: Session = Depends(get_db)):
         "results": results,
         "openings": sorted(openings.items(), key=lambda kv: -kv[1]),
         "heuristic_flags_total": flagged,
-        "engine_available": bool(config.ENGINE_PATH and __import__("os").path.exists(config.ENGINE_PATH)),
+        "engine_available": bool(config.ENGINE_PATH),
+        "engine": engine_status(),
         "disclaimer": DISCLAIMER,
     }

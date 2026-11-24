@@ -11,16 +11,7 @@ SESSION_COOKIE = "cs_session"
 SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7
 
 
-def _discover_engine() -> str:
-    """Engine resolution order: explicit env var → bundled binary → PATH."""
-    explicit = os.environ.get("CHESSSCOPE_ENGINE", "").strip()
-    if explicit:
-        return explicit
-    bundled = Path(__file__).resolve().parent.parent / "engine" / "stockfish"
-    if bundled.exists():
-        return str(bundled)
-    return ""
+from .engine import EngineSettings, clamp_depth, resolve_engine_path  # noqa: E402
 
-
-ENGINE_PATH = _discover_engine()
-ENGINE_DEPTH = int(os.environ.get("CHESSSCOPE_ENGINE_DEPTH", "12"))
+ENGINE_PATH = resolve_engine_path()
+ENGINE_DEPTH = clamp_depth(os.environ.get("CHESSSCOPE_ENGINE_DEPTH", "12"))

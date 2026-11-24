@@ -9,11 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import config
-from .database import Base, engine
+from .database import create_all
 from .routes import router
 from .seed import seed
 
-Base.metadata.create_all(bind=engine)
+create_all()
 
 app = FastAPI(title=config.APP_NAME, version="1.0.0")
 app.add_middleware(
@@ -24,6 +24,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+
+
+@app.get("/api/engine/status")
+def engine_status_route():
+    """Which evaluation sources exist: server UCI (optional) and browser WASM (always offered)."""
+    from .engine import engine_status
+
+    return {
+        "server": engine_status(),
+        "browser": {"available": True, "source": "stockfish.js WASM (in-browser)",
+                    "message": "A WebAssembly Stockfish runs in your browser; nothing is sent to a server."},
+    }
 
 
 @app.get("/api/health")

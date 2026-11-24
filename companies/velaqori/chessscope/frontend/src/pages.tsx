@@ -1,3 +1,4 @@
+import { EnginePanel } from './EnginePanel';
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
@@ -239,10 +240,13 @@ export function SettingsPage({ user }: { user: User }) {
           {user.display_name} · <span className="text-slate-400">{user.email}</span>
         </p>
       </Card>
+      <Card title="Engine">
+        <EnginePanel />
+      </Card>
       <Card title="Analysis honesty rules">
         <ul className="list-inside list-disc space-y-1 text-sm text-slate-300">
           <li>Heuristic flags mark suspicious patterns for review — NOT proof that a move is a mistake.</li>
-          <li>Engine evaluations are shown only when a local UCI engine is configured; otherwise the app says so and invents nothing.</li>
+          <li>Engine evaluations are shown only when a server UCI engine or the in-browser WASM engine actually runs, and are labelled with their source; otherwise the app says so and invents nothing.</li>
           <li>Analysis runs on the PGN you import; the app does not claim to know what happened outside the moves supplied.</li>
           <li>Demo games are simulated.</li>
         </ul>

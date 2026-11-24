@@ -17,7 +17,9 @@ import os
 from dataclasses import dataclass, field
 
 import chess
-import chess.engine
+import chess.engine  # noqa: F401
+
+from . import engine
 import chess.pgn
 
 MATERIAL = {chess.PAWN: 1, chess.KNIGHT: 3, chess.BISHOP: 3, chess.ROOK: 5, chess.QUEEN: 9, chess.KING: 0}
@@ -117,62 +119,19 @@ def heuristic_flags(board_before: chess.Board, move: chess.Move) -> list[str]:
     return flags
 
 
-def run_engine_analysis(
-    moves: list[chess.Move],
-    engine_path: str,
-    depth: int,
-    engine_factory=None,
-) -> tuple[list[tuple[int | None, int | None, str | None]], dict]:
-    """Per-move (eval_cp, eval_drop_cp, classification). Injectable factory for tests."""
-    if engine_factory is None:
-        if not engine_path or not os.path.exists(engine_path):
-            return [], {"available": False, "name": None, "depth": None,
-                        "message": "No UCI engine configured or the binary was not found. No evaluations are shown; heuristic analysis only."}
-        engine_factory = lambda: chess.engine.SimpleEngine.popen_uci(engine_path)  # noqa: E731
-
-    board = chess.Board()
-    results: list[tuple[int | None, int | None, str | None]] = []
-    engine = engine_factory()
-    try:
-        try:
-            engine_name = (engine.id or {}).get("name", "UCI engine")  # type: ignore[attr-defined]
-        except Exception:  # noqa: BLE001 — id lookup must never crash analysis
-            engine_name = "UCI engine"
-        for move in moves:
-            before = engine.analyse(board, chess.engine.Limit(depth=depth))["score"].white().score(mate_score=10000)
-            board.push(move)
-            after = engine.analyse(board, chess.engine.Limit(depth=depth))["score"].white().score(mate_score=10000)
-            mover_before = before if board.turn == chess.BLACK else -before
-            mover_after = after if board.turn == chess.BLACK else -after
-            drop = mover_before - mover_after
-            classification = None
-            if drop >= 200:
-                classification = "blunder"
-            elif drop >= 100:
-                classification = "mistake"
-            elif drop >= 50:
-                classification = "inaccuracy"
-            results.append((after, drop, classification))
-    finally:
-        try:
-            engine.quit()
-        except Exception:  # noqa: BLE001 — engine shutdown must never crash analysis
-            pass
-    return results, {"available": True, "name": engine_name, "depth": depth,
-                     "message": "Evaluations computed with a local UCI engine."}
+def run_engine_analysis(moves, engine_path: str, depth: int, engine_factory=None):
+    """Thin wrapper over :mod:`app.engine` (kept for backwards compatibility)."""
+    settings = engine.EngineSettings(path=engine_path or "", depth=depth)
+    if engine_factory is None and not (engine_path and os.path.exists(engine_path)):
+        # an explicit missing path must not silently fall back to another binary
+        return [], engine.unavailable("no UCI engine configured or the binary was not found")
+    return engine.evaluate_moves(moves, settings, engine_factory)
 
 
-def classify_eval_drop(drop_cp: int) -> str | None:
-    if drop_cp >= 200:
-        return "blunder"
-    if drop_cp >= 100:
-        return "mistake"
-    if drop_cp >= 50:
-        return "inaccuracy"
-    return None
+classify_eval_drop = engine.classify_eval_drop
 
 
-def analyse_game(text: str, engine_path: str = "", depth: int = 12, engine_factory=None) -> GameAnalysis:
+def analyse_game(text: str, engine_path: str = "", depth: int = 12, engine_factory=None, use_engine: bool = True) -> GameAnalysis:
     game, moves = parse_pgn(text)
     headers = {key: game.headers.get(key, "") for key in ("White", "Black", "Result", "Date", "Event", "Site", "Opening")}
     result = game.headers.get("Result", "*")

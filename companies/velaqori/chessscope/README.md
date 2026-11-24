@@ -86,3 +86,17 @@ per-user isolation, insights aggregation, auth enforcement.
   over-trigger. Engine mode is the accurate tier.
 - No interactive board editor in this MVP (analysis is PGN-driven).
 - Screenshots pending capture in a browser environment (not fabricated).
+
+
+## Stockfish: three honest evaluation paths (step 1)
+
+| Path | Where | How |
+|---|---|---|
+| Server UCI | backend | `STOCKFISH_PATH`, else bundled `backend/engine/stockfish`, else `stockfish` on PATH. Install: `backend/scripts/install-stockfish.sh` (apt) or the `backend/Dockerfile`. |
+| Browser WASM | frontend Web Worker | npm `stockfish@18.0.5` (lite, single-thread; no SharedArrayBuffer needed, so it works on Vercel). Files are copied to `public/engine` by `npm run dev/build`. |
+| None | - | The UI/API says "Engine unavailable"; no evaluation is invented. |
+
+Bounds: depth clamped 1-20, per-search movetime <= 5 s, whole-game budget 60 s (`CHESSSCOPE_ENGINE_BUDGET`), games over 300 plies refused. Every evaluation carries a `source` label.
+Set `CHESSSCOPE_DISABLE_ENGINE=1` to force the unavailable path (used by tests).
+Licence note: the npm `stockfish` package and Stockfish itself are GPL-3.0; the licence text ships in `public/engine/` and a Stockfish source link is https://github.com/official-stockfish/Stockfish.
+Vercel: `backend/index.py` re-exports the FastAPI app; Postgres via `DATABASE_URL` + `DB_SCHEMA`. Vercel cannot run native binaries, so there the browser engine is the evaluation path.
