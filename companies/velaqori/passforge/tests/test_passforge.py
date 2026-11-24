@@ -98,3 +98,11 @@ def test_policy_check_reports_problems():
     policy = PasswordPolicy(length=10, use_symbols=False)
     assert policy_problems(policy, "x" * 10) == ["missing an uppercase letter", "missing a digit"]
     assert policy_problems(policy, generate_password(policy)) == []
+
+
+def test_cli_runs_end_to_end(capsys):
+    """Regression: cli.py had a SyntaxError and presets/properties crashed."""
+    from app.cli import main
+    assert main(["presets"]) == 0
+    assert main(["generate", "--count", "2"]) == 0
+    assert len(capsys.readouterr().out.strip().splitlines()) >= 3

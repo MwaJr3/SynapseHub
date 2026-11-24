@@ -69,17 +69,18 @@ def main(argv: list[str] | None = None) -> int:
             print(f"Rules: length {policy.length}; character groups: {', '.join(groups) or 'NONE'}.")
             print(HONEST_NOTE)
             return 0
-        if args.count < 1 or args.count > 100:
+        if getattr(args, "count", None) is not None and not 1 <= args.count <= 100:
             raise PolicyError("Count must be between 1 and 100.")
         if args.command == "presets":
             from .features import PRESETS
             for name, cfg in PRESETS.items():
                 print(f"{name}: {cfg['notes']}")
+            return 0
         elif args.command == "properties":
             from .features import apply_preset, explain_properties
             for item in explain_properties(apply_preset(args.preset)):
-                print(f"- {item['property']} = {item['value']}
-  {item['explanation']}")
+                print(f"- {item['property']} = {item['value']}\n  {item['explanation']}")
+            return 0
         elif args.command == "generate":
             policy = build_policy(args)
             results = [generate_password(policy) for _ in range(args.count)]
