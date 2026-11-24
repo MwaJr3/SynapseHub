@@ -7,7 +7,8 @@
  *
  * All project code lives in the SynapseHub monorepo, so repo links point at
  * verified in-repo tree paths — never at per-project repositories that do
- * not exist.
+ * not exist. Links use `tree/HEAD`, which GitHub resolves to the default
+ * branch, so they survive a default-branch rename.
  *
  * Configure at build time, e.g.:
  *   VITE_REPO_OWNER=MwaJr3 npm run build
@@ -52,7 +53,7 @@ function repo(slug: string): string {
   if (!repoOwner) return '';
   const path = repoPaths[slug];
   if (!path) return '';
-  return `${monorepoTreeBase}/${repoOwner}/SynapseHub/tree/main/${path}`;
+  return `${monorepoTreeBase}/${repoOwner}/SynapseHub/tree/HEAD/${path}`;
 }
 
 export function projectLinks(slug: string): ProjectLinks {

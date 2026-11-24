@@ -21,10 +21,10 @@ describe('projectLinks', () => {
   it('builds monorepo tree URLs, never per-project repositories', async () => {
     const { projectLinks } = await loadWithOwner('MwaJr3');
     expect(projectLinks('hashsight').repo).toBe(
-      'https://github.com/MwaJr3/SynapseHub/tree/main/projects/hashsight',
+      'https://github.com/MwaJr3/SynapseHub/tree/HEAD/companies/velaqori/hashsight',
     );
     expect(projectLinks('phishlens').repo).toBe(
-      'https://github.com/MwaJr3/SynapseHub/tree/main/companies/velaqori/phishlens-cli',
+      'https://github.com/MwaJr3/SynapseHub/tree/HEAD/companies/velaqori/phishlens-cli',
     );
   });
 
@@ -34,7 +34,7 @@ describe('projectLinks', () => {
       'phishlens', 'netscope', 'threatintel-desk', 'incidentflow', 'hashsight',
       'assetwatch', 'securecode-workbench', 'cyberaware-lab', 'transcriptwise',
     ]) {
-      expect(projectLinks(slug).repo, slug).toContain('/SynapseHub/tree/main/');
+      expect(projectLinks(slug).repo, slug).toContain('/SynapseHub/tree/HEAD/');
     }
   });
 
@@ -46,7 +46,7 @@ describe('projectLinks', () => {
   it('trims slashes from the configured owner', async () => {
     const { projectLinks } = await loadWithOwner('/MwaJr3/');
     expect(projectLinks('netscope').repo).toBe(
-      'https://github.com/MwaJr3/SynapseHub/tree/main/companies/velaqori/netscope-cli',
+      'https://github.com/MwaJr3/SynapseHub/tree/HEAD/companies/velaqori/netscope-cli',
     );
   });
 });

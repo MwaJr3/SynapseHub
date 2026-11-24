@@ -89,7 +89,7 @@ export const SUPPLIED_EVIDENCE_LINKS = {
 } as const satisfies Record<string, SuppliedEvidenceLink>;
 
 /** Base for links into this repository's own source tree. */
-const IN_REPO_BASE = 'https://github.com/MwaJr3/SynapseHub/tree/main/';
+const IN_REPO_BASE = 'https://github.com/MwaJr3/SynapseHub/tree/HEAD/';
 
 /** GitHub tree link for a path that exists in this repository. */
 export function inRepoUrl(inRepoPath: string): string {
