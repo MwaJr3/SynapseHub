@@ -47,6 +47,11 @@ export interface SeedOptions {
  */
 export async function seedDatabase(options: SeedOptions = {}): Promise<void> {
   const { includeDemoAccounts = true } = options;
+  // Demo accounts use passwords that are published in the repository. Never create
+  // them in production unless the operator opts in explicitly.
+  if (includeDemoAccounts && process.env.NODE_ENV === 'production' && process.env.ALLOW_DEMO_ACCOUNTS !== 'true') {
+    throw new Error('Refusing to seed demo accounts in production (set ALLOW_DEMO_ACCOUNTS=true to override).');
+  }
   // A caller that passes a transaction has already created the schema and waited
   // for the connection. Running the migrations again here would open a *second*
   // transaction on a single-connection database (PGlite) and deadlock.

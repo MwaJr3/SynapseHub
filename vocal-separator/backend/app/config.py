@@ -1,6 +1,7 @@
 """Environment-driven settings (12-factor). No secrets or model paths are hard-coded."""
 from __future__ import annotations
 import os
+import secrets
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]          # backend/
@@ -11,7 +12,16 @@ DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DATA_DIR / 'vocal-separato
 QUEUE_BACKEND = os.getenv("QUEUE_BACKEND", "inline")    # inline | redis (see jobs.py)
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 
-JWT_SECRET = os.getenv("JWT_SECRET", "dev-only-change-me")
+# No well-known fallback: an unset secret gets a random per-process value (tokens
+# stop working on restart) instead of a published string anyone could forge with.
+JWT_SECRET = os.getenv("JWT_SECRET") or secrets.token_urlsafe(48)
+
+# Browser origins allowed to call the API (comma-separated). Auth is bearer-token,
+# so no cookies are shared, but a wildcard still lets any site probe the API.
+CORS_ORIGINS = [o.strip() for o in os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:3000",
+).split(",") if o.strip()]
 JWT_TTL_HOURS = int(os.getenv("JWT_TTL_HOURS", "72"))
 DOWNLOAD_TOKEN_TTL = int(os.getenv("DOWNLOAD_TOKEN_TTL", "3600"))
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "")              # this email becomes admin on register

@@ -52,6 +52,7 @@ class HttpTransport:
 
     def fetch(self, url: str, etag: str = "", last_modified: str = "") -> Page:
         import urllib.error
+        import urllib.parse
         import urllib.request
         from datetime import datetime, timezone
         headers = {"User-Agent": self.user_agent}
@@ -59,9 +60,11 @@ class HttpTransport:
             headers["If-None-Match"] = etag
         if last_modified:
             headers["If-Modified-Since"] = last_modified
+        if urllib.parse.urlparse(url).scheme not in ("http", "https"):
+            raise CollectError(f"Refusing non-HTTP(S) URL: {url}")
         req = urllib.request.Request(url, headers=headers)
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310 - scheme checked above
                 body = resp.read(512_000).decode("utf-8", "replace")   # bounded read (512 KB)
                 return Page(url, datetime.now(timezone.utc).isoformat(), body,
                             resp.headers.get("ETag", ""), resp.headers.get("Last-Modified", ""))

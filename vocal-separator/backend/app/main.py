@@ -13,7 +13,7 @@ from pydantic import BaseModel as BM
 import re
 
 from . import PIPELINE_VERSION, audio_io, engines, practice, quality, vocal
-from .config import ADMIN_EMAIL, RETENTION_DAYS
+from .config import ADMIN_EMAIL, RETENTION_DAYS, CORS_ORIGINS
 from .db import (SessionLocal, init_db, User, Project, AudioFile, ProcessingJob,
                  ProcessingStage, Stem, VoiceTrack, ModelRecord, AuditLog, Export, now)
 from .security import hash_password, verify_password, make_token, decode_token, sign_download, verify_download
@@ -25,7 +25,9 @@ from .pipeline import make_zip_export, _waveform_peaks
 app = FastAPI(title="AI Music & Vocal Part Separator", version="0.1.0",
               description="Hierarchical stem + voice-part separation. Extracted stems are "
                           "AI/DSP reconstructions, never original isolated recordings.")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS,
+                   allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+                   allow_headers=["Authorization", "Content-Type"])
 
 # naive per-IP rate limit for auth/upload (§117); production uses the gateway/Redis counters.
 _hits: dict[str, list[float]] = {}

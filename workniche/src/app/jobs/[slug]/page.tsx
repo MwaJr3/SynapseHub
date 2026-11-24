@@ -4,6 +4,7 @@ import type { JSX } from 'react';
 import { and, eq } from 'drizzle-orm';
 
 import { getDb } from '@/lib/db';
+import { serializeJsonLd } from '@/lib/json-ld';
 import {
   applications,
   jobQuestions,
@@ -131,7 +132,7 @@ export default async function JobDetailPage({
       {jsonLd ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       ) : null}
       <BackLink href="/jobs">Back to jobs</BackLink>

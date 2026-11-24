@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import asyncio
 from dataclasses import asdict
 from pathlib import Path
@@ -78,7 +79,17 @@ class WebDashboardServer:
                 resp: web.StreamResponse = web.Response(status=204)
             else:
                 resp = await handler(request)
-            resp.headers["Access-Control-Allow-Origin"] = "*"
+            origin = request.headers.get("Origin", "")
+            allowed = {
+                o.strip()
+                for o in os.environ.get(
+                    "DASHBOARD_CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000"
+                ).split(",")
+                if o.strip()
+            }
+            if origin in allowed:
+                resp.headers["Access-Control-Allow-Origin"] = origin
+                resp.headers["Vary"] = "Origin"
             resp.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
             resp.headers["Access-Control-Allow-Headers"] = "Content-Type"
             return resp

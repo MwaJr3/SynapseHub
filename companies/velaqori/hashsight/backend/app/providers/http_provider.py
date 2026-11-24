@@ -26,11 +26,13 @@ class ExternalProvider:
         import urllib.error
         import urllib.request
         now = datetime.now(timezone.utc).isoformat()
+        if not self.base_url.startswith(("https://", "http://")):
+            return ProviderResult(self.name, "UNAVAILABLE", None, None, now, "provider base_url must be http(s)")
         req = urllib.request.Request(
             f"{self.base_url}/reports/{digest}",
             headers={"x-apikey": self.api_key, "User-Agent": "HashSight/0.1"})
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:  # nosec B310 - scheme checked above
                 import json
                 payload = json.loads(resp.read(200_000).decode("utf-8", "replace"))
             positives = payload.get("last_analysis_stats", {}).get("malicious")
