@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BlurFade } from '@/components/decor-client';
 import Link from 'next/link';
 
 import { IllustrativeLabel, StatusBadge, CompanyBadge, Badge, EmptyState } from '@/components/ui';
@@ -38,7 +39,7 @@ export default async function ProductsPage({
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold">Products</h1>
+        <BlurFade><h1 className="text-2xl font-semibold">Products</h1></BlurFade>
         <p className="mt-2 max-w-prose text-muted">
           The complete catalogue for both independent companies. Search and
           filters compose; demo and source actions appear only where URLs are

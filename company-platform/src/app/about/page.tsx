@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BlurFade } from '@/components/decor-client';
 import Link from 'next/link';
 
 import { Section } from '@/components/ui';
@@ -13,7 +14,7 @@ export default function AboutPage() {
   return (
     <div className="space-y-6">
       <header className="card">
-        <h1 className="text-2xl font-semibold">About this platform</h1>
+        <BlurFade><h1 className="text-2xl font-semibold">About this platform</h1></BlurFade>
         <p className="mt-3 max-w-prose text-muted">
           This is a shared discovery platform for two independent companies:
           Velaqori Systems (software and cybersecurity) and Tamuzi Learning

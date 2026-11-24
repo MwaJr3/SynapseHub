@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { BlurFade, DotPattern } from '@/components/decor-client';
+import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, ShimmerText } from '@/components/decor-client';
 import { IllustrativeLabel, Badge, StatusBadge, CompanyBadge } from '@/components/ui';
 import { SEED_DATA_NOTICE } from '@/content';
 import { listCompanies, listPublishedCaseStudies, listPublishedProducts, listPublishedPeople } from '@/lib/queries';
@@ -41,7 +41,7 @@ export default async function HomePage() {
         <Badge tone="accent">Two independent companies · one shared platform</Badge>
         <h1 id="hero-heading" className="mt-4 text-3xl font-semibold leading-tight">
           Software and cyber engineering. Education technology.
-          <span className="block accent-text">Discover the work behind both.</span>
+          <ShimmerText className="block accent-text">Discover the work behind both.</ShimmerText>
         </h1>
         <p className="mt-4 max-w-prose text-muted">
           This platform presents the products, case studies, and people of two
@@ -58,11 +58,37 @@ export default async function HomePage() {
         </BlurFade>
       </section>
 
+      <section aria-label="The platform in numbers" className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[
+          ['Companies', companies.length],
+          ['Products', products.length],
+          ['Case studies', caseStudies.length],
+          ['Published profiles', people.length],
+        ].map(([label, value]) => (
+          <BlurFade key={label as string}>
+            <div className="card text-center">
+              <p className="text-3xl font-semibold accent-text"><NumberTicker value={value as number} /></p>
+              <p className="mt-1 text-sm text-muted">{label}</p>
+            </div>
+          </BlurFade>
+        ))}
+      </section>
+
+      {products.length > 0 ? (
+        <Marquee label="Products on this platform">
+          {products.map((product) => (
+            <span key={product.slug} className="badge mx-2 whitespace-nowrap">
+              {product.name}
+            </span>
+          ))}
+        </Marquee>
+      ) : null}
+
       <section aria-labelledby="companies-heading">
         <h2 id="companies-heading" className="text-xl font-semibold">The two companies</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {companies.map((company) => (
-            <article key={company.slug} className="card">
+            <GlowCard key={company.slug} className="card">
               <h3 className="text-lg font-semibold">{company.name}</h3>
               <p className="mt-2 text-sm text-muted">{company.tagline}</p>
               <p className="mt-3 text-sm text-muted">{company.overview}</p>
@@ -74,7 +100,7 @@ export default async function HomePage() {
                   About
                 </Link>
               </div>
-            </article>
+            </GlowCard>
           ))}
         </div>
       </section>

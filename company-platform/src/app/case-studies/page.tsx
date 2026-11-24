@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BlurFade } from '@/components/decor-client';
 import Link from 'next/link';
 
 import { Badge, CompanyBadge, EmptyState } from '@/components/ui';
@@ -18,7 +19,7 @@ export default async function CaseStudiesPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold">Case Studies</h1>
+        <BlurFade><h1 className="text-2xl font-semibold">Case Studies</h1></BlurFade>
         <p className="mt-2 max-w-prose text-muted">
           Every product has its own case study, written from its project brief.
           Sections the brief cannot support are flagged as requiring verification
