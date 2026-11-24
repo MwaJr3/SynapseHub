@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, Field, field_validator
@@ -16,7 +17,7 @@ from .models import (
 
 router = APIRouter()
 
-ROOM_SECRET = os.environ.get("CLASSCONNECT_ROOM_SECRET", "dev-room-secret-change-in-deployment")
+ROOM_SECRET = os.environ.get("CLASSCONNECT_ROOM_SECRET") or secrets.token_urlsafe(48)
 
 
 def current_user(request: Request, db: Session = Depends(get_db)) -> User:
