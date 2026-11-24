@@ -1,9 +1,9 @@
-fastapi
-uvicorn[standard]
-sqlalchemy
-pydantic
-python-multipart
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+sqlalchemy==2.1.9
+pydantic==2.14.4
+python-multipart==0.0.34
 httpx
-lxml
-nh3
-pytest
+lxml==6.1.3
+nh3==0.3.8
+pytest==9.2.0
