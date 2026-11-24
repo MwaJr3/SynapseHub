@@ -93,6 +93,13 @@ def save(path: str, model: TrainedModel) -> None:
     with open(path, "wb") as fh:
         pickle.dump({"pipeline": model.pipeline, "evaluation": model.evaluation.__dict__,
                      "trained_at": model.trained_at, "dataset_note": model.dataset_note}, fh)
+    # Integrity sidecar: pickle executes code on load, so load() refuses any model
+    # file whose SHA-256 does not match the digest written here at training time.
+    import hashlib
+    with open(path, "rb") as fh:
+        digest = hashlib.sha256(fh.read()).hexdigest()
+    with open(path + ".sha256", "w") as fh:
+        fh.write(digest)
     meta = path + ".json"
     with open(meta, "w") as fh:
         json.dump({"feature_names": list(FEATURE_NAMES), "trained_at": model.trained_at,
@@ -100,7 +107,16 @@ def save(path: str, model: TrainedModel) -> None:
 
 
 def load(path: str) -> TrainedModel:
+    import hashlib
     import pickle
     with open(path, "rb") as fh:
-        data = pickle.load(fh)
+        raw = fh.read()
+    try:
+        with open(path + ".sha256") as fh:
+            expected = fh.read().strip()
+    except FileNotFoundError as exc:
+        raise ValueError(f"Missing integrity file {path}.sha256; refusing to unpickle") from exc
+    if hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError("Model file failed integrity check; refusing to unpickle")
+    data = pickle.loads(raw)  # nosec B301 - integrity verified above
     return TrainedModel(data["pipeline"], Evaluation(**data["evaluation"]), data["trained_at"], data["dataset_note"])

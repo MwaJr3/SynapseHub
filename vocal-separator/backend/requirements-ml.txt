@@ -1,10 +1,10 @@
 # Optional ML engines. The application runs fully without these via the DSP engine;
 # adapters activate automatically when the packages AND model weights are available.
 # GPU strongly recommended for Demucs. See docs/ML_NOTES.md for weight sources + licences.
-torch>=2.1
-torchaudio>=2.1
-demucs>=4.0
-torchcrepe>=0.0.23
-bs-roformer>=0.4,<0.5   # 0.4.x matches checkpoints trained before the hyper-connection layout change
-pyyaml>=6
-librosa>=0.10
+torch==2.15.0
+torchaudio==2.11.1
+demucs==4.1.0
+torchcrepe==0.0.24
+bs-roformer==0.4.1
+pyyaml==6.0.4
+librosa==0.11.0
