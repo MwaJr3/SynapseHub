@@ -9,7 +9,7 @@ COPY index.html tsconfig.json vite.config.ts ./
 COPY src ./src
 RUN npm run build
 
-FROM nginx:1.27-alpine
+FROM nginx:1.31-alpine
 
 ENV API_UPSTREAM=http://api:8000
 
