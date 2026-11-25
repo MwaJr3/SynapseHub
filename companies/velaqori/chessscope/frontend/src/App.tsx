@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type User } from './api';
 import { ErrorBanner, Field, Loading } from './ui';
+import { TacticsPage } from './learn/TacticsPage';
 import { StrategyPage } from './learn/StrategyPage';
 import { EndgamesPage } from './learn/EndgamesPage';
 import { OpeningsPage } from './openings/OpeningsPage';
 import { BoardPage, GamesPage, InsightsPage, SettingsPage, TrainingPage } from './pages';
 
-type Route = 'board' | 'openings' | 'endgames' | 'strategy' | 'games' | 'training' | 'insights' | 'settings';
+type Route = 'board' | 'openings' | 'endgames' | 'strategy' | 'tactics' | 'games' | 'training' | 'insights' | 'settings';
 
 const NAV: { id: Route; label: string }[] = [
   { id: 'board', label: 'Board' },
   { id: 'openings', label: 'Openings' },
   { id: 'endgames', label: 'Endgames' },
   { id: 'strategy', label: 'Strategy' },
+  { id: 'tactics', label: 'Tactics' },
   { id: 'games', label: 'Games & analysis' },
   { id: 'training', label: 'Training & improvement' },
   { id: 'insights', label: 'Insights' },
@@ -151,6 +153,7 @@ export default function App() {
         {route === 'openings' ? <OpeningsPage /> : null}
         {route === 'endgames' ? <EndgamesPage /> : null}
         {route === 'strategy' ? <StrategyPage /> : null}
+        {route === 'tactics' ? <TacticsPage /> : null}
         {route === 'games' ? <GamesPage /> : null}
         {route === 'training' ? <TrainingPage /> : null}
         {route === 'insights' ? <InsightsPage /> : null}

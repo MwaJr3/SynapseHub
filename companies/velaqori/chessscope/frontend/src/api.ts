@@ -258,3 +258,14 @@ export const strategyApi = {
     request<{ correct: boolean; missed: string[]; extra: string[]; explanation: string; answer: string[] | null }>(
       `/api/strategy/exercises/${id}/answer`, json({ squares })),
 };
+
+export interface TacticPuzzle {
+  id: string; theme: string; difficulty: number; fen: string; side_to_move: 'white' | 'black';
+  kind: 'mate' | 'material'; mate_in: number | null; hint?: string;
+  progress?: { attempts: number; solved: number; due: boolean } | null;
+}
+export const tacticsApi = {
+  list: () => request<{ themes: string[]; puzzles: TacticPuzzle[] }>('/api/tactics'),
+  next: () => request<{ puzzle: TacticPuzzle; reason: string }>('/api/tactics/next'),
+  move: (id: string, fen: string, move: string) => request<MoveVerdict>(`/api/tactics/${id}/move`, json({ fen, move })),
+};

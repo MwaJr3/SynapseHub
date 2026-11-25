@@ -34,6 +34,8 @@ from .endgames_routes import router as endgames_router  # noqa: E402
 app.include_router(endgames_router)
 from .strategy_routes import router as strategy_router  # noqa: E402
 app.include_router(strategy_router)
+from .tactics_routes import router as tactics_router  # noqa: E402
+app.include_router(tactics_router)
 
 
 @app.get("/api/engine/status")
