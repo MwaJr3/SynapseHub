@@ -1,0 +1,17 @@
+# Fictional sample data. IPs are reserved documentation addresses (RFC 5737).
+Nov  3 08:01:00 gateway sshd[2010]: Failed password for mbanda from 198.51.100.23 port 52200 ssh2
+Nov  3 08:01:03 gateway sshd[2013]: Failed password for mbanda from 198.51.100.23 port 52201 ssh2
+Nov  3 08:01:06 gateway sshd[2016]: Failed password for mbanda from 198.51.100.23 port 52202 ssh2
+Nov  3 08:01:09 gateway sshd[2019]: Failed password for mbanda from 198.51.100.23 port 52203 ssh2
+Nov  3 08:01:12 gateway sshd[2012]: Failed password for mbanda from 198.51.100.23 port 52204 ssh2
+Nov  3 08:01:15 gateway sshd[2015]: Failed password for mbanda from 198.51.100.23 port 52205 ssh2
+Nov  3 08:01:18 gateway sshd[2018]: Failed password for mbanda from 198.51.100.23 port 52206 ssh2
+Nov  3 08:01:21 gateway sshd[2011]: Failed password for mbanda from 198.51.100.23 port 52207 ssh2
+Nov  3 08:02:00 gateway sshd[2020]: Failed password for invalid user admin from 203.0.113.9 port 41100 ssh2
+Nov  3 08:02:04 gateway sshd[2024]: Failed password for invalid user admin from 203.0.113.9 port 41101 ssh2
+Nov  3 08:02:08 gateway sshd[2028]: Failed password for invalid user admin from 203.0.113.9 port 41102 ssh2
+Nov  3 08:03:05 gateway sshd[2035]: Failed password for tchanda from 198.51.100.77 port 51000 ssh2
+Nov  3 08:04:10 gateway sshd[2040]: Accepted password for cmwila from 192.0.2.14 port 50111 ssh2
+Nov  3 08:05:20 gateway sshd[2050]: Accepted publickey for tchanda from 192.0.2.30 port 50222 ssh2
+Nov  3 08:06:30 gateway sshd[2060]: Accepted password for mbanda from 192.0.2.41 port 50333 ssh2
+Nov  3 08:07:40 gateway sshd[2070]: Accepted publickey for cmwila from 192.0.2.14 port 50444 ssh2

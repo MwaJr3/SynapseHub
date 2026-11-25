@@ -5,6 +5,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import config
@@ -16,6 +17,8 @@ config.DATA_DIR.mkdir(parents=True, exist_ok=True)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=config.APP_NAME, version="1.0.0")
+# Compress JSON bodies of 1 KB or more; smaller ones are not worth the CPU.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5176", "http://127.0.0.1:5176"],

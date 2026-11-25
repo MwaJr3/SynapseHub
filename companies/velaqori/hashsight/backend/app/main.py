@@ -6,6 +6,7 @@ import tempfile
 
 from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
@@ -40,6 +41,8 @@ def _extra_origins() -> list[str]:
     return [value.strip() for value in raw.split(",") if value.strip()]
 
 
+# Compress JSON bodies of 1 KB or more; smaller ones are not worth the CPU.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"] + _extra_origins(),
                    allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 

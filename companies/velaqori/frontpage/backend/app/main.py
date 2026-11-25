@@ -10,6 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -41,6 +42,8 @@ async def lifespan(_app: FastAPI):
 
 
 app = FastAPI(title=config.APP_NAME, version="1.0.0", lifespan=lifespan)
+# Compress JSON bodies of 1 KB or more; smaller ones are not worth the CPU.
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5189", "http://127.0.0.1:5189"],

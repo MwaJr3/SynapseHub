@@ -34,3 +34,6 @@ native/desktop/src-tauri/target/
 # Generated Expo platform projects; CI regenerates these from app.json.
 native/mobile/android/
 native/mobile/ios/
+
+# SentinelLog fictional sample logs are fixtures, not runtime logs.
+!companies/velaqori/sentinellog/backend/examples/*.log
