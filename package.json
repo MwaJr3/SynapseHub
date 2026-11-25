@@ -30,7 +30,9 @@
     "ux:fix": "node tools/northstar/bin/northstar.mjs fix .",
     "ux:watch": "node tools/northstar/bin/northstar.mjs watch . --fix",
     "ux:hooks": "node tools/northstar/bin/northstar.mjs hooks",
-    "ux:report": "node tools/northstar/bin/northstar.mjs audit . --out docs/ux/audit-repository.md"
+    "ux:report": "node tools/northstar/bin/northstar.mjs audit . --out docs/ux/audit-repository.md",
+    "ux:knowledge:validate": "node tools/northstar/scripts/validate-knowledge.mjs validate tools/northstar/knowledge/records",
+    "ux:videos:import": "node tools/northstar/scripts/import-videos.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

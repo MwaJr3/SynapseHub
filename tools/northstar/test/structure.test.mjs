@@ -128,7 +128,7 @@ test('the plugin ships no dependencies and no lockfile', () => {
 });
 
 test('the documentation set is complete', () => {
-  for (const file of ['README.md', 'PATTERNS.md', 'CHANGELOG.md', 'LICENSE', 'templates/DESIGN.md']) {
+  for (const file of ['README.md', 'PATTERNS.md', 'CHANGELOG.md', 'LICENSE', 'templates/DESIGN.md', 'knowledge/README.md', 'knowledge/schema.json', 'assets/videos/README.md', 'assets/videos/manifest.json', 'scripts/validate-knowledge.mjs', 'scripts/import-videos.mjs']) {
     assert.ok(fs.existsSync(path.join(root, file)), `${file} exists`);
   }
   const changelog = read('CHANGELOG.md');

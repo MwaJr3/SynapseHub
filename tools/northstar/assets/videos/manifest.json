@@ -1,0 +1,549 @@
+{
+  "schemaVersion": "1.0",
+  "status": "awaiting-binary-import",
+  "note": "The source archives were inspected and the 76 filename mappings are verified. MP4 binaries are not committed until the Git LFS import workflow is run.",
+  "sourceArchives": [
+    {
+      "name": "Designmotion_part1.zip",
+      "videoCount": 17
+    },
+    {
+      "name": "Designmotion_part2.zip",
+      "videoCount": 59
+    }
+  ],
+  "assets": [
+    {
+      "patternId": "P1",
+      "title": "CSS :has()",
+      "filename": "css-has-selector.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P2",
+      "title": "De-AI Landing Hero",
+      "filename": "de-ai-landing-hero.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P3",
+      "title": "Reverse-Engineered Linear",
+      "filename": "reverse-engineered-linear.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P4",
+      "title": "Bulk Actions",
+      "filename": "bulk-actions.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P5",
+      "title": "Disabled Buttons",
+      "filename": "disabled-buttons.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P6",
+      "title": "Hover Trap",
+      "filename": "hover-trap.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P7",
+      "title": "Date Pickers",
+      "filename": "date-pickers.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P8",
+      "title": "Charts That Lie",
+      "filename": "charts-that-lie.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P9",
+      "title": "Animation Timing",
+      "filename": "animation-timing.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P10",
+      "title": "Context Menu",
+      "filename": "context-menu.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P11",
+      "title": "Destructive Actions",
+      "filename": "destructive-actions.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P12",
+      "title": "Live Cursors",
+      "filename": "live-cursors.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P13",
+      "title": "Design System Kit",
+      "filename": "design-system-kit.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P14",
+      "title": "Inline Editing",
+      "filename": "inline-editing.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P15",
+      "title": "Autosave",
+      "filename": "autosave-ux.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P16",
+      "title": "Settings System",
+      "filename": "settings-system.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P17",
+      "title": "Behind the Button",
+      "filename": "behind-the-button.mp4",
+      "sourceArchive": "Designmotion_part1.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P18",
+      "title": "Doherty Threshold",
+      "filename": "doherty-threshold.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P19",
+      "title": "Drag and Drop",
+      "filename": "drag-and-drop.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P20",
+      "title": "Dropdown Design",
+      "filename": "dropdown-design.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P21",
+      "title": "Easing Curves",
+      "filename": "easing-curves.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P22",
+      "title": "Empty States",
+      "filename": "empty-states.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P23",
+      "title": "Error States",
+      "filename": "error-states.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P24",
+      "title": "Form Field States",
+      "filename": "form-field-states.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P25",
+      "title": "Golden Ratio",
+      "filename": "golden-ratio.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P26",
+      "title": "Grid System",
+      "filename": "grid-system.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P27",
+      "title": "Input Masking",
+      "filename": "input-masking.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P28",
+      "title": "Loading States System",
+      "filename": "loading-states-system.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P29",
+      "title": "Navigation Patterns",
+      "filename": "navigation-patterns.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P30",
+      "title": "Notification System",
+      "filename": "notification-system.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P31",
+      "title": "Peak-End Rule",
+      "filename": "peak-end-rule.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P32",
+      "title": "Proximity Rule",
+      "filename": "proximity-rule.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P33",
+      "title": "Range Sliders",
+      "filename": "range-sliders.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P34",
+      "title": "Search Experience System",
+      "filename": "search-experience-system.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P35",
+      "title": "Serial Position",
+      "filename": "serial-position.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P36",
+      "title": "Shadow Elevation",
+      "filename": "shadow-elevation.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P37",
+      "title": "Star Rating",
+      "filename": "star-rating.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P38",
+      "title": "Stepper Wizard",
+      "filename": "stepper-wizard.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P39",
+      "title": "Tabs System",
+      "filename": "tabs-system.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P40",
+      "title": "Toast Notifications",
+      "filename": "toast-notifications.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P41",
+      "title": "Toggle Anatomy",
+      "filename": "toggle-anatomy.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P42",
+      "title": "Tooltip Design",
+      "filename": "tooltip-design.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P43",
+      "title": "Visual Hierarchy",
+      "filename": "visual-hierarchy.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P44",
+      "title": "Z-Index Mastery",
+      "filename": "z-index-mastery.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P45",
+      "title": "Zeigarnik Effect",
+      "filename": "zeigarnik-effect.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P46",
+      "title": "Focus States",
+      "filename": "focus-states.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P47",
+      "title": "Swipe Actions",
+      "filename": "swipe-actions.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P48",
+      "title": "Undo UX",
+      "filename": "undo-ux.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P49",
+      "title": "Bottom Sheets",
+      "filename": "bottom-sheets.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P50",
+      "title": "Form Validation Timing",
+      "filename": "form-validation-timing.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P51",
+      "title": "Microcopy",
+      "filename": "microcopy.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P52",
+      "title": "Optimistic UI",
+      "filename": "optimistic-ui.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P53",
+      "title": "Gradient Design",
+      "filename": "gradient-design.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P54",
+      "title": "Skeleton Loading",
+      "filename": "skeleton-loading.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P55",
+      "title": "Color Picker UX",
+      "filename": "color-picker-ux.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P56",
+      "title": "File Upload UX",
+      "filename": "file-upload-ux.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P57",
+      "title": "Password Field UX",
+      "filename": "password-field-ux.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P58",
+      "title": "Command Palette",
+      "filename": "command-palette.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P59",
+      "title": "Filter Chips",
+      "filename": "filter-chips.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P60",
+      "title": "OTP Input",
+      "filename": "otp-input.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P61",
+      "title": "Pagination",
+      "filename": "pagination.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P62",
+      "title": "Accordion Disclosure",
+      "filename": "accordion-disclosure.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P63",
+      "title": "Data Table",
+      "filename": "data-table.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P64",
+      "title": "Card Hover Anatomy",
+      "filename": "card-hover-anatomy.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P65",
+      "title": "Modal Hierarchy",
+      "filename": "modal-hierarchy.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P66",
+      "title": "Icon Design Rules",
+      "filename": "icon-design-rules.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P67",
+      "title": "Landing Page Skeleton",
+      "filename": "landing-page-skeleton.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P68",
+      "title": "Scroll-Driven Animations",
+      "filename": "scroll-driven-animations.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P69",
+      "title": "Design Tokens",
+      "filename": "design-tokens.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P70",
+      "title": "Color Accessibility",
+      "filename": "color-accessibility.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P71",
+      "title": "Gestalt Laws",
+      "filename": "gestalt-laws.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P72",
+      "title": "Border Radius",
+      "filename": "border-radius.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P73",
+      "title": "Dark Mode",
+      "filename": "dark-mode.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P74",
+      "title": "Von Restorff Effect",
+      "filename": "von-restorff.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P75",
+      "title": "Perfect Card",
+      "filename": "perfect-card.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    },
+    {
+      "patternId": "P76",
+      "title": "Depth Layers",
+      "filename": "depth-layers.mp4",
+      "sourceArchive": "Designmotion_part2.zip",
+      "status": "awaiting-binary-import"
+    }
+  ]
+}
