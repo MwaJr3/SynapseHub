@@ -1175,6 +1175,24 @@
       "package": "company-platform"
     },
     {
+      "slug": "contextvault",
+      "name": "ContextVault",
+      "path": "contextvault",
+      "source": "extracting",
+      "owner": null,
+      "kind": "product",
+      "block": "products",
+      "interface": [
+        "nextjs",
+        "docker"
+      ],
+      "deployment": "separate",
+      "deploys": [],
+      "package": "contextvault",
+      "repository": "https://github.com/MwaJr3/contextvault",
+      "defaultBranch": "main"
+    },
+    {
       "slug": "bank_system",
       "name": "Bank_system",
       "path": "coursework/cbu-assignments/bank_system",

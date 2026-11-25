@@ -412,6 +412,25 @@ describe('every entry satisfies its source-state schema', () => {
     }
   });
 
+  it('discovers the ContextVault pilot as an extracting entry', () => {
+    // Extraction map §4.1 #1. The original directory still lives here, so the
+    // tree must discover the project — only the source state and target
+    // repository are hand-kept (REGISTRY_META). A contextvault missing from
+    // ROOT_PRODUCTS would silently drop the pilot from the registry while the
+    // schema still passed; this test is the tripwire for that gap.
+    const entry = registry.projects.find((p) => p.slug === 'contextvault');
+    expect(entry, 'contextvault must be discovered by the generator').toBeDefined();
+    expect(entry).toMatchObject({
+      path: 'contextvault',
+      source: 'extracting',
+      repository: 'https://github.com/MwaJr3/contextvault',
+      defaultBranch: 'main',
+      kind: 'product',
+      name: 'ContextVault',
+    });
+    expect(existsSync(join(REPO, 'contextvault'))).toBe(true);
+  });
+
   it('holds path-less entries to the same slug uniqueness as local ones', () => {
     // First-class, not an exception: an external entry squatting a local slug
     // is a duplicate like any other.
