@@ -11,6 +11,18 @@ import { VOCAL_URL } from './fixtures/routes';
  * suite runs without the Python backend, exercising the unauthenticated shell
  * — its health fetch fails silently and the view is otherwise static, so the
  * baselines are deterministic.
+ *
+ * KNOWN STALE BASELINE (documented exception, PR #153, 2026-11-25): the
+ * `vocal-shell-mobile` baseline predates the offline-notice commits
+ * (`b73e61b9`, `2df6e3b`) that mounted OfflineBanner/RequestStatus into this
+ * app. CI reports expected 390×2779 vs received 390×2805 — the added notice
+ * strip — with the desktop baseline and the other 32 tests passing, so this
+ * is a stale fixture, not a test defect or a product regression. Regenerate
+ * with the workflow's own mechanism: Actions → Playwright browser suite →
+ * Run workflow → `update_snapshots` (commits the fresh baselines back to the
+ * branch), or `npm run e2e:update` where Playwright's chromium can be
+ * downloaded. The API dispatch from an automation account needs
+ * `actions: write` and currently returns 403.
  */
 test.describe('vocal separator visual regression', () => {
   test.beforeEach(async ({ page }) => {

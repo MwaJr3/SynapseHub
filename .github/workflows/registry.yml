@@ -14,6 +14,7 @@ on:
     paths:
       - 'projects.json'
       - 'scripts/build-registry.mjs'
+      - 'scripts/build-catalogue.mjs'
       - 'scripts/registry-schema.mjs'
       - 'scripts/registry-schema.d.mts'
       - 'src/registry.test.ts'
@@ -22,6 +23,7 @@ on:
     paths:
       - 'projects.json'
       - 'scripts/build-registry.mjs'
+      - 'scripts/build-catalogue.mjs'
       - 'scripts/registry-schema.mjs'
       - 'scripts/registry-schema.d.mts'
       - 'src/registry.test.ts'
