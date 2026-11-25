@@ -9,7 +9,7 @@ const DISPOSITIONS = new Set(['new','enrichment','refinement','duplicate','conte
 const EVIDENCE = new Set(['source-stated','source-supported','externally-verified','analytical-synthesis','implementation-inference','unverified']);
 const REVIEW = new Set(['proposed','needs-review','approved','rejected','deferred']);
 const ID = /^NK-[A-Z0-9]+(?:-[A-Z0-9]+)*$/;
-const PATTERN_ID = /^P(?:0[1-9]|[1-6][0-9]|7[0-6]|[1-9]|[1-6][0-9]|7[0-6])$/;
+const PATTERN_ID = /^P(?:0?[1-9]|[1-6][0-9]|7[0-6])$/;
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isText = (value) => typeof value === 'string' && value.trim().length > 0;
 const isDate = (value) => typeof value === 'string' && !Number.isNaN(Date.parse(value));
