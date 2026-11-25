@@ -84,3 +84,23 @@ class OpeningCard(Base):
     due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     last_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class ItemProgress(Base):
+    """Per-learner progress + review schedule for any trainable item (endgame, strategy, tactic)."""
+    __tablename__ = "item_progress"
+    __table_args__ = (UniqueConstraint("user_id", "kind", "item_id", name="uq_progress_item"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(16))  # endgame | strategy | tactic
+    item_id: Mapped[str] = mapped_column(String(64))
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    solved_count: Mapped[int] = mapped_column(Integer, default=0)
+    reps: Mapped[int] = mapped_column(Integer, default=0)
+    lapses: Mapped[int] = mapped_column(Integer, default=0)
+    stability: Mapped[float] = mapped_column(Float, default=1.0)
+    difficulty: Mapped[float] = mapped_column(Float, default=3.0)
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    last_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_result: Mapped[str] = mapped_column(String(8), default="")

@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type User } from './api';
 import { ErrorBanner, Field, Loading } from './ui';
+import { EndgamesPage } from './learn/EndgamesPage';
 import { OpeningsPage } from './openings/OpeningsPage';
 import { BoardPage, GamesPage, InsightsPage, SettingsPage, TrainingPage } from './pages';
 
-type Route = 'board' | 'openings' | 'games' | 'training' | 'insights' | 'settings';
+type Route = 'board' | 'openings' | 'endgames' | 'games' | 'training' | 'insights' | 'settings';
 
 const NAV: { id: Route; label: string }[] = [
   { id: 'board', label: 'Board' },
   { id: 'openings', label: 'Openings' },
+  { id: 'endgames', label: 'Endgames' },
   { id: 'games', label: 'Games & analysis' },
   { id: 'training', label: 'Training & improvement' },
   { id: 'insights', label: 'Insights' },
@@ -145,6 +147,7 @@ export default function App() {
       <main className="flex-1 space-y-4 p-4 md:p-6">
         {route === 'board' ? <BoardPage /> : null}
         {route === 'openings' ? <OpeningsPage /> : null}
+        {route === 'endgames' ? <EndgamesPage /> : null}
         {route === 'games' ? <GamesPage /> : null}
         {route === 'training' ? <TrainingPage /> : null}
         {route === 'insights' ? <InsightsPage /> : null}

@@ -207,3 +207,33 @@ export const openingsApi = {
   review: (id: number, moves: string[]) => request<ReviewResult>(`/api/openings/cards/${id}/review`, json({ moves })),
   gameOpening: (gameId: number) => request<GameOpening>(`/api/games/${gameId}/opening`),
 };
+
+export interface EndgameExercise {
+  id: string;
+  category: string;
+  title: string;
+  fen: string;
+  goal: 'mate' | 'win' | 'draw' | 'line';
+  mate_in: number | null;
+  concept: string;
+  highlights: string[];
+  side_to_move: 'white' | 'black';
+  verification: string;
+  verification_text: string;
+  hint?: string;
+  progress?: { attempts: number; solved: number; due: boolean } | null;
+}
+export interface MoveVerdict {
+  accepted: boolean;
+  san: string;
+  reply: { uci: string; san: string } | null;
+  fen_after: string;
+  solved: boolean;
+  why: string;
+  explanation: string | null;
+}
+export const endgamesApi = {
+  list: () => request<{ exercises: EndgameExercise[] }>('/api/endgames'),
+  get: (id: string) => request<EndgameExercise>(`/api/endgames/${id}`),
+  move: (id: string, fen: string, move: string) => request<MoveVerdict>(`/api/endgames/${id}/move`, json({ fen, move })),
+};
