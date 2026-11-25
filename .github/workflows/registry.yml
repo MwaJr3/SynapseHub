@@ -1,0 +1,44 @@
+name: Registry consistency
+
+# The registry guard's CI half: `build-registry.mjs --check` fails when
+# projects.json does not match what the generator would produce (a hand-edit, a
+# stale regeneration, or an entry that violates scripts/registry-schema.mjs —
+# the generator validates before it compares). The semantic suite over the
+# committed file lives in src/registry.test.ts and runs in every PR through the
+# UX engine quality gate's `npm test`; this workflow adds the staleness gate,
+# which nothing else runs, and fires precisely when registry inputs change.
+#
+# No install step: the generator and validator use only Node builtins.
+on:
+  push:
+    paths:
+      - 'projects.json'
+      - 'scripts/build-registry.mjs'
+      - 'scripts/registry-schema.mjs'
+      - 'scripts/registry-schema.d.mts'
+      - 'src/registry.test.ts'
+      - '.github/workflows/registry.yml'
+  pull_request:
+    paths:
+      - 'projects.json'
+      - 'scripts/build-registry.mjs'
+      - 'scripts/registry-schema.mjs'
+      - 'scripts/registry-schema.d.mts'
+      - 'src/registry.test.ts'
+      - '.github/workflows/registry.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: projects.json matches the generator and passes the schema
+        run: node scripts/build-registry.mjs --check
