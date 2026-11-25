@@ -24,6 +24,9 @@ export interface BoardProps {
   /** Squares to highlight as a hint (e.g. key squares in endgames). */
   highlights?: Square[];
   onMove?: (from: Square, to: Square, promotion?: Promo) => void;
+  /** Square-picking mode (strategy exercises): clicking toggles instead of moving. */
+  onSquare?: (sq: Square) => void;
+  picked?: Square[];
   label?: string;
 }
 
@@ -32,7 +35,7 @@ export interface BoardProps {
  * move a roving focus, Enter/Space selects and moves, Escape cancels. Motion is
  * limited to colour transitions that are disabled under prefers-reduced-motion.
  */
-export function Board({ fen, orientation = 'w', interactive = true, lastMove, marker, highlights = [], onMove, label }: BoardProps) {
+export function Board({ fen, orientation = 'w', interactive = true, lastMove, marker, highlights = [], onMove, onSquare, picked = [], label }: BoardProps) {
   const squares = useMemo(() => boardFromFen(fen), [fen]);
   const turn = sideToMove(fen);
   const [selected, setSelected] = useState<Square | null>(null);
@@ -56,6 +59,7 @@ export function Board({ fen, orientation = 'w', interactive = true, lastMove, ma
 
   function activate(sq: Square) {
     if (!interactive) return;
+    if (onSquare) { onSquare(sq); return; }
     if (selected && targetSet.has(sq)) {
       const t = targets.find((x) => x.to === sq);
       if (t?.promotion) {
@@ -101,7 +105,7 @@ export function Board({ fen, orientation = 'w', interactive = true, lastMove, ma
           const wIdx = order.find((k) => squareAt(k, 'w') === sq) as number;
           const piece = squares[wIdx] ?? null;
           const dark = (Math.floor(wIdx / 8) + (wIdx % 8)) % 2 === 1;
-          const isSel = selected === sq;
+          const isSel = selected === sq || picked.includes(sq);
           const isTarget = targetSet.has(sq);
           const isLast = !!lastMove && (lastMove.from === sq || lastMove.to === sq);
           const hint = highlights.includes(sq);

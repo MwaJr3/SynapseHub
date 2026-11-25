@@ -32,6 +32,8 @@ app.include_router(openings_router)
 app.include_router(games_router)
 from .endgames_routes import router as endgames_router  # noqa: E402
 app.include_router(endgames_router)
+from .strategy_routes import router as strategy_router  # noqa: E402
+app.include_router(strategy_router)
 
 
 @app.get("/api/engine/status")

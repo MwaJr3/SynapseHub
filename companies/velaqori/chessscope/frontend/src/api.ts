@@ -237,3 +237,24 @@ export const endgamesApi = {
   get: (id: string) => request<EndgameExercise>(`/api/endgames/${id}`),
   move: (id: string, fen: string, move: string) => request<MoveVerdict>(`/api/endgames/${id}/move`, json({ fen, move })),
 };
+
+export interface StrategyFeatures {
+  isolated: Record<'white' | 'black', string[]>;
+  doubled: Record<'white' | 'black', string[]>;
+  passed: Record<'white' | 'black', string[]>;
+  backward: Record<'white' | 'black', string[]>;
+  outposts: Record<'white' | 'black', string[]>;
+  open_files: string[];
+}
+export interface StrategyLesson {
+  id: string; title: string; fen: string; structure: string; plan: string; pitfalls: string; features: StrategyFeatures;
+}
+export interface StrategyExercise {
+  id: string; title: string; fen: string; prompt: string; progress: { attempts: number; solved: number } | null;
+}
+export const strategyApi = {
+  overview: () => request<{ lessons: StrategyLesson[]; exercises: StrategyExercise[]; provenance: Record<string, string> }>('/api/strategy'),
+  answer: (id: string, squares: string[]) =>
+    request<{ correct: boolean; missed: string[]; extra: string[]; explanation: string; answer: string[] | null }>(
+      `/api/strategy/exercises/${id}/answer`, json({ squares })),
+};
