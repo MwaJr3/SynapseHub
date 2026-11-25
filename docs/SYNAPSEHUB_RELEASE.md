@@ -1,5 +1,9 @@
 # SynapseHub beta release work — 2026-10-28
 
+> **Single release assessment:** capability maturity, evidence and the closure
+> plan live in [SYNAPSEHUB_PRODUCTION_READINESS.md](SYNAPSEHUB_PRODUCTION_READINESS.md).
+> This file remains the execution log for the deployment attempt.
+
 This is an execution log, not a production-readiness certificate. It supersedes
 historical blockers in `SYNAPSEHUB_CONNECTED.md` where noted.
 
