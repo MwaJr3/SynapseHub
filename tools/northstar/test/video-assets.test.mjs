@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
@@ -38,6 +39,7 @@ describe('76-pattern video evidence manifest', () => {
       const bytes = fs.readFileSync(videoPath);
       assert.equal(bytes.length, asset.bytes);
       assert.equal(bytes.toString('ascii', 4, 8), 'ftyp');
+      assert.equal(createHash('sha256').update(bytes).digest('hex'), asset.sha256);
     });
   });
 
