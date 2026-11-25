@@ -45,3 +45,15 @@
   .dx-shimmer { -webkit-text-fill-color: currentColor; background: none; animation: none; }
   .dx-glow::before, .dx-dots { display: none; }
 }
+
+.dx-offline {
+  padding: 0.5rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  background: #fffbeb;
+  color: #78350f;
+  border-bottom: 1px solid #fcd34d;
+}
+@media (forced-colors: active) {
+  .dx-offline { background: Canvas; color: CanvasText; border-bottom: 1px solid CanvasText; }
+}

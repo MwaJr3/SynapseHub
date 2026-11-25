@@ -8,6 +8,7 @@ import './styles/portfolio.css';
 import './styles/apps.css';
 
 import App from './App';
+import { OfflineBanner } from './components/decor';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { validateChallengeManifest } from '@challenges';
 
@@ -26,6 +27,7 @@ createRoot(container).render(
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
+        <OfflineBanner />
         <App />
       </BrowserRouter>
     </ThemeProvider>

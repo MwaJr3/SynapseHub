@@ -6,6 +6,7 @@ import './decor/decor.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { OfflineBanner } from "./decor"
 
 const container = document.getElementById('root');
 if (!container) {
@@ -16,6 +17,7 @@ if (!container) {
    another router here (a nested <Router> throws and renders a blank page). */
 createRoot(container).render(
   <StrictMode>
+    <OfflineBanner />
     <App />
   </StrictMode>,
 );

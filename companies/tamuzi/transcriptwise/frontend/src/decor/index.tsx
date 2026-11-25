@@ -80,3 +80,26 @@ export function Marquee({ children, durationSeconds = 40, label }: { children: R
 export function DotPattern({ gap = 20 }: { gap?: number }) {
   return <div className="dx-dots" aria-hidden="true" style={{ '--dx-dot-gap': `${gap}px` } as CSSProperties} />;
 }
+
+/**
+ * Tells the visitor when the browser is offline and what still works.
+ * Renders an empty polite live region while online so the announcement is read when it appears.
+ */
+export function OfflineBanner({ message = 'You are offline. What is already on screen stays readable; saving and loading resume when you reconnect.' }: { message?: string }) {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const sync = () => setOnline(navigator.onLine);
+    sync();
+    window.addEventListener('online', sync);
+    window.addEventListener('offline', sync);
+    return () => {
+      window.removeEventListener('online', sync);
+      window.removeEventListener('offline', sync);
+    };
+  }, []);
+  return (
+    <div role="status" aria-live="polite" className={online ? undefined : 'dx-offline'}>
+      {online ? null : message}
+    </div>
+  );
+}

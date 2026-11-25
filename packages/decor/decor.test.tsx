@@ -1,6 +1,6 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, ShimmerText } from './index';
+import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, OfflineBanner, ShimmerText } from './index';
 
 const reduceMotion = () =>
   vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }));
@@ -31,5 +31,22 @@ describe('decor', () => {
     const { container } = render(<><DotPattern /><ShimmerText>x</ShimmerText><GlowCard>y</GlowCard></>);
     expect(container.querySelector('.dx-dots')?.getAttribute('aria-hidden')).toBe('true');
     expect(container.querySelector('.dx-glow')?.textContent).toBe('y');
+  });
+});
+
+describe('OfflineBanner', () => {
+  it('is an empty live region online and shows the message when the browser goes offline', () => {
+    render(<OfflineBanner />);
+    expect(screen.getByRole('status').textContent).toBe('');
+    act(() => {
+      Object.defineProperty(navigator, 'onLine', { value: false, configurable: true });
+      window.dispatchEvent(new Event('offline'));
+    });
+    expect(screen.getByRole('status').textContent).toMatch(/offline/i);
+    act(() => {
+      Object.defineProperty(navigator, 'onLine', { value: true, configurable: true });
+      window.dispatchEvent(new Event('online'));
+    });
+    expect(screen.getByRole('status').textContent).toBe('');
   });
 });

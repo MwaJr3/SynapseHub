@@ -7,10 +7,12 @@ import './styles/tokens.css';
 import './styles/app.css';
 import './decor/decor.css';
 import { App } from './App';
+import { OfflineBanner } from "./decor"
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
+      <OfflineBanner />
       <App />
     </BrowserRouter>
   </StrictMode>,

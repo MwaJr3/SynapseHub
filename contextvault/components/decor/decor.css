@@ -1,0 +1,59 @@
+/*
+ * decor — small, dependency-free decorative components (ported in spirit from Magic UI
+ * and Cult UI, rebuilt without their dependencies). Every effect:
+ *   - is off or static under prefers-reduced-motion,
+ *   - never carries meaning (decorative layers are aria-hidden),
+ *   - uses transform/opacity only, so it never triggers layout.
+ * Class names are prefixed `dx-` so they cannot collide with an app's own styles.
+ */
+.dx-reveal { opacity: 0; transform: translateY(var(--dx-reveal-distance, 8px)); filter: blur(var(--dx-reveal-blur, 6px));
+  transition: opacity .5s ease-out, transform .5s ease-out, filter .5s ease-out; transition-delay: var(--dx-delay, 0ms); }
+.dx-reveal[data-visible='true'] { opacity: 1; transform: none; filter: none; }
+
+.dx-shimmer { background-image: linear-gradient(110deg, currentColor 35%, color-mix(in srgb, currentColor 40%, white) 50%, currentColor 65%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  animation: dx-shimmer 3.2s ease-in-out infinite; }
+@keyframes dx-shimmer { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+@property --dx-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.dx-glow { position: relative; border-radius: var(--dx-radius, 12px); isolation: isolate; }
+.dx-glow::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1px;
+  background: conic-gradient(from var(--dx-angle), transparent 0 70%, var(--dx-glow-from, #67e8f9), var(--dx-glow-to, #818cf8), transparent);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: dx-spin 6s linear infinite; }
+@keyframes dx-spin { to { --dx-angle: 360deg; } }
+
+.dx-marquee { display: flex; overflow: hidden; gap: var(--dx-gap, 1.5rem); -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.dx-marquee__track { display: flex; flex-shrink: 0; gap: var(--dx-gap, 1.5rem); min-width: 100%; align-items: center; justify-content: space-around;
+  animation: dx-marquee var(--dx-duration, 40s) linear infinite; }
+.dx-marquee:hover .dx-marquee__track, .dx-marquee:focus-within .dx-marquee__track { animation-play-state: paused; }
+@keyframes dx-marquee { to { transform: translateX(calc(-100% - var(--dx-gap, 1.5rem))); } }
+
+.dx-dots { position: absolute; inset: 0; z-index: -1; pointer-events: none; color: var(--dx-dot, currentColor); opacity: .18;
+  background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: var(--dx-dot-gap, 20px) var(--dx-dot-gap, 20px);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse at center, #000 30%, transparent 75%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dx-reveal { opacity: 1; transform: none; filter: none; transition: none; }
+  .dx-shimmer { animation: none; background: none; -webkit-text-fill-color: currentColor; }
+  .dx-glow::before { animation: none; }
+  .dx-marquee { overflow: visible; flex-wrap: wrap; -webkit-mask-image: none; mask-image: none; }
+  .dx-marquee__track { animation: none; }
+  .dx-marquee__track[aria-hidden='true'] { display: none; }
+}
+@media (forced-colors: active) {
+  .dx-shimmer { -webkit-text-fill-color: currentColor; background: none; animation: none; }
+  .dx-glow::before, .dx-dots { display: none; }
+}
+
+.dx-offline {
+  padding: 0.5rem 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  background: #fffbeb;
+  color: #78350f;
+  border-bottom: 1px solid #fcd34d;
+}
+@media (forced-colors: active) {
+  .dx-offline { background: Canvas; color: CanvasText; border-bottom: 1px solid CanvasText; }
+}
