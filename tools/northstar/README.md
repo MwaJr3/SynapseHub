@@ -13,7 +13,7 @@ are complementary and both are kept, behind one entry point:
 
 | Layer | Where | Reached by |
 | --- | --- | --- |
-| Severity-ranked rules (53 checks, P0–P3) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
+| Severity-ranked rules (53 rule functions, P0–P3; direct checks map to 29 canonical patterns and 10 extensions) | `rules.mjs`, `engine.mjs` | `northstar audit` · `check` · `fix` · `watch` |
 | Static detectors (15 families, file:line evidence) | `engine/` | `northstar scan` |
 
 It holds to a rule most design tooling breaks: **it does not claim to have seen
@@ -62,7 +62,7 @@ Node 20 or newer. No dependencies, no network access, no telemetry.
 
 ## What it checks
 
-Forty-eight checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
+Fifty-three rule functions that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
 rendered from Python string templates. The ones that find the most, in this repository:
 
 | Check | Pattern | What it proves |
@@ -115,9 +115,7 @@ Plus `hover-only-action`, `raw-colour-in-class`, `nav-missing-current`,
 `placeholder-link`, `target-blank-noopener` and `small-target`. The full mapping lives
 in `PATTERNS.md` and `patterns.mjs`.
 
-**Fifty of the 76 canonical patterns are not machine-checked.** That is stated in the
-pattern library, in the audit report, and in every command's output. `PATTERNS.md`
-lists them with the standard they are held to.
+**Twenty-nine of the 76 canonical patterns have direct source checks.** The other 47 canonical patterns are explicitly marked for human or browser assessment. Ten of the 16 Northstar extensions have direct checks; six need human or browser assessment. PATTERNS.md is the generated coverage source of truth and lists each pattern with the standard it is held to.
 
 ## Why source analysis
 
@@ -154,15 +152,13 @@ Nine, each written to activate on the task rather than on the keyword:
 | `visual-character` | The product looks generic, templated, or "AI-made" |
 | `responsive-design` | Widths, keyboard, zoom, contrast, reduced motion — WCAG 2.2 AA |
 
-Two specialists are included because delegation genuinely helps:
-`ux-auditor` (audits and reports, never edits) and `design-system-cartographer`
-(inventories an existing system before anyone replaces it).
+Three specialist agents are included because delegation genuinely helps: ux-designer (turns a product brief into a pre-code specification), ux-auditor (audits and reports, never edits), and design-system-cartographer (inventories an existing system before anyone replaces it).
 
 ## Numbering
 
 Canonical patterns are `P01`–`P76` (zero-padded, so they never collide with the
 severities `P0`–`P3`); the TypeScript engine writes the same patterns as `P1`–`P76`.
-Northstar-only checks are extensions `X01`–`X13`. Every record keeps a `legacyId` that
+Northstar-only checks are extensions X01–X16. Every record keeps a `legacyId` that
 traces it to its 1.0.x number. `PATTERNS.md` is generated: `northstar patterns --markdown`.
 
 ## Measuring a real page
@@ -201,7 +197,7 @@ you cannot remove gets removed wholesale.
 cd northstar-ux-engine && npm test
 ```
 
-`node --test`, no dependencies. Five suites:
+`node --test`, no dependencies. Ten test files:
 
 - **structure** — manifest, marketplace source, exactly four commands, exactly nine
   skills whose `name` matches their directory, agents with a model, the hook pointing
@@ -216,17 +212,14 @@ cd northstar-ux-engine && npm test
 - **engine** — contrast against published values, palette resolution, surface
   detection, and calibration on five fixtures: the broken ones must produce exactly
   their planted defects, and the nearly-correct one must produce exactly one.
-- **safety** — the guard blocks and allows the right commands, can be bypassed
-  deliberately, no file imports a network module, the only environment variable read
-  is the documented override, and the CLI never deletes anything.
+- **add / fixer / hooks** — component installation, safe mechanical fixes, and hook behavior.
+- **safety** — the guard blocks and allows the right commands, can be bypassed deliberately, no file imports a network module, and the CLI never deletes anything.
+- **knowledge** — provenance, evidence classification, review gates, and duplicate/reference validation.
+- **video assets** — all 76 pattern-to-video mappings and Git LFS configuration.
 
 ## Fixtures
 
-Five small projects under `fixtures/`, each planted with a specific defect set:
-`bad-form` (6), `dashboard-missing-states` (4), `overflow-layout` (2),
-`inconsistent-tokens` (8), and `accessible-markup-with-defect` — which is correct
-accessible markup with exactly one contrast failure, and exists to keep the engine
-from becoming a machine that fires on everything.
+Fixture projects under fixtures/ cover forms, missing states, overflow, inconsistent tokens, accessibility, motion, media, and near-correct markup. accessible-markup-with-defect is intentionally almost correct, with exactly one contrast failure, to keep the engine from becoming a machine that fires on everything.
 
 ## Limitation, stated once and plainly
 
@@ -243,3 +236,15 @@ MIT — see `LICENSE`.
 ## Decorative components
 
 `northstar add decor <srcDir>` copies the dependency-free kit. `northstar add magicui --list` shows the optional vendored magicui set (needs Tailwind 4, `motion`, `clsx`, `tailwind-merge`); see `vendor/magicui/README.md`. `northstar add cult-ui --list` shows the vendored cult-ui set; see `vendor/cult-ui/README.md`.
+
+## Knowledge acquisition and review
+
+Northstar keeps its 76 canonical patterns as the stable baseline. New knowledge from books, papers, standards, articles and demonstrations is staged separately under knowledge/records/; it is never silently merged into the canonical pattern catalogue.
+
+Each proposal carries source metadata and a precise locator (chapter, page, section, URL or video timecode), a short excerpt where useful, an evidence classification, related pattern IDs, an integration disposition, and a review status. Use knowledge/schema.json and validate staged records with npm run ux:knowledge:validate. The workflow is extract → classify → compare → propose → review → approve → integrate. Approved records require a reviewer and review timestamp. Duplicate, conflict, obsolete and contextual-exception findings remain explicit; they are not auto-resolved. See knowledge/README.md.
+
+## Demonstration videos
+
+The supplied source archives contain 76 MP4 demonstrations, one for each canonical pattern. Their mapping is recorded in assets/videos/manifest.json. The binary assets are handled with Git LFS so ordinary Git history does not balloon. The importer validates all expected filenames, verifies MP4 signatures, extracts the files, and writes byte sizes and SHA-256 checksums to the manifest.
+
+Run git lfs install, then node tools/northstar/scripts/import-videos.mjs /path/to/Designmotion_part1.zip /path/to/Designmotion_part2.zip. Stage .gitattributes and tools/northstar/assets/videos, then commit and push. The repository contains the verified manifest and import workflow; the 76 binary files still need to be imported and pushed from the supplied archives. A filename reference is not proof that a video object is present.
