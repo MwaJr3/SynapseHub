@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, type User } from './api';
 import { ErrorBanner, Field, Loading } from './ui';
-import { GamesPage, InsightsPage, SettingsPage, TrainingPage } from './pages';
+import { BoardPage, GamesPage, InsightsPage, SettingsPage, TrainingPage } from './pages';
 
-type Route = 'games' | 'training' | 'insights' | 'settings';
+type Route = 'board' | 'games' | 'training' | 'insights' | 'settings';
 
 const NAV: { id: Route; label: string }[] = [
+  { id: 'board', label: 'Board' },
   { id: 'games', label: 'Games & analysis' },
   { id: 'training', label: 'Training & improvement' },
   { id: 'insights', label: 'Insights' },
@@ -15,7 +16,7 @@ const NAV: { id: Route; label: string }[] = [
 function useHashRoute(): [Route, (route: Route) => void] {
   const read = (): Route => {
     const hash = window.location.hash.replace('#/', '') as Route;
-    return NAV.some((n) => n.id === hash) ? hash : 'games';
+    return NAV.some((n) => n.id === hash) ? hash : 'board';
   };
   const [route, setRoute] = useState<Route>(read);
   useEffect(() => {
@@ -140,6 +141,7 @@ export default function App() {
         </div>
       </aside>
       <main className="flex-1 space-y-4 p-4 md:p-6">
+        {route === 'board' ? <BoardPage /> : null}
         {route === 'games' ? <GamesPage /> : null}
         {route === 'training' ? <TrainingPage /> : null}
         {route === 'insights' ? <InsightsPage /> : null}

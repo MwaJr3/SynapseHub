@@ -1,4 +1,5 @@
 import { EnginePanel } from './EnginePanel';
+import { GameViewer } from './board/GameViewer';
 import { useCallback, useEffect, useState } from 'react';
 import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
@@ -10,6 +11,7 @@ export function GamesPage() {
   const [error, setError] = useState('');
   const [openId, setOpenId] = useState<number | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [openPgn, setOpenPgn] = useState('');
   const [busy, setBusy] = useState(false);
 
   const reload = useCallback(() => {
@@ -27,6 +29,7 @@ export function GamesPage() {
     setBusy(true);
     try {
       const detail = await api.game(id);
+      setOpenPgn(detail.pgn_text);
       if (detail.analysis) {
         setAnalysis(detail.analysis);
       } else {
@@ -114,7 +117,7 @@ export function GamesPage() {
               {openId === g.id ? (
                 <div className="mt-4 space-y-3 border-t border-slate-800 pt-3">
                   {busy && !analysis ? <Loading /> : null}
-                  {analysis ? <AnalysisView analysis={analysis} /> : null}
+                  {analysis ? <AnalysisView analysis={analysis} pgn={openPgn} /> : null}
                 </div>
               ) : null}
             </div>
@@ -125,9 +128,10 @@ export function GamesPage() {
   );
 }
 
-function AnalysisView({ analysis }: { analysis: Analysis }) {
+function AnalysisView({ analysis, pgn }: { analysis: Analysis; pgn: string }) {
   return (
     <div className="space-y-3">
+      {pgn ? <GameViewer key={pgn} initialText={pgn} analysis={analysis} allowImport={false} /> : null}
       <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
         <strong className="text-slate-200">Engine status:</strong> {analysis.engine.message}
       </div>
@@ -372,6 +376,17 @@ export function TrainingPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+export function BoardPage() {
+  return (
+    <div className="space-y-4">
+      <h1 className="text-xl font-semibold">Board</h1>
+      <Card>
+        <GameViewer />
+      </Card>
     </div>
   );
 }

@@ -4,7 +4,10 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+from .chess_tools import InputError, parse_input
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -36,6 +39,19 @@ def engine_status_route():
         "browser": {"available": True, "source": "stockfish.js WASM (in-browser)",
                     "message": "A WebAssembly Stockfish runs in your browser; nothing is sent to a server."},
     }
+
+
+class ParseBody(BaseModel):
+    text: str = Field(max_length=200_000)
+
+
+@app.post("/api/chess/parse")
+def chess_parse(body: ParseBody):
+    """Authoritative FEN/PGN validation (python-chess). Pure function; stores nothing."""
+    try:
+        return parse_input(body.text)
+    except InputError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @app.get("/api/health")
