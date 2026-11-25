@@ -26,6 +26,12 @@ export function vendoredNames(set) {
 export const magicuiNames = () => vendoredNames('magicui');
 
 const copy = (from, to) => { fs.mkdirSync(path.dirname(to), { recursive: true }); fs.copyFileSync(from, to); };
+/** Third-party source keeps its own style, so the copy is marked for the app's linter (the code is otherwise unchanged). */
+const HEADER = '/* eslint-disable -- vendored third-party component (MIT); see LICENSE in this folder */\n';
+const copySource = (from, to) => {
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.writeFileSync(to, HEADER + fs.readFileSync(from, 'utf8'));
+};
 
 export function add(args, log = (m) => process.stdout.write(`${m}\n`)) {
   const [set, ...rest] = args;
@@ -47,7 +53,7 @@ export function add(args, log = (m) => process.stdout.write(`${m}\n`)) {
     const unknown = names.filter((n) => !known.includes(n));
     if (unknown.length) { log(`unknown component: ${unknown.join(', ')}. Known: ${known.join(', ')}`); return 2; }
     const out = path.join(dir, 'components', set);
-    for (const n of names) copy(path.join(VENDOR, set, `${n}.tsx`), path.join(out, `${n}.tsx`));
+    for (const n of names) copySource(path.join(VENDOR, set, `${n}.tsx`), path.join(out, `${n}.tsx`));
     for (const f of config.extra) copy(path.join(VENDOR, set, f), path.join(out, f));
     log(`copied ${names.join(', ')} to ${out}`);
     log(`npm i ${config.deps}     # peer packages these components use`);

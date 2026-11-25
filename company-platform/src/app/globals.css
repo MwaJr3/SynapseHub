@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '../components/magicui/magicui.css';
 @config '../../tailwind.config.ts';
 
 :root {

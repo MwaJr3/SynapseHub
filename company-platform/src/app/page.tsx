@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, ShimmerText } from '@/components/decor-client';
+import { BlurFade, DotPattern, ShimmerText } from '@/components/decor-client';
+import { BorderBeam } from '@/components/magicui/border-beam';
+import { Marquee } from '@/components/magicui/marquee';
+import { NumberTicker } from '@/components/magicui/number-ticker';
+import { ShineBorder } from '@/components/magicui/shine-border';
 import { IllustrativeLabel, Badge, StatusBadge, CompanyBadge } from '@/components/ui';
 import { SEED_DATA_NOTICE } from '@/content';
 import { listCompanies, listPublishedCaseStudies, listPublishedProducts, listPublishedPeople } from '@/lib/queries';
@@ -37,6 +41,7 @@ export default async function HomePage() {
     <div className="space-y-14">
       <section aria-labelledby="hero-heading" className="card relative overflow-hidden p-8">
         <DotPattern />
+        <BorderBeam size={140} duration={12} />
         <BlurFade>
         <Badge tone="accent">Two independent companies · one shared platform</Badge>
         <h1 id="hero-heading" className="mt-4 text-3xl font-semibold leading-tight">
@@ -67,7 +72,7 @@ export default async function HomePage() {
         ].map(([label, value]) => (
           <BlurFade key={label as string}>
             <div className="card text-center">
-              <p className="text-3xl font-semibold accent-text"><NumberTicker value={value as number} /></p>
+              <p className="text-3xl font-semibold accent-text"><NumberTicker value={value as number} className="text-[var(--accent)] dark:text-[var(--accent)]" /></p>
               <p className="mt-1 text-sm text-muted">{label}</p>
             </div>
           </BlurFade>
@@ -75,7 +80,7 @@ export default async function HomePage() {
       </section>
 
       {products.length > 0 ? (
-        <Marquee label="Products on this platform">
+        <Marquee aria-hidden="true" pauseOnHover className="motion-reduce:[&_*]:!animate-none">
           {products.map((product) => (
             <span key={product.slug} className="badge mx-2 whitespace-nowrap">
               {product.name}
@@ -88,7 +93,8 @@ export default async function HomePage() {
         <h2 id="companies-heading" className="text-xl font-semibold">The two companies</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {companies.map((company) => (
-            <GlowCard key={company.slug} className="card">
+            <article key={company.slug} className="card relative overflow-hidden">
+              <ShineBorder shineColor={["#3b6fd4", "#8b5cf6"]} borderWidth={1} />
               <h3 className="text-lg font-semibold">{company.name}</h3>
               <p className="mt-2 text-sm text-muted">{company.tagline}</p>
               <p className="mt-3 text-sm text-muted">{company.overview}</p>
@@ -100,7 +106,7 @@ export default async function HomePage() {
                   About
                 </Link>
               </div>
-            </GlowCard>
+            </article>
           ))}
         </div>
       </section>

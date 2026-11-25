@@ -40,10 +40,10 @@ test('add decor copies the dependency-free kit', () => {
 
 test('add cult-ui copies components with licence and helper, and lists its names', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ns-add-'));
-  assert.equal(add(['cult-ui', 'texture-card', 'type-animate', dir], quiet), 0);
+  assert.equal(add(['cult-ui', 'texture-card', 'edge-blur', dir], quiet), 0);
   const out = path.join(dir, 'components', 'cult-ui');
-  for (const f of ['texture-card.tsx', 'type-animate.tsx', 'utils.ts', 'LICENSE']) assert.ok(fs.existsSync(path.join(out, f)), f);
+  for (const f of ['texture-card.tsx', 'edge-blur.tsx', 'utils.ts', 'LICENSE']) assert.ok(fs.existsSync(path.join(out, f)), f);
   assert.match(fs.readFileSync(path.join(out, 'LICENSE'), 'utf8'), /MIT License/);
   assert.equal(add(['cult-ui', 'nope', dir], quiet), 2);
-  assert.deepEqual(vendoredNames('cult-ui').length, 7);
+  assert.deepEqual(vendoredNames('cult-ui').length, 6);
 });

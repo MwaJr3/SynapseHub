@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+import { MotionProvider } from '@/components/motion-provider';
 import { SiteFooter, SiteHeader } from '@/components/site-chrome';
 import { getSessionActor } from '@/lib/auth';
 
@@ -28,11 +29,13 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         >
           Skip to content
         </a>
+        <MotionProvider>
         <SiteHeader actor={actor} />
         <main id="main" className="mx-auto max-w-6xl px-4 py-10">
           {children}
         </main>
         <SiteFooter />
+        </MotionProvider>
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
   "name": "company-platform",
   "version": "0.1.0",
   "private": true,
-  "description": "Shared discovery platform for two independent companies \u2014 Velaqori Systems and Tamuzi Learning (working names).",
+  "description": "Shared discovery platform for two independent companies — Velaqori Systems and Tamuzi Learning (working names).",
   "scripts": {
     "dev": "next dev -H 0.0.0.0",
     "build": "next build",
@@ -23,15 +23,20 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",
     "@electric-sql/pglite": "0.5.11",
+    "clsx": "^2.1.1",
     "drizzle-orm": "0.45.4",
+    "motion": "^14.14.0",
     "next": "15.5.29",
     "next-auth": "5.0.0-beta.32",
     "pg": "8.23.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
+    "react-use-measure": "^2.1.7",
+    "tailwind-merge": "^3.7.1",
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.10.0",
     "@types/pg": "^8.11.10",
     "@types/react": "^19.1.0",
@@ -42,8 +47,7 @@
     "tailwindcss": "^4.3.3",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
-    "vitest": "^4.1.12",
-    "@tailwindcss/postcss": "^4.3.3"
+    "vitest": "^4.1.12"
   },
   "overrides": {
     "postcss": "^8.5.23",
