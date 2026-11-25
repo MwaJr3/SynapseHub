@@ -38,7 +38,7 @@ const EXCLUDED = [
  * Root-level products: standalone builds that are not filed under a company.
  * They keep their own deployment story and are not part of the companies split.
  */
-const ROOT_PRODUCTS = ['company-platform', 'workniche', 'vocal-separator'];
+const ROOT_PRODUCTS = ['company-platform', 'workniche', 'vocal-separator', 'contextvault'];
 
 /**
  * The two companies, and the roots each one's products are filed under. Ownership
@@ -109,6 +109,15 @@ const DECLARED_PRODUCTS = [];
  * for entries the tree discovers — used while `source: 'extracting'`.
  */
 const REGISTRY_META = {
+  // ContextVault pilot (extraction map §4.1 #1): discovered from the tree like
+  // any local product — the original directory still lives here — while the
+  // standalone repository at github.com/MwaJr3/contextvault takes over. Moves
+  // to DECLARED_PRODUCTS only when the directory is retired (§7.6).
+  contextvault: {
+    source: 'extracting',
+    repository: 'https://github.com/MwaJr3/contextvault',
+    defaultBranch: 'main',
+  },
   'companies/velaqori/phishlens-cli': { variantOf: 'phishlens' },
   'companies/velaqori/netscope-cli': { variantOf: 'netscope' },
   'companies/velaqori/incidentflow-cli': { variantOf: 'incidentflow' },
@@ -156,6 +165,7 @@ const DISPLAY_NAME = {
   'companies/velaqori/phishlens-cli': 'PhishLens (CLI)',
   'companies/velaqori/threatintel-desk-cli': 'ThreatIntel Desk (CLI)',
   'sites/portfolio': 'Mwangala',
+  contextvault: 'ContextVault',
 };
 
 /**
