@@ -18,9 +18,9 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <header style={{ background: "var(--accent)", color: "white" }}>
-        <div className="shell" style={{ display: "flex", gap: "1.25rem", alignItems: "center", padding: "0.85rem 1.25rem" }}>
+        <div className="shell" style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem 1.25rem", alignItems: "center", padding: "0.85rem 1.25rem" }}>
           <strong style={{ fontSize: "1.1rem" }}>AssetWatch</strong>
-          <nav style={{ display: "flex", gap: "1rem", flex: 1 }}>
+          <nav style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem 1rem", flex: 1 }}>
             <Link to="/" style={{ color: "white" }}>Dashboard</Link>
             <Link to="/assets" style={{ color: "white" }}>Assets</Link>
             <Link to="/scans" style={{ color: "white" }}>Scans</Link>

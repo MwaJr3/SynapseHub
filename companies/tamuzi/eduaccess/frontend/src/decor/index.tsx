@@ -103,3 +103,65 @@ export function OfflineBanner({ message = 'You are offline. What is already on s
     </div>
   );
 }
+
+type RequestIssue = 'slow' | 'signed-out' | null;
+
+/**
+ * Watches the app's own fetch() calls and says so when the connection is slow or the session ended.
+ *  - slow: a request has been pending for `slowAfterMs` (it reports waiting, never fake progress)
+ *  - signed-out: a request came back 401, so the person is asked to sign in again; nothing on screen is cleared
+ * It wraps window.fetch while mounted and restores it on unmount.
+ */
+export function RequestStatus({
+  slowAfterMs = 4000,
+  signInHref,
+}: {
+  slowAfterMs?: number;
+  /** Where "Sign in again" goes; without it the notice offers a page reload instead. */
+  signInHref?: string;
+}) {
+  const [issue, setIssue] = useState<RequestIssue>(null);
+  useEffect(() => {
+    const original = window.fetch;
+    let pending = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const settle = () => {
+      pending = Math.max(0, pending - 1);
+      if (pending === 0) {
+        if (timer) clearTimeout(timer);
+        setIssue((current) => (current === 'slow' ? null : current));
+      }
+    };
+    window.fetch = async (...args: Parameters<typeof fetch>) => {
+      pending += 1;
+      if (pending === 1) {
+        timer = setTimeout(() => setIssue((current) => current ?? 'slow'), slowAfterMs);
+      }
+      try {
+        const response = await original.apply(window, args);
+        if (response.status === 401) setIssue('signed-out');
+        return response;
+      } finally {
+        settle();
+      }
+    };
+    return () => {
+      window.fetch = original;
+      if (timer) clearTimeout(timer);
+    };
+  }, [slowAfterMs]);
+
+  if (!issue) return <div role="status" aria-live="polite" />;
+  return (
+    <div role="status" aria-live="polite" className="dx-offline">
+      {issue === 'slow' ? (
+        'This is taking longer than usual. Your connection may be slow; what you have entered is kept.'
+      ) : (
+        <>
+          Your session has ended, so the last request was refused. What is on screen is kept.{' '}
+          {signInHref ? <a href={signInHref}>Sign in again</a> : <button type="button" onClick={() => window.location.reload()}>Reload to sign in again</button>}
+        </>
+      )}
+    </div>
+  );
+}

@@ -4,6 +4,6 @@ import '@fontsource-variable/manrope'
 import './styles.css'
 import './decor/decor.css'
 import { App } from './App'
-import { OfflineBanner } from "./decor"
+import { OfflineBanner, RequestStatus } from "./decor"
 
-createRoot(document.getElementById('root')!).render(<OfflineBanner /><App />)
+createRoot(document.getElementById('root')!).render(<OfflineBanner /><RequestStatus /><App />)

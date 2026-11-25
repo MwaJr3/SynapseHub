@@ -1,2 +1,2 @@
 'use client';
-export { OfflineBanner } from './decor';
+export { OfflineBanner, RequestStatus } from './decor';

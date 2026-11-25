@@ -6,7 +6,7 @@ import './decor/decor.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import { OfflineBanner } from "./decor"
+import { OfflineBanner, RequestStatus } from "./decor"
 
 const container = document.getElementById('root');
 if (!container) {
@@ -18,6 +18,7 @@ if (!container) {
 createRoot(container).render(
   <StrictMode>
     <OfflineBanner />
+    <RequestStatus />
     <App />
   </StrictMode>,
 );

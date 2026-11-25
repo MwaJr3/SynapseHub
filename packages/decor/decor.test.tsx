@@ -1,6 +1,6 @@
 import { act, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, OfflineBanner, ShimmerText } from './index';
+import { BlurFade, DotPattern, GlowCard, Marquee, NumberTicker, OfflineBanner, RequestStatus, ShimmerText } from './index';
 
 const reduceMotion = () =>
   vi.stubGlobal('matchMedia', (query: string) => ({ matches: query.includes('reduce'), media: query, addEventListener() {}, removeEventListener() {} }));
@@ -48,5 +48,35 @@ describe('OfflineBanner', () => {
       window.dispatchEvent(new Event('online'));
     });
     expect(screen.getByRole('status').textContent).toBe('');
+  });
+});
+
+describe('RequestStatus', () => {
+  afterEach(() => vi.useRealTimers());
+
+  it('reports a slow request, clears it when the request ends, and restores fetch on unmount', async () => {
+    vi.useFakeTimers();
+    let release: (r: Response) => void = () => {};
+    const original = vi.fn(() => new Promise<Response>((resolve) => { release = resolve; }));
+    window.fetch = original as unknown as typeof fetch;
+    const { unmount } = render(<RequestStatus slowAfterMs={1000} />);
+    const wrapped = window.fetch;
+    expect(wrapped).not.toBe(original);
+    const call = wrapped('/slow');
+    expect(screen.getByRole('status').textContent).toBe('');
+    await act(async () => { vi.advanceTimersByTime(1200); });
+    expect(screen.getByRole('status').textContent).toMatch(/taking longer/i);
+    await act(async () => { release(new Response('ok')); await call; });
+    expect(screen.getByRole('status').textContent).toBe('');
+    unmount();
+    expect(window.fetch).toBe(original);
+  });
+
+  it('asks the person to sign in again after a 401 and keeps the message', async () => {
+    window.fetch = vi.fn(async () => new Response('no', { status: 401 })) as unknown as typeof fetch;
+    render(<RequestStatus signInHref="/login" />);
+    await act(async () => { await window.fetch('/api/x'); });
+    expect(screen.getByRole('status').textContent).toMatch(/session has ended/i);
+    expect(screen.getByRole('link', { name: /sign in again/i }).getAttribute('href')).toBe('/login');
   });
 });
