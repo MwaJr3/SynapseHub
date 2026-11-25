@@ -10,3 +10,8 @@
 @keyframes marquee-vertical { from { transform: translateY(0); } to { transform: translateY(calc(-100% - var(--gap))); } }
 @keyframes shiny-text { 0%, 90%, 100% { background-position: calc(-100% - var(--shiny-width)) 0; } 30%, 60% { background-position: calc(100% + var(--shiny-width)) 0; } }
 @keyframes shine { 0% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } to { background-position: 0% 0%; } }
+
+/* Added by Northstar: the upstream components do not all honour reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  [class*='animate-marquee'], [class*='animate-shiny-text'], [class*='animate-shine'] { animation: none !important; }
+}
