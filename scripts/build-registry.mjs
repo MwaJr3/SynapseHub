@@ -16,6 +16,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateRegistry } from './registry-schema.mjs';
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), '..');
 const REGISTRY = join(REPO, 'projects.json');
@@ -86,9 +87,26 @@ const NOT_A_PROJECT = new Set([
 ]);
 
 /**
+ * Products whose entry cannot be discovered from this tree: source lives in
+ * another repository (`external`) or the original here was retired (`archived`).
+ * Hand-kept like REGISTRY_META, because no directory records these facts.
+ * Each entry must satisfy scripts/registry-schema.mjs — the generator refuses
+ * to write a registry that fails it.
+ *
+ * A project mid-migration (`extracting`) is NOT declared here: its directory
+ * still exists, so the tree discovers it, and REGISTRY_META below adds the
+ * target repository and `source: 'extracting'` until the move completes — at
+ * which point the directory disappears and the entry moves into this list.
+ */
+const DECLARED_PRODUCTS = [];
+
+/**
  * Hand-kept facts. `owner` is the company the product belongs to; `pausedDeployment`
  * records what used to be hosted — deployment config was removed on 2026-10-28 and
  * nothing deploys today, so this is history, not configuration.
+ *
+ * `source`, `repository` and `defaultBranch` are the extraction-state overrides
+ * for entries the tree discovers — used while `source: 'extracting'`.
  */
 const REGISTRY_META = {
   'companies/velaqori/phishlens-cli': { variantOf: 'phishlens' },
@@ -289,6 +307,7 @@ function build() {
         slug,
         name: DISPLAY_NAME[path] ?? slug.replaceAll('-', ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
         path,
+        source: 'local',
         owner: ownerFor(path),
         kind,
         block: blockFor(path),
@@ -311,9 +330,15 @@ function build() {
           rootDirectory: meta.pausedDeployment.target === 'vercel-api' ? `${path}/backend` : path,
         };
       if (meta.variantOf) entry.variantOf = meta.variantOf;
+      if (meta.source) entry.source = meta.source;
+      if (meta.repository) {
+        entry.repository = meta.repository;
+        entry.defaultBranch = meta.defaultBranch;
+      }
       return entry;
     })
-    .sort((a, b) => a.path.localeCompare(b.path));
+    .concat(DECLARED_PRODUCTS)
+    .sort((a, b) => (a.path ?? a.slug).localeCompare(b.path ?? b.slug));
 
   return {
     schemaVersion: 1,
@@ -329,6 +354,8 @@ function build() {
       deployment:
         'Only the projects listed in `deploys` are deployed (company-platform, on the owner\'s request, 2026-10-29); hosting configuration for everything else was removed on 2026-10-28. pausedDeployment records what used to be live, for the redeployment; it is not configuration.',
       generatedBy: 'node scripts/build-registry.mjs — edit REGISTRY_META there, not this file.',
+      source:
+        "Where a project's code lives: `local` (this repository — the default), `external` (its own repository: no path, requires repository + defaultBranch), `extracting` (migration underway: local path plus the target repository), `archived` (the original here was retired). Path-less entries are first-class: same slug, block and uniqueness rules, validated by scripts/registry-schema.mjs. External products are declared in DECLARED_PRODUCTS there, not discovered from the tree.",
       challenges:
         'The 60 interactive prototypes live in challenges/, a self-contained collection with its own package boundary and one @challenges alias. Not a deployable project: it is content the portfolio site renders. Prepared for extraction to its own branch (docs/branch-splits.md).',
     },
@@ -336,7 +363,18 @@ function build() {
   };
 }
 
-const serialised = `${JSON.stringify(build(), null, 2)}\n`;
+const doc = build();
+
+// Schema first: a registry that violates the entry rules is never written and
+// never passes --check, whatever its bytes look like.
+const problems = validateRegistry(doc, BLOCKS, (path) => existsSync(join(REPO, path)));
+if (problems.length > 0) {
+  console.error('projects.json would be invalid:');
+  for (const problem of problems) console.error(`  - ${problem}`);
+  process.exit(1);
+}
+
+const serialised = `${JSON.stringify(doc, null, 2)}\n`;
 
 if (process.argv.includes('--check')) {
   const current = existsSync(REGISTRY) ? readFileSync(REGISTRY, 'utf8') : '';
@@ -347,10 +385,11 @@ if (process.argv.includes('--check')) {
   console.log('projects.json is up to date');
 } else {
   writeFileSync(REGISTRY, serialised);
-  const doc = JSON.parse(serialised);
   const count = (key) => doc.projects.filter((p) => p[key] !== undefined).length;
+  const housed = doc.projects.filter((p) => (p.source ?? 'local') !== 'local').length;
   console.log(
     `${doc.projects.length} projects · ${count('devPort')} with a dev port · ` +
-      `${count('package')} with an npm package · ${count('pausedDeployment')} paused deployments`,
+      `${count('package')} with an npm package · ${count('pausedDeployment')} paused deployments · ` +
+      `${housed} outside this repository`,
   );
 }

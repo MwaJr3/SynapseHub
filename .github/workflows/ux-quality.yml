@@ -8,8 +8,19 @@ on:
 permissions:
   contents: read
 
+# Five independent jobs, not one sequential chain. GitHub Actions stops a job
+# at its first failed step, so the old single-job layout let a lint error hide
+# the test results entirely (it did, until the lint repair in PR #153 — the
+# job died at Lint and never ran npm test). Each gate now reports as its own
+# check, exactly the way the release acceptance table lists them; the workflow
+# still fails if any job fails, so no status is masked and nothing is skipped
+# silently.
+#
+# Registry validation is deliberately not here: it lives in registry.yml,
+# path-filtered to registry inputs and independent of every application build.
 jobs:
-  quality:
+  typecheck:
+    name: Type check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +37,38 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Lint
         run: npm run lint
+
+  tests:
+    name: Unit, component and detector tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Unit, component and detector tests
         run: npm test
@@ -35,11 +76,41 @@ jobs:
       - name: UX engine tests (CLI, plugin, fixer)
         run: npm run ux:test
 
+  scan:
+    name: UX scan and audit report
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: UX engine repository scan (strict)
         run: npm run ux:scan -- --strict
 
       - name: Audit report is up to date
         run: git diff --exit-code --ignore-matching-lines='^Generated ' docs/UX_ENGINE_REPO_AUDIT.md
+
+  build:
+    name: Production build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Production build
         run: npm run build

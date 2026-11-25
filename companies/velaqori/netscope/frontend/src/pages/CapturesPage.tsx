@@ -16,7 +16,8 @@ export default function CapturesPage() {
   useEffect(() => { load() }, [])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    search ? params.set("q", search) : params.delete("q")
+    if (search) params.set("q", search)
+    else params.delete("q")
     const qs = params.toString()
     window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
   }, [search])

@@ -1,8 +1,8 @@
 # UX engine repository audit
 
-Generated 2026-11-21 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
+Generated 2026-11-25 by `northstar scan` (`npm run ux:scan`) from Northstar's static detectors.
 
-Scope: **32 frontends**, **580 source files**, **757 findings**.
+Scope: **32 frontends**, **670 source files**, **757 findings**.
 
 ## Method and limitations
 
@@ -17,38 +17,38 @@ Scope: **32 frontends**, **580 source files**, **757 findings**.
 
 | Frontend | Files | Critical | Major | Minor | Nice | High conf. | Medium | Low |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Portfolio website | 71 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Portfolio website | 74 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | Challenge collection | 13 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Company platform (Next.js) | 114 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
-| WorkNiche (Next.js) | 78 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Vocal separator web app | 11 | 0 | 0 | 76 | 0 | 0 | 75 | 1 |
-| companies/tamuzi/campusflow | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/classconnect | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/cyberaware-lab | 10 | 1 | 7 | 2 | 0 | 8 | 2 | 0 |
-| companies/tamuzi/eduaccess | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/learnbridge | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/learnpulse | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/openlearn-commons | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/pathwise | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/reachlearn | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/teachcraft | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/tessera | 22 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/tamuzi/transcriptwise | 28 | 29 | 21 | 581 | 0 | 30 | 593 | 8 |
-| companies/tamuzi/tutorspring | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/assetwatch | 12 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
-| companies/velaqori/chessscope | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/circuitlab-calc | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/dependsecure | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/fileguard | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/frontpage | 34 | 0 | 0 | 8 | 0 | 0 | 0 | 8 |
-| companies/velaqori/hashsight | 11 | 0 | 1 | 2 | 0 | 1 | 2 | 0 |
-| companies/velaqori/incidentflow | 10 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
-| companies/velaqori/netscope | 9 | 0 | 1 | 2 | 0 | 1 | 2 | 0 |
-| companies/velaqori/phishlens | 10 | 0 | 3 | 1 | 0 | 3 | 1 | 0 |
-| companies/velaqori/securecode-workbench | 10 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
-| companies/velaqori/sentinelcore | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/sentinellog | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| companies/velaqori/threatintel-desk | 9 | 0 | 4 | 2 | 0 | 4 | 2 | 0 |
+| Company platform (Next.js) | 130 | 0 | 0 | 1 | 0 | 0 | 1 | 0 |
+| WorkNiche (Next.js) | 79 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vocal separator web app | 13 | 0 | 0 | 76 | 0 | 0 | 75 | 1 |
+| companies/tamuzi/campusflow | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/classconnect | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/cyberaware-lab | 12 | 1 | 7 | 2 | 0 | 8 | 2 | 0 |
+| companies/tamuzi/eduaccess | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/learnbridge | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/learnpulse | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/openlearn-commons | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/pathwise | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/reachlearn | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/teachcraft | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/tessera | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/tamuzi/transcriptwise | 30 | 29 | 21 | 581 | 0 | 30 | 593 | 8 |
+| companies/tamuzi/tutorspring | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/assetwatch | 15 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
+| companies/velaqori/chessscope | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/circuitlab-calc | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/dependsecure | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/fileguard | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/frontpage | 36 | 0 | 0 | 8 | 0 | 0 | 0 | 8 |
+| companies/velaqori/hashsight | 15 | 0 | 1 | 2 | 0 | 1 | 2 | 0 |
+| companies/velaqori/incidentflow | 13 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
+| companies/velaqori/netscope | 12 | 0 | 1 | 2 | 0 | 1 | 2 | 0 |
+| companies/velaqori/phishlens | 14 | 0 | 3 | 1 | 0 | 3 | 1 | 0 |
+| companies/velaqori/securecode-workbench | 13 | 0 | 3 | 2 | 0 | 3 | 2 | 0 |
+| companies/velaqori/sentinelcore | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/sentinellog | 11 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| companies/velaqori/threatintel-desk | 12 | 0 | 4 | 2 | 0 | 4 | 2 | 0 |
 
 ## Portfolio website
 
@@ -186,9 +186,9 @@ Root: `companies/tamuzi/cyberaware-lab/frontend/src` — 10 findings.
 | 5 | major | high | FORM-LABEL-01 (P24/P57) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/InstructorPage.tsx:67` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 6 | major | high | FORM-LABEL-01 (P24/P57) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/InstructorPage.tsx:78` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 7 | major | high | FORM-LABEL-01 (P24/P57) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/LoginPage.tsx:41` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 8 | major | high | FORM-LABEL-01 (P24/P57) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:66` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 8 | major | high | FORM-LABEL-01 (P24/P57) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:96` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 9 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/InstructorPage.tsx:37` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
-| 10 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:48` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 10 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:78` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/tamuzi/eduaccess
 
@@ -293,11 +293,11 @@ Root: `companies/tamuzi/transcriptwise/frontend/src` — 631 findings.
 | 25 | critical | medium | A11Y-FOCUS-01 (P46/P65) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:3947` | Outline is removed without a ring or focus-visible replacement on the same rule (a scoped focus style exists elsewhere — verify it covers this selector). |
 | 26 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4006` | Rule ".view-toggle > button.active" (theme `:root,
   :root.dark`) pairs #222 on #252a33: 1.1:1 against a 4.5:1 AA requirement. |
-| 27 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4393` | Rule ".integration-icon" (theme `:root,
+| 27 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4394` | Rule ".integration-icon" (theme `:root,
   :root.dark`) pairs #555 on #252a33: 1.93:1 against a 4.5:1 AA requirement. |
-| 28 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4421` | Rule ".configuration-note" (theme `:root,
+| 28 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4422` | Rule ".configuration-note" (theme `:root,
   :root.dark`) pairs #555 on #252a33: 1.93:1 against a 4.5:1 AA requirement. |
-| 29 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4766` | Rule ".flow-icon.video" (theme `:root,
+| 29 | critical | high | A11Y-CONTRAST-01 (P70/P55/P53) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4767` | Rule ".flow-icon.video" (theme `:root,
   :root.dark`) pairs #555 on #252a33: 1.93:1 against a 4.5:1 AA requirement. |
 | 30 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:338` | CSS rule for ".icon-button" sets an interactive height of 31px; touch targets need at least 44px. |
 | 31 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:696` | CSS rule for ".main-nav a" sets an interactive height of 40px; touch targets need at least 44px. |
@@ -313,13 +313,13 @@ Root: `companies/tamuzi/transcriptwise/frontend/src` — 631 findings.
 | 41 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:3943` | CSS rule for ".search-box > input" sets an interactive height of 37px; touch targets need at least 44px. |
 | 42 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:3955` | CSS rule for ".search-box > .icon-button" sets an interactive height of 24px; touch targets need at least 44px. |
 | 43 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:3968` | CSS rule for ".library-filters select" sets an interactive height of 38px; touch targets need at least 44px. |
-| 44 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4077` | CSS rule for ".library-card-badges .icon-button" sets an interactive height of 24px; touch targets need at least 44px. |
-| 45 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5873` | CSS rule for ".topbar .icon-button" sets an interactive height of 30px; touch targets need at least 44px. |
-| 46 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5955` | CSS rule for ".input-tabs > button > svg" sets an interactive height of 14px; touch targets need at least 44px. |
-| 47 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5969` | CSS rule for ".url-entry > input" sets an interactive height of 30px; touch targets need at least 44px. |
-| 48 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6394` | CSS rule for "  .guide-top-actions .dropdown > .icon-button" sets an interactive height of 28px; touch targets need at least 44px. |
-| 49 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6483` | CSS rule for ".section-controls > .icon-button" sets an interactive height of 26px; touch targets need at least 44px. |
-| 50 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6852` | CSS rule for ".library-filters select" sets an interactive height of 35px; touch targets need at least 44px. |
+| 44 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4078` | CSS rule for ".library-card-badges .icon-button" sets an interactive height of 24px; touch targets need at least 44px. |
+| 45 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5874` | CSS rule for ".topbar .icon-button" sets an interactive height of 30px; touch targets need at least 44px. |
+| 46 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5956` | CSS rule for ".input-tabs > button > svg" sets an interactive height of 14px; touch targets need at least 44px. |
+| 47 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5970` | CSS rule for ".url-entry > input" sets an interactive height of 30px; touch targets need at least 44px. |
+| 48 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6395` | CSS rule for "  .guide-top-actions .dropdown > .icon-button" sets an interactive height of 28px; touch targets need at least 44px. |
+| 49 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6484` | CSS rule for ".section-controls > .icon-button" sets an interactive height of 26px; touch targets need at least 44px. |
+| 50 | major | medium | A11Y-TARGET-01 (P6/P33/P20) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6853` | CSS rule for ".library-filters select" sets an interactive height of 35px; touch targets need at least 44px. |
 | 51 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:156` | Rule "select" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 52 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:198` | Rule "label" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 53 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:208` | Rule "legend" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
@@ -603,304 +603,304 @@ Root: `companies/tamuzi/transcriptwise/frontend/src` — 631 findings.
 | 331 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4022` | Rule ".tag-filter" uses literal spacing 5, 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 332 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4039` | Rule ".library-results.grid" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 | 333 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4044` | Rule ".library-card" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 334 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4062` | Rule ".library-card-top" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 335 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4073` | Rule ".library-card-badges .badge" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 336 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4081` | Rule ".library-card-main" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 337 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4086` | Rule ".library-source" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 338 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4109` | Rule ".card-organizing" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 339 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4130` | Rule ".library-card-footer" uses literal spacing 7, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 340 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4158` | Rule ".library-results.list" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 341 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4163` | Rule ".library-results.list .library-card" uses literal spacing 20, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 342 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4193` | Rule ".library-retention" uses literal spacing 6, 19, 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 343 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4212` | Rule ".settings-grid" uses literal spacing 33px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 344 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4219` | Rule ".settings-nav" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 345 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4239` | Rule ".settings-content" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 346 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4245` | Rule ".settings-section" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 347 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4249` | Rule ".settings-section-heading" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 348 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4264` | Rule ".settings-section-heading p" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 349 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4275` | Rule ".theme-option" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 350 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4299` | Rule ".theme-miniature > div" uses literal spacing 10, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 351 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4311` | Rule ".theme-miniature > div > span:first-child" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 352 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4340` | Rule ".theme-option > div:nth-child(2)" uses literal spacing 6, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 353 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4354` | Rule ".theme-option p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 354 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4360` | Rule ".settings-form-grid" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 355 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4372` | Rule ".settings-save" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 356 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4382` | Rule ".integration-row" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 357 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4411` | Rule ".integration-row p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 358 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4421` | Rule ".configuration-note" uses literal spacing 9, 13, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 359 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4436` | Rule ".account-settings-callout" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 360 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4450` | Rule ".account-settings-callout p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 361 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4484` | Rule ".privacy-details" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 362 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4491` | Rule ".privacy-details ul" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 363 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4499` | Rule ".privacy-details li" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 364 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4506` | Rule ".data-actions" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 365 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4522` | Rule ".help-journey" uses literal spacing 25, 30, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 366 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4528` | Rule ".help-journey .how-icon" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 367 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4531` | Rule ".help-journey h2" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 368 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4542` | Rule ".help-page > .notice" uses literal spacing 34px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 369 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4545` | Rule ".help-content" uses literal spacing 37, 31px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 370 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4552` | Rule ".help-content .section-heading" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 371 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4561` | Rule ".faq-list > details" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 372 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4565` | Rule ".faq-list > details > summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 373 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4582` | Rule ".faq-list > details > p" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 374 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4588` | Rule ".help-side-panel" uses literal spacing 22, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 375 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4592` | Rule ".help-side-panel > svg" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 376 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4600` | Rule ".help-side-panel p" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 377 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4606` | Rule ".help-side-panel dl" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 378 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4621` | Rule ".help-api-link" uses literal spacing 9, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 379 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4636` | Rule ".help-api-link p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 380 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4641` | Rule ".help-api-link a" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 381 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4651` | Rule ".landing-header" uses literal spacing 40, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 382 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4662` | Rule ".landing-header > nav" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 383 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4672` | Rule ".landing-header > div" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 384 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4677` | Rule ".landing main" uses literal spacing 36px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 385 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4682` | Rule ".landing-hero" uses literal spacing 69, 60px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 386 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4687` | Rule ".landing-eyebrow" uses literal spacing 7, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 387 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4700` | Rule ".landing-hero h1" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 388 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4715` | Rule ".landing-hero > .button-row" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 389 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4718` | Rule ".landing-hero .button" uses literal spacing 13, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 390 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4722` | Rule ".landing-no-account" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 391 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4731` | Rule ".landing-flow" uses literal spacing 55px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 392 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4738` | Rule ".landing-flow > div" uses literal spacing 28, 17, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 393 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4754` | Rule ".flow-icon" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 394 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4779` | Rule ".landing-flow strong" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 395 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4799` | Rule ".flow-inputs" uses literal spacing 6, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 396 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4805` | Rule ".flow-inputs > span" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 397 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4815` | Rule ".flow-concept" uses literal spacing 5, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 398 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4834` | Rule ".landing-section h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 399 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4845` | Rule ".landing-features" uses literal spacing 39, 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 400 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4852` | Rule ".landing-features article > svg" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 401 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4861` | Rule ".landing-features p" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 402 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4867` | Rule ".landing-example" uses literal spacing 70, 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 403 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4888` | Rule ".landing-example > div > .text-button" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 404 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4891` | Rule ".example-caption" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 405 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4906` | Rule ".example-guide-top" uses literal spacing 9, 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 406 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4942` | Rule ".example-guide h3" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 407 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4951` | Rule ".example-next-step" uses literal spacing 14, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 408 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4961` | Rule ".example-next-step p" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 409 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4967` | Rule ".example-guide-bottom" uses literal spacing 13, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 410 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4976` | Rule ".landing-truth" uses literal spacing 17, 43, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 411 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4995` | Rule ".landing-truth p" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 412 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5000` | Rule ".landing-cta" uses literal spacing 65, 75px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 413 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5004` | Rule ".landing-cta h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 414 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5014` | Rule ".landing-cta .button" uses literal spacing 25, 13, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 415 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5018` | Rule ".landing-footer" uses literal spacing 26, 36, 35, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 416 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5043` | Rule ".landing-footer > a:last-child" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 417 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5053` | Rule ".workspace-page" uses literal spacing 40px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 418 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5056` | Rule ".dashboard-page" uses literal spacing 40px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 419 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5068` | Rule ".composer-top" uses literal spacing 27, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 420 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5072` | Rule ".composer-body" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 421 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5076` | Rule ".how-section" uses literal spacing 38px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 422 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5081` | Rule ".sidebar-brand" uses literal spacing 22, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 423 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5085` | Rule ".workspace-label" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 424 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5088` | Rule ".sidebar-new" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 425 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5095` | Rule ".sidebar-note p" uses literal spacing 5, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 426 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5101` | Rule ".sidebar-profile" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 427 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5109` | Rule ".sidebar-brand" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 428 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5120` | Rule ".workspace-label" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 429 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5123` | Rule ".sidebar-new" uses literal spacing 14, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 430 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5131` | Rule ".topbar" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 431 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5134` | Rule ".workspace-page" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 432 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5150` | Rule ".learning-illustration" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 433 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5179` | Rule ".how-grid" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 434 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5182` | Rule ".how-item" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 435 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5201` | Rule ".workspace-grid" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 436 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5205` | Rule ".guide-navigation nav > button" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 437 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5213` | Rule ".guide-reading" uses literal spacing 25, 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 438 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5219` | Rule ".review-grid" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 439 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5223` | Rule ".options-panel" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 440 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5229` | Rule ".panel-heading" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 441 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5236` | Rule ".source-facts" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 442 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5239` | Rule ".library-results.grid" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 443 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5252` | Rule ".guest-banner" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 444 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5261` | Rule ".settings-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 445 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5268` | Rule ".settings-section" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 446 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5271` | Rule ".flashcard-page-grid" uses literal spacing 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 447 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5275` | Rule ".landing-header" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 448 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5278` | Rule ".landing-example" uses literal spacing 40, 35px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 449 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5298` | Rule ".workspace-label" uses literal spacing 13, 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 450 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5308` | Rule ".sidebar-new" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 451 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5316` | Rule ".main-nav" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 452 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5326` | Rule ".sidebar-note" uses literal spacing 15, 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 453 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5339` | Rule ".sidebar-profile" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 454 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5348` | Rule ".workspace-page" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 455 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5351` | Rule ".topbar" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 456 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5360` | Rule ".dashboard-hero" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 457 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5375` | Rule ".learning-illustration" uses literal spacing 60px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 458 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5379` | Rule ".hero-pills" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 459 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5385` | Rule ".how-item" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 460 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5426` | Rule ".workspace-grid" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 461 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5430` | Rule ".guide-navigation nav > button" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 462 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5440` | Rule ".guide-reading" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 463 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5463` | Rule ".study-card" uses literal spacing 23, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 464 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5487` | Rule ".topbar" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 465 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5494` | Rule ".workspace-page" uses literal spacing 29, 28, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 466 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5509` | Rule ".dashboard-page" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 467 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5527` | Rule ".landing-header > nav" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 468 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5538` | Rule ".landing-example" uses literal spacing 30, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 469 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5548` | Rule ".landing-features" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 470 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5560` | Rule ".landing-hero" uses literal spacing 53px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 471 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5565` | Rule ".review-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 472 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5610` | Rule ".workspace-grid" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 473 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5617` | Rule ".mobile-guide-nav" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 474 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5635` | Rule ".mobile-guide-nav > select" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 475 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5642` | Rule ".guide-reading" uses literal spacing 27, 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 476 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5658` | Rule ".guest-banner" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 477 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5669` | Rule ".library-results.list .library-card" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 478 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5677` | Rule ".library-results.list .library-card-top" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 479 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5686` | Rule ".settings-grid" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 480 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5693` | Rule ".flashcard-page-grid" uses literal spacing 27, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 481 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5712` | Rule ".study-sidebar > p" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 482 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5719` | Rule ".study-sidebar > .checkbox-label" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 483 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5724` | Rule ".study-numbers" uses literal spacing 21, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 484 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5742` | Rule ".help-content" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 485 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5757` | Rule ".help-journey" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 486 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5766` | Rule ".landing-header" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 487 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5773` | Rule ".landing main" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 488 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5805` | Rule ".landing-features" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 489 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5814` | Rule ".landing-example" uses literal spacing 29, 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 490 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5842` | Rule ".landing-footer" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 491 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5854` | Rule ".breadcrumbs" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 492 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5877` | Rule ".mobile-menu-button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 493 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5880` | Rule ".workspace-page" uses literal spacing 25, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 494 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5886` | Rule ".dashboard-hero" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 495 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5894` | Rule ".hero-copy h1" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 496 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5912` | Rule ".hero-pills" uses literal spacing 18, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 497 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5922` | Rule ".composer-top" uses literal spacing 20, 18, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 498 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5934` | Rule ".example-button" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 499 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5945` | Rule ".input-tabs" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 500 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5950` | Rule ".input-tabs > button" uses literal spacing 5, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 501 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5959` | Rule ".composer-body" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 502 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5962` | Rule ".url-entry" uses literal spacing 10, 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 503 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5969` | Rule ".url-entry > input" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 504 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5978` | Rule ".url-entry .button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 505 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5984` | Rule ".input-context" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 506 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6000` | Rule ".retrieval-disclosure" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 507 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6005` | Rule ".composer-footer" uses literal spacing 11, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 508 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6021` | Rule ".paste-footer" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 509 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6045` | Rule ".dropzone" uses literal spacing 20, 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 510 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6071` | Rule "  .recent-section" uses literal spacing 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 511 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6075` | Rule ".section-heading" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 512 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6101` | Rule ".how-item" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 513 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6109` | Rule ".how-item h3" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 514 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6120` | Rule ".library-invitation" uses literal spacing 28, 11, 17, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 515 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6136` | Rule ".library-invitation > a" uses literal spacing 45, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 516 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6152` | Rule ".recent-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 517 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6165` | Rule ".activity-line" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 518 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6172` | Rule ".page-heading" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 519 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6194` | Rule ".workflow-steps" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 520 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6199` | Rule ".workflow-steps > li" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 521 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6214` | Rule ".new-page-heading" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 522 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6228` | Rule ".new-help-grid" uses literal spacing 22, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 523 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6242` | Rule ".new-help-grid strong" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 524 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6257` | Rule ".review-grid" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 525 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6260` | Rule ".panel-heading" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 526 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6274` | Rule ".source-metadata" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 527 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6283` | Rule ".source-facts" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 528 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6290` | Rule ".editor-toolbar" uses literal spacing 7, 10, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 529 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6294` | Rule ".small-tabs > button" uses literal spacing 5, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 530 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6316` | Rule ".edit-segment textarea" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 531 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6321` | Rule ".editor-footer" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 532 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6325` | Rule ".source-save-bar" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 533 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6335` | Rule ".options-panel" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 534 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6341` | Rule ".dialog" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 535 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6383` | Rule ".guide-top-actions" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 536 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6387` | Rule "  .export-dropdown > .button" uses literal spacing 7, 9, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 537 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6405` | Rule ".guide-eyebrow" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 538 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6420` | Rule ".guide-source-line" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 539 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6427` | Rule ".guide-mode-banner" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 540 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6433` | Rule ".guide-mode-banner > .provider-dot" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 541 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6439` | Rule ".guide-mode-banner > details" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 542 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6450` | Rule ".workspace-grid" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 543 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6454` | Rule ".mobile-guide-nav" uses literal spacing 7, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 544 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6461` | Rule ".guide-reading" uses literal spacing 22, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 545 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6466` | Rule ".reading-heading" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 546 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6471` | Rule ".reading-heading h2" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 547 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6504` | Rule ".learning-item + .learning-item" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 548 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6508` | Rule ".source-refs" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 549 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6511` | Rule "  .source-refs > button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 550 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6516` | Rule ".section-takeaways .learning-item" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 551 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6538` | Rule ".continue-learning" uses literal spacing 17, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 552 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6545` | Rule ".continue-learning button" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 553 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6549` | Rule ".reading-footer" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 554 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6556` | Rule ".source-reader-toolbar" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 555 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6563` | Rule ".source-reader-toolbar > .button" uses literal spacing 7, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 556 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6568` | Rule ".source-passage" uses literal spacing 9, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 557 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6595` | Rule ".processing-view" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 558 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6607` | Rule ".processing-status" uses literal spacing 19, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 559 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6613` | Rule ".regeneration-status" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 560 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6621` | Rule ".learning-section-intro" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 561 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6635` | Rule ".quiz-meter" uses literal spacing 10, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 562 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6645` | Rule ".quiz-question > legend" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 563 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6656` | Rule ".quiz-options > label" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 564 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6662` | Rule ".quiz-submit" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 565 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6670` | Rule ".quiz-result-banner" uses literal spacing 14, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 566 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6684` | Rule ".quiz-result-banner > .button" uses literal spacing 47px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 567 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6688` | Rule ".question-review" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 568 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6712` | Rule ".study-card" uses literal spacing 22, 18, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 569 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6728` | Rule ".study-card-icon" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 570 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6733` | Rule ".study-card-content" uses literal spacing 20, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 571 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6742` | Rule ".study-card-bottom" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 572 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6749` | Rule ".card-rating > p > span" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 573 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6754` | Rule ".card-rating > div:not(.spinner-wrap)" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 574 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6757` | Rule ".card-rating > div > button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 575 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6767` | Rule ".study-navigation" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 576 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6793` | Rule ".flashcard-page-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 577 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6802` | Rule ".study-numbers" uses literal spacing 35, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 578 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6814` | Rule ".guest-banner" uses literal spacing 15, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 579 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6824` | Rule ".guest-banner > .text-button" uses literal spacing 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 580 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6838` | Rule ".library-toolbar" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 581 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6846` | Rule ".library-filters" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 582 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6852` | Rule ".library-filters select" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 583 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6870` | Rule ".library-tags" uses literal spacing 6, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 584 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6874` | Rule ".tag-filter" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 585 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6881` | Rule ".library-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 586 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6902` | Rule ".library-retention" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 587 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6907` | Rule ".library-results.list .library-card" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 588 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6913` | Rule ".library-results.list .library-card-top" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 589 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6935` | Rule ".empty-state" uses literal spacing 45, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 590 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6952` | Rule ".settings-section" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 591 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6955` | Rule ".settings-section-heading" uses literal spacing 10, 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 592 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6972` | Rule ".theme-option" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 593 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6979` | Rule ".theme-miniature > div" uses literal spacing 9, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 594 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7003` | Rule ".settings-save" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 595 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7011` | Rule ".integration-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 596 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7036` | Rule ".configuration-note" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 597 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7045` | Rule ".account-settings-callout" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 598 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7056` | Rule ".signed-in-row" uses literal spacing 13, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 599 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7084` | Rule ".data-actions" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 600 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7092` | Rule ".help-journey" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 601 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7107` | Rule ".help-journey h2" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 602 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7120` | Rule ".help-side-panel" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 603 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7140` | Rule ".landing-header" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 604 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7152` | Rule ".landing-header > div" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 605 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7155` | Rule ".landing-header > div > .button" uses literal spacing 9, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 606 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7163` | Rule ".landing main" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 607 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7166` | Rule ".landing-hero" uses literal spacing 45px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 608 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7169` | Rule ".landing-eyebrow" uses literal spacing 6, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 609 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7178` | Rule ".landing-hero h1" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 610 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7194` | Rule ".landing-hero .button" uses literal spacing 11, 13, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 611 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7199` | Rule ".landing-hero > .button-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 612 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7203` | Rule ".landing-no-account" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 613 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7207` | Rule ".landing-flow" uses literal spacing 15, 36px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 614 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7213` | Rule ".landing-flow > div" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 615 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7256` | Rule ".landing-section" uses literal spacing 38, 42px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 616 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7263` | Rule ".landing-section h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 617 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7272` | Rule ".landing-features" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 618 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7291` | Rule ".landing-features p" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 619 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7295` | Rule ".landing-example" uses literal spacing 22, 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 620 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7316` | Rule ".example-guide" uses literal spacing 18, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 621 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7363` | Rule ".landing-cta" uses literal spacing 45, 50px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 622 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7376` | Rule ".landing-footer" uses literal spacing 23, 20, 29, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 623 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7388` | Rule ".library-results.grid" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 624 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7395` | Rule ".guide-top-actions" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 625 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7433` | Rule ".example-button" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 626 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7445` | Rule ".guide-reading" uses literal spacing 20, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 627 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7451` | Rule ".section-controls" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 628 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7466` | Rule ".theme-option" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 629 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7479` | Rule ".topbar-start .breadcrumbs" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 630 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7507` | Rule ".empty-state" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
-| 631 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7601` | Rule ".library-invitation > a" uses literal spacing 45px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 334 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4063` | Rule ".library-card-top" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 335 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4074` | Rule ".library-card-badges .badge" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 336 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4082` | Rule ".library-card-main" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 337 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4087` | Rule ".library-source" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 338 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4110` | Rule ".card-organizing" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 339 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4131` | Rule ".library-card-footer" uses literal spacing 7, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 340 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4159` | Rule ".library-results.list" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 341 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4164` | Rule ".library-results.list .library-card" uses literal spacing 20, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 342 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4194` | Rule ".library-retention" uses literal spacing 6, 19, 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 343 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4213` | Rule ".settings-grid" uses literal spacing 33px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 344 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4220` | Rule ".settings-nav" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 345 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4240` | Rule ".settings-content" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 346 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4246` | Rule ".settings-section" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 347 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4250` | Rule ".settings-section-heading" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 348 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4265` | Rule ".settings-section-heading p" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 349 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4276` | Rule ".theme-option" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 350 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4300` | Rule ".theme-miniature > div" uses literal spacing 10, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 351 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4312` | Rule ".theme-miniature > div > span:first-child" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 352 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4341` | Rule ".theme-option > div:nth-child(2)" uses literal spacing 6, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 353 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4355` | Rule ".theme-option p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 354 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4361` | Rule ".settings-form-grid" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 355 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4373` | Rule ".settings-save" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 356 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4383` | Rule ".integration-row" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 357 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4412` | Rule ".integration-row p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 358 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4422` | Rule ".configuration-note" uses literal spacing 9, 13, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 359 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4437` | Rule ".account-settings-callout" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 360 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4451` | Rule ".account-settings-callout p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 361 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4485` | Rule ".privacy-details" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 362 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4492` | Rule ".privacy-details ul" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 363 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4500` | Rule ".privacy-details li" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 364 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4507` | Rule ".data-actions" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 365 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4523` | Rule ".help-journey" uses literal spacing 25, 30, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 366 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4529` | Rule ".help-journey .how-icon" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 367 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4532` | Rule ".help-journey h2" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 368 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4543` | Rule ".help-page > .notice" uses literal spacing 34px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 369 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4546` | Rule ".help-content" uses literal spacing 37, 31px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 370 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4553` | Rule ".help-content .section-heading" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 371 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4562` | Rule ".faq-list > details" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 372 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4566` | Rule ".faq-list > details > summary" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 373 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4583` | Rule ".faq-list > details > p" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 374 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4589` | Rule ".help-side-panel" uses literal spacing 22, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 375 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4593` | Rule ".help-side-panel > svg" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 376 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4601` | Rule ".help-side-panel p" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 377 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4607` | Rule ".help-side-panel dl" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 378 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4622` | Rule ".help-api-link" uses literal spacing 9, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 379 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4637` | Rule ".help-api-link p" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 380 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4642` | Rule ".help-api-link a" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 381 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4652` | Rule ".landing-header" uses literal spacing 40, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 382 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4663` | Rule ".landing-header > nav" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 383 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4673` | Rule ".landing-header > div" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 384 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4678` | Rule ".landing main" uses literal spacing 36px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 385 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4683` | Rule ".landing-hero" uses literal spacing 69, 60px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 386 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4688` | Rule ".landing-eyebrow" uses literal spacing 7, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 387 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4701` | Rule ".landing-hero h1" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 388 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4716` | Rule ".landing-hero > .button-row" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 389 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4719` | Rule ".landing-hero .button" uses literal spacing 13, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 390 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4723` | Rule ".landing-no-account" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 391 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4732` | Rule ".landing-flow" uses literal spacing 55px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 392 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4739` | Rule ".landing-flow > div" uses literal spacing 28, 17, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 393 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4755` | Rule ".flow-icon" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 394 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4780` | Rule ".landing-flow strong" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 395 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4800` | Rule ".flow-inputs" uses literal spacing 6, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 396 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4806` | Rule ".flow-inputs > span" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 397 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4816` | Rule ".flow-concept" uses literal spacing 5, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 398 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4835` | Rule ".landing-section h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 399 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4846` | Rule ".landing-features" uses literal spacing 39, 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 400 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4853` | Rule ".landing-features article > svg" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 401 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4862` | Rule ".landing-features p" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 402 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4868` | Rule ".landing-example" uses literal spacing 70, 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 403 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4889` | Rule ".landing-example > div > .text-button" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 404 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4892` | Rule ".example-caption" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 405 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4907` | Rule ".example-guide-top" uses literal spacing 9, 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 406 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4943` | Rule ".example-guide h3" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 407 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4952` | Rule ".example-next-step" uses literal spacing 14, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 408 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4962` | Rule ".example-next-step p" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 409 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4968` | Rule ".example-guide-bottom" uses literal spacing 13, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 410 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4977` | Rule ".landing-truth" uses literal spacing 17, 43, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 411 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4996` | Rule ".landing-truth p" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 412 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5001` | Rule ".landing-cta" uses literal spacing 65, 75px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 413 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5005` | Rule ".landing-cta h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 414 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5015` | Rule ".landing-cta .button" uses literal spacing 25, 13, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 415 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5019` | Rule ".landing-footer" uses literal spacing 26, 36, 35, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 416 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5044` | Rule ".landing-footer > a:last-child" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 417 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5054` | Rule ".workspace-page" uses literal spacing 40px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 418 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5057` | Rule ".dashboard-page" uses literal spacing 40px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 419 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5069` | Rule ".composer-top" uses literal spacing 27, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 420 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5073` | Rule ".composer-body" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 421 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5077` | Rule ".how-section" uses literal spacing 38px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 422 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5082` | Rule ".sidebar-brand" uses literal spacing 22, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 423 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5086` | Rule ".workspace-label" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 424 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5089` | Rule ".sidebar-new" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 425 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5096` | Rule ".sidebar-note p" uses literal spacing 5, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 426 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5102` | Rule ".sidebar-profile" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 427 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5110` | Rule ".sidebar-brand" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 428 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5121` | Rule ".workspace-label" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 429 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5124` | Rule ".sidebar-new" uses literal spacing 14, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 430 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5132` | Rule ".topbar" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 431 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5135` | Rule ".workspace-page" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 432 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5151` | Rule ".learning-illustration" uses literal spacing 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 433 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5180` | Rule ".how-grid" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 434 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5183` | Rule ".how-item" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 435 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5202` | Rule ".workspace-grid" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 436 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5206` | Rule ".guide-navigation nav > button" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 437 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5214` | Rule ".guide-reading" uses literal spacing 25, 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 438 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5220` | Rule ".review-grid" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 439 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5224` | Rule ".options-panel" uses literal spacing 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 440 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5230` | Rule ".panel-heading" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 441 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5237` | Rule ".source-facts" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 442 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5240` | Rule ".library-results.grid" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 443 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5253` | Rule ".guest-banner" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 444 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5262` | Rule ".settings-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 445 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5269` | Rule ".settings-section" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 446 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5272` | Rule ".flashcard-page-grid" uses literal spacing 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 447 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5276` | Rule ".landing-header" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 448 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5279` | Rule ".landing-example" uses literal spacing 40, 35px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 449 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5299` | Rule ".workspace-label" uses literal spacing 13, 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 450 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5309` | Rule ".sidebar-new" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 451 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5317` | Rule ".main-nav" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 452 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5327` | Rule ".sidebar-note" uses literal spacing 15, 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 453 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5340` | Rule ".sidebar-profile" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 454 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5349` | Rule ".workspace-page" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 455 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5352` | Rule ".topbar" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 456 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5361` | Rule ".dashboard-hero" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 457 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5376` | Rule ".learning-illustration" uses literal spacing 60px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 458 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5380` | Rule ".hero-pills" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 459 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5386` | Rule ".how-item" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 460 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5427` | Rule ".workspace-grid" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 461 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5431` | Rule ".guide-navigation nav > button" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 462 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5441` | Rule ".guide-reading" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 463 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5464` | Rule ".study-card" uses literal spacing 23, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 464 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5488` | Rule ".topbar" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 465 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5495` | Rule ".workspace-page" uses literal spacing 29, 28, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 466 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5510` | Rule ".dashboard-page" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 467 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5528` | Rule ".landing-header > nav" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 468 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5539` | Rule ".landing-example" uses literal spacing 30, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 469 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5549` | Rule ".landing-features" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 470 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5561` | Rule ".landing-hero" uses literal spacing 53px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 471 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5566` | Rule ".review-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 472 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5611` | Rule ".workspace-grid" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 473 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5618` | Rule ".mobile-guide-nav" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 474 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5636` | Rule ".mobile-guide-nav > select" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 475 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5643` | Rule ".guide-reading" uses literal spacing 27, 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 476 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5659` | Rule ".guest-banner" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 477 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5670` | Rule ".library-results.list .library-card" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 478 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5678` | Rule ".library-results.list .library-card-top" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 479 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5687` | Rule ".settings-grid" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 480 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5694` | Rule ".flashcard-page-grid" uses literal spacing 27, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 481 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5713` | Rule ".study-sidebar > p" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 482 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5720` | Rule ".study-sidebar > .checkbox-label" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 483 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5725` | Rule ".study-numbers" uses literal spacing 21, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 484 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5743` | Rule ".help-content" uses literal spacing 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 485 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5758` | Rule ".help-journey" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 486 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5767` | Rule ".landing-header" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 487 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5774` | Rule ".landing main" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 488 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5806` | Rule ".landing-features" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 489 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5815` | Rule ".landing-example" uses literal spacing 29, 30px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 490 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5843` | Rule ".landing-footer" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 491 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5855` | Rule ".breadcrumbs" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 492 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5878` | Rule ".mobile-menu-button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 493 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5881` | Rule ".workspace-page" uses literal spacing 25, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 494 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5887` | Rule ".dashboard-hero" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 495 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5895` | Rule ".hero-copy h1" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 496 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5913` | Rule ".hero-pills" uses literal spacing 18, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 497 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5923` | Rule ".composer-top" uses literal spacing 20, 18, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 498 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5935` | Rule ".example-button" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 499 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5946` | Rule ".input-tabs" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 500 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5951` | Rule ".input-tabs > button" uses literal spacing 5, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 501 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5960` | Rule ".composer-body" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 502 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5963` | Rule ".url-entry" uses literal spacing 10, 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 503 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5970` | Rule ".url-entry > input" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 504 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5979` | Rule ".url-entry .button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 505 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5985` | Rule ".input-context" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 506 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6001` | Rule ".retrieval-disclosure" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 507 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6006` | Rule ".composer-footer" uses literal spacing 11, 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 508 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6022` | Rule ".paste-footer" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 509 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6046` | Rule ".dropzone" uses literal spacing 20, 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 510 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6072` | Rule "  .recent-section" uses literal spacing 29px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 511 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6076` | Rule ".section-heading" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 512 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6102` | Rule ".how-item" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 513 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6110` | Rule ".how-item h3" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 514 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6121` | Rule ".library-invitation" uses literal spacing 28, 11, 17, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 515 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6137` | Rule ".library-invitation > a" uses literal spacing 45, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 516 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6153` | Rule ".recent-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 517 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6166` | Rule ".activity-line" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 518 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6173` | Rule ".page-heading" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 519 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6195` | Rule ".workflow-steps" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 520 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6200` | Rule ".workflow-steps > li" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 521 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6215` | Rule ".new-page-heading" uses literal spacing 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 522 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6229` | Rule ".new-help-grid" uses literal spacing 22, 28px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 523 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6243` | Rule ".new-help-grid strong" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 524 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6258` | Rule ".review-grid" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 525 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6261` | Rule ".panel-heading" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 526 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6275` | Rule ".source-metadata" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 527 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6284` | Rule ".source-facts" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 528 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6291` | Rule ".editor-toolbar" uses literal spacing 7, 10, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 529 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6295` | Rule ".small-tabs > button" uses literal spacing 5, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 530 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6317` | Rule ".edit-segment textarea" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 531 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6322` | Rule ".editor-footer" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 532 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6326` | Rule ".source-save-bar" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 533 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6336` | Rule ".options-panel" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 534 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6342` | Rule ".dialog" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 535 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6384` | Rule ".guide-top-actions" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 536 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6388` | Rule "  .export-dropdown > .button" uses literal spacing 7, 9, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 537 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6406` | Rule ".guide-eyebrow" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 538 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6421` | Rule ".guide-source-line" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 539 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6428` | Rule ".guide-mode-banner" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 540 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6434` | Rule ".guide-mode-banner > .provider-dot" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 541 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6440` | Rule ".guide-mode-banner > details" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 542 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6451` | Rule ".workspace-grid" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 543 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6455` | Rule ".mobile-guide-nav" uses literal spacing 7, 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 544 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6462` | Rule ".guide-reading" uses literal spacing 22, 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 545 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6467` | Rule ".reading-heading" uses literal spacing 19, 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 546 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6472` | Rule ".reading-heading h2" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 547 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6505` | Rule ".learning-item + .learning-item" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 548 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6509` | Rule ".source-refs" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 549 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6512` | Rule "  .source-refs > button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 550 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6517` | Rule ".section-takeaways .learning-item" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 551 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6539` | Rule ".continue-learning" uses literal spacing 17, 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 552 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6546` | Rule ".continue-learning button" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 553 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6550` | Rule ".reading-footer" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 554 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6557` | Rule ".source-reader-toolbar" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 555 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6564` | Rule ".source-reader-toolbar > .button" uses literal spacing 7, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 556 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6569` | Rule ".source-passage" uses literal spacing 9, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 557 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6596` | Rule ".processing-view" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 558 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6608` | Rule ".processing-status" uses literal spacing 19, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 559 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6614` | Rule ".regeneration-status" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 560 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6622` | Rule ".learning-section-intro" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 561 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6636` | Rule ".quiz-meter" uses literal spacing 10, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 562 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6646` | Rule ".quiz-question > legend" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 563 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6657` | Rule ".quiz-options > label" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 564 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6663` | Rule ".quiz-submit" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 565 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6671` | Rule ".quiz-result-banner" uses literal spacing 14, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 566 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6685` | Rule ".quiz-result-banner > .button" uses literal spacing 47px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 567 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6689` | Rule ".question-review" uses literal spacing 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 568 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6713` | Rule ".study-card" uses literal spacing 22, 18, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 569 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6729` | Rule ".study-card-icon" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 570 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6734` | Rule ".study-card-content" uses literal spacing 20, 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 571 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6743` | Rule ".study-card-bottom" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 572 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6750` | Rule ".card-rating > p > span" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 573 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6755` | Rule ".card-rating > div:not(.spinner-wrap)" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 574 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6758` | Rule ".card-rating > div > button" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 575 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6768` | Rule ".study-navigation" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 576 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6794` | Rule ".flashcard-page-grid" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 577 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6803` | Rule ".study-numbers" uses literal spacing 35, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 578 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6815` | Rule ".guest-banner" uses literal spacing 15, 10px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 579 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6825` | Rule ".guest-banner > .text-button" uses literal spacing 46px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 580 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6839` | Rule ".library-toolbar" uses literal spacing 11px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 581 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6847` | Rule ".library-filters" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 582 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6853` | Rule ".library-filters select" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 583 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6871` | Rule ".library-tags" uses literal spacing 6, 19px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 584 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6875` | Rule ".tag-filter" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 585 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6882` | Rule ".library-card" uses literal spacing 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 586 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6903` | Rule ".library-retention" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 587 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6908` | Rule ".library-results.list .library-card" uses literal spacing 13, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 588 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6914` | Rule ".library-results.list .library-card-top" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 589 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6936` | Rule ".empty-state" uses literal spacing 45, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 590 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6953` | Rule ".settings-section" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 591 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6956` | Rule ".settings-section-heading" uses literal spacing 10, 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 592 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6973` | Rule ".theme-option" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 593 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6980` | Rule ".theme-miniature > div" uses literal spacing 9, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 594 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7004` | Rule ".settings-save" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 595 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7012` | Rule ".integration-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 596 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7037` | Rule ".configuration-note" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 597 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7046` | Rule ".account-settings-callout" uses literal spacing 14px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 598 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7057` | Rule ".signed-in-row" uses literal spacing 13, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 599 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7085` | Rule ".data-actions" uses literal spacing 18px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 600 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7093` | Rule ".help-journey" uses literal spacing 25px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 601 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7108` | Rule ".help-journey h2" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 602 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7121` | Rule ".help-side-panel" uses literal spacing 21px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 603 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7141` | Rule ".landing-header" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 604 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7153` | Rule ".landing-header > div" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 605 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7156` | Rule ".landing-header > div > .button" uses literal spacing 9, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 606 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7164` | Rule ".landing main" uses literal spacing 20px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 607 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7167` | Rule ".landing-hero" uses literal spacing 45px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 608 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7170` | Rule ".landing-eyebrow" uses literal spacing 6, 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 609 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7179` | Rule ".landing-hero h1" uses literal spacing 22px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 610 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7195` | Rule ".landing-hero .button" uses literal spacing 11, 13, 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 611 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7200` | Rule ".landing-hero > .button-row" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 612 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7204` | Rule ".landing-no-account" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 613 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7208` | Rule ".landing-flow" uses literal spacing 15, 36px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 614 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7214` | Rule ".landing-flow > div" uses literal spacing 23px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 615 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7257` | Rule ".landing-section" uses literal spacing 38, 42px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 616 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7264` | Rule ".landing-section h2" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 617 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7273` | Rule ".landing-features" uses literal spacing 27px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 618 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7292` | Rule ".landing-features p" uses literal spacing 9px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 619 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7296` | Rule ".landing-example" uses literal spacing 22, 26px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 620 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7317` | Rule ".example-guide" uses literal spacing 18, 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 621 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7364` | Rule ".landing-cta" uses literal spacing 45, 50px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 622 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7377` | Rule ".landing-footer" uses literal spacing 23, 20, 29, 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 623 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7389` | Rule ".library-results.grid" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 624 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7396` | Rule ".guide-top-actions" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 625 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7434` | Rule ".example-button" uses literal spacing 15px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 626 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7446` | Rule ".guide-reading" uses literal spacing 20, 17px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 627 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7452` | Rule ".section-controls" uses literal spacing 13px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 628 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7467` | Rule ".theme-option" uses literal spacing 6px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 629 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7480` | Rule ".topbar-start .breadcrumbs" uses literal spacing 5px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 630 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7508` | Rule ".empty-state" uses literal spacing 7px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
+| 631 | minor | medium | TOKEN-SPACING-01 (P13/P69/P32) | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7602` | Rule ".library-invitation > a" uses literal spacing 45px, off the 4px-base scale (4, 8, 12, 16, 24, 32, 48, 64). |
 
 ## companies/tamuzi/tutorspring
 
@@ -914,10 +914,10 @@ Root: `companies/velaqori/assetwatch/frontend/src` — 5 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:23` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:31` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/assetwatch/frontend/src/pages/ScansPage.tsx:39` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/assetwatch/frontend/src/pages/ScansPage.tsx:43` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:19` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:27` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 | 5 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/assetwatch/frontend/src/pages/ScansPage.tsx:23` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/chessscope
@@ -965,9 +965,9 @@ Root: `companies/velaqori/hashsight/frontend/src` — 3 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/hashsight/frontend/src/pages/HistoryPage.tsx:24` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/hashsight/frontend/src/pages/HistoryPage.tsx:34` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 2 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/hashsight/frontend/src/pages/CasesPage.tsx:37` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
-| 3 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/hashsight/frontend/src/pages/RecordPage.tsx:36` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 3 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/hashsight/frontend/src/pages/RecordPage.tsx:38` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/incidentflow
 
@@ -975,10 +975,10 @@ Root: `companies/velaqori/incidentflow/frontend/src` — 5 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:29` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:40` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:43` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:55` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/incidentflow/frontend/src/pages/LoginPage.tsx:60` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:26` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:40` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 | 5 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/incidentflow/frontend/src/pages/IncidentPage.tsx:31` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/netscope
@@ -987,9 +987,9 @@ Root: `companies/velaqori/netscope/frontend/src` — 3 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:74` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 2 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:33` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
-| 3 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/netscope/frontend/src/pages/CapturesPage.tsx:24` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:80` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 2 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:34` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 3 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/netscope/frontend/src/pages/CapturesPage.tsx:36` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/phishlens
 
@@ -997,10 +997,10 @@ Root: `companies/velaqori/phishlens/frontend/src` — 4 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/AnalyzePage.tsx:34` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/HistoryPage.tsx:23` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:46` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:34` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/AnalyzePage.tsx:35` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/HistoryPage.tsx:33` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:48` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:36` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/securecode-workbench
 
@@ -1008,10 +1008,10 @@ Root: `companies/velaqori/securecode-workbench/frontend/src` — 5 findings.
 
 | # | Severity | Conf. | Rule | Location | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:35` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:39` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:47` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:51` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/securecode-workbench/frontend/src/pages/ProjectsPage.tsx:42` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:65` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 4 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:79` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 | 5 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/securecode-workbench/frontend/src/pages/ProjectsPage.tsx:26` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## companies/velaqori/sentinelcore
@@ -1035,9 +1035,9 @@ Root: `companies/velaqori/threatintel-desk/frontend/src` — 6 findings.
 | 1 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/threatintel-desk/frontend/src/pages/DeskPage.tsx:30` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 2 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/threatintel-desk/frontend/src/pages/DeskPage.tsx:45` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 3 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/threatintel-desk/frontend/src/pages/DeskPage.tsx:58` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
-| 4 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:26` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
+| 4 | major | high | FORM-LABEL-01 (P24/P57) | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:46` | Form control has no visible label, aria-label/aria-labelledby association or wrapping <label>. |
 | 5 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/threatintel-desk/frontend/src/pages/DeskPage.tsx:27` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
-| 6 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:56` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
+| 6 | minor | medium | A11Y-HEADING-01 (P62/P41) | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:84` | Heading level jumps from h1 to h3; insert the missing level or restructure the outline (per-file analysis — verify the composed page). |
 
 ## Triage decisions and deferred findings
 
@@ -1125,7 +1125,7 @@ Root: `companies/velaqori/threatintel-desk/frontend/src` — 6 findings.
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1703` | 18px |
 | Vocal separator web app | `vocal-separator/web/src/styles.css:1725` | 18px |
 | companies/tamuzi/cyberaware-lab | `companies/tamuzi/cyberaware-lab/frontend/src/pages/InstructorPage.tsx:37` | px |
-| companies/tamuzi/cyberaware-lab | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:48` | px |
+| companies/tamuzi/cyberaware-lab | `companies/tamuzi/cyberaware-lab/frontend/src/pages/SimulationPage.tsx:78` | px |
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:156` | 10px |
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:198` | 7px |
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:208` | 9px |
@@ -1409,305 +1409,305 @@ Root: `companies/velaqori/threatintel-desk/frontend/src` — 6 findings.
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4022` | 5, 7px |
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4039` | 18px |
 | companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4044` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4062` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4073` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4081` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4086` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4109` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4130` | 7, 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4158` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4163` | 20, 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4193` | 6, 19, 29px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4212` | 33px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4219` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4239` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4245` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4249` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4264` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4275` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4299` | 10, 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4311` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4340` | 6, 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4354` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4360` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4372` | 19, 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4382` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4411` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4421` | 9, 13, 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4436` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4450` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4484` | 26px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4491` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4499` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4506` | 19, 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4522` | 25, 30, 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4528` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4531` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4542` | 34px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4545` | 37, 31px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4552` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4561` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4565` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4582` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4588` | 22, 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4592` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4600` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4606` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4621` | 9, 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4636` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4641` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4651` | 40, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4662` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4672` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4677` | 36px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4682` | 69, 60px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4687` | 7, 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4700` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4715` | 27px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4718` | 13, 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4722` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4731` | 55px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4738` | 28, 17, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4754` | 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4779` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4799` | 6, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4805` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4815` | 5, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4834` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4845` | 39, 46px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4852` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4861` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4867` | 70, 46px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4888` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4891` | 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4906` | 9, 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4942` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4951` | 14, 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4961` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4967` | 13, 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4976` | 17, 43, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4995` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5000` | 65, 75px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5004` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5014` | 25, 13, 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5018` | 26, 36, 35, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5043` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5053` | 40px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5056` | 40px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5068` | 27, 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5072` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5076` | 38px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5081` | 22, 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5085` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5088` | 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5095` | 5, 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5101` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5109` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5120` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5123` | 14, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5131` | 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5134` | 30px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5150` | 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5179` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5182` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5201` | 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5205` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5213` | 25, 26px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5219` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5223` | 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5229` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5236` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5239` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5252` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5261` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5268` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5271` | 29px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5275` | 30px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5278` | 40, 35px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5298` | 13, 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5308` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5316` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5326` | 15, 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5339` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5348` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5351` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5360` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5375` | 60px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5379` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5385` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5426` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5430` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5440` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5463` | 23, 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5487` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5494` | 29, 28, 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5509` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5527` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5538` | 30, 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5548` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5560` | 53px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5565` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5610` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5617` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5635` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5642` | 27, 29px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5658` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5669` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5677` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5686` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5693` | 27, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5712` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5719` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5724` | 21, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5742` | 30px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5757` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5766` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5773` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5805` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5814` | 29, 30px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5842` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5854` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5877` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5880` | 25, 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5886` | 27px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5894` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5912` | 18, 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5922` | 20, 18, 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5934` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5945` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5950` | 5, 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5959` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5962` | 10, 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5969` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5978` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5984` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6000` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6005` | 11, 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6021` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6045` | 20, 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6071` | 29px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6075` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6101` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6109` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6120` | 28, 11, 17, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6136` | 45, 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6152` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6165` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6172` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6194` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6199` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6214` | 26px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6228` | 22, 28px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6242` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6257` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6260` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6274` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6283` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6290` | 7, 10, 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6294` | 5, 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6316` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6321` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6325` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6335` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6341` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6383` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6387` | 7, 9, 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6405` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6420` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6427` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6433` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6439` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6450` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6454` | 7, 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6461` | 22, 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6466` | 19, 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6471` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6504` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6508` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6511` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6516` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6538` | 17, 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6545` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6549` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6556` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6563` | 7, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6568` | 9, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6595` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6607` | 19, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6613` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6621` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6635` | 10, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6645` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6656` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6662` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6670` | 14, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6684` | 47px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6688` | 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6712` | 22, 18, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6728` | 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6733` | 20, 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6742` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6749` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6754` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6757` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6767` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6793` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6802` | 35, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6814` | 15, 10px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6824` | 46px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6838` | 11px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6846` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6852` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6870` | 6, 19px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6874` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6881` | 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6902` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6907` | 13, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6913` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6935` | 45, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6952` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6955` | 10, 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6972` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6979` | 9, 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7003` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7011` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7036` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7045` | 14px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7056` | 13, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7084` | 18px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7092` | 25px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7107` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7120` | 21px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7140` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7152` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7155` | 9, 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7163` | 20px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7166` | 45px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7169` | 6, 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7178` | 22px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7194` | 11, 13, 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7199` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7203` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7207` | 15, 36px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7213` | 23px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7256` | 38, 42px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7263` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7272` | 27px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7291` | 9px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7295` | 22, 26px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7316` | 18, 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7363` | 45, 50px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7376` | 23, 20, 29, 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7388` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7395` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7433` | 15px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7445` | 20, 17px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7451` | 13px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7466` | 6px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7479` | 5px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7507` | 7px |
-| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7601` | 45px |
-| companies/velaqori/assetwatch | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:19` | px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4063` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4074` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4082` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4087` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4110` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4131` | 7, 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4159` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4164` | 20, 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4194` | 6, 19, 29px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4213` | 33px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4220` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4240` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4246` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4250` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4265` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4276` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4300` | 10, 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4312` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4341` | 6, 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4355` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4361` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4373` | 19, 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4383` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4412` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4422` | 9, 13, 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4437` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4451` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4485` | 26px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4492` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4500` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4507` | 19, 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4523` | 25, 30, 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4529` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4532` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4543` | 34px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4546` | 37, 31px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4553` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4562` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4566` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4583` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4589` | 22, 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4593` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4601` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4607` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4622` | 9, 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4637` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4642` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4652` | 40, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4663` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4673` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4678` | 36px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4683` | 69, 60px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4688` | 7, 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4701` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4716` | 27px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4719` | 13, 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4723` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4732` | 55px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4739` | 28, 17, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4755` | 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4780` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4800` | 6, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4806` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4816` | 5, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4835` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4846` | 39, 46px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4853` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4862` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4868` | 70, 46px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4889` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4892` | 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4907` | 9, 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4943` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4952` | 14, 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4962` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4968` | 13, 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4977` | 17, 43, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:4996` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5001` | 65, 75px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5005` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5015` | 25, 13, 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5019` | 26, 36, 35, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5044` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5054` | 40px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5057` | 40px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5069` | 27, 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5073` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5077` | 38px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5082` | 22, 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5086` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5089` | 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5096` | 5, 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5102` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5110` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5121` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5124` | 14, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5132` | 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5135` | 30px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5151` | 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5180` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5183` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5202` | 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5206` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5214` | 25, 26px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5220` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5224` | 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5230` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5237` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5240` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5253` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5262` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5269` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5272` | 29px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5276` | 30px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5279` | 40, 35px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5299` | 13, 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5309` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5317` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5327` | 15, 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5340` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5349` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5352` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5361` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5376` | 60px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5380` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5386` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5427` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5431` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5441` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5464` | 23, 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5488` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5495` | 29, 28, 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5510` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5528` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5539` | 30, 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5549` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5561` | 53px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5566` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5611` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5618` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5636` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5643` | 27, 29px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5659` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5670` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5678` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5687` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5694` | 27, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5713` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5720` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5725` | 21, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5743` | 30px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5758` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5767` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5774` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5806` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5815` | 29, 30px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5843` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5855` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5878` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5881` | 25, 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5887` | 27px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5895` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5913` | 18, 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5923` | 20, 18, 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5935` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5946` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5951` | 5, 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5960` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5963` | 10, 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5970` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5979` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:5985` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6001` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6006` | 11, 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6022` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6046` | 20, 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6072` | 29px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6076` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6102` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6110` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6121` | 28, 11, 17, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6137` | 45, 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6153` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6166` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6173` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6195` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6200` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6215` | 26px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6229` | 22, 28px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6243` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6258` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6261` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6275` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6284` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6291` | 7, 10, 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6295` | 5, 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6317` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6322` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6326` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6336` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6342` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6384` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6388` | 7, 9, 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6406` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6421` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6428` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6434` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6440` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6451` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6455` | 7, 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6462` | 22, 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6467` | 19, 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6472` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6505` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6509` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6512` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6517` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6539` | 17, 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6546` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6550` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6557` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6564` | 7, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6569` | 9, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6596` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6608` | 19, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6614` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6622` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6636` | 10, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6646` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6657` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6663` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6671` | 14, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6685` | 47px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6689` | 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6713` | 22, 18, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6729` | 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6734` | 20, 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6743` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6750` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6755` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6758` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6768` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6794` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6803` | 35, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6815` | 15, 10px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6825` | 46px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6839` | 11px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6847` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6853` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6871` | 6, 19px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6875` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6882` | 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6903` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6908` | 13, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6914` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6936` | 45, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6953` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6956` | 10, 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6973` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:6980` | 9, 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7004` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7012` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7037` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7046` | 14px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7057` | 13, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7085` | 18px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7093` | 25px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7108` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7121` | 21px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7141` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7153` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7156` | 9, 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7164` | 20px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7167` | 45px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7170` | 6, 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7179` | 22px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7195` | 11, 13, 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7200` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7204` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7208` | 15, 36px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7214` | 23px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7257` | 38, 42px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7264` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7273` | 27px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7292` | 9px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7296` | 22, 26px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7317` | 18, 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7364` | 45, 50px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7377` | 23, 20, 29, 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7389` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7396` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7434` | 15px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7446` | 20, 17px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7452` | 13px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7467` | 6px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7480` | 5px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7508` | 7px |
+| companies/tamuzi/transcriptwise | `companies/tamuzi/transcriptwise/frontend/src/styles.css:7602` | 45px |
+| companies/velaqori/assetwatch | `companies/velaqori/assetwatch/frontend/src/pages/AssetsPage.tsx:27` | px |
 | companies/velaqori/assetwatch | `companies/velaqori/assetwatch/frontend/src/pages/ScansPage.tsx:23` | px |
 | companies/velaqori/frontpage | `companies/velaqori/frontpage/frontend/src/styles/app.css:65` | px |
 | companies/velaqori/frontpage | `companies/velaqori/frontpage/frontend/src/styles/app.css:104` | px |
@@ -1718,16 +1718,16 @@ Root: `companies/velaqori/threatintel-desk/frontend/src` — 6 findings.
 | companies/velaqori/frontpage | `companies/velaqori/frontpage/frontend/src/styles/app.css:255` | px |
 | companies/velaqori/frontpage | `companies/velaqori/frontpage/frontend/src/styles/app.css:331` | px |
 | companies/velaqori/hashsight | `companies/velaqori/hashsight/frontend/src/pages/CasesPage.tsx:37` | px |
-| companies/velaqori/hashsight | `companies/velaqori/hashsight/frontend/src/pages/RecordPage.tsx:36` | px |
-| companies/velaqori/incidentflow | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:26` | px |
+| companies/velaqori/hashsight | `companies/velaqori/hashsight/frontend/src/pages/RecordPage.tsx:38` | px |
+| companies/velaqori/incidentflow | `companies/velaqori/incidentflow/frontend/src/pages/BoardPage.tsx:40` | px |
 | companies/velaqori/incidentflow | `companies/velaqori/incidentflow/frontend/src/pages/IncidentPage.tsx:31` | px |
-| companies/velaqori/netscope | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:33` | px |
-| companies/velaqori/netscope | `companies/velaqori/netscope/frontend/src/pages/CapturesPage.tsx:24` | px |
-| companies/velaqori/phishlens | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:34` | px |
-| companies/velaqori/securecode-workbench | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:65` | px |
+| companies/velaqori/netscope | `companies/velaqori/netscope/frontend/src/pages/CapturePage.tsx:34` | px |
+| companies/velaqori/netscope | `companies/velaqori/netscope/frontend/src/pages/CapturesPage.tsx:36` | px |
+| companies/velaqori/phishlens | `companies/velaqori/phishlens/frontend/src/pages/MessagePage.tsx:36` | px |
+| companies/velaqori/securecode-workbench | `companies/velaqori/securecode-workbench/frontend/src/pages/FindingsPage.tsx:79` | px |
 | companies/velaqori/securecode-workbench | `companies/velaqori/securecode-workbench/frontend/src/pages/ProjectsPage.tsx:26` | px |
 | companies/velaqori/threatintel-desk | `companies/velaqori/threatintel-desk/frontend/src/pages/DeskPage.tsx:27` | px |
-| companies/velaqori/threatintel-desk | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:56` | px |
+| companies/velaqori/threatintel-desk | `companies/velaqori/threatintel-desk/frontend/src/pages/IndicatorsPage.tsx:84` | px |
 
 ## Remediation contract
 
