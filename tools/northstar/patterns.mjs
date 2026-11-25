@@ -931,6 +931,16 @@ export const PATTERNS = [
     tagline: '',
     legacyId: null,
   },
+  {
+    id: 'X16',
+    name: 'Every page can be found and shared',
+    group: 'content',
+    checks: ['meta-description-missing', 'og-metadata-missing'],
+    skill: 'information-hierarchy',
+    claim: 'Each page has a title, one honest meta-description sentence and Open Graph tags, so search results and shared links say what the page is.',
+    tagline: '',
+    legacyId: null,
+  },
 ];
 
 /** Look up a pattern by id. */

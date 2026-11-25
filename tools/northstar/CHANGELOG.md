@@ -10,7 +10,7 @@ All notable changes to the Northstar UX Engine. Format follows
 - `northstar add decor|magicui|cult-ui <name…> <srcDir>` copies decorative components into an app. The magicui set is an optional, vendored (MIT) subset: blur-fade, number-ticker, marquee, border-beam, shine-border, animated-shiny-text, magic-card, scroll-progress, dot-pattern, with their Tailwind 4 keyframes. A second optional set vendors six MIT cult-ui components (texture-card, shadow-card, direction-aware-tabs, bg-animate-button, edge-blur, expandable). The dependency-free `packages/decor` kit stays the default.
 
 ### Added
-- Three rules from a second pass over the videos: `icon-button-unnamed` (P66), `toast-no-live-region` (P40), `draggable-no-keyboard` (P19). 51 rules in total.
+- Five rules from a second pass over the videos and the shared screenshots: `icon-button-unnamed` (P66), `toast-no-live-region` (P40), `draggable-no-keyboard` (P19), `meta-description-missing` and `og-metadata-missing` (X16). 53 rules in total.
 
 ## [1.1.0] — 2026-11-20
 

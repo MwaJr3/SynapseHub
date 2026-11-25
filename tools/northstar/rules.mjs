@@ -1575,6 +1575,40 @@ const draggableNoKeyboard = {
   },
 };
 
+/** Rule 53 — an app shell (index.html) with no meta description. */
+const metaDescriptionMissing = {
+  id: 'meta-description-missing',
+  pattern: 'X16',
+  severity: 'P2',
+  confidence: 'high',
+  aggregate: 'file',
+  title: 'Page has no meta description',
+  why: 'Search results and link previews fall back to whatever text the crawler guesses at. A single-page app shell has no content for it to guess from.',
+  fix: 'Add `<meta name="description" content="…">` with one honest sentence of what the product does, under about 160 characters.',
+  check(file, text) {
+    if (!/index\.html$/.test(file.relPath) || !/<html[\s>]/i.test(text) || !/<head[\s>]/i.test(text)) return [];
+    if (/<meta[^>]+name\s*=\s*["']description["']/i.test(text)) return [];
+    return [finding(metaDescriptionMissing, file, text, text.search(/<head[\s>]/i), { detail: 'no <meta name="description">' })];
+  },
+};
+
+/** Rule 54 — an app shell with a description but no Open Graph preview tags. */
+const ogMetadataMissing = {
+  id: 'og-metadata-missing',
+  pattern: 'X16',
+  severity: 'P3',
+  confidence: 'medium',
+  aggregate: 'file',
+  title: 'Link previews have no Open Graph title or description',
+  why: 'Shared links render as a bare URL in chat apps and social feeds unless og:title and og:description are present.',
+  fix: 'Add `<meta property="og:title">` and `<meta property="og:description">` (and an `og:image` when there is a real one).',
+  check(file, text) {
+    if (!/index\.html$/.test(file.relPath) || !/<head[\s>]/i.test(text)) return [];
+    if (/property\s*=\s*["']og:title["']/i.test(text) && /property\s*=\s*["']og:description["']/i.test(text)) return [];
+    return [finding(ogMetadataMissing, file, text, text.search(/<head[\s>]/i), { detail: 'og:title / og:description missing' })];
+  },
+};
+
 export const RULES = [
   focusRingRemoved,
   noFocusStyle,
@@ -1627,6 +1661,8 @@ export const RULES = [
   iconButtonUnnamed,
   toastNoLiveRegion,
   draggableNoKeyboard,
+  metaDescriptionMissing,
+  ogMetadataMissing,
 ];
 
 export { NON_TEXT_RATIO, SMALL_TEXT_RATIO, LARGE_TEXT_RATIO, contrast, blend };

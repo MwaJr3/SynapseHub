@@ -1,6 +1,7 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, gt } from 'drizzle-orm';
+import { headers } from 'next/headers';
 
 import { getDb } from '@/lib/db';
 import { auditEvents, companies, contactSubmissions } from '@/lib/db/schema';
@@ -11,6 +12,7 @@ import {
   sendContactEmail,
   type ContactCompanySlug,
 } from '@/lib/email/brevo';
+import { rateLimit } from '@/lib/rate-limit';
 import { contactSchema, zodFieldErrors, type ActionResult } from '@/lib/validation';
 import { revalidatePath } from 'next/cache';
 
@@ -39,6 +41,15 @@ export async function submitContactAction(
     return { ok: false, fieldErrors: zodFieldErrors(parsed.error) };
   }
 
+  // Rate limit (per email and per client address) so a stuck button or a script cannot flood the inbox.
+  const forwarded = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  for (const key of [`contact:email:${parsed.data.email.toLowerCase()}`, `contact:ip:${forwarded}`]) {
+    const gate = rateLimit(key, { limit: 5, windowMs: 10 * 60_000 });
+    if (!gate.allowed) {
+      return { ok: false, error: `Too many messages in a short time. Please wait ${Math.ceil(gate.retryAfterSeconds / 60)} minute(s) and try again.` };
+    }
+  }
+
   const db = getDb();
   const [company] = await db
     .select()
@@ -46,6 +57,36 @@ export async function submitContactAction(
     .where(eq(companies.slug, parsed.data.companySlug))
     .limit(1);
   if (!company) return { ok: false, error: 'Company not found.' };
+
+  // Idempotency: an identical message from the same address in the last 10 minutes is the same
+  // submission (double click, retry after a slow network). Report it; never record or send it twice.
+  const [duplicate] = await db
+    .select({ id: contactSubmissions.id, delivery: contactSubmissions.delivery })
+    .from(contactSubmissions)
+    .where(
+      and(
+        eq(contactSubmissions.companyId, company.id),
+        eq(contactSubmissions.email, parsed.data.email),
+        eq(contactSubmissions.subject, parsed.data.subject),
+        eq(contactSubmissions.message, parsed.data.message),
+        gt(contactSubmissions.createdAt, new Date(Date.now() - 10 * 60_000)),
+      ),
+    )
+    .limit(1);
+  if (duplicate) {
+    // Say what really happened to the first copy; never claim a delivery that did not occur.
+    if (duplicate.delivery === 'DELIVERED') {
+      return { ok: true, deliveryState: 'delivered', deliveryMessage: 'We already sent this exact message a moment ago, so it was not sent a second time.' };
+    }
+    if (duplicate.delivery === 'FAILED') {
+      return { ok: false, error: 'This exact message was recorded a moment ago but could not be emailed. Please try again later.' };
+    }
+    return {
+      ok: true,
+      deliveryState: 'setup-required',
+      deliveryMessage: 'This exact message is already recorded in the platform inbox. It has NOT been sent or delivered.',
+    };
+  }
 
   // Only the two configured companies have a delivery route; anything else is
   // recorded but never forwarded.

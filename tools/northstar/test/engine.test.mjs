@@ -196,3 +196,7 @@ test('the second-pass fixture finds icon buttons, silent toasts and mouse-only d
   assert.equal(byId('icon-button-unnamed').occurrences ?? 1, 1, 'the labelled icon button is fine');
   assert.equal(byId('toast-no-live-region').occurrences ?? 1, 1, 'the role=status toast is fine');
 });
+
+test('an app shell without a description or Open Graph tags is flagged for both', () => {
+  assert.deepEqual(ids(scan('seo-shell')), ['meta-description-missing', 'og-metadata-missing']);
+});
