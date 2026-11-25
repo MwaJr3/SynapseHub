@@ -14,6 +14,7 @@
  *   patterns        print the pattern index the skills reference (--markdown renders PATTERNS.md)
  *   fix     [path]  apply the mechanical fixes, verify each one, refuse the rest
  *   watch   [path]  re-audit on save; with --fix, re-fix too
+ *   add <set> …     copy decorative components into an app (decor, or the optional magicui set)
  *   hooks           install the pre-commit gate that runs `fix` then `check`
  *
  * Two detector layers, one command line. `audit`/`check`/`fix`/`watch` are the
@@ -250,6 +251,11 @@ async function runScan(args) {
 async function main(argv) {
   const rest = argv.slice(1);
   const options = parseArguments(argv);
+
+  if (options.verb === 'add') {
+    const { add } = await import('../lib/add.mjs');
+    return add(rest);
+  }
 
   if (options.verb === 'patterns') {
     if (options.markdown) {

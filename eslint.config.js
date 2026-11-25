@@ -16,6 +16,7 @@ export default tseslint.config(
       '**/dist/**',
       'node_modules',
       'coverage',
+      'tools/northstar/vendor',
       'public',
       'workniche',
       'contextvault',

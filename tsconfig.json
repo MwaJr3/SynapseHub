@@ -28,5 +28,5 @@
     }
   },
   "include": ["src", "challenges", "vite.config.ts", "scripts", "e2e", "playwright.config.ts", "tools"],
-  "exclude": ["node_modules", "tools/northstar/fixtures"]
+  "exclude": ["node_modules", "tools/northstar/fixtures", "tools/northstar/vendor"]
 }

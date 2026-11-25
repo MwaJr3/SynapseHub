@@ -239,3 +239,7 @@ and every report repeats it.
 ## Licence
 
 MIT — see `LICENSE`.
+
+## Decorative components
+
+`northstar add decor <srcDir>` copies the dependency-free kit. `northstar add magicui --list` shows the optional vendored magicui set (needs Tailwind 4, `motion`, `clsx`, `tailwind-merge`); see `vendor/magicui/README.md`.
