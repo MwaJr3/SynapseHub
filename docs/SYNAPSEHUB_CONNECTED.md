@@ -1,4 +1,5 @@
 > **Release follow-up:** see [current setup and release execution log](SYNAPSEHUB_RELEASE.md) for deployment, patched dependencies and remaining operator steps.
+> **Single release assessment:** the evidence-backed classification of every capability, and the ordered closure plan, live in [SYNAPSEHUB_PRODUCTION_READINESS.md](SYNAPSEHUB_PRODUCTION_READINESS.md).
 
 # SynapseHub connected beta — implementation and handoff
 
