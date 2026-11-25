@@ -20,10 +20,25 @@ describe('76-pattern video evidence manifest', () => {
     });
   });
 
-  it('records the supplied archive split without claiming binaries are already committed', () => {
+  it('distinguishes a manifest-only checkout from a verified binary import', () => {
     assert.equal(manifest.sourceArchives.reduce((sum, archive) => sum + archive.videoCount, 0), 76);
-    assert.equal(manifest.status, 'awaiting-binary-import');
-    assert.ok(manifest.assets.every((asset) => asset.status === 'awaiting-binary-import'));
+    if (manifest.status === 'awaiting-binary-import') {
+      assert.ok(manifest.assets.every((asset) => asset.status === 'awaiting-binary-import'));
+      assert.ok(manifest.assets.every((asset) => asset.sha256 === undefined && asset.bytes === undefined));
+      return;
+    }
+
+    assert.equal(manifest.status, 'imported');
+    manifest.assets.forEach((asset) => {
+      const videoPath = path.join(root, 'assets/videos', asset.filename);
+      assert.equal(asset.status, 'imported');
+      assert.ok(Number.isInteger(asset.bytes) && asset.bytes > 12);
+      assert.match(asset.sha256, /^[a-f0-9]{64}$/);
+      assert.ok(fs.existsSync(videoPath), asset.filename + ' must exist after import');
+      const bytes = fs.readFileSync(videoPath);
+      assert.equal(bytes.length, asset.bytes);
+      assert.equal(bytes.toString('ascii', 4, 8), 'ftyp');
+    });
   });
 
   it('detects missing, duplicate, unexpected and wrongly assigned archive entries', () => {
