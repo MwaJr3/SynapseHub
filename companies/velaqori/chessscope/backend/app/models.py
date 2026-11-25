@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .database import Base
@@ -65,4 +65,22 @@ class Mistake(Base):
     eval_drop_cp: Mapped[int] = mapped_column(Integer, default=0)
     phase: Mapped[str] = mapped_column(String(16), default="middlegame")
     category: Mapped[str] = mapped_column(String(32), default="positional")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class OpeningCard(Base):
+    """One opening line a learner is drilling, with its spaced-repetition memory state."""
+    __tablename__ = "opening_cards"
+    __table_args__ = (UniqueConstraint("user_id", "opening_id", "side", name="uq_card_user_opening_side"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    opening_id: Mapped[int] = mapped_column(Integer)
+    side: Mapped[str] = mapped_column(String(5))  # white | black: which side the learner plays
+    stability: Mapped[float] = mapped_column(Float, default=1.0)
+    difficulty: Mapped[float] = mapped_column(Float, default=3.0)
+    reps: Mapped[int] = mapped_column(Integer, default=0)
+    lapses: Mapped[int] = mapped_column(Integer, default=0)
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    last_reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

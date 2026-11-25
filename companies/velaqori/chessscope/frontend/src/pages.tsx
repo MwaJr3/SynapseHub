@@ -1,7 +1,7 @@
 import { EnginePanel } from './EnginePanel';
 import { GameViewer } from './board/GameViewer';
 import { useCallback, useEffect, useState } from 'react';
-import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan } from './api';
+import { api, ApiError, type Analysis, type GameRow, type User , Mistake, TrainingPlan, openingsApi, type GameOpening } from './api';
 import { classificationTone, formatEval, materialLabel } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
@@ -117,7 +117,7 @@ export function GamesPage() {
               {openId === g.id ? (
                 <div className="mt-4 space-y-3 border-t border-slate-800 pt-3">
                   {busy && !analysis ? <Loading /> : null}
-                  {analysis ? <AnalysisView analysis={analysis} pgn={openPgn} /> : null}
+                  {analysis ? <AnalysisView analysis={analysis} pgn={openPgn} gameId={g.id} /> : null}
                 </div>
               ) : null}
             </div>
@@ -128,9 +128,30 @@ export function GamesPage() {
   );
 }
 
-function AnalysisView({ analysis, pgn }: { analysis: Analysis; pgn: string }) {
+function OpeningLink({ gameId }: { gameId: number }) {
+  const [info, setInfo] = useState<GameOpening | null>(null);
+  useEffect(() => {
+    openingsApi.gameOpening(gameId).then(setInfo).catch(() => setInfo(null));
+  }, [gameId]);
+  if (!info) return null;
+  if (!info.match) return <p className="text-xs text-slate-400">{info.note}</p>;
+  const m = info.match;
+  return (
+    <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
+      <strong className="text-slate-200">Opening:</strong> {m.opening.eco} {m.opening.name} (known line through ply {m.matched_plies}
+      {m.left_book_at_ply ? `, you left it at ply ${m.left_book_at_ply}` : ''}).{' '}
+      {info.linked_mistakes.length
+        ? `Linked mistakes: ${info.linked_mistakes.map((x) => `${x.san} (${x.classification})`).join(', ')}.`
+        : 'No engine-classified mistakes recorded near the end of the known line.'}{' '}
+      <a className="text-sky-300 underline" href="#/openings">Drill this opening</a>
+    </div>
+  );
+}
+
+function AnalysisView({ analysis, pgn, gameId }: { analysis: Analysis; pgn: string; gameId: number }) {
   return (
     <div className="space-y-3">
+      <OpeningLink gameId={gameId} />
       {pgn ? <GameViewer key={pgn} initialText={pgn} analysis={analysis} allowImport={false} /> : null}
       <div className="rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-xs text-slate-300">
         <strong className="text-slate-200">Engine status:</strong> {analysis.engine.message}
