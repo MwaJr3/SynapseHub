@@ -5,6 +5,44 @@ import { api, ApiError, type Analysis, type GameRow, type User , Mistake, Traini
 import { classificationTone, formatEval, materialLabel } from './utils';
 import { Badge, Card, ConfirmButton, EmptyState, ErrorBanner, Loading, StatCard } from './ui';
 
+function LichessCard({ onDone }: { onDone: () => void }) {
+  const [user, setUser] = useState('');
+  const [n, setN] = useState(10);
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+  return (
+    <Card title="Import from Lichess">
+      <form
+        className="flex flex-wrap items-end gap-2"
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          setMsg('');
+          try {
+            const r = await api.importLichess(user.trim(), n);
+            setMsg(`Imported ${r.added} game(s); ${r.skipped_duplicates} duplicate(s) skipped.`);
+            onDone();
+          } catch (err) {
+            setMsg(err instanceof ApiError ? err.message : 'Import failed.');
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <label className="text-xs text-slate-400">Lichess username
+          <input className="input mt-1" value={user} onChange={(e) => setUser(e.target.value)} maxLength={30} />
+        </label>
+        <label className="text-xs text-slate-400">Games (max 20)
+          <input className="input mt-1 w-24" type="number" min={1} max={20} value={n} onChange={(e) => setN(Number(e.target.value))} />
+        </label>
+        <button className="btn-primary" disabled={busy || user.trim().length < 2}>{busy ? 'Importing...' : 'Import public games'}</button>
+      </form>
+      <p className="mt-2 text-xs text-slate-400">Only the username is sent to lichess.org, once, when you press the button. No token or password is requested or stored.</p>
+      <p role="status" className="mt-1 text-sm text-slate-200">{msg}</p>
+    </Card>
+  );
+}
+
 export function GamesPage() {
   const [games, setGames] = useState<GameRow[] | null>(null);
   const [pgn, setPgn] = useState('');
@@ -54,7 +92,7 @@ export function GamesPage() {
             e.preventDefault();
             setError('');
             try {
-              await api.uploadGame(pgn);
+              await api.importPgn(pgn);
               setPgn('');
               reload();
             } catch (err) {
@@ -77,6 +115,7 @@ export function GamesPage() {
           </p>
         </form>
       </Card>
+      <LichessCard onDone={reload} />
       {!games ? (
         <Loading />
       ) : games.length === 0 ? (

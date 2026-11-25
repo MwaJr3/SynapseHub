@@ -292,3 +292,61 @@ def insights(user: User = Depends(current_user), db: Session = Depends(get_db)):
         "engine": engine_status(),
         "disclaimer": DISCLAIMER,
     }
+
+
+# ---------------------------------------------------------------- import --
+
+from . import importer  # noqa: E402
+
+
+class LichessBody(BaseModel):
+    username: str = Field(min_length=2, max_length=30)
+    max_games: int = Field(default=10, ge=1, le=importer.MAX_GAMES)
+
+
+class PasteBody(BaseModel):
+    pgn_text: str = Field(min_length=1, max_length=importer.MAX_PASTE_CHARS)
+
+
+def _store_games(db: Session, user: User, games: list[tuple[str, dict]], source: str) -> dict:
+    existing = {g.headers_json for g in db.query(Game).filter(Game.user_id == user.id).all()}
+    added = skipped = 0
+    for text, hdr in games:
+        keys = ("White", "Black", "Result", "Date", "Event", "Opening", "Site")
+        headers = {k: hdr.get(k, "") for k in keys}
+        headers["Source"] = source
+        blob = json.dumps(headers)
+        if hdr.get("Site", "").startswith("https://lichess.org/") and blob in existing:
+            skipped += 1
+            continue
+        db.add(Game(uid=uuid.uuid4().hex, user_id=user.id, white=headers["White"] or "White",
+                    black=headers["Black"] or "Black", result=headers["Result"] or "*",
+                    headers_json=blob, pgn_text=text))
+        existing.add(blob)
+        added += 1
+    db.commit()
+    return {"added": added, "skipped_duplicates": skipped}
+
+
+@router.post("/api/import/lichess")
+def import_lichess(body: LichessBody, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    """Explicit, user-triggered import of public games. Only the username is sent; nothing is stored about the account."""
+    try:
+        text = importer.fetch_lichess_pgn(body.username, body.max_games)
+        games = importer.split_games(text, body.max_games)
+    except importer.ImportError_ as exc:
+        raise HTTPException(status_code=502 if "Lichess" in str(exc) and "valid" not in str(exc) else 400, detail=str(exc))
+    if not games:
+        raise HTTPException(status_code=404, detail="No importable games found for that user.")
+    return _store_games(db, user, games, "lichess.org (public API, CC0 game data)")
+
+
+@router.post("/api/import/pgn")
+def import_pgn(body: PasteBody, user: User = Depends(current_user), db: Session = Depends(get_db)):
+    try:
+        games = importer.split_games(body.pgn_text)
+    except importer.ImportError_ as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    if not games:
+        raise HTTPException(status_code=400, detail="No valid games with moves found in the pasted PGN.")
+    return _store_games(db, user, games, "pasted PGN")

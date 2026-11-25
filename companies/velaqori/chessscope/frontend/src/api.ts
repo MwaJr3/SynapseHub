@@ -122,6 +122,9 @@ export const api = {
     request<GameRow & { headers: Record<string, string>; pgn_text: string; analysis: Analysis | null; disclaimer: string }>(
       `/api/games/${id}`,
     ),
+  importPgn: (pgn_text: string) => request<{ added: number; skipped_duplicates: number }>('/api/import/pgn', json({ pgn_text })),
+  importLichess: (username: string, max_games: number) =>
+    request<{ added: number; skipped_duplicates: number }>('/api/import/lichess', json({ username, max_games })),
   analyze: (id: number) => request<Analysis>(`/api/games/${id}/analyze`, { method: 'POST' }),
   deleteGame: (id: number) => request<{ ok: boolean }>(`/api/games/${id}`, { method: 'DELETE' }),
   insights: () => request<Insights>('/api/insights'),
