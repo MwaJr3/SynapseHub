@@ -1569,7 +1569,7 @@ const draggableNoKeyboard = {
     if (!is(file, 'jsx', 'html')) return [];
     if (/onKeyDown|keydown|aria-grabbed|Move (?:up|down|to)|aria-label=["'][^"']*move/i.test(text)) return [];
     const out = [];
-    const m = /\bdraggable(?:\s*=\s*(?:\{true\}|["']true["']))?(?=[\s>\/])/.exec(text);
+    const m = /\bdraggable(?:\s*=\s*(?:\{true\}|["']true["']))?(?=[\s>/])/.exec(text);
     if (m) out.push(finding(draggableNoKeyboard, file, text, m.index, { detail: 'draggable with no key handler in the file' }));
     return out;
   },

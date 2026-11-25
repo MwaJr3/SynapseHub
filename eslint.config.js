@@ -17,6 +17,7 @@ export default tseslint.config(
       'node_modules',
       'coverage',
       'tools/northstar/vendor',
+      'tools/northstar/fixtures',
       'public',
       'workniche',
       'contextvault',

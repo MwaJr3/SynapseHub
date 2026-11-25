@@ -1,3 +1,4 @@
+/* global document, window, getComputedStyle -- the evaluate() callbacks run inside the page, not in Node */
 /**
  * Runtime probe — what a real browser can tell you that source cannot.
  *

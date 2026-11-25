@@ -242,4 +242,4 @@ MIT — see `LICENSE`.
 
 ## Decorative components
 
-`northstar add decor <srcDir>` copies the dependency-free kit. `northstar add magicui --list` shows the optional vendored magicui set (needs Tailwind 4, `motion`, `clsx`, `tailwind-merge`); see `vendor/magicui/README.md`.
+`northstar add decor <srcDir>` copies the dependency-free kit. `northstar add magicui --list` shows the optional vendored magicui set (needs Tailwind 4, `motion`, `clsx`, `tailwind-merge`); see `vendor/magicui/README.md`. `northstar add cult-ui --list` shows the vendored cult-ui set; see `vendor/cult-ui/README.md`.

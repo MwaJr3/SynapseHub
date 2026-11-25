@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { add, magicuiNames } from '../lib/add.mjs';
+import { add, magicuiNames, vendoredNames } from '../lib/add.mjs';
 
 const quiet = () => {};
 
@@ -36,4 +36,14 @@ test('add decor copies the dependency-free kit', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ns-add-'));
   assert.equal(add(['decor', dir], quiet), 0);
   assert.ok(fs.existsSync(path.join(dir, 'decor', 'index.tsx')));
+});
+
+test('add cult-ui copies components with licence and helper, and lists its names', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ns-add-'));
+  assert.equal(add(['cult-ui', 'texture-card', 'type-animate', dir], quiet), 0);
+  const out = path.join(dir, 'components', 'cult-ui');
+  for (const f of ['texture-card.tsx', 'type-animate.tsx', 'utils.ts', 'LICENSE']) assert.ok(fs.existsSync(path.join(out, f)), f);
+  assert.match(fs.readFileSync(path.join(out, 'LICENSE'), 'utf8'), /MIT License/);
+  assert.equal(add(['cult-ui', 'nope', dir], quiet), 2);
+  assert.deepEqual(vendoredNames('cult-ui').length, 7);
 });
