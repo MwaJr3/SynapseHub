@@ -6,4 +6,10 @@ import './decor/decor.css'
 import { App } from './App'
 import { OfflineBanner, RequestStatus } from "./decor"
 
-createRoot(document.getElementById('root')!).render(<OfflineBanner /><RequestStatus /><App />)
+createRoot(document.getElementById('root')!).render(
+  <>
+    <OfflineBanner />
+    <RequestStatus />
+    <App />
+  </>,
+)

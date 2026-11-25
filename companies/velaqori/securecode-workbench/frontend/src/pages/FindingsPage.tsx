@@ -18,8 +18,10 @@ export default function FindingsPage() {
   useEffect(() => { load() }, [runId, severity, triageFilter])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    severity ? params.set("severity", severity) : params.delete("severity")
-    triageFilter ? params.set("triage", triageFilter) : params.delete("triage")
+    if (severity) params.set("severity", severity)
+    else params.delete("severity")
+    if (triageFilter) params.set("triage", triageFilter)
+    else params.delete("triage")
     const qs = params.toString()
     window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
   }, [severity, triageFilter])

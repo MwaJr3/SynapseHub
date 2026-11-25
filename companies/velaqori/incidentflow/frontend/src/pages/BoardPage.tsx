@@ -20,8 +20,10 @@ export default function BoardPage() {
   useEffect(() => { load() }, [status])
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    status ? params.set("status", status) : params.delete("status")
-    search ? params.set("q", search) : params.delete("q")
+    if (status) params.set("status", status)
+    else params.delete("status")
+    if (search) params.set("q", search)
+    else params.delete("q")
     const qs = params.toString()
     window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
   }, [status, search])

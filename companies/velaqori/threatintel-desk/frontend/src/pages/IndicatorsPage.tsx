@@ -25,8 +25,10 @@ export default function IndicatorsPage() {
     .then((r) => setRows(r.indicators)).catch((e) => setError(String(e)))
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    q ? params.set("q", q) : params.delete("q")
-    triage ? params.set("triage", triage) : params.delete("triage")
+    if (q) params.set("q", q)
+    else params.delete("q")
+    if (triage) params.set("triage", triage)
+    else params.delete("triage")
     const qs = params.toString()
     window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
     load()

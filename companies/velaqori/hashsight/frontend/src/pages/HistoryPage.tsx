@@ -14,8 +14,10 @@ export default function HistoryPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    q ? params.set("q", q) : params.delete("q")
-    verdict ? params.set("verdict", verdict) : params.delete("verdict")
+    if (q) params.set("q", q)
+    else params.delete("q")
+    if (verdict) params.set("verdict", verdict)
+    else params.delete("verdict")
     const qs = params.toString()
     window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : "") + window.location.hash)
     api.records(q, verdict)
