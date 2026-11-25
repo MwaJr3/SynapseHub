@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { hasPath, sourceOf, validateEntry, validateRegistry } from '../scripts/registry-schema.mjs';
 
 /**
  * The registry guard.
@@ -11,8 +12,14 @@ import { describe, expect, it } from 'vitest';
  * packages called `mwangala-portfolio`, four slugs naming both a CLI and a
  * deployed product.
  *
+ * Two kinds of entry exist: `local` (source in this repository, a path on disk)
+ * and path-less (`external` / `archived`, source elsewhere — see
+ * `scripts/registry-schema.mjs`). Per-entry shape and state rules live in that
+ * module and are run over the committed registry below; cross-entry rules
+ * (uniqueness, blocks, tree agreement) live here. Both run in CI via `npm test`.
+ *
  * The checks are written as pure functions over an entry list so the failure
- * paths can be demonstrated on synthetic data (see the last describe block)
+ * paths can be demonstrated on synthetic data (see the last describe blocks)
  * rather than only being asserted absent on the real registry.
  */
 
@@ -36,7 +43,17 @@ const DEPLOYED_ON_REQUEST = new Set(['company-platform/vercel.json']);
 interface ProjectEntry {
   slug: string;
   name: string;
-  path: string;
+  /** Directory in this repository. Absent exactly when the source lives elsewhere. */
+  path?: string;
+  /**
+   * Where the code lives: `local` (this repository), `external` (its own
+   * repository), `extracting` (migration underway), `archived` (original
+   * retired). Absent ≡ `local`. Validated by scripts/registry-schema.mjs.
+   */
+  source?: 'local' | 'external' | 'extracting' | 'archived';
+  /** Target repository while extracting, home repository when external. */
+  repository?: string;
+  defaultBranch?: string;
   owner: 'velaqori' | 'tamuzi' | null;
   kind: 'catalogue' | 'project' | 'product' | 'coursework';
   /**
@@ -155,7 +172,10 @@ describe('slugs, ports and package names are unique', () => {
 
 describe('the registry and the tree agree', () => {
   it('registers only paths that exist', () => {
+    // Path-less entries (external/archived) are excluded here by construction —
+    // their claim is a repository URL, checked by registry-schema, not a directory.
     const missing = registry.projects
+      .filter(hasPath)
       .map((entry) => entry.path)
       .filter((path) => !existsSync(join(REPO, path)));
     expect(missing).toEqual([]);
@@ -169,7 +189,7 @@ describe('the registry and the tree agree', () => {
   });
 
   it('leaves no project directory unregistered', () => {
-    const registered = new Set(registry.projects.map((entry) => entry.path));
+    const registered = new Set(registry.projects.filter(hasPath).map((entry) => entry.path));
     const excluded = new Set(registry.excluded.map((entry) => entry.path));
     const unregistered: string[] = [];
     // Installed dependencies are never projects. The companies workspace hoists
@@ -228,7 +248,11 @@ describe('the registry and the tree agree', () => {
   it('keeps the nine former deployments as history, with a root directory', () => {
     const paused = registry.projects.filter((entry) => entry.pausedDeployment !== undefined);
     expect(paused).toHaveLength(9);
-    for (const entry of paused) {
+    // pausedDeployment asserts a directory in *this* tree, so every such entry
+    // must be path-bearing; registry-schema enforces the same rule.
+    const pathed = paused.filter(hasPath);
+    expect(pathed).toHaveLength(paused.length);
+    for (const entry of pathed) {
       const record = entry.pausedDeployment;
       if (!record) throw new Error(`${entry.slug}: unreachable`);
       expect(record.project.length).toBeGreaterThan(3);
@@ -264,7 +288,7 @@ describe('the registry and the tree agree', () => {
       }
     };
 
-    for (const entry of registry.projects) visit(entry.path);
+    for (const entry of registry.projects.filter(hasPath)) visit(entry.path);
     // The repository root is checked too. A root config deploys the whole tree as one
     // project, which is more than any single project's wiring, not less.
     if (existsSync(join(REPO, 'vercel.json'))) found.push('vercel.json');
@@ -279,7 +303,7 @@ describe('the delivery rule', () => {
 
   it('keeps full-stack company builds as their own deployment', () => {
     const fullStack = registry.projects.filter(
-      (entry) => entry.path.startsWith('companies/') && hasFrontend(entry) && hasBackend(entry),
+      (entry) => entry.path?.startsWith('companies/') === true && hasFrontend(entry) && hasBackend(entry),
     );
     expect(fullStack.length).toBeGreaterThan(10);
     for (const entry of fullStack) {
@@ -289,7 +313,7 @@ describe('the delivery rule', () => {
 
   it('catalogues the company builds that are not full-stack', () => {
     const cliOnly = registry.projects.filter(
-      (entry) => entry.path.startsWith('companies/') && !(hasFrontend(entry) && hasBackend(entry)),
+      (entry) => entry.path?.startsWith('companies/') === true && !(hasFrontend(entry) && hasBackend(entry)),
     );
     expect(cliOnly.length).toBeGreaterThan(20);
     for (const entry of cliOnly) {
@@ -370,5 +394,178 @@ describe('the failure modes are real, not merely absent', () => {
     expect(misplacedPorts(companies, registry.blocks)).toEqual([
       'alpha: port 5178 is outside companies 5300–5399',
     ]);
+  });
+});
+
+describe('every entry satisfies its source-state schema', () => {
+  it('validates the committed registry against registry-schema', () => {
+    const problems = validateRegistry(registry, registry.blocks, (path) =>
+      existsSync(join(REPO, path)),
+    );
+    expect(problems).toEqual([]);
+  });
+
+  it('names a known source state for every entry', () => {
+    const known = new Set(['local', 'external', 'extracting', 'archived']);
+    for (const entry of registry.projects) {
+      expect(known.has(sourceOf(entry)), `${entry.slug} has source "${entry.source}"`).toBe(true);
+    }
+  });
+
+  it('holds path-less entries to the same slug uniqueness as local ones', () => {
+    // First-class, not an exception: an external entry squatting a local slug
+    // is a duplicate like any other.
+    const local: ProjectEntry = {
+      slug: 'alpha',
+      name: 'Alpha',
+      path: 'companies/velaqori/alpha',
+      source: 'local',
+      owner: null,
+      kind: 'project',
+      block: 'companies',
+      interface: ['react'],
+      deployment: 'separate',
+      deploys: [],
+    };
+    const squatter: ProjectEntry = {
+      ...local,
+      path: undefined,
+      source: 'external',
+      repository: 'https://github.com/example/alpha',
+      defaultBranch: 'main',
+    };
+    expect(duplicateSlugs([local, squatter])).toEqual(['alpha']);
+  });
+});
+
+describe('the source-state schema, demonstrated on synthetic data', () => {
+  const blocks = { catalogue: [5173, 5299] as [number, number], products: [5500, 5599] as [number, number] };
+  const exists = (path: string) => path === 'contextvault';
+  // Typed at the validator's parameter so bad states (unknown `source`) can be
+  // fed in without fighting ProjectEntry's union.
+  const problems = (entry: Parameters<typeof validateEntry>[0]) => validateEntry(entry, blocks, exists);
+
+  const local: ProjectEntry = {
+    slug: 'contextvault',
+    name: 'ContextVault',
+    path: 'contextvault',
+    source: 'local',
+    owner: null,
+    kind: 'product',
+    block: 'products',
+    interface: ['nextjs'],
+    deployment: 'separate',
+    deploys: [],
+  };
+  const external: ProjectEntry = {
+    slug: 'contextvault',
+    name: 'ContextVault',
+    source: 'external',
+    repository: 'https://github.com/example/contextvault',
+    defaultBranch: 'main',
+    owner: null,
+    kind: 'product',
+    block: 'products',
+    interface: ['nextjs'],
+    deployment: 'separate',
+    deploys: [],
+  };
+
+  it('accepts a correct entry for each of the four states', () => {
+    expect(problems(local)).toEqual([]);
+    expect(problems(external)).toEqual([]);
+    expect(
+      problems({ ...local, source: 'extracting', repository: external.repository, defaultBranch: 'main' }),
+    ).toEqual([]);
+    expect(problems({ ...external, path: undefined, source: 'archived', defaultBranch: undefined })).toEqual([]);
+  });
+
+  it('rejects an unknown source state', () => {
+    expect(problems({ ...local, source: 'mirrored' })).toEqual([
+      'contextvault: source "mirrored" is not one of local, external, extracting, archived',
+    ]);
+  });
+
+  it('rejects a local entry without an existing path', () => {
+    expect(problems({ ...local, path: undefined })).toContain(
+      'contextvault: local source requires a path in this repository',
+    );
+    expect(problems({ ...local, path: 'nowhere' })).toContain(
+      'contextvault: path "nowhere" does not exist',
+    );
+  });
+
+  it('rejects a local entry claiming its own repository URL', () => {
+    // The central repository is the home of local entries; recording it per
+    // entry would let two entries disagree about where the code lives.
+    expect(problems({ ...local, repository: 'https://github.com/example/central' })).toContain(
+      'contextvault: local source must not carry repository — its home is this repository',
+    );
+  });
+
+  it('rejects an external entry missing its repository evidence', () => {
+    expect(problems({ ...external, repository: undefined })).toContain(
+      'contextvault: external source requires a repository URL',
+    );
+    expect(problems({ ...external, defaultBranch: undefined })).toContain(
+      'contextvault: external source requires defaultBranch',
+    );
+    expect(problems({ ...external, repository: 'http://github.com/example/contextvault' })).toContain(
+      'contextvault: repository must be an https URL',
+    );
+  });
+
+  it('rejects an external entry still holding a local path', () => {
+    expect(problems({ ...external, path: 'contextvault' })).toContain(
+      'contextvault: external source must not carry a path in this repository',
+    );
+  });
+
+  it('rejects deployment claims this tree cannot back for a path-less entry', () => {
+    expect(problems({ ...external, devPort: 5501 })).toContain(
+      'contextvault: external source must not claim a devPort — its dev server lives in its own repository',
+    );
+    expect(
+      problems({ ...external, deployment: 'catalogue', interface: ['cli'] }),
+    ).toContain(
+      'contextvault: deployment "catalogue" requires a local path — the catalogue is generated from this tree',
+    );
+    expect(
+      problems({ ...external, deploys: [{ target: 'vercel-site', project: 'vault' }] }),
+    ).toContain(
+      'contextvault: deploys points at a vercel.json manifest in this tree; a path-less entry cannot ship one',
+    );
+    expect(
+      problems({
+        ...external,
+        pausedDeployment: { target: 'vercel-site', project: 'vault', rootDirectory: 'contextvault' },
+      }),
+    ).toContain(
+      'contextvault: pausedDeployment records a rootDirectory in this tree; a path-less entry cannot carry it',
+    );
+  });
+
+  it('rejects an extracting entry without its target repository', () => {
+    expect(problems({ ...local, source: 'extracting' })).toContain(
+      'contextvault: extracting source requires the target repository URL',
+    );
+    expect(problems({ ...local, source: 'extracting', repository: external.repository })).toContain(
+      'contextvault: extracting source requires defaultBranch in the target repository',
+    );
+  });
+
+  it('rejects an archived entry that still points at a directory here', () => {
+    expect(problems({ ...local, source: 'archived', repository: undefined, defaultBranch: undefined })).toContain(
+      'contextvault: archived source must not carry a path — the original implementation was retired',
+    );
+  });
+
+  it('keeps the honest pairing for entries with nothing to deliver', () => {
+    expect(
+      problems({ ...external, deployment: 'none', interface: ['other'] }),
+    ).toEqual([]);
+    expect(problems({ ...external, deployment: 'none', interface: ['nextjs'] })).toContain(
+      'contextvault: deployment "none" requires interface ["other"] — nothing to deliver, nothing to claim',
+    );
   });
 });
