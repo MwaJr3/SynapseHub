@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://synapsehub.dev/northstar/knowledge-record.schema.json",
+  "title": "Northstar Knowledge Record",
+  "description": "A source-attributed, reviewable design-knowledge proposal. Records remain staged until a human approves integration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "schemaVersion",
+    "title",
+    "classification",
+    "statement",
+    "disposition",
+    "evidenceStatus",
+    "reviewStatus",
+    "source",
+    "createdAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^NK-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+    },
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 180
+    },
+    "classification": {
+      "enum": [
+        "design-principle",
+        "ux-law",
+        "interface-pattern",
+        "component-spec",
+        "decision-rule",
+        "visual-technique",
+        "interaction-behavior",
+        "state-management",
+        "accessibility",
+        "implementation-technique",
+        "design-system",
+        "research-finding",
+        "heuristic",
+        "anti-pattern",
+        "process-framework",
+        "case-study",
+        "trade-off"
+      ]
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 12,
+      "maxLength": 2000
+    },
+    "problem": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "recommendation": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "context": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "tradeoffs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "implementation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 50
+    },
+    "accessibility": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "responsive": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "failureModes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "evaluation": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 30
+    },
+    "relatedPatternIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^P(?:0[1-9]|[1-6][0-9]|7[0-6]|[1-9]|[1-6][0-9]|7[0-6])$"
+      }
+    },
+    "relatedKnowledgeIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^NK-[A-Z0-9]+(?:-[A-Z0-9]+)*$"
+      }
+    },
+    "disposition": {
+      "enum": [
+        "new",
+        "enrichment",
+        "refinement",
+        "duplicate",
+        "contextual-exception",
+        "conflict",
+        "obsolete",
+        "not-suitable"
+      ]
+    },
+    "evidenceStatus": {
+      "enum": [
+        "source-stated",
+        "source-supported",
+        "externally-verified",
+        "analytical-synthesis",
+        "implementation-inference",
+        "unverified"
+      ]
+    },
+    "reviewStatus": {
+      "enum": [
+        "proposed",
+        "needs-review",
+        "approved",
+        "rejected",
+        "deferred"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceType",
+        "title",
+        "location"
+      ],
+      "properties": {
+        "sourceType": {
+          "enum": [
+            "book",
+            "video",
+            "research-paper",
+            "article",
+            "standard",
+            "case-study",
+            "other"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "creators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "publisher": {
+          "type": "string"
+        },
+        "publishedAt": {
+          "type": "string",
+          "format": "date"
+        },
+        "edition": {
+          "type": "string"
+        },
+        "isbn": {
+          "type": "string"
+        },
+        "doi": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "accessedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chapter": {
+              "type": "string"
+            },
+            "section": {
+              "type": "string"
+            },
+            "pageStart": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "pageEnd": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "timeStartSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "timeEndSeconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "urlFragment": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "anyOf": [
+            {
+              "required": [
+                "chapter"
+              ]
+            },
+            {
+              "required": [
+                "section"
+              ]
+            },
+            {
+              "required": [
+                "pageStart"
+              ]
+            },
+            {
+              "required": [
+                "timeStartSeconds"
+              ]
+            },
+            {
+              "required": [
+                "urlFragment"
+              ]
+            }
+          ]
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewNotes": {
+      "type": "string",
+      "maxLength": 3000
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "reviewStatus": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "reviewStatus"
+        ]
+      },
+      "then": {
+        "required": [
+          "reviewer",
+          "reviewedAt"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "sourceType": {
+                "const": "video"
+              }
+            },
+            "required": [
+              "sourceType"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "location": {
+                "required": [
+                  "timeStartSeconds"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "properties": {
+              "sourceType": {
+                "const": "book"
+              }
+            },
+            "required": [
+              "sourceType"
+            ]
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "location": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "chapter"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "pageStart"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
