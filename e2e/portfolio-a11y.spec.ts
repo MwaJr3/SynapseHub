@@ -15,10 +15,31 @@ import {
 function axe(page: import('@playwright/test').Page): Promise<{
   violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
 }> {
+  await waitForRevealTransitions(page);
   return new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag22aa', 'best-practice'])
     .analyze()
     .then((results) => ({ violations: results.violations }));
+}
+
+async function waitForRevealTransitions(
+  page: import('@playwright/test').Page,
+): Promise<void> {
+  await expect
+    .poll(
+      () =>
+        page.locator('[data-reveal="visible"]').evaluateAll((elements) =>
+          elements.every(
+            (element) =>
+              Number.parseFloat(getComputedStyle(element).opacity) >= 0.999,
+          ),
+        ),
+      {
+        message: 'Scroll-reveal transitions must finish before contrast is measured',
+        timeout: 5_000,
+      },
+    )
+    .toBe(true);
 }
 
 function describeViolations(
@@ -167,6 +188,7 @@ test('approach section eyebrow labels meet the WCAG AA text contrast threshold',
   await page.goto('/approach');
   const section = page.locator('#stages');
   await section.waitFor();
+  await waitForRevealTransitions(page);
 
   const contrast = await section.locator('.eyebrow').first().evaluate((element) => {
     const sectionStyle = getComputedStyle(element.closest('section')!);
