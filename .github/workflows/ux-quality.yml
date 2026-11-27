@@ -76,6 +76,9 @@ jobs:
       - name: UX engine tests (CLI, plugin, fixer)
         run: npm run ux:test
 
+      - name: Validate staged UX knowledge records
+        run: npm run ux:knowledge:validate
+
   scan:
     name: UX scan and audit report
     runs-on: ubuntu-latest
