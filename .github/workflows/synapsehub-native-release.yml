@@ -19,7 +19,7 @@ jobs:
       VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SYNAPSE_SUPABASE_PUBLISHABLE_KEY }}
       VITE_API_ORIGIN: ${{ vars.SYNAPSE_API_ORIGIN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with: { node-version: '22', cache: npm }
       - uses: dtolnay/rust-toolchain@stable
@@ -47,7 +47,7 @@ jobs:
       EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SYNAPSE_SUPABASE_PUBLISHABLE_KEY }}
       EXPO_PUBLIC_API_ORIGIN: ${{ vars.SYNAPSE_API_ORIGIN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           {
@@ -80,7 +80,7 @@ jobs:
       EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.SYNAPSE_SUPABASE_PUBLISHABLE_KEY }}
       EXPO_PUBLIC_API_ORIGIN: ${{ vars.SYNAPSE_API_ORIGIN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           {
