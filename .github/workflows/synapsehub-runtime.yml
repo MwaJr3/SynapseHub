@@ -25,7 +25,7 @@ jobs:
       GENERATE_SYNTHETIC: ${{ inputs.generate_synthetic }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: { python-version: '3.11' }
       - run: pip install -r backend/requirements.lock
       - shell: bash
