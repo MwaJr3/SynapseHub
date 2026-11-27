@@ -161,6 +161,50 @@ test.describe('keyboard access', () => {
   }
 });
 
+test('approach section eyebrow labels meet the WCAG AA text contrast threshold', async ({
+  page,
+}) => {
+  await page.goto('/approach');
+  const section = page.locator('#stages');
+  await section.waitFor();
+
+  const contrast = await section.locator('.eyebrow').first().evaluate((element) => {
+    const sectionStyle = getComputedStyle(element.closest('section')!);
+    const textStyle = getComputedStyle(element);
+    const parse = (value: string) =>
+      value.match(/[\\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+    const [fr, fg, fb] = parse(textStyle.color);
+    const [br, bg, bb] = parse(sectionStyle.backgroundColor);
+    const luminance = (channels: number[]) =>
+      channels
+        .map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        })
+        .reduce(
+          (total, channel, index) =>
+            total + channel * [0.2126, 0.7152, 0.0722][index],
+          0,
+        );
+    const foreground = luminance([fr, fg, fb]);
+    const background = luminance([br, bg, bb]);
+    return {
+      ratio:
+        (Math.max(foreground, background) + 0.05) /
+        (Math.min(foreground, background) + 0.05),
+      foreground: textStyle.color,
+      background: sectionStyle.backgroundColor,
+    };
+  });
+
+  expect(
+    contrast.ratio,
+    `Expected at least 4.5:1, received ${contrast.ratio.toFixed(2)}:1 (${contrast.foreground} on ${contrast.background})`,
+  ).toBeGreaterThanOrEqual(4.5);
+});
+
 test('prefers-reduced-motion collapses every transition and animation', async ({
   browser,
 }) => {
