@@ -194,7 +194,7 @@ you cannot remove gets removed wholesale.
 ## Tests
 
 ```bash
-cd northstar-ux-engine && npm test
+npm run ux:test  # from the repository root
 ```
 
 `node --test`, no dependencies. The test suite covers plugin structure, command contracts, pattern coverage, engine behavior, safety, component installation, mechanical fixes, hooks, knowledge validation and video asset integrity:
