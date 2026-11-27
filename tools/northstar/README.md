@@ -214,7 +214,7 @@ npm run ux:test  # from the repository root
   their planted defects, and the nearly-correct one must produce exactly one.
 - **safety** — the guard blocks and allows the right commands, can be bypassed deliberately, no file imports a network module, the only environment variable read is the documented override, and the CLI never deletes anything.
 - **knowledge** — source provenance, evidence classification, review gates, strict locators and duplicate/reference validation.
-- **video assets** — all 76 pattern-to-video mappings, archive assignments and Git LFS configuration.
+- **video assets** — all 76 pattern-to-video mappings, archive assignments and checksums.
 
 ## Fixtures
 
@@ -247,4 +247,4 @@ Source-derived knowledge is staged separately from the canonical pattern write-u
 
 ## Demonstration videos
 
-The manifest maps all 76 canonical patterns to the supplied MP4 demonstrations. Git LFS is configured for the video binaries, and the importer checks archive membership, MP4 signatures and SHA-256 checksums. The manifest currently records `awaiting-binary-import`: the 76 video files are not yet repository assets. See [assets/videos/README.md](assets/videos/README.md) for the import procedure.
+The manifest maps all 76 canonical patterns to the supplied MP4 demonstrations. The video binaries are stored as ordinary Git blobs, and the importer checks archive membership, MP4 signatures and SHA-256 checksums. The manifest currently records `awaiting-binary-import`: the 76 video files are not yet repository assets. See [assets/videos/README.md](assets/videos/README.md) for the import procedure.

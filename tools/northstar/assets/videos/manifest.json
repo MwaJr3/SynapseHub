@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "status": "awaiting-binary-import",
-  "note": "The source archives were inspected and the 76 filename mappings are verified. MP4 binaries are not committed until the Git LFS import workflow is run.",
+  "note": "The source archives were inspected and the 76 filename mappings are verified. 75 of the 76 MP4 binaries are committed as ordinary Git blobs; von-restorff.mp4 was not in the supplied archives.",
   "sourceArchives": [
     {
       "name": "Designmotion_part1.zip",

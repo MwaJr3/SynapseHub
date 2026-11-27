@@ -58,8 +58,9 @@ describe('76-pattern video evidence manifest', () => {
     assert.ok(result.errors.some((error) => error.includes('expected in')));
   });
 
-  it('configures MP4 files for Git LFS', () => {
-    const attributes = fs.readFileSync(path.resolve(root, '../..', '.gitattributes'), 'utf8');
-    assert.match(attributes, /assets\/videos\/\*\.mp4 filter=lfs/);
+  it('stores MP4 files as ordinary Git blobs (no LFS rule)', () => {
+    const file = path.resolve(root, '../..', '.gitattributes');
+    const attributes = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
+    assert.doesNotMatch(attributes, /assets\/videos\/\*\.mp4 filter=lfs/);
   });
 });
