@@ -12,7 +12,7 @@ import {
  * full WCAG 2.x A/AA + 2.2 AA + best-practice rule set runs against rendered
  * Chromium, including color-contrast, target-size and scrollable-region-focusable.
  */
-function axe(page: import('@playwright/test').Page): Promise<{
+async function axe(page: import('@playwright/test').Page): Promise<{
   violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
 }> {
   await waitForRevealTransitions(page);
