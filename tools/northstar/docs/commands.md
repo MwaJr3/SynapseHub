@@ -21,3 +21,8 @@ Out of scope · Open questions. It ends: **Approve to implement, or tell me what
 | Path | source |
 | URL or HTML file (`northstar page`) | measured |
 | Screenshot(s) | visual |
+
+
+## Engine API operations versus installed slash commands
+
+The plugin installs four callable slash commands: `/ux-review`, `/ux-design`, `/ux-audit` and `/restyle`. The TypeScript engine also exposes four programmatic operations — `ux-pattern`, `ux-states`, `ux-system` and `ux-test`. Those API operations are not separate installed slash-command files; do not count them as additional plugin commands.
