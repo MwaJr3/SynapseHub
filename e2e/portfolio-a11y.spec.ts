@@ -177,19 +177,17 @@ test('approach section eyebrow labels meet the WCAG AA text contrast threshold',
     };
     const [fr, fg, fb] = parse(textStyle.color);
     const [br, bg, bb] = parse(sectionStyle.backgroundColor);
-    const luminance = (channels: number[]) =>
-      channels
+    const luminance = (channels: number[]) => {
+      const weights = [0.2126, 0.7152, 0.0722] as const;
+      return channels
         .map((channel) => {
           const normalized = channel / 255;
           return normalized <= 0.04045
             ? normalized / 12.92
             : ((normalized + 0.055) / 1.055) ** 2.4;
         })
-        .reduce(
-          (total, channel, index) =>
-            total + channel * [0.2126, 0.7152, 0.0722][index],
-          0,
-        );
+        .reduce((total, channel, index) => total + channel * (weights[index] ?? 0), 0);
+    };
     const foreground = luminance([fr, fg, fb]);
     const background = luminance([br, bg, bb]);
     return {
