@@ -77,12 +77,12 @@ export function validateKnowledgeRecord(record) {
   }
   if (record.relatedPatternIds !== undefined && (!Array.isArray(record.relatedPatternIds) || record.relatedPatternIds.some((id) => typeof id !== 'string' || !PATTERN_ID.test(id)))) {
     errors.push('relatedPatternIds must contain canonical IDs P1–P76 (padded or unpadded)');
-  } else if (new Set(record.relatedPatternIds).size !== record.relatedPatternIds.length) {
+  } else if (Array.isArray(record.relatedPatternIds) && new Set(record.relatedPatternIds).size !== record.relatedPatternIds.length) {
     errors.push('relatedPatternIds must not contain duplicates');
   }
   if (record.relatedKnowledgeIds !== undefined && (!Array.isArray(record.relatedKnowledgeIds) || record.relatedKnowledgeIds.some((id) => typeof id !== 'string' || !ID.test(id)))) {
     errors.push('relatedKnowledgeIds must contain valid NK-... IDs');
-  } else if (new Set(record.relatedKnowledgeIds).size !== record.relatedKnowledgeIds.length) {
+  } else if (Array.isArray(record.relatedKnowledgeIds) && new Set(record.relatedKnowledgeIds).size !== record.relatedKnowledgeIds.length) {
     errors.push('relatedKnowledgeIds must not contain duplicates');
   }
   if (record.reviewStatus === 'approved') {
