@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix native/desktop
       - run: npm run build --prefix native/desktop
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: synapsehub-desktop-internal-${{ runner.os }}
           path: |
@@ -67,7 +67,7 @@ jobs:
         working-directory: native/mobile
       - run: chmod +x gradlew && ./gradlew assembleDebug --no-daemon
         working-directory: native/mobile/android
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: synapsehub-android-debug-not-for-store
           path: native/mobile/android/app/build/outputs/apk/debug/*.apk
@@ -99,7 +99,7 @@ jobs:
         working-directory: native/mobile
       - run: xcodebuild -workspace ios/SynapseHub.xcworkspace -scheme SynapseHub -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath dist/xcode CODE_SIGNING_ALLOWED=NO
         working-directory: native/mobile
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: synapsehub-ios-simulator-not-ipa
           path: native/mobile/dist/xcode/Build/Products/Debug-iphonesimulator/*.app
