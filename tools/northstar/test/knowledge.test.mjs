@@ -20,6 +20,28 @@ const validRecord = () => ({
   },
   createdAt: '2026-11-25T12:00:00.000Z',
   relatedPatternIds: ['P18', 'P28'],
+
+  it('rejects date-only timestamps where an ISO date-time is required', () => {
+    const record = validRecord();
+    record.createdAt = '2026-11-25';
+    assert.match(validateKnowledgeRecord(record).join(' '), /createdAt must be a valid ISO date-time/);
+  });
+
+  it('rejects impossible calendar dates instead of accepting Date.parse normalization', () => {
+    const record = validRecord();
+    record.source.publishedAt = '2026-02-31';
+    assert.match(validateKnowledgeRecord(record).join(' '), /publishedAt must be a real YYYY-MM-DD date/);
+  });
+
+  it('rejects duplicate related pattern and knowledge references', () => {
+    const record = validRecord();
+    record.relatedPatternIds = ['P18', 'P18'];
+    record.relatedKnowledgeIds = ['NK-BOOK-CH04-002', 'NK-BOOK-CH04-002'];
+    const errors = validateKnowledgeRecord(record).join(' ');
+    assert.match(errors, /relatedPatternIds must not contain duplicates/);
+    assert.match(errors, /relatedKnowledgeIds must not contain duplicates/);
+  });
+
 });
 
 describe('provenance-aware knowledge records', () => {
