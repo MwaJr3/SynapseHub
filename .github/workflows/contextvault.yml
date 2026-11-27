@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: contextvault
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -50,7 +50,7 @@ jobs:
       AI_PROVIDER: mock
       EMBEDDING_PROVIDER: mock
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build and start the PostgreSQL, RustFS, app and worker stack
         run: |
           bash tests/stack/ci-report.sh docker compose config --quiet

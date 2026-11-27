@@ -22,7 +22,7 @@ jobs:
       # On pull requests the default checkout is a detached merge ref, which cannot
       # receive the baseline commit. Check out the PR head SHA so the generated
       # baselines can be pushed back to the pull-request branch fast-forward.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
