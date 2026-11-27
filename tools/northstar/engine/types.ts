@@ -107,6 +107,83 @@ export interface PatternRelationship {
   interpretation: string;
 }
 
+/** Provenance-aware knowledge is staged separately from the canonical pattern write-ups. */
+export type KnowledgeSourceType =
+  | 'book' | 'video' | 'research-paper' | 'article' | 'standard' | 'case-study' | 'other';
+
+export type KnowledgeClassification =
+  | 'design-principle' | 'ux-law' | 'interface-pattern' | 'component-spec'
+  | 'decision-rule' | 'visual-technique' | 'interaction-behavior' | 'state-management'
+  | 'accessibility' | 'implementation-technique' | 'design-system' | 'research-finding'
+  | 'heuristic' | 'anti-pattern' | 'process-framework' | 'case-study' | 'trade-off';
+
+export type KnowledgeDisposition =
+  | 'new' | 'enrichment' | 'refinement' | 'duplicate' | 'contextual-exception'
+  | 'conflict' | 'obsolete' | 'not-suitable';
+
+export type KnowledgeEvidenceStatus =
+  | 'source-stated' | 'source-supported' | 'externally-verified'
+  | 'analytical-synthesis' | 'implementation-inference' | 'unverified';
+
+export type KnowledgeReviewStatus =
+  | 'proposed' | 'needs-review' | 'approved' | 'rejected' | 'deferred';
+
+export interface KnowledgeSourceLocation {
+  chapter?: string;
+  section?: string;
+  pageStart?: number;
+  pageEnd?: number;
+  timeStartSeconds?: number;
+  timeEndSeconds?: number;
+  urlFragment?: string;
+}
+
+export interface KnowledgeSource {
+  sourceType: KnowledgeSourceType;
+  title: string;
+  creators?: string[];
+  publisher?: string;
+  publishedAt?: string;
+  edition?: string;
+  isbn?: string;
+  doi?: string;
+  url?: string;
+  accessedAt?: string;
+  location: KnowledgeSourceLocation;
+  /** Keep excerpts short; retain a locator instead of copying source passages. */
+  excerpt?: string;
+}
+
+export interface KnowledgeRecord {
+  id: string;
+  schemaVersion: '1.0';
+  title: string;
+  classification: KnowledgeClassification;
+  statement: string;
+  problem?: string;
+  recommendation?: string;
+  context?: string;
+  conditions?: string[];
+  limitations?: string[];
+  tradeoffs?: string[];
+  implementation?: string[];
+  accessibility?: string[];
+  responsive?: string[];
+  failureModes?: string[];
+  evaluation?: string[];
+  relatedPatternIds?: string[];
+  relatedKnowledgeIds?: string[];
+  disposition: KnowledgeDisposition;
+  evidenceStatus: KnowledgeEvidenceStatus;
+  reviewStatus: KnowledgeReviewStatus;
+  source: KnowledgeSource;
+  createdAt: string;
+  updatedAt?: string;
+  reviewer?: string;
+  reviewedAt?: string;
+  reviewNotes?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Constraint engine
 // ---------------------------------------------------------------------------

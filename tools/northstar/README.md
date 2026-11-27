@@ -62,7 +62,7 @@ Node 20 or newer. No dependencies, no network access, no telemetry.
 
 ## What it checks
 
-Forty-eight checks that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
+Fifty-three rule functions that read source: React/JSX, CSS/Tailwind, plain HTML, and HTML
 rendered from Python string templates. The ones that find the most, in this repository:
 
 | Check | Pattern | What it proves |
@@ -115,9 +115,7 @@ Plus `hover-only-action`, `raw-colour-in-class`, `nav-missing-current`,
 `placeholder-link`, `target-blank-noopener` and `small-target`. The full mapping lives
 in `PATTERNS.md` and `patterns.mjs`.
 
-**Fifty of the 76 canonical patterns are not machine-checked.** That is stated in the
-pattern library, in the audit report, and in every command's output. `PATTERNS.md`
-lists them with the standard they are held to.
+**Twenty-nine of the 76 canonical patterns have direct source checks.** The other 47 canonical patterns are explicitly marked for human or browser assessment. Ten of the 16 Northstar extensions have direct checks; six need human or browser assessment. `PATTERNS.md` lists the coverage and the standard each pattern is held to.
 
 ## Why source analysis
 
@@ -154,15 +152,13 @@ Nine, each written to activate on the task rather than on the keyword:
 | `visual-character` | The product looks generic, templated, or "AI-made" |
 | `responsive-design` | Widths, keyboard, zoom, contrast, reduced motion — WCAG 2.2 AA |
 
-Two specialists are included because delegation genuinely helps:
-`ux-auditor` (audits and reports, never edits) and `design-system-cartographer`
-(inventories an existing system before anyone replaces it).
+Three specialist agents are included because delegation genuinely helps: `ux-designer` (specifies new screens before code), `ux-auditor` (audits and reports, never edits), and `design-system-cartographer` (inventories an existing system before anyone replaces it).
 
 ## Numbering
 
 Canonical patterns are `P01`–`P76` (zero-padded, so they never collide with the
 severities `P0`–`P3`); the TypeScript engine writes the same patterns as `P1`–`P76`.
-Northstar-only checks are extensions `X01`–`X13`. Every record keeps a `legacyId` that
+Northstar-only checks are extensions `X01`–`X16`. Every record keeps a `legacyId` that
 traces it to its 1.0.x number. `PATTERNS.md` is generated: `northstar patterns --markdown`.
 
 ## Measuring a real page
@@ -198,10 +194,10 @@ you cannot remove gets removed wholesale.
 ## Tests
 
 ```bash
-cd northstar-ux-engine && npm test
+npm run ux:test  # from the repository root
 ```
 
-`node --test`, no dependencies. Five suites:
+`node --test`, no dependencies. The test suite covers plugin structure, command contracts, pattern coverage, engine behavior, safety, component installation, mechanical fixes, hooks, knowledge validation and video asset integrity:
 
 - **structure** — manifest, marketplace source, exactly four commands, exactly nine
   skills whose `name` matches their directory, agents with a model, the hook pointing
@@ -216,9 +212,9 @@ cd northstar-ux-engine && npm test
 - **engine** — contrast against published values, palette resolution, surface
   detection, and calibration on five fixtures: the broken ones must produce exactly
   their planted defects, and the nearly-correct one must produce exactly one.
-- **safety** — the guard blocks and allows the right commands, can be bypassed
-  deliberately, no file imports a network module, the only environment variable read
-  is the documented override, and the CLI never deletes anything.
+- **safety** — the guard blocks and allows the right commands, can be bypassed deliberately, no file imports a network module, the only environment variable read is the documented override, and the CLI never deletes anything.
+- **knowledge** — source provenance, evidence classification, review gates, strict locators and duplicate/reference validation.
+- **video assets** — all 76 pattern-to-video mappings, archive assignments and Git LFS configuration.
 
 ## Fixtures
 
@@ -243,3 +239,12 @@ MIT — see `LICENSE`.
 ## Decorative components
 
 `northstar add decor <srcDir>` copies the dependency-free kit. `northstar add magicui --list` shows the optional vendored magicui set (needs Tailwind 4, `motion`, `clsx`, `tailwind-merge`); see `vendor/magicui/README.md`. `northstar add cult-ui --list` shows the vendored cult-ui set; see `vendor/cult-ui/README.md`.
+
+
+## Knowledge acquisition and review
+
+Source-derived knowledge is staged separately from the canonical pattern write-ups. Each proposal records its source, precise locator, evidence status, integration disposition and review status. The validator checks record structure and references; it does not certify source accuracy or approve integration. Only explicitly reviewed records may be promoted into canonical engine data. See [knowledge/README.md](knowledge/README.md).
+
+## Demonstration videos
+
+The manifest maps all 76 canonical patterns to the supplied MP4 demonstrations. Git LFS is configured for the video binaries, and the importer checks archive membership, MP4 signatures and SHA-256 checksums. The manifest currently records `awaiting-binary-import`: the 76 video files are not yet repository assets. See [assets/videos/README.md](assets/videos/README.md) for the import procedure.

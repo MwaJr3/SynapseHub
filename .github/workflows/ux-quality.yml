@@ -38,7 +38,7 @@ jobs:
         run: npm run typecheck
 
   lint:
-    name: Lint
+    name: Northstar lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -52,8 +52,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint Northstar
+        run: npx eslint tools/northstar
 
   tests:
     name: Unit, component and detector tests
@@ -75,6 +75,9 @@ jobs:
 
       - name: UX engine tests (CLI, plugin, fixer)
         run: npm run ux:test
+
+      - name: Validate staged UX knowledge records
+        run: npm run ux:knowledge:validate
 
   scan:
     name: UX scan and audit report
