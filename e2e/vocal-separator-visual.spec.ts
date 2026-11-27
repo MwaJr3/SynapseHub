@@ -5,24 +5,11 @@ import { VOCAL_URL } from './fixtures/routes';
 /**
  * Visual-regression baselines for the vocal-separator standalone app.
  *
- * These screenshots are the gating prerequisite for normalising its 75
- * deferred TOKEN-SPACING-01 findings: any spacing-token change must leave the
- * rendered shell pixel-stable (within a small antialiasing tolerance). The
- * suite runs without the Python backend, exercising the unauthenticated shell
- * — its health fetch fails silently and the view is otherwise static, so the
- * baselines are deterministic.
- *
- * KNOWN STALE BASELINE (documented exception, PR #153, 2026-11-25): the
- * `vocal-shell-mobile` baseline predates the offline-notice commits
- * (`b73e61b9`, `2df6e3b`) that mounted OfflineBanner/RequestStatus into this
- * app. CI reports expected 390×2779 vs received 390×2805 — the added notice
- * strip — with the desktop baseline and the other 32 tests passing, so this
- * is a stale fixture, not a test defect or a product regression. Regenerate
- * with the workflow's own mechanism: Actions → Playwright browser suite →
- * Run workflow → `update_snapshots` (commits the fresh baselines back to the
- * branch), or `npm run e2e:update` where Playwright's chromium can be
- * downloaded. The API dispatch from an automation account needs
- * `actions: write` and currently returns 403.
+ * These screenshots cover the unauthenticated shell, including the offline
+ * and request-status notices. The E2E workflow regenerates baselines when the
+ * snapshot directory has no PNG fixtures; normal runs compare the rendered
+ * shell against the checked-in desktop and mobile images with a strict
+ * pixel-difference tolerance.
  */
 test.describe('vocal separator visual regression', () => {
   test.beforeEach(async ({ page }) => {

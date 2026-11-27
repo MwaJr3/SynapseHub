@@ -12,13 +12,34 @@ import {
  * full WCAG 2.x A/AA + 2.2 AA + best-practice rule set runs against rendered
  * Chromium, including color-contrast, target-size and scrollable-region-focusable.
  */
-function axe(page: import('@playwright/test').Page): Promise<{
+async function axe(page: import('@playwright/test').Page): Promise<{
   violations: Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
 }> {
+  await waitForRevealTransitions(page);
   return new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag22aa', 'best-practice'])
     .analyze()
     .then((results) => ({ violations: results.violations }));
+}
+
+async function waitForRevealTransitions(
+  page: import('@playwright/test').Page,
+): Promise<void> {
+  await expect
+    .poll(
+      () =>
+        page.locator('[data-reveal="visible"]').evaluateAll((elements) =>
+          elements.every(
+            (element) =>
+              Number.parseFloat(getComputedStyle(element).opacity) >= 0.999,
+          ),
+        ),
+      {
+        message: 'Scroll-reveal transitions must finish before contrast is measured',
+        timeout: 5_000,
+      },
+    )
+    .toBe(true);
 }
 
 function describeViolations(
@@ -159,6 +180,51 @@ test.describe('keyboard access', () => {
       ).toBeGreaterThan(1);
     });
   }
+});
+
+test('approach section eyebrow labels meet the WCAG AA text contrast threshold', async ({
+  page,
+}) => {
+  await page.goto('/approach');
+  const section = page.locator('#stages');
+  await section.waitFor();
+  await waitForRevealTransitions(page);
+
+  const contrast = await section.locator('.eyebrow').first().evaluate((element) => {
+    const sectionStyle = getComputedStyle(element.closest('section')!);
+    const textStyle = getComputedStyle(element);
+    const parse = (value: string): [number, number, number] => {
+      const channels = value.match(/[\d.]+/g)?.slice(0, 3).map(Number) ?? [];
+      return [channels[0] ?? 0, channels[1] ?? 0, channels[2] ?? 0];
+    };
+    const [fr, fg, fb] = parse(textStyle.color);
+    const [br, bg, bb] = parse(sectionStyle.backgroundColor);
+    const luminance = (channels: number[]) => {
+      const weights = [0.2126, 0.7152, 0.0722] as const;
+      return channels
+        .map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        })
+        .reduce((total, channel, index) => total + channel * (weights[index] ?? 0), 0);
+    };
+    const foreground = luminance([fr, fg, fb]);
+    const background = luminance([br, bg, bb]);
+    return {
+      ratio:
+        (Math.max(foreground, background) + 0.05) /
+        (Math.min(foreground, background) + 0.05),
+      foreground: textStyle.color,
+      background: sectionStyle.backgroundColor,
+    };
+  });
+
+  expect(
+    contrast.ratio,
+    `Expected at least 4.5:1, received ${contrast.ratio.toFixed(2)}:1 (${contrast.foreground} on ${contrast.background})`,
+  ).toBeGreaterThanOrEqual(4.5);
 });
 
 test('prefers-reduced-motion collapses every transition and animation', async ({
