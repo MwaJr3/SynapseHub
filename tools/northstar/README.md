@@ -152,9 +152,7 @@ Nine, each written to activate on the task rather than on the keyword:
 | `visual-character` | The product looks generic, templated, or "AI-made" |
 | `responsive-design` | Widths, keyboard, zoom, contrast, reduced motion — WCAG 2.2 AA |
 
-Two specialists are included because delegation genuinely helps:
-`ux-auditor` (audits and reports, never edits) and `design-system-cartographer`
-(inventories an existing system before anyone replaces it).
+Three specialist agents are included because delegation genuinely helps: `ux-designer` (specifies new screens before code), `ux-auditor` (audits and reports, never edits), and `design-system-cartographer` (inventories an existing system before anyone replaces it).
 
 ## Numbering
 
