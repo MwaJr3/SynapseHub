@@ -12,7 +12,15 @@ const ID = /^NK-[A-Z0-9]+(?:-[A-Z0-9]+)*$/;
 const PATTERN_ID = /^P(?:0?[1-9]|[1-6][0-9]|7[0-6])$/;
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isText = (value) => typeof value === 'string' && value.trim().length > 0;
-const isDate = (value) => typeof value === 'string' && !Number.isNaN(Date.parse(value));
+const isDateOnly = (value) => {
+  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+};
+const isDateTime = (value) => typeof value === 'string' &&
+  /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$/.test(value) &&
+  isDateOnly(value.slice(0, 10)) && Number.isFinite(Date.parse(value));
 
 export function validateKnowledgeRecord(record) {
   const errors = [];
@@ -26,8 +34,8 @@ export function validateKnowledgeRecord(record) {
   if (!DISPOSITIONS.has(record.disposition)) errors.push('disposition is not supported');
   if (!EVIDENCE.has(record.evidenceStatus)) errors.push('evidenceStatus is not supported');
   if (!REVIEW.has(record.reviewStatus)) errors.push('reviewStatus is not supported');
-  if (!isDate(record.createdAt)) errors.push('createdAt must be a valid date/time');
-  if (record.updatedAt !== undefined && !isDate(record.updatedAt)) errors.push('updatedAt must be a valid date/time');
+  if (!isDateTime(record.createdAt)) errors.push('createdAt must be a valid ISO date-time');
+  if (record.updatedAt !== undefined && !isDateTime(record.updatedAt)) errors.push('updatedAt must be a valid ISO date-time');
 
   const source = record.source;
   if (!isObject(source)) {
@@ -59,7 +67,7 @@ export function validateKnowledgeRecord(record) {
       } catch { errors.push('source.url must be an absolute URL'); }
     }
     if (source.publishedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(source.publishedAt)) errors.push('source.publishedAt must use YYYY-MM-DD');
-    if (source.accessedAt !== undefined && !isDate(source.accessedAt)) errors.push('source.accessedAt must be a valid date/time');
+    if (source.accessedAt !== undefined && !isDateTime(source.accessedAt)) errors.push('source.accessedAt must be a valid ISO date-time');
     if (source.excerpt !== undefined && (typeof source.excerpt !== 'string' || source.excerpt.length > 500)) errors.push('source.excerpt must be a string of at most 500 characters');
     if (source.creators !== undefined && (!Array.isArray(source.creators) || source.creators.some((name) => !isText(name)))) errors.push('source.creators must be an array of non-empty names');
   }
@@ -69,15 +77,19 @@ export function validateKnowledgeRecord(record) {
   }
   if (record.relatedPatternIds !== undefined && (!Array.isArray(record.relatedPatternIds) || record.relatedPatternIds.some((id) => typeof id !== 'string' || !PATTERN_ID.test(id)))) {
     errors.push('relatedPatternIds must contain canonical IDs P1–P76 (padded or unpadded)');
+  } else if (new Set(record.relatedPatternIds).size !== record.relatedPatternIds.length) {
+    errors.push('relatedPatternIds must not contain duplicates');
   }
   if (record.relatedKnowledgeIds !== undefined && (!Array.isArray(record.relatedKnowledgeIds) || record.relatedKnowledgeIds.some((id) => typeof id !== 'string' || !ID.test(id)))) {
     errors.push('relatedKnowledgeIds must contain valid NK-... IDs');
+  } else if (new Set(record.relatedKnowledgeIds).size !== record.relatedKnowledgeIds.length) {
+    errors.push('relatedKnowledgeIds must not contain duplicates');
   }
   if (record.reviewStatus === 'approved') {
     if (!isText(record.reviewer)) errors.push('approved records require reviewer');
-    if (!isDate(record.reviewedAt)) errors.push('approved records require a valid reviewedAt timestamp');
-  } else if (record.reviewedAt !== undefined && !isDate(record.reviewedAt)) {
-    errors.push('reviewedAt must be a valid date/time');
+    if (!isDateTime(record.reviewedAt)) errors.push('approved records require a valid ISO reviewedAt timestamp');
+  } else if (record.reviewedAt !== undefined && !isDateTime(record.reviewedAt)) {
+    errors.push('reviewedAt must be a valid ISO date-time');
   }
   return errors;
 }
