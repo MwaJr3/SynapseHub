@@ -13,13 +13,13 @@ const PATTERN_ID = /^P(?:0?[1-9]|[1-6][0-9]|7[0-6])$/;
 const isObject = (value) => value !== null && typeof value === 'object' && !Array.isArray(value);
 const isText = (value) => typeof value === 'string' && value.trim().length > 0;
 const isDateOnly = (value) => {
-  if (typeof value !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
   const [year, month, day] = value.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 };
 const isDateTime = (value) => typeof value === 'string' &&
-  /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$/.test(value) &&
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(value) &&
   isDateOnly(value.slice(0, 10)) && Number.isFinite(Date.parse(value));
 
 export function validateKnowledgeRecord(record) {
@@ -66,7 +66,7 @@ export function validateKnowledgeRecord(record) {
         if (!['http:','https:'].includes(url.protocol)) errors.push('source.url must use http or https');
       } catch { errors.push('source.url must be an absolute URL'); }
     }
-    if (source.publishedAt !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(source.publishedAt)) errors.push('source.publishedAt must use YYYY-MM-DD');
+    if (source.publishedAt !== undefined && !isDateOnly(source.publishedAt)) errors.push('source.publishedAt must be a real YYYY-MM-DD date');
     if (source.accessedAt !== undefined && !isDateTime(source.accessedAt)) errors.push('source.accessedAt must be a valid ISO date-time');
     if (source.excerpt !== undefined && (typeof source.excerpt !== 'string' || source.excerpt.length > 500)) errors.push('source.excerpt must be a string of at most 500 characters');
     if (source.creators !== undefined && (!Array.isArray(source.creators) || source.creators.some((name) => !isText(name)))) errors.push('source.creators must be an array of non-empty names');
