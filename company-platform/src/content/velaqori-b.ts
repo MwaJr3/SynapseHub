@@ -12,9 +12,9 @@ export const velaqoriProductsB: ProductContent[] = [
       'Collects, normalizes, searches, and correlates indicators from configurable legitimate threat-intelligence sources.',
     summary:
       'A threat-intelligence aggregation platform: feed ingestion, indicator normalization and deduplication, source attribution, relationships, analyst notes, feed-health monitoring, and reports.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Background jobs'],
     features: [
       {
@@ -107,7 +107,7 @@ export const velaqoriProductsB: ProductContent[] = [
       limitations: [
         'Coverage bounded by configured sources; incomplete by nature',
         'Indicator matches are context, never proof of malicious events',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Structured export formats for peer sharing',
@@ -125,9 +125,9 @@ export const velaqoriProductsB: ProductContent[] = [
       'Organizes security incidents, response tasks, evidence references, timelines, affected assets, investigation notes, and remediation work.',
     summary:
       'Security incident response and case management: classification, severity/status lifecycle, task assignment, timelines, asset records, response templates, audit trail, and resolution reports.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLAlchemy', 'PostgreSQL'],
     features: [
       {
@@ -209,7 +209,7 @@ export const velaqoriProductsB: ProductContent[] = [
       limitations: [
         'Case management only — no alerting or paging in scope',
         'Evidence integrations are references, not ingestion',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Post-incident review templates',
@@ -227,9 +227,9 @@ export const velaqoriProductsB: ProductContent[] = [
       'Calculates local file hashes and optionally checks configured reputation sources.',
     summary:
       'A file hash reputation explorer: local hashing (SHA-256 plus compatibility hashes where required), configurable reputation lookups with source attribution, conflicting-result display, lookup history, and investigation cases.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLite'],
     features: [
       {
@@ -312,7 +312,7 @@ export const velaqoriProductsB: ProductContent[] = [
       limitations: [
         'Reputation coverage bounded by configured sources',
         'Hash matches do not prove file behaviour; “unknown” remains unknown',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Batch hashing for directories with diffing',
@@ -330,9 +330,9 @@ export const velaqoriProductsB: ProductContent[] = [
       'Tracks authorized network assets, observed services, exposure findings, and remediation tasks over time.',
     summary:
       'An authorized network asset and exposure monitor: allowlisted inventory collection, service observations, scan history, change detection, exposure findings, ownership, and remediation tracking.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
     features: [
       {
@@ -419,7 +419,7 @@ export const velaqoriProductsB: ProductContent[] = [
       limitations: [
         'No scanning outside explicit allowlists — by design',
         'Finding depth bounded by collection methods',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Scheduled collection windows with approval workflow',
@@ -437,9 +437,9 @@ export const velaqoriProductsB: ProductContent[] = [
       'Integrates established static-analysis tools to help developers understand and prioritize supported code-security findings.',
     summary:
       'Static application security review with Bandit (and optional Semgrep) integration: finding categories, source locations, rule references, remediation guidance, a false-positive workflow, and review history.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL', 'Bandit', 'Semgrep'],
     features: [
       {
@@ -521,7 +521,7 @@ export const velaqoriProductsB: ProductContent[] = [
       limitations: [
         'Automated static analysis has documented blind spots (e.g. complex flows)',
         'Scanner coverage bounded by integrated tools and their rule sets',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'More scanner adapters behind the same model',
