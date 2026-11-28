@@ -117,12 +117,6 @@ export interface ProductEvidence {
   verificationAddendum: string;
 }
 
-const CASE_STUDY_ADDENDUM =
-  'Project case-study record verified in the owner-supplied Mwangala React portfolio (' +
-  'https://github.com/MwaJr3/MySul/pull/2, merged 2026-10-23); the record source resides in this ' +
-  'repository at sites/portfolio/src/data/projects/. Product source code is not ' +
-  'linked yet — the Source Code button stays hidden.';
-
 function appAddendum(company: 'velaqori' | 'tamuzi', slug: string): string {
   return (
     `Working full-stack application built and verified in this repository at companies/${company}/${slug} (backend + frontend + tests), ` +
@@ -148,10 +142,6 @@ function appEvidence(company: 'velaqori' | 'tamuzi', slug: string): ProductEvide
     repositoryUrl: appSourceUrl(company, slug),
     verificationAddendum: appAddendum(company, slug),
   };
-}
-
-function caseStudyEvidence(): ProductEvidence {
-  return { verificationAddendum: CASE_STUDY_ADDENDUM };
 }
 
 /**
