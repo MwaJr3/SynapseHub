@@ -158,7 +158,7 @@ function caseStudyEvidence(): ProductEvidence {
  * Per-product evidence, keyed by product slug. The 25 catalogue products are
  * covered by exactly one of three verified record sets; source links exist
  * only for products with working apps — pointing into this repository, where
- * the code now lives (seven portfolio apps plus nine education-suite apps,
+ * the code now lives (sixteen portfolio and cybersecurity apps plus nine education-suite apps,
  * each filed under its company since 2026-10-29).
  */
 export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
@@ -170,16 +170,16 @@ export const PRODUCT_EVIDENCE: Record<string, ProductEvidence> = {
   chessscope: appEvidence('velaqori', 'chessscope'),
   'circuitlab-calc': appEvidence('velaqori', 'circuitlab-calc'),
   campusflow: appEvidence('tamuzi', 'campusflow'),
-  // Case-study records (vendored from MySul PR #2) — no product source linked.
-  assetwatch: caseStudyEvidence(),
-  hashsight: caseStudyEvidence(),
-  incidentflow: caseStudyEvidence(),
-  netscope: caseStudyEvidence(),
-  phishlens: caseStudyEvidence(),
-  'securecode-workbench': caseStudyEvidence(),
-  'threatintel-desk': caseStudyEvidence(),
-  'cyberaware-lab': caseStudyEvidence(),
-  transcriptwise: caseStudyEvidence(),
+  // Completed cybersecurity applications — local source, tests and demos verified in-repository.
+  assetwatch: appEvidence('velaqori', 'assetwatch'),
+  hashsight: appEvidence('velaqori', 'hashsight'),
+  incidentflow: appEvidence('velaqori', 'incidentflow'),
+  netscope: appEvidence('velaqori', 'netscope'),
+  phishlens: appEvidence('velaqori', 'phishlens'),
+  'securecode-workbench': appEvidence('velaqori', 'securecode-workbench'),
+  'threatintel-desk': appEvidence('velaqori', 'threatintel-desk'),
+  'cyberaware-lab': appEvidence('tamuzi', 'cyberaware-lab'),
+  transcriptwise: appEvidence('tamuzi', 'transcriptwise'),
   // Education suite (built in this workspace, companies/tamuzi/<slug>) — Source Code configured.
   learnbridge: educationAppEvidence('learnbridge'),
   classconnect: educationAppEvidence('classconnect'),
