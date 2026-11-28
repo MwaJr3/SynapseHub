@@ -26,45 +26,57 @@ claimed live.
 
 ## How the evidence maps to the 25 catalogue products
 
-All 25 products carry a verified record of *something real*; sixteen carry
-working application source. Source Code buttons appear only for the sixteen.
+All 25 products now carry a verified source location and an internal
+Source Code link. The nine cybersecurity/learning projects that previously had
+only case-study records now have dedicated full-stack implementations under
+`companies/`, with frontend, backend, automated tests, setup instructions and
+local demonstration workflows. Source-code evidence is not evidence of a
+public hosted demo.
 
-### Working apps — Source Code configured (7)
+### Original working portfolio applications (7)
 
 `sentinelcore`, `sentinellog`, `fileguard`, `dependsecure`, `chessscope`,
-`circuitlab-calc`, `campusflow` — **full working full-stack applications
-built into this repository at `apps/<slug>/`** (backend + frontend + tests,
-built 2026-10-23), with demo and case-study pages vendored at
-`sites/portfolio/public/demos/<slug>/` and
-`sites/portfolio/src/data/earlierWork.ts`, provenance
-[MySul#1](https://github.com/MwaJr3/MySul/pull/1). Each product's Source Code
-button links to its `apps/<slug>/` folder **inside this repository**. Status
-stays **Built (not publicly deployed)**: source exists and runs; no hosted
-deployment is claimed.
+`circuitlab-calc`, and `campusflow` — full applications with backend,
+frontend and tests, filed under `companies/<company>/<slug>/`. Their source
+links point into this repository.
 
-### Verified case-study records — Source Code hidden (9)
+### Completed cybersecurity applications (9)
 
-`assetwatch`, `hashsight`, `incidentflow`, `netscope`, `phishlens`,
-`securecode-workbench`, `threatintel-desk`, `cyberaware-lab`,
-`transcriptwise` — project case-study records vendored at
-`sites/portfolio/src/data/projects/`, provenance
-[MySul#2](https://github.com/MwaJr3/MySul/pull/2). Product source is **not
-linked**, so the Source Code button stays hidden.
+| Product | Company | Source path | Verification scope |
+| --- | --- | --- | --- |
+| HashSight | Velaqori | `companies/velaqori/hashsight/` | Frontend, FastAPI backend, hashing/provider/casework tests, README and local demo |
+| IncidentFlow | Velaqori | `companies/velaqori/incidentflow/` | Frontend, FastAPI backend, lifecycle/RBAC/audit/evidence tests, README and local demo |
+| NetScope | Velaqori | `companies/velaqori/netscope/` | Frontend, FastAPI backend, PCAP parsing/redaction/API tests, README and local demo |
+| PhishLens | Velaqori | `companies/velaqori/phishlens/` | Frontend, FastAPI backend, parser/rules/auth/workflow tests, README and local demo |
+| SecureCode Workbench | Velaqori | `companies/velaqori/securecode-workbench/` | Frontend, FastAPI backend, archive-guard/rules/redaction/parser tests, README and local demo |
+| ThreatIntel Desk | Velaqori | `companies/velaqori/threatintel-desk/` | Frontend, FastAPI backend, feed/indicator/dedup/triage tests, README and local demo |
+| AssetWatch | Velaqori | `companies/velaqori/assetwatch/` | Frontend, FastAPI backend, authorization/scan/diff/migration tests, README and local demo |
+| CyberAware Lab | Tamuzi | `companies/tamuzi/cyberaware-lab/` | Frontend, FastAPI backend, lesson/scenario/auth/API tests, README and local demo |
+| TranscriptWise | Tamuzi | `companies/tamuzi/transcriptwise/` | Existing standalone frontend/backend; API/core/integration tests, browser workflows, deployment and security documentation |
 
-### Education suite — Source Code configured (9)
+All nine now have source links in the catalogue. Their status is **Built
+(not publicly deployed)**. TranscriptWise is an existing implementation and
+was audited as part of this pass rather than duplicated. Its own security
+documentation explicitly records remaining identity limitations: no email
+verification, password reset/change, MFA, SSO, or session-management dashboard.
+Its current test report records executed SQLite and PostgreSQL backend suites,
+frontend tests, and desktop/mobile browser workflows; those are repository
+reports, not a fresh execution in this review environment.
+
+### Education suite (9)
 
 `learnbridge`, `classconnect`, `tutorspring`, `pathwise`, `teachcraft`,
-`openlearn-commons`, `learnpulse`, `reachlearn`, `eduaccess` — **full working
-full-stack applications built into this repository at `apps/<slug>/`**
-(backend + frontend + tests + seeded demo data, built 2026-10-24). Each
-product's Source Code button links to its `apps/<slug>/` folder **inside this
-repository**. Status: **Built (not publicly deployed)**.
+`openlearn-commons`, `learnpulse`, `reachlearn`, and `eduaccess` — full
+applications with backend, frontend, tests, seeded demo data and local setup
+instructions under `companies/tamuzi/<slug>/`.
 
-**Correction (2026-10-23), preserved:** an earlier draft of this document
-claimed verified registry records at the root path `src/data/projects/`; no
-such records exist and that claim was withdrawn. Before 2026-10-24 these nine
-were case-study-only; they now have verified working implementations as
-described above.
+The 25 product source links all point to existing folders in this repository.
+The nine applications above have no hosted demo URLs configured; no live
+service or production capability is implied by a successful source build.
+
+**Correction:** this replaces the earlier case-study-only classification for
+the nine named products. Their current source directories, frontend/backend
+code, tests and local run instructions supersede that earlier status.
 
 ## Projects outside the 25-product catalogue
 
