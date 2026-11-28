@@ -503,9 +503,9 @@ export const velaqoriProducts: ProductContent[] = [
       'Performs explainable defensive analysis of suspicious email content, headers, and URLs.',
     summary:
       'A phishing email and URL analyzer: header parsing, URL structure analysis, sender/reply-to mismatch indicators, available SPF/DKIM/DMARC evidence, and explainable risk classifications — never automatically opening suspicious links.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'SQLite'],
     features: [
       {
@@ -598,7 +598,7 @@ export const velaqoriProducts: ProductContent[] = [
       limitations: [
         'Heuristic analysis; sophisticated messages can present few reliable indicators',
         'Authentication evidence is only as reliable as the message headers provided',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Optional configured reputation lookups for URLs (explicit, informed action)',
@@ -616,9 +616,9 @@ export const velaqoriProducts: ProductContent[] = [
       'Processes authorized packet captures to summarize protocols, endpoints, traffic distribution, and potential anomalies.',
     summary:
       'A network traffic analysis workbench: PCAP/PCAPNG upload, packet parsing, protocol summaries, endpoint analysis, filters, visualization, capture comparison, and configurable anomaly indicators — offline processing of authorized captures.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'Scapy', 'Pandas', 'PostgreSQL'],
     features: [
       {
@@ -705,7 +705,7 @@ export const velaqoriProducts: ProductContent[] = [
       limitations: [
         'Offline analysis of uploaded captures — no live monitoring',
         'Heuristic anomaly indicators with documented limits',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Additional protocol decoders as needed',
