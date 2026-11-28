@@ -79,9 +79,9 @@ export const tamuziProducts: ProductContent[] = [
       'Teaches secure online practices through lessons, fictional scenarios, quizzes, and progress tracking.',
     summary:
       'An interactive cybersecurity awareness platform: structured lessons, safe fictional simulations, scenario-based exercises with answer explanations, learning paths, and privacy-conscious progress tracking.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed. Real-cohort educational effectiveness is not claimed.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed. Real-cohort educational effectiveness is not claimed.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'PostgreSQL'],
     features: [
       {
@@ -164,7 +164,7 @@ export const tamuziProducts: ProductContent[] = [
       limitations: [
         'Educational effectiveness unvalidated in real cohorts',
         'Curriculum bounded by the authored content set',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Consented pilot programmes with documented evaluation',
@@ -283,9 +283,9 @@ export const tamuziProducts: ProductContent[] = [
       'Uses supported transcript inputs to create organized study guides and other learning materials.',
     summary:
       'A YouTube transcript and learning intelligence tool: transcript retrieval or manual/upload entry, AI-assisted study guides, concept explanations, quizzes and flashcards — with transcript-derived claims kept distinct from AI interpretation.',
-    status: 'CASE_STUDY_ONLY',
+    status: 'BUILT',
     statusNote:
-      'Implementation complete as a portfolio build; not publicly deployed. AI-generated content requires human review; provider limits apply.',
+      'Built and tested locally with a dedicated frontend, backend, automated tests, documentation and local demo; not publicly deployed. AI-generated content requires human review; provider limits apply.',
     technologies: ['Python', 'FastAPI', 'React', 'TypeScript', 'Tailwind CSS', 'Pydantic', 'PostgreSQL', 'Configurable AI provider'],
     features: [
       {
@@ -368,7 +368,7 @@ export const tamuziProducts: ProductContent[] = [
       limitations: [
         'AI-generated content requires human review and can be wrong',
         'Retrieval support depends on the configured provider/URL availability',
-        'Deployment status unverified',
+        'Not publicly deployed',
       ],
       futureImprovements: [
         'Additional source platforms where transcripts are supported',

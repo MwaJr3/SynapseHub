@@ -35,6 +35,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TAMUZI = new Set([
   'campusflow',
   'classconnect',
+  'cyberaware-lab',
   'eduaccess',
   'learnbridge',
   'learnpulse',
@@ -42,6 +43,7 @@ const TAMUZI = new Set([
   'pathwise',
   'reachlearn',
   'teachcraft',
+  'transcriptwise',
   'tutorspring',
 ]);
 
@@ -142,6 +144,28 @@ describe('seed catalogue integrity', () => {
     }
   });
 
+  it('marks the nine completed cybersecurity applications as built and source-linked', () => {
+    const completed = [
+      'assetwatch',
+      'cyberaware-lab',
+      'hashsight',
+      'incidentflow',
+      'netscope',
+      'phishlens',
+      'securecode-workbench',
+      'threatintel-desk',
+      'transcriptwise',
+    ];
+    for (const slug of completed) {
+      const product = products.find((item) => item.slug === slug);
+      expect(product, slug).toBeDefined();
+      expect(product?.status).toBe('BUILT');
+      expect(product?.repositoryUrl).toBeTruthy();
+      expect(product?.repositoryUrl).toContain(`/companies/`);
+      expect(product?.statusNote.toLowerCase()).toContain('not publicly deployed');
+    }
+  });
+
   it('contains no invented external URLs — only owner-supplied evidence', () => {
     for (const product of products) {
       expect(product.liveDemoUrl ?? '').toBe('');
@@ -164,24 +188,33 @@ describe('seed catalogue integrity', () => {
     }
   });
 
-  it('configures source links for exactly the sixteen products with working apps', () => {
+  it('configures source links for all twenty-five implemented products', () => {
     const withSource = products.filter((p) => (p.repositoryUrl ?? '') !== '');
     expect(withSource.map((p) => p.slug).sort()).toEqual([
+      'assetwatch',
       'campusflow',
       'chessscope',
       'circuitlab-calc',
       'classconnect',
+      'cyberaware-lab',
       'dependsecure',
       'eduaccess',
       'fileguard',
+      'hashsight',
+      'incidentflow',
       'learnbridge',
       'learnpulse',
+      'netscope',
       'openlearn-commons',
       'pathwise',
+      'phishlens',
       'reachlearn',
+      'securecode-workbench',
       'sentinelcore',
       'sentinellog',
       'teachcraft',
+      'threatintel-desk',
+      'transcriptwise',
       'tutorspring',
     ]);
     for (const product of withSource) {
