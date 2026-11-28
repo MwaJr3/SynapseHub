@@ -35,6 +35,7 @@ const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TAMUZI = new Set([
   'campusflow',
   'classconnect',
+  'cyberaware-lab',
   'eduaccess',
   'learnbridge',
   'learnpulse',
@@ -42,6 +43,7 @@ const TAMUZI = new Set([
   'pathwise',
   'reachlearn',
   'teachcraft',
+  'transcriptwise',
   'tutorspring',
 ]);
 
